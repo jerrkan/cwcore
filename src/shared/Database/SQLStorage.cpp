@@ -50,17 +50,6 @@ SQLStorage sEquipmentStorage(EquipmentInfofmt,"entry","creature_equip_template")
 SQLStorage sGOStorage(GameObjectInfosrcfmt, GameObjectInfodstfmt, "entry","gameobject_template");
 SQLStorage sItemStorage(ItemPrototypesrcfmt, ItemPrototypedstfmt, "entry","item_template");
 SQLStorage sPageTextStore(PageTextfmt,"entry","page_text");
-SQLStorage sSpellThreatStore(SpellThreatfmt,"entry","spell_threat");
-SQLStorage sInstanceTemplate(InstanceTemplatesrcfmt, InstanceTemplatedstfmt, "map","instance_template");
-
-SQLStorage sCreatureStorage(CreatureInfosrcfmt, CreatureInfodstfmt, "entry","creature_template");
-SQLStorage sCreatureDataAddonStorage(CreatureDataAddonInfofmt,"guid","creature_addon");
-SQLStorage sCreatureModelStorage(CreatureModelfmt,"modelid","creature_model_info");
-SQLStorage sCreatureInfoAddonStorage(CreatureInfoAddonInfofmt,"entry","creature_template_addon");
-SQLStorage sEquipmentStorage(EquipmentInfofmt,"entry","creature_equip_template");
-SQLStorage sGOStorage(GameObjectInfosrcfmt, GameObjectInfodstfmt, "entry","gameobject_template");
-SQLStorage sItemStorage(ItemPrototypesrcfmt, ItemPrototypedstfmt, "entry","item_template");
-SQLStorage sPageTextStore(PageTextfmt,"entry","page_text");
 SQLStorage sInstanceTemplate(InstanceTemplatesrcfmt, InstanceTemplatedstfmt, "map","instance_template");
 
 void SQLStorage::Free ()
