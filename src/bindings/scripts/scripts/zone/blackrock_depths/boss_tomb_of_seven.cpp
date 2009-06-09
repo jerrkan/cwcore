@@ -436,6 +436,7 @@ bool GossipHello_boss_gloomrel(Player *player, Creature *_Creature)
     if (player->GetQuestRewardStatus(4083) == 0 && player->GetSkillValue(SKILL_MINING) >= 230)
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_TRIBUTE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
 
+    player->SEND_GOSSIP_MENU(_Creature->GetNpcTextId(), _Creature->GetGUID());
     return true;
 }
 
@@ -457,7 +458,7 @@ bool GossipSelect_boss_gloomrel(Player *player, Creature *_Creature, uint32 send
             break;
         case GOSSIP_ACTION_INFO_DEF+22:
             player->CLOSE_GOSSIP_MENU();
-            if (ScriptedInstance* pInstance = (ScriptedInstance*)_Creature->GetInstanceData())
+            if (ScriptedInstance* pInstance = _Creature->GetInstanceData())
             {
                 //are 5 minutes expected? go template may have data to despawn when used at quest
                 pInstance->DoRespawnGameObject(pInstance->GetData64(DATA_GO_CHALICE),MINUTE*5);

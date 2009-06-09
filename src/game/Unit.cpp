@@ -868,6 +868,8 @@ uint32 Unit::DealDamage(Unit *pVictim, uint32 damage, CleanDamage const* cleanDa
                 // only lootable if it has loot or can drop gold
                 if(cVictim->GetCreatureInfo()->lootid || cVictim->GetCreatureInfo()->maxgold > 0)
                     cVictim->SetUInt32Value(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
+                else
+                    cVictim->lootForBody = true;            // needed for skinning
             }
             // Call creature just died function
             if (cVictim->AI())
@@ -3776,8 +3778,10 @@ bool Unit::AddAura(Aura *Aur, bool handleEffects)
         return false;
     }
 
+    SpellEntry const* aurSpellInfo = Aur->GetSpellProto();
+
     // ghost spell check, allow apply any auras at player loading in ghost mode (will be cleanup after load)
-    if( !isAlive() && Aur->GetId() != 20584 && Aur->GetId() != 8326 && Aur->GetId() != 2584 &&
+    if( !isAlive() && !IsDeathPersistentSpell(aurSpellInfo) &&
         (GetTypeId()!=TYPEID_PLAYER || !((Player*)this)->GetSession()->PlayerLoading()) )
     {
         delete Aur;
@@ -3793,7 +3797,6 @@ bool Unit::AddAura(Aura *Aur, bool handleEffects)
         return false;
     }
 
-    SpellEntry const* aurSpellInfo = Aur->GetSpellProto();
     uint32 aurId = aurSpellInfo->Id;
 
     // passive and persistent and Incanter's Absorption auras can stack with themselves any number of times
@@ -4174,13 +4177,24 @@ void Unit::RemoveAurasByTypeWithDispel(AuraType auraType, Spell * spell)
     }
 }
 
-void Unit::RemoveNotOwnSingleTargetAuras()
+void Unit::RemoveNotOwnSingleTargetAuras(uint32 newPhase)
 {
     // single target auras from other casters
     for (AuraMap::iterator iter = m_Auras.begin(); iter != m_Auras.end(); )
     {
         if (iter->second->GetCasterGUID()!=GetGUID() && IsSingleTargetSpell(iter->second->GetSpellProto()))
-            RemoveAura(iter);
+        {
+            if(!newPhase)
+                RemoveAura(iter);
+            else
+            {
+                Unit* caster = iter->second->GetCaster();
+                if(!caster || !caster->InSamePhase(newPhase))
+                    RemoveAura(iter);
+                else
+                    ++iter;
+            }
+        }
         else
             ++iter;
     }
@@ -4189,12 +4203,12 @@ void Unit::RemoveNotOwnSingleTargetAuras()
     AuraList& scAuras = GetSingleCastAuras();
     for (AuraList::iterator iter = scAuras.begin(); iter != scAuras.end();)
     {
-        Aura * aur=*iter;
+        Aura * aura=*iter;
         ++iter;
-        if (aur->GetTarget()!=this)
+        if (aura->GetTarget() != this && !aura->GetTarget()->InSamePhase(newPhase))
         {
             uint32 removedAuras = m_removedAurasCount;
-            aur->GetTarget()->RemoveAura(aur->GetId(),aur->GetCasterGUID());
+            aura->GetTarget()->RemoveAura(aura->GetId(),aura->GetCasterGUID());
             if (removedAuras+1<m_removedAurasCount)
                 iter=scAuras.begin();
         }
@@ -6395,8 +6409,8 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                         triggered_spell_id = 40471;
                         chance = 15.0f;
                     }
-                    // Judgement
-                    else if( procSpell->SpellFamilyFlags[0] & 0x800000 )
+                    // Judgement (any)
+                    else if (GetSpellSpecific(procSpell->Id)==SPELL_JUDGEMENT)
                     {
                         triggered_spell_id = 40472;
                         chance = 50.0f;
@@ -6442,14 +6456,8 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
         case SPELLFAMILY_SHAMAN:
         {
             switch(dummySpell->Id)
-            {
                // Shaman T8 Elemental 4P Bonus
-                case 64928:
-                {
-                    basepoints0 = int32( triggerAmount * damage / 100 );
-                    triggered_spell_id = 64930;
-                    break;
-                }
+            {
                 // Improved fire nova totem
                 case 16544:
                 {
@@ -6627,6 +6635,13 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                         return false;
                     basepoints0 = triggerAmount * damage / 100;
                     triggered_spell_id = 58879;
+                    break;
+                }
+                // Shaman T8 Elemental 4P Bonus
+                case 64928:
+                {
+                    basepoints0 = int32( triggerAmount * damage / 100 );
+                    triggered_spell_id = 64930;            // Electrified
                     break;
                 }
             }
@@ -7164,12 +7179,66 @@ bool Unit::HandleAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAura, S
     {
         case SPELLFAMILY_DEATHKNIGHT:
         {
+            // Blood of the North
+            // Reaping
+            // Death Rune Mastery
+            if (dummySpell->SpellIconID == 3041 || dummySpell->SpellIconID == 22 || dummySpell->SpellIconID == 2622)
+            {
+                *handled = true;
+                // Convert recently used Blood Rune to Death Rune
+                if (GetTypeId() == TYPEID_PLAYER)
+                {
+                    if(((Player*)this)->getClass() != CLASS_DEATH_KNIGHT)
+                        return false;
+                    RuneType rune = ((Player*)this)->GetLastUsedRune();
+                    // can't proc from death rune use
+                    if (rune == RUNE_DEATH)
+                        return false;
+                    AuraEffect * aurEff = triggeredByAura->GetPartAura(0);
+                    if (!aurEff)
+                        return false;
+                    // Reset amplitude - set death rune remove timer to 30s
+                    aurEff->ResetPeriodicTimer();
+                    uint32 runesLeft;
+
+                    if (dummySpell->SpellIconID == 2622)
+                        runesLeft = 2;
+                    else
+                        runesLeft = 1;
+
+                    for (uint8 i=0;i<MAX_RUNES && runesLeft;++i)
+                    {
+                        if (dummySpell->SpellIconID == 2622)
+                        {
+                            if (((Player*)this)->GetCurrentRune(i) == RUNE_DEATH ||
+                                ((Player*)this)->GetBaseRune(i) == RUNE_BLOOD )
+                                continue;
+                        }
+                        else
+                        {
+                            if (((Player*)this)->GetCurrentRune(i) == RUNE_DEATH ||
+                                ((Player*)this)->GetBaseRune(i) != RUNE_BLOOD )
+                                continue;
+                        }
+                        if (((Player*)this)->GetRuneCooldown(i) != RUNE_COOLDOWN)
+                            continue;
+
+                        --runesLeft;
+                        // Mark aura as used
+                        aurEff->SetAmount(aurEff->GetAmount() | (1<<i));
+                        ((Player*)this)->ConvertRune(i,RUNE_DEATH);
+                    }
+                    return true;
+                }
+                return false;
+            }
+
             switch(dummySpell->Id)
             {
                 // Hungering Cold aura drop
                 case 51209:
                     *handled = true;
-                    // Drop only in disease case
+                    // Drop only in not disease case
                     if (procSpell && procSpell->Dispel == DISPEL_DISEASE)
                         return false;
                     return true;
@@ -11423,10 +11492,6 @@ Unit* Creature::SelectVictim()
     //next-victim-selection algorithm and evade mode are called
     //threat list sorting etc.
 
-    //This should not be called by unit who does not have a threatlist
-    //or who does not have threat (totem/pet/critter)
-    //otherwise enterevademode every update
-
     Unit* target = NULL;
     // First checking if we have some taunt on us
     const AuraEffectList& tauntAuras = GetAurasByType(SPELL_AURA_MOD_TAUNT);
@@ -11465,7 +11530,7 @@ Unit* Creature::SelectVictim()
             // No taunt aura or taunt aura caster is dead standart target selection
             target = m_ThreatManager.getHostilTarget();
     }
-    else
+    else if(!HasReactState(REACT_PASSIVE))
     {
         // We have player pet probably
         target = getAttackerForHelper();
@@ -11473,25 +11538,24 @@ Unit* Creature::SelectVictim()
         {
             if (Unit * owner = ((TempSummon*)this)->GetOwner())
             {
-                if (HasReactState(REACT_AGGRESSIVE) || HasReactState(REACT_DEFENSIVE))
+                if (owner->isInCombat())
+                    target = owner->getAttackerForHelper();
+                if (!target)
                 {
-                    if (owner->isInCombat())
-                        target = owner->getAttackerForHelper();
-                    if (!target)
+                    for(ControlList::const_iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
                     {
-                        for(ControlList::const_iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
+                        if ((*itr)->isInCombat())
                         {
-                            if ((*itr)->isInCombat())
-                            {
-                                target = (*itr)->getAttackerForHelper();
-                                if (target) break;
-                            }
+                            target = (*itr)->getAttackerForHelper();
+                            if (target) break;
                         }
                     }
                 }
             }
         }
     }
+    else
+        return NULL;
 
     if(target)
     {
@@ -14160,27 +14224,22 @@ void Unit::SetRooted(bool apply)
     {
         AddUnitMovementFlag(MOVEMENTFLAG_ROOT);        
 
-        if(GetTypeId() == TYPEID_PLAYER)
-        {
-            WorldPacket data(SMSG_FORCE_MOVE_ROOT, 10);
-            data.append(GetPackGUID());
-            data << (uint32)2;
-            SendMessageToSet(&data,true);
-        }
-        else
+        WorldPacket data(SMSG_FORCE_MOVE_ROOT, 10);
+        data.append(GetPackGUID());
+        data << (uint32)2;
+        SendMessageToSet(&data,true);
+
+        if(GetTypeId() != TYPEID_PLAYER)
             ((Creature *)this)->StopMoving();
     }
     else
     {
         if(!hasUnitState(UNIT_STAT_STUNNED))      // prevent allow move if have also stun effect
         {
-            if(GetTypeId() == TYPEID_PLAYER)
-            {
-                WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 10);
-                data.append(GetPackGUID());
-                data << (uint32)2;
-                SendMessageToSet(&data,true);
-            }
+            WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 10);
+            data.append(GetPackGUID());
+            data << (uint32)2;
+            SendMessageToSet(&data,true);
 
             RemoveUnitMovementFlag(MOVEMENTFLAG_ROOT);
         }
@@ -14783,6 +14842,12 @@ float Unit::MeleeSpellMissChance(const Unit *pVictim, WeaponAttackType attType, 
 
 void Unit::SetPhaseMask(uint32 newPhaseMask, bool update)
 {
+    if(newPhaseMask==GetPhaseMask())
+        return;
+
+    if(IsInWorld())
+        RemoveNotOwnSingleTargetAuras(newPhaseMask);        // we can lost access to caster or target
+
     WorldObject::SetPhaseMask(newPhaseMask,update);
 
     if(!IsInWorld())

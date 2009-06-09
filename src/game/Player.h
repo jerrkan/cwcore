@@ -294,6 +294,7 @@ struct Runes
 {
     RuneInfo runes[MAX_RUNES];
     uint8 runeState;                                        // mask of available runes
+    RuneType lastUsedRune;
 
     void SetRuneState(uint8 index, bool set = true)
     {
@@ -914,6 +915,7 @@ class TRINITY_DLL_SPEC Player : public Unit
         void RemoveFromWorld();
 
         bool TeleportTo(uint32 mapid, float x, float y, float z, float orientation, uint32 options = 0);
+        void TeleportOutOfMap(Map *oldMap);
 
         bool TeleportTo(WorldLocation const &loc, uint32 options = 0)
         {
@@ -2023,7 +2025,7 @@ class TRINITY_DLL_SPEC Player : public Unit
         }
         void HandleFall(MovementInfo const& movementInfo);
 
-        bool IsAllowUseFlyMountsHere() const;
+        bool IsKnowHowFlyIn(uint32 mapid, uint32 zone) const;
 
         void SetClientControl(Unit* target, uint8 allowMove);
 
@@ -2152,6 +2154,8 @@ class TRINITY_DLL_SPEC Player : public Unit
         uint8 GetBaseRune(uint8 index) const { return m_runes->runes[index].BaseRune; }
         uint8 GetCurrentRune(uint8 index) const { return m_runes->runes[index].CurrentRune; }
         uint8 GetRuneCooldown(uint8 index) const { return m_runes->runes[index].Cooldown; }
+        RuneType GetLastUsedRune() { return m_runes->lastUsedRune; }
+        void SetLastUsedRune(RuneType type) { m_runes->lastUsedRune = type; }
         void SetBaseRune(uint8 index, uint8 baseRune) { m_runes->runes[index].BaseRune = baseRune; }
         void SetCurrentRune(uint8 index, uint8 currentRune) { m_runes->runes[index].CurrentRune = currentRune; }
         void SetRuneCooldown(uint8 index, uint8 cooldown) { m_runes->runes[index].Cooldown = cooldown; m_runes->SetRuneState(index, (cooldown == 0) ? true : false); }

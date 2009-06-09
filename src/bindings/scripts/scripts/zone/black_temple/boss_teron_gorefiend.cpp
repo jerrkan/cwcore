@@ -103,18 +103,6 @@ struct TRINITY_DLL_DECL mob_doom_blossomAI : public ScriptedAI
     void SetTeronGUID(uint64 guid){ TeronGUID = guid; }
 };
 
-//This is used to sort the players by distance for Constructs to see who to cast Atrophy on
-struct TargetDistanceOrder : public std::binary_function<const Unit, const Unit, bool>
-{
-    const Unit* MainTarget;
-    TargetDistanceOrder(const Unit* Target) : MainTarget(Target) {};
-    // functor for operator "<"
-    bool operator()(const Unit* _Left, const Unit* _Right) const
-    {
-        return MainTarget->GetDistanceOrder(_Left, _Right);
-    }
-};
-
 struct TRINITY_DLL_DECL mob_shadowy_constructAI : public ScriptedAI
 {
     mob_shadowy_constructAI(Creature* c) : ScriptedAI(c) {}
@@ -165,7 +153,7 @@ struct TRINITY_DLL_DECL mob_shadowy_constructAI : public ScriptedAI
             if(pUnit && pUnit->isAlive())
                 targets.push_back(pUnit);
         }
-        targets.sort(TargetDistanceOrder(m_creature));
+        targets.sort(ObjectDistanceOrder(m_creature));
         Unit* target = targets.front();
         if(target && m_creature->IsWithinDistInMap(target, m_creature->GetAttackDistance(target)))
         {
@@ -239,23 +227,11 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
 
     void EnterCombat(Unit *who) {}
 
-    void MoveInLineOfSight(Unit *who)
+    void MoveInLineOfSight(Unit* pWho)
     {
-        if(!who || (!who->isAlive())) return;
-
-        if(who->isTargetableForAttack() && who->isInAccessiblePlaceFor(m_creature) && m_creature->IsHostileTo(who))
+        if (!Intro && pWho->GetTypeId() == TYPEID_PLAYER && pWho->isTargetableForAttack() && m_creature->IsHostileTo(pWho) && pWho->isInAccessiblePlaceFor(m_creature))
         {
-            float attackRadius = m_creature->GetAttackDistance(who);
-
-            if (m_creature->IsWithinDistInMap(who, attackRadius) && m_creature->GetDistanceZ(who) <= CREATURE_Z_ATTACK_RANGE && m_creature->IsWithinLOSInMap(who))
-            {
-                //if(who->HasStealthAura())
-                //    who->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
-
-                m_creature->AddThreat(who, 1.0f);
-            }
-
-            if(!m_creature->isInCombat() && !Intro && m_creature->IsWithinDistInMap(who, 60.0f) && (who->GetTypeId() == TYPEID_PLAYER))
+            if (m_creature->IsWithinDistInMap(pWho, VISIBLE_RANGE) && m_creature->IsWithinLOSInMap(pWho))
             {
                 if(pInstance)
                     pInstance->SetData(DATA_TERONGOREFIENDEVENT, IN_PROGRESS);
@@ -264,10 +240,12 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
                 m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 DoScriptText(SAY_INTRO, m_creature);
                 m_creature->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_TALK);
-                AggroTargetGUID = who->GetGUID();
+                AggroTargetGUID = pWho->GetGUID();
                 Intro = true;
             }
         }
+
+        ScriptedAI::MoveInLineOfSight(pWho);
     }
 
     void KilledUnit(Unit *victim)

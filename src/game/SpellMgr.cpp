@@ -320,8 +320,6 @@ bool IsPassiveSpell(uint32 spellId)
         return false;
     if(spellInfo->Attributes & SPELL_ATTR_PASSIVE)
         return true;
-    if(spellInfo->activeIconID == 2158)  //flight
-        return true;
     return false;
 }
 
@@ -331,8 +329,6 @@ bool IsAutocastableSpell(uint32 spellId)
     if(!spellInfo)
         return false;
     if(spellInfo->Attributes & SPELL_ATTR_PASSIVE)
-        return false;
-    if(spellInfo->activeIconID == 2158)
         return false;
     if(spellInfo->AttributesEx & SPELL_ATTR_EX_UNAUTOCASTABLE_BY_PET)
         return false;
@@ -575,6 +571,10 @@ SpellSpecific GetSpellSpecific(uint32 spellId)
 
             if (spellInfo->SpellFamilyFlags[0] & 0x11010002)
                 return SPELL_BLESSING;
+
+            if (spellInfo->SpellFamilyFlags[0] & 0x00002190)
+                return SPELL_HAND;
+
             // Judgement of Wisdom, Judgement of Light, Judgement of Justice
             if (spellInfo->Id == 20184 || spellInfo->Id == 20185 || spellInfo->Id == 20186)
                 return SPELL_JUDGEMENT;
@@ -634,6 +634,7 @@ bool IsSingleFromSpellSpecificPerCaster(uint32 spellSpec1,uint32 spellSpec2)
     {
         case SPELL_SEAL:
         case SPELL_BLESSING:
+        case SPELL_HAND:
         case SPELL_AURA:
         case SPELL_STING:
         case SPELL_CURSE:
@@ -702,7 +703,7 @@ bool IsPositiveTarget(uint32 targetA, uint32 targetB)
     return true;
 }
 
-bool IsPositiveEffect(uint32 spellId, uint32 effIndex, bool deep)
+bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) const
 {
     SpellEntry const *spellproto = sSpellStore.LookupEntry(spellId);
     if (!spellproto) return false;
@@ -720,6 +721,7 @@ bool IsPositiveEffect(uint32 spellId, uint32 effIndex, bool deep)
         case 31719:                                         // Suspension
         case 61987:                                         // Avenging Wrath Marker
         case 11196:                                         // Recently Bandadged
+        case 50524:                                         // Runic Power Feed
             return false;
         case 12042:                                         // Arcane Power
             return true;
@@ -810,7 +812,7 @@ bool IsPositiveEffect(uint32 spellId, uint32 effIndex, bool deep)
                                     continue;
                                 // if non-positive trigger cast targeted to positive target this main cast is non-positive
                                 // this will place this spell auras as debuffs
-                                if(IsPositiveTarget(spellTriggeredProto->EffectImplicitTargetA[effIndex],spellTriggeredProto->EffectImplicitTargetB[effIndex]) && !IsPositiveEffect(spellTriggeredId,i, true))
+                                if(IsPositiveTarget(spellTriggeredProto->EffectImplicitTargetA[effIndex],spellTriggeredProto->EffectImplicitTargetB[effIndex]) && !_isPositiveEffect(spellTriggeredId,i, true))
                                     return false;
                             }
                         }
@@ -896,7 +898,7 @@ bool IsPositiveEffect(uint32 spellId, uint32 effIndex, bool deep)
                                     for (uint8 i=0;i<MAX_SPELL_EFFECTS;++i)
                                     {
                                         if (i != effIndex)
-                                            if (IsPositiveEffect(spellId, i, true))
+                                            if (_isPositiveEffect(spellId, i, true))
                                             {
                                                 negative = false;
                                                 break;
@@ -943,14 +945,30 @@ bool IsPositiveEffect(uint32 spellId, uint32 effIndex, bool deep)
     if (!deep && spellproto->EffectTriggerSpell[effIndex]
         && !spellproto->EffectApplyAuraName[effIndex]
         && IsPositiveTarget(spellproto->EffectImplicitTargetA[effIndex],spellproto->EffectImplicitTargetB[effIndex])
-        && !IsPositiveSpell(spellproto->EffectTriggerSpell[effIndex], true))
+        && !_isPositiveSpell(spellproto->EffectTriggerSpell[effIndex], true))
         return false;
 
     // ok, positive
     return true;
 }
 
-bool IsPositiveSpell(uint32 spellId, bool deep)
+bool IsPositiveSpell(uint32 spellId)
+{
+    return !(spellmgr.GetSpellCustomAttr(spellId) & SPELL_ATTR_CU_NEGATIVE);
+}
+
+bool IsPositiveEffect(uint32 spellId, uint32 effIndex)
+{
+    switch(effIndex)
+    {
+        default:
+        case 0: return !(spellmgr.GetSpellCustomAttr(spellId) & SPELL_ATTR_CU_NEGATIVE_EFF0);
+        case 1: return !(spellmgr.GetSpellCustomAttr(spellId) & SPELL_ATTR_CU_NEGATIVE_EFF1);
+        case 2: return !(spellmgr.GetSpellCustomAttr(spellId) & SPELL_ATTR_CU_NEGATIVE_EFF2);
+    }
+}
+
+bool SpellMgr::_isPositiveSpell(uint32 spellId, bool deep) const
 {
     SpellEntry const *spellproto = sSpellStore.LookupEntry(spellId);
     if (!spellproto) return false;
@@ -958,7 +976,7 @@ bool IsPositiveSpell(uint32 spellId, bool deep)
     // spells with at least one negative effect are considered negative
     // some self-applied spells have negative effects but in self casting case negative check ignored.
     for (int i = 0; i < 3; ++i)
-        if (!IsPositiveEffect(spellId, i, deep))
+        if (!_isPositiveEffect(spellId, i, deep))
             return false;
     return true;
 }
@@ -1933,6 +1951,9 @@ void SpellMgr::LoadSpellScriptTarget()
                 }
                 break;
             }
+            case SPELL_TARGET_TYPE_CONTROLLED:
+                if( targetEntry==0 )
+                    sLog.outErrorDb("Table `spell_script_target`: creature template entry %u does not exist.",targetEntry);
             default:
             {
                 //players
@@ -2462,10 +2483,15 @@ void SpellMgr::LoadSpellAreas()
                 continue;
             }
 
-            if(spellInfo->EffectApplyAuraName[0]!=SPELL_AURA_DUMMY && spellInfo->EffectApplyAuraName[0]!=SPELL_AURA_PHASE)
+            switch(spellInfo->EffectApplyAuraName[0])
             {
-                sLog.outErrorDb("Spell %u listed in `spell_area` have aura spell requirement (%u) without dummy/phase aura in effect 0", spell,abs(spellArea.auraSpell));
-                continue;
+                case SPELL_AURA_DUMMY:
+                case SPELL_AURA_PHASE:
+                case SPELL_AURA_GHOST:
+                    break;
+                default:
+                    sLog.outErrorDb("Spell %u listed in `spell_area` have aura spell requirement (%u) without dummy/phase/ghost aura in effect 0", spell,abs(spellArea.auraSpell));
+                    continue;
             }
 
             if(abs(spellArea.auraSpell)==spellArea.spellId)
@@ -2558,8 +2584,12 @@ void SpellMgr::LoadSpellAreas()
 
 SpellCastResult SpellMgr::GetSpellAllowedInLocationError(SpellEntry const *spellInfo, uint32 map_id, uint32 zone_id, uint32 area_id, Player const* player)
 {
+    // allow in GM-mode
+    if (player && player->isGameMaster())
+        return SPELL_CAST_OK;
+
     // normal case
-    if( spellInfo->AreaGroupId > 0)
+    if (spellInfo->AreaGroupId > 0)
     {
         bool found = false;
         AreaGroupEntry const* groupEntry = sAreaGroupStore.LookupEntry(spellInfo->AreaGroupId);
@@ -2578,9 +2608,18 @@ SpellCastResult SpellMgr::GetSpellAllowedInLocationError(SpellEntry const *spell
             return SPELL_FAILED_INCORRECT_AREA;
     }
 
+    // continent limitation (virtual continent)
+    if (spellInfo->AttributesEx4 & SPELL_ATTR_EX4_CAST_ONLY_IN_OUTLAND)
+    {
+        uint32 v_map = GetVirtualMapForMapAndZone(map_id, zone_id);
+        MapEntry const* mapEntry = sMapStore.LookupEntry(v_map);
+        if(!mapEntry || mapEntry->addon < 1 || !mapEntry->IsContinent())
+            return SPELL_FAILED_INCORRECT_AREA;
+    }
+
     // DB base check (if non empty then must fit at least single for allow)
     SpellAreaMapBounds saBounds = spellmgr.GetSpellAreaMapBounds(spellInfo->Id);
-    if(saBounds.first != saBounds.second)
+    if (saBounds.first != saBounds.second)
     {
         for(SpellAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
         {
@@ -2607,21 +2646,21 @@ SpellCastResult SpellMgr::GetSpellAllowedInLocationError(SpellEntry const *spell
         case 44535:                                         // Spirit Heal (mana)
         {
             MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
-            if(!mapEntry)
+            if (!mapEntry)
                 return SPELL_FAILED_INCORRECT_AREA;
 
             return mapEntry->IsBattleGround() && player && player->InBattleGround() ? SPELL_CAST_OK : SPELL_FAILED_REQUIRES_AREA;
         }
         case 44521:                                         // Preparation
         {
-            if(!player)
+            if (!player)
                 return SPELL_FAILED_REQUIRES_AREA;
 
             MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
-            if(!mapEntry)
+            if (!mapEntry)
                 return SPELL_FAILED_INCORRECT_AREA;
 
-            if(!mapEntry->IsBattleGround())
+            if (!mapEntry->IsBattleGround())
                 return SPELL_FAILED_REQUIRES_AREA;
 
             BattleGround* bg = player->GetBattleGround();
@@ -2633,14 +2672,14 @@ SpellCastResult SpellMgr::GetSpellAllowedInLocationError(SpellEntry const *spell
         case 35775:                                         // Green Team (Horde)
         {
             MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
-            if(!mapEntry)
+            if (!mapEntry)
                 return SPELL_FAILED_INCORRECT_AREA;
 
             return mapEntry->IsBattleArena() && player && player->InBattleGround() ? SPELL_CAST_OK : SPELL_FAILED_REQUIRES_AREA;
         }
         case 32727:                                         // Arena Preparation
         {
-            if(!player)
+            if (!player)
                 return SPELL_FAILED_REQUIRES_AREA;
 
             MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
@@ -3560,10 +3599,20 @@ void SpellMgr::LoadSpellCustomAttr()
                     mSpellCustomAttr[i] &= ~SPELL_ATTR_CU_MOVEMENT_IMPAIR;
                     break;
             }
-        }     
+        }
+
+        if(!_isPositiveEffect(i, 0, false))
+            mSpellCustomAttr[i] |= SPELL_ATTR_CU_NEGATIVE_EFF0;
+        if(!_isPositiveEffect(i, 1, false))
+            mSpellCustomAttr[i] |= SPELL_ATTR_CU_NEGATIVE_EFF1;
+        if(!_isPositiveEffect(i, 2, false))
+            mSpellCustomAttr[i] |= SPELL_ATTR_CU_NEGATIVE_EFF2;
 
         if(spellInfo->SpellVisual[0] == 3879)
             mSpellCustomAttr[i] |= SPELL_ATTR_CU_CONE_BACK;
+
+        if(spellInfo->activeIconID == 2158)  //flight
+            spellInfo->Attributes |= SPELL_ATTR_PASSIVE;
 
         switch(i)
         {
@@ -3679,6 +3728,9 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         case 51852:    // The Eye of Acherus (no spawn in phase 2 in db)
             spellInfo->EffectMiscValue[0] |= 1;
+            break;
+        case 52025:    // Cleansing Totem Effect
+            spellInfo->EffectDieSides[1] = 1;
             break;
         case 51904:     // Summon Ghouls On Scarlet Crusade (core does not know the triggered spell is summon spell)
             spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;

@@ -542,7 +542,6 @@ Map::Add(T *obj)
     //also, trigger needs to cast spell, if not update, cannot see visual
     //if(obj->GetTypeId() != TYPEID_UNIT)
         UpdateObjectVisibility(obj,cell,p);
-
     AddNotifier(obj);
 }
 
@@ -1195,6 +1194,21 @@ bool Map::UnloadGrid(const uint32 &x, const uint32 &y, bool unloadAll)
     }
     DEBUG_LOG("Unloading grid[%u,%u] for map %u finished", x,y, GetId());
     return true;
+}
+
+void Map::RemoveAllPlayers()
+{
+    if(HavePlayers())
+    {
+        sLog.outError("Map::UnloadAll: there are still players in the instance at unload, should not happen!");
+
+        for(MapRefManager::iterator itr = m_mapRefManager.begin(); itr != m_mapRefManager.end(); ++itr)
+        {
+            Player* plr = itr->getSource();
+            if(!plr->IsBeingTeleportedFar())
+                plr->TeleportTo(plr->m_homebindMapId, plr->m_homebindX, plr->m_homebindY, plr->m_homebindZ, plr->GetOrientation());
+        }
+    }
 }
 
 void Map::UnloadAll()
@@ -2643,15 +2657,7 @@ void InstanceMap::PermBindAllPlayers(Player *player)
 
 void InstanceMap::UnloadAll()
 {
-    if(HavePlayers())
-    {
-        sLog.outError("InstanceMap::UnloadAll: there are still players in the instance at unload, should not happen!");
-        for(MapRefManager::iterator itr = m_mapRefManager.begin(); itr != m_mapRefManager.end(); ++itr)
-        {
-            Player* plr = itr->getSource();
-            plr->TeleportTo(plr->m_homebindMapId, plr->m_homebindX, plr->m_homebindY, plr->m_homebindZ, plr->GetOrientation());
-        }
-    }
+    assert(!HavePlayers());
 
     if(m_resetAfterUnload == true)
         objmgr.DeleteRespawnTimeForInstance(GetInstanceId());
@@ -2738,21 +2744,17 @@ void BattleGroundMap::SetUnload()
     m_unloadTimer = MIN_UNLOAD_DELAY;
 }
 
-void BattleGroundMap::UnloadAll()
+void BattleGroundMap::RemoveAllPlayers()
 {
-    while(HavePlayers())
+    if(HavePlayers())
     {
-        if(Player * plr = m_mapRefManager.getFirst()->getSource())
+        for(MapRefManager::iterator itr = m_mapRefManager.begin(); itr != m_mapRefManager.end(); ++itr)
         {
-            plr->TeleportTo(plr->GetBattleGroundEntryPoint());
-            // TeleportTo removes the player from this map (if the map exists) -> calls BattleGroundMap::Remove -> invalidates the iterator.
-            // just in case, remove the player from the list explicitly here as well to prevent a possible infinite loop
-            // note that this remove is not needed if the code works well in other places
-            plr->GetMapRef().unlink();
+            Player* plr = itr->getSource();
+            if(!plr->IsBeingTeleportedFar())
+                plr->TeleportTo(plr->GetBattleGroundEntryPoint());
         }
     }
-
-    Map::UnloadAll();
 }
 
 /// Put scripts in the execution queue

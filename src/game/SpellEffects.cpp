@@ -1936,10 +1936,29 @@ void Spell::EffectDummy(uint32 i)
                     bp = damage;
                 }
                 m_caster->CastCustomSpell(unitTarget,m_spellInfo->CalculateSimpleValue(1),&bp,NULL,NULL,true);
-                // Suicide
+                // Corpse Explosion (Suicide)
                 unitTarget->CastCustomSpell(unitTarget,43999,&bp,NULL,NULL,true);
                 // Set corpse look
                 unitTarget->SetDisplayId(25537+urand(0,3));
+            }
+            // Runic Power Feed ( keeping Gargoyle alive )
+            else if (m_spellInfo->Id == 50524)
+            {
+                // No power, dismiss Gargoyle
+                if (m_caster->GetPower(POWER_RUNIC_POWER)<30)
+                    m_caster->CastSpell((Unit*)NULL,50515,true);
+                else
+                    m_caster->ModifyPower(POWER_RUNIC_POWER,-30);
+
+                return;
+            }
+            // Dismiss Gargoyle
+            else if (m_spellInfo->Id == 50515)
+            {
+                // FIXME: gargoyle should fly away
+                unitTarget->setDeathState(JUST_DIED);
+                m_caster->RemoveAurasDueToSpell(50514);
+                return;
             }
             break;
     }
@@ -2047,6 +2066,15 @@ void Spell::EffectTriggerSpell(uint32 i)
     // special cases
     switch(triggered_spell_id)
     {
+        // Mirror Image
+        case 58832:
+        {
+            // Glyph of Mirror Image
+            if (m_caster->GetDummyAura(63093))
+               m_caster->CastSpell(m_caster, 65047, true); // Mirror Image
+
+            break;
+        }
         // Vanish (not exist)
         case 18461:
         {
@@ -4627,7 +4655,6 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                 {
                     if(!unitTarget || unitTarget->GetTypeId() != TYPEID_UNIT)
                         return;
-                    
                     ((Creature*)unitTarget)->ForcedDespawn();
                     return;
                 }
@@ -4991,6 +5018,11 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                     }
                     break;
                 }
+                case 52173: // Coyote Spirit Despawn
+                case 60243: // Blood Parrot Despawn
+                    if (unitTarget->GetTypeId() == TYPEID_UNIT && ((Creature*)unitTarget)->isSummon())
+                        ((TempSummon*)unitTarget)->UnSummon();
+                    return;
                 // Sky Darkener Assault
                 case 52124:
                     if(unitTarget)
@@ -5066,6 +5098,24 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                         }
                     }
                     return;
+                case 58983:
+                {
+                    if(!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    // Prevent stacking of mounts
+                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
+
+                    // Triggered spell id dependent of riding skill
+                    if(uint16 skillval = ((Player*)unitTarget)->GetSkillValue(SKILL_RIDING))
+                    {
+                        if (skillval >= 150)
+                            unitTarget->CastSpell(unitTarget, 58999, true);
+                        else
+                            unitTarget->CastSpell(unitTarget, 58997, true);
+                    }
+                    return;
+                }
                 case 59317:                                 // Teleporting
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
                         return;
@@ -5318,8 +5368,8 @@ void Spell::EffectScriptEffect(uint32 effIndex)
         }
         case SPELLFAMILY_PALADIN:
         {
-            // Judgement
-            if (m_spellInfo->SpellFamilyFlags[0] & 0x800000 || m_spellInfo->SpellFamilyFlags[2] & 0x8)
+            // Judgement (seal trigger)
+            if (m_spellInfo->Category == SPELLCATEGORY_JUDGEMENT)
             {
                 if(!unitTarget || !unitTarget->isAlive())
                     return;
@@ -5329,12 +5379,12 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                 // Judgement self add switch
                 switch (m_spellInfo->Id)
                 {
-                    case 41467: break;                      // Judgement
                     case 53407: spellId1 = 20184; break;    // Judgement of Justice
                     case 20271:                             // Judgement of Light
                     case 57774: spellId1 = 20185; break;    // Judgement of Light
                     case 53408: spellId1 = 20186; break;    // Judgement of Wisdom
                     default:
+                        sLog.outError("Unsupported Judgement (seal trigger) spell (Id: %u) in Spell::EffectScriptEffect",m_spellInfo->Id);
                         return;
                 }
                 // all seals have aura dummy in 2 effect
@@ -5649,8 +5699,10 @@ void Spell::EffectStuck(uint32 /*i*/)
     if(pTarget->isInFlight())
         return;
 
+    PlayerInfo const *info = objmgr.GetPlayerInfo(pTarget->getRace(), pTarget->getClass());
+    pTarget->TeleportTo(info->mapId, info->positionX, info->positionY, info->positionZ, pTarget->GetOrientation(), (unitTarget==m_caster ? TELE_TO_SPELL : 0));
     // homebind location is loaded always
-    pTarget->TeleportTo(pTarget->m_homebindMapId,pTarget->m_homebindX,pTarget->m_homebindY,pTarget->m_homebindZ,pTarget->GetOrientation(), (unitTarget==m_caster ? TELE_TO_SPELL : 0));
+    // pTarget->TeleportTo(pTarget->m_homebindMapId,pTarget->m_homebindX,pTarget->m_homebindY,pTarget->m_homebindZ,pTarget->GetOrientation(), (unitTarget==m_caster ? TELE_TO_SPELL : 0));
 
     // Stuck spell trigger Hearthstone cooldown
     SpellEntry const *spellInfo = sSpellStore.LookupEntry(8690);
@@ -6813,7 +6865,6 @@ void Spell::SummonGuardian(uint32 entry, SummonPropertiesEntry const *properties
         TempSummon *summon = map->SummonCreature(entry, px, py, pz, m_caster->GetOrientation(), properties, duration, caster);
         if(!summon)
             return;
-
         if(summon->HasSummonMask(SUMMON_MASK_GUARDIAN))
             ((Guardian*)summon)->InitStatsForLevel(level);
 

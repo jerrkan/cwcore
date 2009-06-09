@@ -154,7 +154,7 @@ struct TRINITY_DLL_DECL npc_air_force_botsAI : public ScriptedAI
     
     Creature* GetSummonedGuard()
     {
-        Creature* pCreature = (Creature*)Unit::GetUnit(*m_creature, m_uiSpawnedGUID);
+        Creature* pCreature = Unit::GetCreature(*m_creature, m_uiSpawnedGUID);
 
         if (pCreature && pCreature->isAlive())
             return pCreature;
@@ -169,7 +169,7 @@ struct TRINITY_DLL_DECL npc_air_force_botsAI : public ScriptedAI
 
         if (pWho->isTargetableForAttack() && m_creature->IsHostileTo(pWho))
         {
-            Player* pPlayerTarget = pWho->GetTypeId() == TYPEID_PLAYER ? (Player*)pWho : NULL;
+            Player* pPlayerTarget = pWho->GetTypeId() == TYPEID_PLAYER ? CAST_PLR(pWho) : NULL;
 
             // airforce guards only spawn for players
             if (!pPlayerTarget)
@@ -1475,11 +1475,14 @@ struct TRINITY_DLL_DECL npc_snake_trap_serpentsAI : public ScriptedAI
     void Reset()
     {
         Spawn = true;
+        SpellTimer = 0;
 
         CreatureInfo const *Info = m_creature->GetCreatureInfo();
 
         if(Info->Entry == C_VIPER)
             IsViper = true;
+        else
+            IsViper = false;
 
         //We have to reload the states from db for summoned guardians
         m_creature->SetMaxHealth(Info->maxhealth);
@@ -1521,7 +1524,7 @@ struct TRINITY_DLL_DECL npc_snake_trap_serpentsAI : public ScriptedAI
             Spawn = false;
             // Start attacking attacker of owner on first ai update after spawn - move in line of sight may choose better target
             if (!m_creature->getVictim() && m_creature->isSummon())
-                if (Unit * Owner = ((TempSummon*)m_creature)->GetSummoner())
+                if (Unit * Owner = CAST_SUM(m_creature)->GetSummoner())
                     if(Owner->getAttackerForHelper())
                         AttackStart(Owner->getAttackerForHelper());
         }
@@ -1595,7 +1598,7 @@ struct TRINITY_DLL_DECL mob_mojoAI : public ScriptedAI
     {
         m_creature->HandleEmoteCommand(emote);
         Unit* own = m_creature->GetOwner();
-        if (own && ((Player*)own)->GetTeam() != player->GetTeam())
+        if (!own || own->GetTypeId() != TYPEID_PLAYER || CAST_PLR(own)->GetTeam() != player->GetTeam())
             return;
         if (emote == TEXTEMOTE_KISS)
         {
@@ -1636,18 +1639,16 @@ CreatureAI* GetAI_mob_mojo(Creature *_Creature)
     return new mob_mojoAI (_Creature);
 }
 
-struct TRINITY_DLL_DECL npc_mirror_image : SpellAI
+struct TRINITY_DLL_DECL npc_mirror_image : SpellCasterAI
 {
-    npc_mirror_image(Creature *c) : SpellAI(c) {}
+    npc_mirror_image(Creature *c) : SpellCasterAI(c) {}
 
-    void Reset()
+    void InitializeAI()
     {
-        Unit * owner = NULL;
-        if (m_creature->isSummon())
-            owner = ((TempSummon*)me)->GetOwner();
+        SpellCasterAI::InitializeAI();
+        Unit * owner = me->GetOwner();
         if (!owner)
             return;
-        owner->SetLevel(owner->getLevel());
         // Inherit Master's Threat List (not yet implemented)
         owner->CastSpell((Unit*)NULL, 58838, true);
         // here mirror image casts on summoner spell (not present in client dbc) 49866
@@ -1656,40 +1657,19 @@ struct TRINITY_DLL_DECL npc_mirror_image : SpellAI
         owner->CastSpell(me, 45204, false);
     }
 
-    void EnterCombat(Unit *who)
+    // Do not reload creature templates on evade mode enter - prevent visual lost
+    void EnterEvadeMode()
     {
-        if (spells.empty())
+        if(me->IsInEvadeMode() || !me->isAlive())
             return;
 
-        uint32 spell = rand() % spells.size();
-        uint32 count = 0;
-        for(SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr, ++count)
+        Unit *owner = me->GetCharmerOrOwner();
+
+        me->CombatStop(true);
+        if(owner && !me->hasUnitState(UNIT_STAT_FOLLOW) )
         {
-            uint32 cooldown = GetAISpellInfo(*itr)->cooldown;
-            if (count == spell)
-            {
-                DoCast(spells[spell]);
-                cooldown += me->GetCurrentSpellCastTime(*itr);
-            }
-            events.ScheduleEvent(*itr, cooldown);
-        }
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if(!UpdateVictim())
-            return;
-
-        events.Update(diff);
-
-        if(me->hasUnitState(UNIT_STAT_CASTING))
-            return;
-
-        if(uint32 spellId = events.ExecuteEvent())
-        {
-            DoCast(spellId);
-            uint32 casttime = me->GetCurrentSpellCastTime(spellId);
-            events.ScheduleEvent(spellId, (casttime ? casttime : 500) + GetAISpellInfo(spellId)->cooldown);
+            me->GetMotionMaster()->Clear(false);
+            me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, m_creature->GetFollowAngle(), MOTION_SLOT_ACTIVE);
         }
     }
 };
