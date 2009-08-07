@@ -2305,6 +2305,45 @@ void World::ProcessCliCommands()
     zprint("TC> ");
 }
 
+void World::SendRNDBroadcast()
+{
+   std::string msg;
+   QueryResult *result = WorldDatabase.PQuery("SELECT `text` FROM `autobroadcast` ORDER BY RAND() LIMIT 1");
+
+   if(!result)
+      return;
+
+   msg = result->Fetch()[0].GetString();
+   delete result;
+
+   static uint32 abcenter = 0;
+    abcenter = sConfig.GetIntDefault("AutoBroadcast.Center", 0);
+    if(abcenter == 0)
+    {
+      sWorld.SendWorldText(LANG_AUTO_BROADCAST, msg.c_str());
+
+      sLog.outString("AutoBroadcast: '%s'",msg.c_str());
+   }
+   if(abcenter == 1)
+   {
+      WorldPacket data(SMSG_NOTIFICATION, (msg.size()+1));
+      data << msg;
+      sWorld.SendGlobalMessage(&data);
+
+      sLog.outString("AutoBroadcast: '%s'",msg.c_str());
+   }
+   if(abcenter == 2)
+   {
+      sWorld.SendWorldText(LANG_AUTO_BROADCAST, msg.c_str());
+
+      WorldPacket data(SMSG_NOTIFICATION, (msg.size()+1));
+      data << msg;
+      sWorld.SendGlobalMessage(&data);
+
+      sLog.outString("AutoBroadcast: '%s'",msg.c_str());
+   }
+}
+
 void World::InitResultQueue()
 {
     m_resultQueue = new SqlResultQueue;

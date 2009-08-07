@@ -922,7 +922,7 @@ TalentsInspecting = 1
 #
 ###################################################################################################################
 
-ThreatRadius = 60
+ThreatRadius = 20
 Rate.Creature.Aggro = 1
 CreatureFamilyFleeAssistanceRadius = 30
 CreatureFamilyAssistanceRadius = 10
@@ -1347,6 +1347,28 @@ Death.CorpseReclaimDelay.PvE = 0
 Death.Bones.World = 1
 Death.Bones.BattlegroundOrArena = 1
 
+###################################################################################################################
+# AUTO BROADCAST
+#
+#    AutoBroadcast.On
+#        Enable auto broadcast
+#        Default: 0 - off
+#                 1 - on
+#
+#    AutoBroadcast.Center
+#        Display method
+#        Default: 0 - announce
+#                 1 - notify
+#                 2 - both
+#
+#    AutoBroadcast.Timer
+#        Timer for auto broadcast
+#
+###################################################################################################################
+
+AutoBroadcast.On = 0
+AutoBroadcast.Center = 0
+AutoBroadcast.Timer = 60000
 
 ###################################################################################################################
 # BATTLEGROUND CONFIG
