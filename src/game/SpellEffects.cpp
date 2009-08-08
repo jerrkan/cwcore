@@ -4381,7 +4381,7 @@ void Spell::SpellDamageWeaponDmg(uint32 i)
         case SPELLFAMILY_DEATHKNIGHT:
         {
             // Obliterate (12.5% more damage per disease)
-            if (m_spellInfo->SpellFamilyFlags[1] & 0x20000)
+            else if (m_spellInfo->SpellFamilyFlags[1] & 0x20000)
             {
                 bool consumeDiseases = true;
                 // Annihilation
