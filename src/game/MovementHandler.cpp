@@ -305,6 +305,12 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
     mover->m_movementInfo = movementInfo;
 
+    if(mover->m_Vehicle)
+    {
+        mover->SetOrientation(movementInfo.o);
+        return;
+    }
+
     if(plMover)                                             // nothing is charmed, or player charmed
     {
         plMover->SetPosition(movementInfo.x, movementInfo.y, movementInfo.z, movementInfo.o);
@@ -343,9 +349,6 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
     }
     else                                                    // creature charmed
     {
-        uint32 entry = mover->GetEntry();
-        if(mover->m_Vehicle)
-            return;
         mover->GetMap()->CreatureRelocation((Creature*)mover, movementInfo.x, movementInfo.y, movementInfo.z, movementInfo.o);
 
         /*if(mover->canFly())
