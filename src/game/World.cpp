@@ -67,6 +67,7 @@
 #include "Language.h"
 #include "CreatureGroups.h"
 #include "Transports.h"
+#include "ProgressBar.h"
 
 INSTANTIATE_SINGLETON_1( World );
 
@@ -1494,6 +1495,9 @@ void World::SetInitialWorldSettings()
     sLog.outString( "Returning old mails..." );
     objmgr.ReturnOrDeleteOldMails(false);
 
+    sLog.outString("Loading Autobroadcasts...");
+    LoadAutobroadcasts();
+
     ///- Load and initialize scripts
     sLog.outString( "Loading Scripts..." );
     sLog.outString();
@@ -1694,6 +1698,45 @@ void World::RecordTimeDiff(const char *text, ...)
     }
 
     m_currentTime = thisTime;
+}
+
+void World::LoadAutobroadcasts()
+{
+    m_Autobroadcasts.clear();
+
+    QueryResult *result = WorldDatabase.Query("SELECT text FROM autobroadcast");
+
+    if(!result)
+    {
+        barGoLink bar(1);
+        bar.step();
+
+        sLog.outString();
+        sLog.outString( ">> Loaded 0 autobroadcasts definitions");
+        return;
+    }
+
+    barGoLink bar(result->GetRowCount());
+
+    uint32 count = 0;
+
+    do
+    {
+        bar.step();
+
+        Field *fields = result->Fetch();
+
+        std::string message = fields[0].GetCppString();
+
+        m_Autobroadcasts.push_back(message);
+
+        count++;
+    } while(result->NextRow());
+
+    delete result;
+
+    sLog.outString();
+    sLog.outString( ">> Loaded %u autobroadcasts definitions", count);
 }
 
 /// Update the World !

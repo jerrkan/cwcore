@@ -957,7 +957,7 @@ void Aura::HandleAuraSpecificMods(bool apply)
                     if(AuraEffect *auraeff = GetPartAura(2))
                     {
                         int32 value = int32((auraeff->GetAmount()*-1)-10);
-                        uint32 defva = uint32(((Player*)caster)->GetSkillValue(SKILL_DEFENSE) + ((Player*)this)->GetRatingBonusValue(CR_DEFENSE_SKILL));
+                        uint32 defva = uint32(((Player*)caster)->GetSkillValue(SKILL_DEFENSE) + ((Player*)caster)->GetRatingBonusValue(CR_DEFENSE_SKILL));
                         
                         if(defva > 400)
                             value += int32((defva-400)*0.15);
@@ -4215,26 +4215,6 @@ void AuraEffect::HandleModMechanicImmunity(bool apply, bool Real, bool /*changeA
             }
         }
     }
-
-    // The Beast Within and Bestial Wrath - immunity
-    if(GetId() == 19574 || GetId() == 34471)
-    {
-        if(apply)
-        {
-            m_target->CastSpell(m_target,24395,true, NULL, this);
-            m_target->CastSpell(m_target,24396,true, NULL, this);
-            m_target->CastSpell(m_target,24397,true, NULL, this);
-            m_target->CastSpell(m_target,26592,true, NULL, this);
-        }
-        else
-        {
-            m_target->RemoveAurasDueToSpell(24395);
-            m_target->RemoveAurasDueToSpell(24396);
-            m_target->RemoveAurasDueToSpell(24397);
-            m_target->RemoveAurasDueToSpell(26592);
-        }
-    }
-
     // Heroic Fury (remove Intercept cooldown)
     else if( apply && GetId() == 60970 && m_target->GetTypeId() == TYPEID_PLAYER )
     {
