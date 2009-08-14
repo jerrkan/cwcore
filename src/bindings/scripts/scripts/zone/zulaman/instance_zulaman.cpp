@@ -24,7 +24,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_zulaman.h"
 
-#define ENCOUNTERS     6
+#define MAX_ENCOUNTER     6
 #define RAND_VENDOR    2
 
 //187021 //Harkor's Satchel
@@ -69,11 +69,13 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
     uint16 QuestMinute;
     uint16 ChestLooted;
 
-    uint32 Encounters[ENCOUNTERS];
+    uint32 m_auiEncounter[MAX_ENCOUNTER];
     uint32 RandVendor[RAND_VENDOR];
 
     void Initialize()
     {
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+
         HarkorsSatchelGUID = 0;
         TanzarsTrunkGUID = 0;
         AshlisBagGUID = 0;
@@ -217,7 +219,7 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
             }
             break;
         case DATA_AKILZONEVENT:
-            Encounters[1] = data;
+            m_auiEncounter[1] = data;
             HandleGameObject(AkilzonDoorGUID, data != IN_PROGRESS);
             if(data == DONE)
             {
@@ -278,12 +280,12 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
     {
         switch(type)
         {
-        case DATA_NALORAKKEVENT: return Encounters[0];
-        case DATA_AKILZONEVENT:  return Encounters[1];
-        case DATA_JANALAIEVENT:  return Encounters[2];
-        case DATA_HALAZZIEVENT:  return Encounters[3];
-        case DATA_HEXLORDEVENT:  return Encounters[4];
-        case DATA_ZULJINEVENT:   return Encounters[5];
+        case DATA_NALORAKKEVENT: return m_auiEncounter[0];
+        case DATA_AKILZONEVENT:  return m_auiEncounter[1];
+        case DATA_JANALAIEVENT:  return m_auiEncounter[2];
+        case DATA_HALAZZIEVENT:  return m_auiEncounter[3];
+        case DATA_HEXLORDEVENT:  return m_auiEncounter[4];
+        case DATA_ZULJINEVENT:   return m_auiEncounter[5];
         case DATA_CHESTLOOTED:   return ChestLooted;
         case TYPE_RAND_VENDOR_1: return RandVendor[0];
         case TYPE_RAND_VENDOR_2: return RandVendor[1];

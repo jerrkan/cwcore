@@ -759,60 +759,13 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
     {
         // not blizz like, we must correctly save and load player instead...
         if(pCurrChar->getRace() == RACE_NIGHTELF)
-            pCurrChar->CastSpell(pCurrChar, 20584, true, 0);// auras SPELL_AURA_INCREASE_SPEED(+speed in wisp form), SPELL_AURA_INCREASE_SWIM_SPEED(+swim speed in wisp form), SPELL_AURA_TRANSFORM (to wisp form)
-        pCurrChar->CastSpell(pCurrChar, 8326, true, 0);     // auras SPELL_AURA_GHOST, SPELL_AURA_INCREASE_SPEED(why?), SPELL_AURA_INCREASE_SWIM_SPEED(why?)
+            pCurrChar->CastSpell(pCurrChar, SPELL_ID_NE_GHOST, true, 0);// auras SPELL_AURA_INCREASE_SPEED(+speed in wisp form), SPELL_AURA_INCREASE_SWIM_SPEED(+swim speed in wisp form), SPELL_AURA_TRANSFORM (to wisp form)
+        pCurrChar->CastSpell(pCurrChar, SPELL_ID_GHOST, true, 0);     // auras SPELL_AURA_GHOST, SPELL_AURA_INCREASE_SPEED(why?), SPELL_AURA_INCREASE_SWIM_SPEED(why?)
 
         pCurrChar->SetMovement(MOVE_WATER_WALK);
     }
 
-    if(uint32 sourceNode = pCurrChar->m_taxi.GetTaxiSource())
-    {
-        sLog.outDebug( "WORLD: Restart character %u taxi flight", pCurrChar->GetGUIDLow() );
-
-        uint32 mountDisplayId = objmgr.GetTaxiMountDisplayId(sourceNode, pCurrChar->GetTeam(),true);
-        uint32 path = pCurrChar->m_taxi.GetCurrentTaxiPath();
-
-        // search appropriate start path node
-        uint32 startNode = 0;
-
-        TaxiPathNodeList const& nodeList = sTaxiPathNodesByPath[path];
-
-        float distPrev = MAP_SIZE*MAP_SIZE;
-        float distNext =
-            (nodeList[0].x-pCurrChar->GetPositionX())*(nodeList[0].x-pCurrChar->GetPositionX())+
-            (nodeList[0].y-pCurrChar->GetPositionY())*(nodeList[0].y-pCurrChar->GetPositionY())+
-            (nodeList[0].z-pCurrChar->GetPositionZ())*(nodeList[0].z-pCurrChar->GetPositionZ());
-
-        for(uint32 i = 1; i < nodeList.size(); ++i)
-        {
-            TaxiPathNode const& node = nodeList[i];
-            TaxiPathNode const& prevNode = nodeList[i-1];
-
-            // skip nodes at another map
-            if(node.mapid != pCurrChar->GetMapId())
-                continue;
-
-            distPrev = distNext;
-
-            distNext =
-                (node.x-pCurrChar->GetPositionX())*(node.x-pCurrChar->GetPositionX())+
-                (node.y-pCurrChar->GetPositionY())*(node.y-pCurrChar->GetPositionY())+
-                (node.z-pCurrChar->GetPositionZ())*(node.z-pCurrChar->GetPositionZ());
-
-            float distNodes =
-                (node.x-prevNode.x)*(node.x-prevNode.x)+
-                (node.y-prevNode.y)*(node.y-prevNode.y)+
-                (node.z-prevNode.z)*(node.z-prevNode.z);
-
-            if(distNext + distPrev < distNodes)
-            {
-                startNode = i;
-                break;
-            }
-        }
-
-        SendDoFlight( mountDisplayId, path, startNode );
-    }
+    pCurrChar->ContinueTaxiFlight();
 
     // reset for all pets before pet loading
     if(pCurrChar->HasAtLoginFlag(AT_LOGIN_RESET_PET_TALENTS))

@@ -182,9 +182,8 @@ struct TRINITY_DLL_DECL boss_terestianAI : public ScriptedAI
         {
             if(PortalGUID[i])
             {
-                Unit* Portal = Unit::GetUnit((*m_creature), PortalGUID[i]);
-                if(Portal)
-                    Portal->DealDamage(Portal, Portal->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                if(Creature* pPortal = Unit::GetCreature(*m_creature, PortalGUID[i]))
+                    pPortal->ForcedDespawn();
 
                 PortalGUID[i] = 0;
             }
@@ -201,7 +200,7 @@ struct TRINITY_DLL_DECL boss_terestianAI : public ScriptedAI
         ReSummon            = false;
 
         if(pInstance)
-            pInstance->SetData(DATA_TERESTIAN_EVENT, NOT_STARTED);
+            pInstance->SetData(TYPE_TERESTIAN, NOT_STARTED);
     }
 
     void EnterCombat(Unit* who)
@@ -221,7 +220,7 @@ struct TRINITY_DLL_DECL boss_terestianAI : public ScriptedAI
             if(Kilrek && !Kilrek->getVictim())
                 Kilrek->AddThreat(who, 1.0f);
 
-            pInstance->SetData(DATA_TERESTIAN_EVENT, IN_PROGRESS);
+            pInstance->SetData(TYPE_TERESTIAN, IN_PROGRESS);
         }else ERROR_INST_DATA(m_creature);
     }
 
@@ -240,9 +239,8 @@ struct TRINITY_DLL_DECL boss_terestianAI : public ScriptedAI
         {
             if(PortalGUID[i])
             {
-                Unit* Portal = Unit::GetUnit((*m_creature), PortalGUID[i]);
-                if(Portal)
-                    Portal->DealDamage(Portal, Portal->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                if(Creature* pPortal = Unit::GetCreature((*m_creature), PortalGUID[i]))
+                    pPortal->ForcedDespawn();
 
                 PortalGUID[i] = 0;
             }
@@ -251,7 +249,7 @@ struct TRINITY_DLL_DECL boss_terestianAI : public ScriptedAI
         DoScriptText(SAY_DEATH, m_creature);
 
         if(pInstance)
-            pInstance->SetData(DATA_TERESTIAN_EVENT, DONE);
+            pInstance->SetData(TYPE_TERESTIAN, DONE);
     }
 
     void UpdateAI(const uint32 diff)

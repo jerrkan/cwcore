@@ -60,6 +60,15 @@ Map::~Map()
 {
     UnloadAll();
 
+    while(!i_worldObjects.empty())
+    {
+        WorldObject *obj = *i_worldObjects.begin();
+        assert(obj->m_isWorldObject);
+        //assert(obj->GetTypeId() == TYPEID_CORPSE);
+        obj->RemoveFromWorld();
+        obj->ResetMap();
+    }
+
     if(!m_scriptSchedule.empty())
         sWorld.DecreaseScheduledScriptCount(m_scriptSchedule.size());
 }
@@ -202,7 +211,7 @@ Map::Map(uint32 id, time_t expiry, uint32 InstanceId, uint8 SpawnMode, Map* _par
   : i_mapEntry (sMapStore.LookupEntry(id)), i_spawnMode(SpawnMode), i_InstanceId(InstanceId), m_unloadTimer(0),
   m_activeNonPlayersIter(m_activeNonPlayers.end()),
   i_gridExpiry(expiry), m_parentMap(_parent ? _parent : this)
-   , i_lock(true)
+   , i_lock(false)
 {
     m_notifyTimer.SetInterval(IN_MILISECONDS/2);
 
@@ -221,104 +230,30 @@ Map::Map(uint32 id, time_t expiry, uint32 InstanceId, uint8 SpawnMode, Map* _par
 template<class T>
 void Map::AddToGrid(T* obj, NGridType *grid, Cell const& cell)
 {
-    (*grid)(cell.CellX(), cell.CellY()).template AddGridObject<T>(obj, obj->GetGUID());
-}
-
-template<>
-void Map::AddToGrid(Player* obj, NGridType *grid, Cell const& cell)
-{
-    (*grid)(cell.CellX(), cell.CellY()).AddWorldObject(obj, obj->GetGUID());
-}
-
-template<>
-void Map::AddToGrid(Corpse *obj, NGridType *grid, Cell const& cell)
-{
-    // add to world object registry in grid
-    if(obj->GetType()!=CORPSE_BONES)
-    {
-        (*grid)(cell.CellX(), cell.CellY()).AddWorldObject(obj, obj->GetGUID());
-    }
-    // add to grid object store
+    if(obj->m_isWorldObject)
+        (*grid)(cell.CellX(), cell.CellY()).template AddWorldObject<T>(obj, obj->GetGUID());
     else
-    {
-        (*grid)(cell.CellX(), cell.CellY()).AddGridObject(obj, obj->GetGUID());
-    }
+        (*grid)(cell.CellX(), cell.CellY()).template AddGridObject<T>(obj, obj->GetGUID());
 }
 
 template<>
 void Map::AddToGrid(Creature* obj, NGridType *grid, Cell const& cell)
 {
-    // add to world object registry in grid
-    if(obj->isWorldCreature() || obj->IsTempWorldObject)
-    {
-        (*grid)(cell.CellX(), cell.CellY()).AddWorldObject<Creature>(obj, obj->GetGUID());
-    }
-    // add to grid object store
+    if(obj->m_isWorldObject)
+        (*grid)(cell.CellX(), cell.CellY()).AddWorldObject(obj, obj->GetGUID());
     else
-    {
-        (*grid)(cell.CellX(), cell.CellY()).AddGridObject<Creature>(obj, obj->GetGUID());
-    }
-    obj->SetCurrentCell(cell);
-}
+        (*grid)(cell.CellX(), cell.CellY()).AddGridObject(obj, obj->GetGUID());
 
-template<>
-void Map::AddToGrid(DynamicObject* obj, NGridType *grid, Cell const& cell)
-{
-    if(obj->isActiveObject()) // only farsight
-        (*grid)(cell.CellX(), cell.CellY()).AddWorldObject<DynamicObject>(obj, obj->GetGUID());
-    else
-        (*grid)(cell.CellX(), cell.CellY()).AddGridObject<DynamicObject>(obj, obj->GetGUID());
+    obj->SetCurrentCell(cell);
 }
 
 template<class T>
 void Map::RemoveFromGrid(T* obj, NGridType *grid, Cell const& cell)
 {
-    (*grid)(cell.CellX(), cell.CellY()).template RemoveGridObject<T>(obj, obj->GetGUID());
-}
-
-template<>
-void Map::RemoveFromGrid(Player* obj, NGridType *grid, Cell const& cell)
-{
-    (*grid)(cell.CellX(), cell.CellY()).RemoveWorldObject(obj, obj->GetGUID());
-}
-
-template<>
-void Map::RemoveFromGrid(Corpse *obj, NGridType *grid, Cell const& cell)
-{
-    // remove from world object registry in grid
-    if(obj->GetType()!=CORPSE_BONES)
-    {
-        (*grid)(cell.CellX(), cell.CellY()).RemoveWorldObject(obj, obj->GetGUID());
-    }
-    // remove from grid object store
+    if(obj->m_isWorldObject)
+        (*grid)(cell.CellX(), cell.CellY()).template RemoveWorldObject<T>(obj, obj->GetGUID());
     else
-    {
-        (*grid)(cell.CellX(), cell.CellY()).RemoveGridObject(obj, obj->GetGUID());
-    }
-}
-
-template<>
-void Map::RemoveFromGrid(Creature* obj, NGridType *grid, Cell const& cell)
-{
-    // remove from world object registry in grid
-    if(obj->isWorldCreature() || obj->IsTempWorldObject)
-    {
-        (*grid)(cell.CellX(), cell.CellY()).RemoveWorldObject<Creature>(obj, obj->GetGUID());
-    }
-    // remove from grid object store
-    else
-    {
-        (*grid)(cell.CellX(), cell.CellY()).RemoveGridObject<Creature>(obj, obj->GetGUID());
-    }
-}
-
-template<>
-void Map::RemoveFromGrid(DynamicObject* obj, NGridType *grid, Cell const& cell)
-{
-    if(obj->isActiveObject()) // only farsight
-        (*grid)(cell.CellX(), cell.CellY()).RemoveWorldObject<DynamicObject>(obj, obj->GetGUID());
-    else
-        (*grid)(cell.CellX(), cell.CellY()).RemoveGridObject<DynamicObject>(obj, obj->GetGUID());
+        (*grid)(cell.CellX(), cell.CellY()).template RemoveGridObject<T>(obj, obj->GetGUID());
 }
 
 template<class T>
@@ -361,11 +296,11 @@ void Map::SwitchGridContainers(T* obj, bool on)
             assert(false);
         }*/
     }
-    obj->IsTempWorldObject = on;
+    obj->m_isWorldObject = on;
 }
 
 template void Map::SwitchGridContainers(Creature *, bool);
-template void Map::SwitchGridContainers(DynamicObject *, bool);
+//template void Map::SwitchGridContainers(DynamicObject *, bool);
 
 template<class T>
 void Map::DeleteFromWorld(T* obj)
@@ -519,9 +454,14 @@ Map::Add(T *obj)
         return;
     }
 
-    obj->SetMap(this);
-
     Cell cell(p);
+    if(obj->IsInWorld()) // need some clean up later
+    {
+        UpdateObjectVisibility(obj,cell,p); // is this needed?
+        AddNotifier(obj);
+        return;
+    }
+
     if(obj->isActiveObject())
         EnsureGridLoadedAtEnter(cell);
     else
@@ -531,6 +471,7 @@ Map::Add(T *obj)
     assert( grid != NULL );
 
     AddToGrid(obj,grid,cell);
+    //obj->SetMap(this);
     obj->AddToWorld();
 
     if(obj->isActiveObject())
@@ -543,30 +484,6 @@ Map::Add(T *obj)
     //if(obj->GetTypeId() != TYPEID_UNIT)
         UpdateObjectVisibility(obj,cell,p);
     AddNotifier(obj);
-}
-
-void Map::MessageBroadcast(Player *player, WorldPacket *msg, bool to_self)
-{
-    Trinity::MessageDistDeliverer post_man(player, msg, World::GetMaxVisibleDistance(), to_self);
-    VisitWorld(player->GetPositionX(), player->GetPositionY(), World::GetMaxVisibleDistance(), post_man);
-}
-
-void Map::MessageBroadcast(WorldObject *obj, WorldPacket *msg)
-{
-    Trinity::MessageDistDeliverer post_man(obj, msg, World::GetMaxVisibleDistance());
-    VisitWorld(obj->GetPositionX(), obj->GetPositionY(), World::GetMaxVisibleDistance(), post_man);
-}
-
-void Map::MessageDistBroadcast(Player *player, WorldPacket *msg, float dist, bool to_self, bool own_team_only)
-{
-    Trinity::MessageDistDeliverer post_man(player, msg, dist, to_self, own_team_only);
-    VisitWorld(player->GetPositionX(), player->GetPositionY(), dist, post_man);
-}
-
-void Map::MessageDistBroadcast(WorldObject *obj, WorldPacket *msg, float dist)
-{
-    Trinity::MessageDistDeliverer post_man(obj, msg, dist);
-    VisitWorld(obj->GetPositionX(), obj->GetPositionY(), dist, post_man);
 }
 
 bool Map::loaded(const GridPair &p) const
@@ -649,8 +566,9 @@ void Map::AddUnitToNotify(Unit* u)
     }
 }
 
-void Map::RemoveUnitFromNotify(Unit *unit, int32 slot)
+void Map::RemoveUnitFromNotify(Unit *unit)
 {
+    int32 slot = unit->m_NotifyListPos;
     if(i_lock)
     {
         if(slot < i_unitsToNotifyBacklog.size() && i_unitsToNotifyBacklog[slot] == unit)
@@ -665,6 +583,8 @@ void Map::RemoveUnitFromNotify(Unit *unit, int32 slot)
         assert(slot < i_unitsToNotify.size());
         i_unitsToNotify[slot] = NULL;
     }
+
+    unit->m_NotifyListPos = -1;
 }
 
 void Map::Update(const uint32 &t_diff)
@@ -816,17 +736,12 @@ void Map::Remove(Player *player, bool remove)
     CellPair p = Trinity::ComputeCellPair(player->GetPositionX(), player->GetPositionY());
     if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
     {
-        if(remove)
-            player->CleanupsBeforeDelete();
-
+        sLog.outCrash("Map::Remove: Player is in invalid cell!");
         // invalid coordinates
         player->RemoveFromWorld();
 
         if( remove )
-        {
-            player->ResetMap();
             DeleteFromWorld(player);
-        }
 
         return;
     }
@@ -842,9 +757,6 @@ void Map::Remove(Player *player, bool remove)
     DEBUG_LOG("Remove player %s from grid[%u,%u]", player->GetName(), cell.GridX(), cell.GridY());
     NGridType *grid = getNGrid(cell.GridX(), cell.GridY());
     assert(grid != NULL);
-
-    if(remove)
-        player->CleanupsBeforeDelete();
 
     player->RemoveFromWorld();
     RemoveFromGrid(player,grid,cell);
@@ -2223,7 +2135,7 @@ void Map::RemoveAllObjectsInRemoveList()
         switch(obj->GetTypeId())
         {
         case TYPEID_UNIT:
-            if(!((Creature*)obj)->isWorldCreature())
+            if(!((Creature*)obj)->isPet())
                 SwitchGridContainers((Creature*)obj, on);
             break;
         }
@@ -3395,7 +3307,7 @@ void Map::ScriptsProcess()
 
                 if(!cmdTarget)
                 {
-                    sLog.outError("SCRIPT_COMMAND_CAST_SPELL call for NULL %s.",step.script->datalong2 & 0x01 ? "source" : "target");
+                    sLog.outError("SCRIPT_COMMAND_CAST_SPELL %u call for NULL %s.", step.script->datalong, step.script->datalong2 & 0x01 ? "source" : "target");
                     break;
                 }
 
@@ -3411,7 +3323,7 @@ void Map::ScriptsProcess()
 
                 if(!cmdSource)
                 {
-                    sLog.outError("SCRIPT_COMMAND_CAST_SPELL call for NULL %s.",step.script->datalong2 & 0x02 ? "target" : "source");
+                    sLog.outError("SCRIPT_COMMAND_CAST_SPELL %u call for NULL %s.", step.script->datalong, step.script->datalong2 & 0x02 ? "target" : "source");
                     break;
                 }
 

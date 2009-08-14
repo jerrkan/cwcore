@@ -256,9 +256,14 @@ ObjectAccessor::RemoveCorpse(Corpse *corpse)
 {
     assert(corpse && corpse->GetType() != CORPSE_BONES);
 
+    if(corpse->FindMap())
+        corpse->FindMap()->Remove(corpse, false);
+    else
+        corpse->RemoveFromWorld();
+
     Guard guard(i_corpseGuard);
     Player2CorpsesMapType::iterator iter = i_player2corpse.find(corpse->GetOwnerGUID());
-    if( iter == i_player2corpse.end() )
+    if( iter == i_player2corpse.end() ) // i do not know when it happens but it happens
         return;
 
     // build mapid*cellid -> guid_set map
@@ -266,7 +271,6 @@ ObjectAccessor::RemoveCorpse(Corpse *corpse)
     uint32 cell_id = (cell_pair.y_coord*TOTAL_NUMBER_OF_CELLS_PER_MAP) + cell_pair.x_coord;
 
     objmgr.DeleteCorpseCellData(corpse->GetMapId(), cell_id, corpse->GetOwnerGUID());
-    corpse->RemoveFromWorld();
 
     i_player2corpse.erase(iter);
 }
@@ -323,14 +327,17 @@ ObjectAccessor::ConvertCorpseForPlayer(uint64 player_guid, bool insignia)
 
     DEBUG_LOG("Deleting Corpse and spawning bones.");
 
+    Map *map = corpse->FindMap();
+
     // remove corpse from player_guid -> corpse map
     RemoveCorpse(corpse);
 
+    // done in removecorpse
     // remove resurrectable corpse from grid object registry (loaded state checked into call)
     // do not load the map if it's not loaded
-    Map *map = MapManager::Instance().FindMap(corpse->GetMapId(), corpse->GetInstanceId());
-    if(map)
-        map->Remove(corpse, false);
+    //Map *map = MapManager::Instance().FindMap(corpse->GetMapId(), corpse->GetInstanceId());
+    //if(map)
+    //    map->Remove(corpse, false);
 
     // remove corpse from DB
     corpse->DeleteFromDB();
@@ -344,7 +351,7 @@ ObjectAccessor::ConvertCorpseForPlayer(uint64 player_guid, bool insignia)
     {
         // Create bones, don't change Corpse
         bones = new Corpse;
-        bones->Create(corpse->GetGUIDLow());
+        bones->Create(corpse->GetGUIDLow(), map);
 
         for (int i = 3; i < CORPSE_END; ++i)                    // don't overwrite guid and object type
             bones->SetUInt32Value(i, corpse->GetUInt32Value(i));

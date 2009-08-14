@@ -25,10 +25,16 @@
 
 typedef uint32 TeamPair[2];
 
+enum CreatureEntry
+{
+    CRE_ENG_A = 30499,
+    CRE_ENG_H = 30400,
+};
+
 const TeamPair CreatureEntryPair[] =
 {
     {30739, 30740},
-    {30400, 30499},
+    //{30400, 30499},
     {0,0}
 };
 
@@ -54,10 +60,76 @@ void LoadTeamPair(TeamPairMap &pairMap, const TeamPair *pair)
 
 typedef std::list<const AreaPOIEntry *> AreaPOIList;
 
+SiegeWorkshop::SiegeWorkshop(OPvPWintergrasp *opvp, BuildingState *state)
+: OPvPCapturePoint(opvp), m_buildingState(state), m_wintergrasp(opvp)
+, m_vehNum(0), m_engineer(NULL), m_engGuid(0)
+{
+}
+
+void SiegeWorkshop::SetStateByBuildingState()
+{
+    if(m_buildingState->team == TEAM_ALLIANCE)
+    {
+        m_value = m_maxValue;
+        m_State = OBJECTIVESTATE_ALLIANCE;
+    }
+    else if(m_buildingState->team == TEAM_HORDE)
+    {
+        m_value = -m_maxValue;
+        m_State = OBJECTIVESTATE_HORDE;
+    }
+    else
+    {
+        m_value = 0;
+        m_State = OBJECTIVESTATE_NEUTRAL;
+    }
+
+    ChangeState();
+    SendChangePhase();
+}
+
+void SiegeWorkshop::ChangeState()
+{
+    uint32 entry = 0;
+    if(m_State == OBJECTIVESTATE_ALLIANCE) // to do m_buildingState->team == TEAM_ALLIANCE;
+    {
+        m_buildingState->team = TEAM_ALLIANCE;
+        entry = CRE_ENG_A;
+    }
+    else if(m_State == OBJECTIVESTATE_HORDE)
+    {
+        m_buildingState->team = TEAM_HORDE;
+        entry = CRE_ENG_H;
+    }
+    else
+        return;
+
+    *m_engEntry = entry;
+
+    // TODO: this may be sent twice
+    m_wintergrasp->BroadcastStateChange(m_buildingState);
+
+    // does not work, entry may change
+    /*Creature *creature = ObjectAccessor::GetObjectInWorld(m_Creatures[0], (Creature*)NULL);
+    if(!creature)
+    {
+        sLog.outError("SiegeWorkshop::ChangeState cannot find creature " I64FMT " !", m_Creatures[0]);
+        return;
+    }*/
+
+    if(m_engineer)
+    {
+        m_engineer->SetOriginalEntry(entry);
+        if(entry != m_engineer->GetEntry() || !m_engineer->isAlive())
+            m_engineer->Respawn(true);
+    }
+
+    sLog.outDebug("Wintergrasp workshop now belongs to %u.", (uint32)m_buildingState->team);
+}
+
 bool OPvPWintergrasp::SetupOutdoorPvP()
 {
     m_defender = TeamId(rand()%2);
-    //m_defender = TEAM_ALLIANCE;
 
     // Load buildings
     AreaPOIList areaPOIs;
@@ -76,10 +148,13 @@ bool OPvPWintergrasp::SetupOutdoorPvP()
     }
     minX -= 20; minY -= 20; maxX += 20; maxY += 20;
 
-    QueryResult *result = WorldDatabase.PQuery("SELECT `guid`,`position_x`,`position_y` FROM `gameobject`,`gameobject_template` WHERE `gameobject`.`map`=571"
+    QueryResult *result = WorldDatabase.PQuery("SELECT `guid` FROM `gameobject`,`gameobject_template`"
+        " WHERE `gameobject`.`map`=571"
         " AND `gameobject`.`position_x`>%f AND `gameobject`.`position_y`>%f"
         " AND `gameobject`.`position_x`<%f AND `gameobject`.`position_y`<%f"
-        " AND `gameobject_template`.`type`=33 AND `gameobject`.`id`=`gameobject_template`.`entry`", minX, minY, maxX, maxY);
+        " AND `gameobject_template`.`type`=33"
+        " AND `gameobject`.`id`=`gameobject_template`.`entry`",
+        minX, minY, maxX, maxY);
     if(!result)
         return false;
 
@@ -88,9 +163,11 @@ bool OPvPWintergrasp::SetupOutdoorPvP()
         Field *fields = result->Fetch();
         
         uint32 guid = fields[0].GetUInt32();
-        float x = fields[1].GetFloat();
-        float y = fields[2].GetFloat();
-        
+        GameObjectData const * goData = objmgr.GetGOData(guid);
+        if(!goData) // this should not happen
+            continue;
+
+        float x = goData->posX, y = goData->posY;
         float minDist = 100;
         AreaPOIList::iterator poi = areaPOIs.end();
         for(AreaPOIList::iterator itr = areaPOIs.begin(); itr != areaPOIs.end(); ++itr)
@@ -106,12 +183,94 @@ bool OPvPWintergrasp::SetupOutdoorPvP()
             }
         }
 
-        if(poi != areaPOIs.end())
+        if(poi == areaPOIs.end())
+            continue;
+
+        // add building to the list
+        TeamId teamId = x > POS_X_CENTER ? m_defender : OTHER_TEAM(m_defender);
+        m_buildingStates[guid] = new BuildingState((*poi)->worldState, teamId, m_defender != TEAM_ALLIANCE);
+        areaPOIs.erase(poi);
+
+        //disable for now
+        //continue;
+
+        // add capture point
+        uint32 capturePointEntry = 0;
+
+        //192028 192029
+        //192030 192031
+        //192032 192033
+
+        //190475 190487 not sure
+        //192626 192627
+        //194959 194960
+
+        switch(goData->id)
         {
-            m_buildingStates[guid] = new BuildingState((*poi)->worldState
-                , x > POS_X_CENTER ? m_defender : OTHER_TEAM(m_defender)
-                , m_defender != TEAM_ALLIANCE);
-            areaPOIs.erase(poi);
+            case 192028: capturePointEntry = 190475; break;
+            case 192029: capturePointEntry = 190487; break;
+            case 192030: capturePointEntry = 190475; break;
+            case 192031: capturePointEntry = 190487; break;
+            case 192032: capturePointEntry = 190475; break;
+            case 192033: capturePointEntry = 190487; break;
+        }
+        if(capturePointEntry)
+        {
+            uint32 engGuid = 0;
+
+            QueryResult *result = WorldDatabase.PQuery("SELECT `guid` FROM `creature`"
+                " WHERE `creature`.`map`=571"
+                " AND `creature`.`id` IN (%u, %u);", CRE_ENG_A, CRE_ENG_H);
+
+            if(!result)
+            {
+                sLog.outError("Cannot find siege workshop master in creature!"); 
+                continue;
+            }
+
+            float minDist = 100;
+            do
+            {
+                Field *fields = result->Fetch();
+                uint32 guid = fields[0].GetUInt32();
+                const CreatureData *creData = objmgr.GetCreatureData(guid);
+                if(!creData)
+                    continue;
+
+                float dist = (abs(creData->posX - x) + abs(creData->posY - y));
+                if(minDist > dist)
+                {
+                    minDist = dist;
+                    engGuid = guid;
+                }
+            }while(result->NextRow());
+            delete result;
+
+            if(!engGuid)
+            {
+                sLog.outError("Cannot find nearby siege workshop master!");
+                continue;
+            }
+
+            SiegeWorkshop *workshop = new SiegeWorkshop(this, m_buildingStates[guid]);
+            if(!workshop->AddCapturePoint(capturePointEntry, goData->mapid, goData->posX, goData->posY, goData->posZ))
+            {
+                delete workshop;
+                sLog.outError("Cannot add capture point!");
+                continue;
+            }
+            const CreatureData *creData = objmgr.GetCreatureData(engGuid);
+            if(!creData)
+                continue;
+
+            workshop->m_engEntry = const_cast<uint32*>(&creData->id);
+            const_cast<CreatureData*>(creData)->displayid = 0;
+            workshop->AddGO(0, guid, goData->id);
+            workshop->m_engGuid = engGuid;
+            //workshop->AddCre(0, engGuid, creData->id);
+            //sLog.outDebug("Demolisher Engineerer lowguid %u is linked to workshop lowguid %u.", engGuid, guid);
+            m_capturePoints.push_back(workshop);
+            workshop->SetStateByBuildingState();
         }
     }while(result->NextRow());
     delete result;
@@ -122,7 +281,7 @@ bool OPvPWintergrasp::SetupOutdoorPvP()
     //gameeventmgr.StartInternalEvent(GameEventWintergraspDefender[m_defender]);
 
     //Titan Relic eventid = 19982
-    objmgr.AddGameObject(192829, 571, 5440, 2840.8, 420.43, 0);
+    objmgr.AddGOData(192829, 571, 5440, 2840.8, 420.43, 0);
 
     LoadTeamPair(m_goDisplayPair, GODisplayPair);
     LoadTeamPair(m_creEntryPair, CreatureEntryPair);
@@ -150,9 +309,7 @@ void OPvPWintergrasp::ProcessEvent(GameObject *obj, uint32 eventId)
                 itr->second->damageState = DAMAGE_DAMAGED;
             else
                 itr->second->damageState = DAMAGE_DESTROYED;
-            for(uint32 team = 0; team < 2; ++team)
-                for(PlayerSet::iterator p_itr = m_players[team].begin(); p_itr != m_players[team].end(); ++p_itr)
-                    itr->second->SendUpdate(*p_itr);
+            BroadcastStateChange(itr->second);
         }
     }
 }
@@ -173,7 +330,8 @@ uint32 OPvPWintergrasp::GetCreatureEntry(uint32 guidlow, const CreatureData *dat
 
 void OPvPWintergrasp::OnCreatureCreate(Creature *creature, bool add)
 {
-    if(creature->isVehicle())
+    uint32 entry = creature->GetEntry();
+    if(creature->isVehicle()) // vehicles
     {
         TeamId team;
         if(creature->getFaction() == WintergraspFaction[TEAM_ALLIANCE])
@@ -183,7 +341,7 @@ void OPvPWintergrasp::OnCreatureCreate(Creature *creature, bool add)
         else
             return;
 
-        switch(creature->GetEntry())
+        switch(entry)
         {
             case 27881:
             case 28094:
@@ -209,10 +367,20 @@ void OPvPWintergrasp::OnCreatureCreate(Creature *creature, bool add)
                 break;
         }
     }
-    else if(m_creEntryPair.find(creature->GetEntry()) != m_creEntryPair.end())
+    else if(m_creEntryPair.find(entry) != m_creEntryPair.end()) // guards and npc
     {
         if(add) m_creatures.insert(creature);
         else m_creatures.erase(creature);
+    }
+    else if(entry == CRE_ENG_A || entry == CRE_ENG_H) // demolisher engineers
+    {
+        for(OutdoorPvP::OPvPCapturePointMap::iterator itr = m_capturePoints.begin(); itr != m_capturePoints.end(); ++itr)
+            if(SiegeWorkshop *workshop = dynamic_cast<SiegeWorkshop*>(*itr))
+                if(workshop->m_engGuid == creature->GetDBTableGUIDLow())
+                {
+                    workshop->m_engineer = add ? creature : NULL;
+                    break;
+                }
     }
 }
 
@@ -248,13 +416,19 @@ void OPvPWintergrasp::OnGameObjectCreate(GameObject *go, bool add)
 
 void OPvPWintergrasp::UpdateAllWorldObject()
 {
+    // update cre and go factions
     for(GameObjectSet::iterator itr = m_gobjects.begin(); itr != m_gobjects.end(); ++itr)
         UpdateGameObjectInfo(*itr);
     for(CreatureSet::iterator itr = m_creatures.begin(); itr != m_creatures.end(); ++itr)
         UpdateCreatureInfo(*itr);
+
+    // rebuild and update building states
     RebuildAllBuildings();
 
-        //if(GameObject *obj = ObjectAccessor::GetObjectInWorld(
+    // update capture points
+    for(OPvPCapturePointMap::iterator itr = m_capturePoints.begin(); itr != m_capturePoints.end(); ++itr)
+        if(SiegeWorkshop *workshop = dynamic_cast<SiegeWorkshop*>(*itr))
+            workshop->SetStateByBuildingState();
 
     SendInitWorldStatesTo();
 }
@@ -291,6 +465,13 @@ void OPvPWintergrasp::SendInitWorldStatesTo(Player *player)
         BroadcastPacket(data);
 }
 
+void OPvPWintergrasp::BroadcastStateChange(BuildingState *state)
+{
+    for(uint32 team = 0; team < 2; ++team)
+        for(PlayerSet::iterator p_itr = m_players[team].begin(); p_itr != m_players[team].end(); ++p_itr)
+            state->SendUpdate(*p_itr);
+}
+
 bool OPvPWintergrasp::UpdateCreatureInfo(Creature *creature)
 {
     TeamPairMap::const_iterator itr = m_creEntryPair.find(creature->GetCreatureData()->id);
@@ -302,6 +483,8 @@ bool OPvPWintergrasp::UpdateCreatureInfo(Creature *creature)
             creature->SetOriginalEntry(entry);
             creature->Respawn(true);
         }
+        else if(!creature->isAlive())
+            creature->Respawn(true);
     }
 
     return false;
@@ -427,7 +610,7 @@ void OPvPWintergrasp::UpdateTenacityStack()
     // Apply new buff
     if(newStack)
     {
-        TeamId team = newStack > 0 ? TEAM_ALLIANCE : TEAM_HORDE;
+        TeamId team = newStack > 0 ? TEAM_HORDE : TEAM_ALLIANCE;
         if(newStack < 0) newStack = -newStack;
         for(PlayerSet::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
             (*itr)->SetAuraStack(SPELL_TENACITY, *itr, newStack);
@@ -449,7 +632,12 @@ void OPvPWintergrasp::VehicleCastSpell(TeamId team, int32 spellId)
 bool OPvPWintergrasp::Update(uint32 diff)
 {
     if(m_timer > diff)
+    {
         m_timer -= diff;
+
+        if(m_wartime)
+            OutdoorPvP::Update(diff); // update capture points
+    }
     else
     {
         if(m_wartime)

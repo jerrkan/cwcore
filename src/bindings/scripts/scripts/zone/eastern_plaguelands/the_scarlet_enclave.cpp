@@ -18,6 +18,8 @@
 
 #include "precompiled.h"
 #include "Vehicle.h"
+#include "ObjectMgr.h"
+#include "../../npc/npc_escortAI.h"
 
 #define GCD_CAST    1
 
@@ -479,6 +481,192 @@ CreatureAI* GetAI_npc_a_special_surprise(Creature* pCreature)
 }
 
 /*######
+## npc_koltira_deathweaver
+######*/
+
+enum eKoltira
+{
+    SAY_BREAKOUT1                   = -1609079,
+    SAY_BREAKOUT2                   = -1609080,
+    SAY_BREAKOUT3                   = -1609081,
+    SAY_BREAKOUT4                   = -1609082,
+    SAY_BREAKOUT5                   = -1609083,
+    SAY_BREAKOUT6                   = -1609084,
+    SAY_BREAKOUT7                   = -1609085,
+    SAY_BREAKOUT8                   = -1609086,
+    SAY_BREAKOUT9                   = -1609087,
+    SAY_BREAKOUT10                  = -1609088,
+
+    SPELL_KOLTIRA_TRANSFORM         = 52899,
+    SPELL_ANTI_MAGIC_ZONE           = 52894,
+
+    QUEST_BREAKOUT                  = 12727,
+
+    NPC_CRIMSON_ACOLYTE             = 29007,
+    NPC_HIGH_INQUISITOR_VALROTH     = 29001,
+    NPC_KOLTIRA_ALT                 = 28447,
+
+    //not sure about this id
+    //NPC_DEATH_KNIGHT_MOUNT          = 29201,
+    MODEL_DEATH_KNIGHT_MOUNT        = 25278
+};
+
+struct TRINITY_DLL_DECL npc_koltira_deathweaverAI : public npc_escortAI
+{
+    npc_koltira_deathweaverAI(Creature *pCreature) : npc_escortAI(pCreature) { }
+
+    uint32 m_uiWave;
+    uint32 m_uiWave_Timer;
+    uint64 m_uiValrothGUID;
+
+    void Reset()
+    {
+        if (!IsBeingEscorted)
+        {
+            m_uiWave = 0;
+            m_uiWave_Timer = 3000;
+            m_uiValrothGUID = 0;
+        }
+    }
+
+    void WaypointReached(uint32 uiPointId)
+    {
+        switch(uiPointId)
+        {
+            case 0:
+                DoScriptText(SAY_BREAKOUT1, m_creature);
+                break;
+            case 1:
+                m_creature->SetStandState(UNIT_STAND_STATE_KNEEL);
+                break;
+            case 2:
+                m_creature->SetStandState(UNIT_STAND_STATE_STAND);
+                //m_creature->UpdateEntry(NPC_KOLTIRA_ALT); //unclear if we must update or not
+                DoCast(m_creature, SPELL_KOLTIRA_TRANSFORM);
+                break;
+            case 3:
+                IsOnHold = true;
+                m_creature->SetStandState(UNIT_STAND_STATE_KNEEL);
+                DoScriptText(SAY_BREAKOUT2, m_creature);
+                DoCast(m_creature, SPELL_ANTI_MAGIC_ZONE);  // cast again that makes bubble up
+                break;
+            case 4:
+                SetRun(true);
+                break;
+            case 9:
+                m_creature->Mount(MODEL_DEATH_KNIGHT_MOUNT);
+                break;
+            case 10:
+                m_creature->Unmount();
+                break;
+        }
+    }
+
+    void JustSummoned(Creature* pSummoned)
+    {
+        if (Unit* pPlayer = Unit::GetUnit(*m_creature, PlayerGUID))
+        {
+            pSummoned->AI()->AttackStart(pPlayer);
+            pSummoned->AddThreat(m_creature, 0.0f);
+        }
+
+        if (pSummoned->GetEntry() == NPC_HIGH_INQUISITOR_VALROTH)
+            m_uiValrothGUID = pSummoned->GetGUID();
+    }
+
+    void SummonAcolyte(uint32 uiAmount)
+    {
+        for(uint32 i = 0; i < uiAmount; ++i)
+            m_creature->SummonCreature(NPC_CRIMSON_ACOLYTE, 1642.329, -6045.818, 127.583, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        npc_escortAI::UpdateAI(uiDiff);
+
+        if (IsOnHold)
+        {
+            if (m_uiWave_Timer < uiDiff)
+            {
+                switch(m_uiWave)
+                {
+                    case 0:
+                        DoScriptText(SAY_BREAKOUT3, m_creature);
+                        SummonAcolyte(3);
+                        m_uiWave_Timer = 20000;
+                        break;
+                    case 1:
+                        DoScriptText(SAY_BREAKOUT4, m_creature);
+                        SummonAcolyte(3);
+                        m_uiWave_Timer = 20000;
+                        break;
+                    case 2:
+                        DoScriptText(SAY_BREAKOUT5, m_creature);
+                        SummonAcolyte(4);
+                        m_uiWave_Timer = 20000;
+                        break;
+                    case 3:
+                        DoScriptText(SAY_BREAKOUT6, m_creature);
+                        m_creature->SummonCreature(NPC_HIGH_INQUISITOR_VALROTH, 1642.329, -6045.818, 127.583, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 1000);
+                        m_uiWave_Timer = 1000;
+                        break;
+                    case 4:
+                    {
+                        Unit* pTemp = Unit::GetUnit(*m_creature, m_uiValrothGUID);
+
+                        if (!pTemp || !pTemp->isAlive())
+                        {
+                            DoScriptText(SAY_BREAKOUT8, m_creature);
+                            m_uiWave_Timer = 5000;
+                        }
+                        else
+                        {
+                            m_uiWave_Timer = 2500;
+                            return;                         //return, we don't want m_uiWave to increment now
+                        }
+                        break;
+                    }
+                    case 5:
+                        DoScriptText(SAY_BREAKOUT9, m_creature);
+                        m_creature->RemoveAurasDueToSpell(SPELL_ANTI_MAGIC_ZONE);
+                        m_uiWave_Timer = 2500;
+                        break;
+                    case 6:
+                        DoScriptText(SAY_BREAKOUT10, m_creature);
+                        IsOnHold = false;
+                        break;
+                }
+
+                ++m_uiWave;
+            }
+            else
+                m_uiWave_Timer -= uiDiff;
+        }
+    }
+};
+
+CreatureAI* GetAI_npc_koltira_deathweaver(Creature* pCreature)
+{
+    npc_koltira_deathweaverAI* pTempAI = new npc_koltira_deathweaverAI(pCreature);
+
+    pTempAI->FillPointMovementListForCreature();
+
+    return (CreatureAI*)pTempAI;
+}
+
+bool QuestAccept_npc_koltira_deathweaver(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+{
+    if (pQuest->GetQuestId() == QUEST_BREAKOUT)
+    {
+        pCreature->SetStandState(UNIT_STAND_STATE_STAND);
+
+        if (npc_escortAI* pEscortAI = CAST_AI(npc_koltira_deathweaverAI,pCreature->AI()))
+            pEscortAI->Start(false, false, pPlayer->GetGUID());
+    }
+    return true;
+}
+
+/*######
 ##Quest 12848
 ######*/
 
@@ -549,33 +737,32 @@ struct TRINITY_DLL_DECL npc_unworthy_initiateAI : public ScriptedAI
 {
     npc_unworthy_initiateAI(Creature *c) : ScriptedAI(c)
     {
-        m_creature->GetHomePosition(home_x,home_y,home_z,home_ori);
+        me->SetReactState(REACT_PASSIVE);
+        if(!me->GetEquipmentId())
+            if(const CreatureInfo *info = GetCreatureInfo(28406))
+                if(info->equipmentId)
+                    const_cast<CreatureInfo*>(me->GetCreatureInfo())->equipmentId = info->equipmentId;
     }
 
-    float home_x,home_y,home_z,home_ori;
     bool event_startet;
     uint64 event_starter;
     initiate_phase phase;
     uint32 wait_timer;
     float targ_x,targ_y,targ_z;
-    uint64 anchor;
+    uint64 anchorGUID;
 
     EventMap events;
 
     void Reset()
     {
-        anchor = 0;
+        anchorGUID = 0;
         phase = Chained;
         events.Reset();
         m_creature->setFaction(7);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, 8);
-        m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID  , 0);
-        m_creature->SetDisplayId(m_creature->GetNativeDisplayId());
-        event_starter = 0;
+        me->LoadEquipment(0, true);
         event_startet = false;
-        m_creature->SetHomePosition(home_x,home_y,home_z,home_ori);
-        m_creature->GetMotionMaster()->MoveTargetedHome();
     }
 
     void EnterCombat(Unit *who)
@@ -584,13 +771,6 @@ struct TRINITY_DLL_DECL npc_unworthy_initiateAI : public ScriptedAI
         events.ScheduleEvent(EVENT_PLAGUE_STRIKE, 3000, GCD_CAST);
         events.ScheduleEvent(EVENT_BLOOD_STRIKE, 2000, GCD_CAST);
         events.ScheduleEvent(EVENT_DEATH_COIL, 5000, GCD_CAST);
-    }
-
-    void JustDied(Unit *killer)
-    {
-        if(m_creature->GetEntry() !=  29519)
-            if(killer->GetTypeId() == TYPEID_PLAYER)
-                CAST_PLR(killer)->KilledMonsterCredit(29519,m_creature->GetGUID());
     }
 
     void MovementInform(uint32 type, uint32 id)
@@ -616,15 +796,14 @@ struct TRINITY_DLL_DECL npc_unworthy_initiateAI : public ScriptedAI
         phase = ToEquipping;
 
         m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
-
-        anchor->GetNearPoint2D(targ_x,targ_y,1,anchor->GetAngle(m_creature));
-        //anchor->DealDamage(anchor,anchor->GetHealth());
         m_creature->RemoveAurasDueToSpell(SPELL_SOUL_PRISON_CHAIN_SELF);
         m_creature->RemoveAurasDueToSpell(SPELL_SOUL_PRISON_CHAIN);
 
+        float z;
+        anchor->GetContactPoint(me, targ_x, targ_y, z, 1.0f);
+
         event_starter = target->GetGUID();
-        if(Unit* starter = Unit::GetUnit((*m_creature),event_starter))
-            DoScriptText(say_event_start[rand()%8],m_creature,starter);
+        DoScriptText(say_event_start[rand()%8], m_creature, target);
     }
 
     void UpdateAI(const uint32 diff);
@@ -663,39 +842,34 @@ void npc_unworthy_initiateAI::UpdateAI(const uint32 diff)
     switch(phase)
     {
     case Chained:
-        if(anchor == 0)
+        if(!anchorGUID)
         {
             float x, y, z;
             float dist = 99.0f;
-            uint64 nearest_prison;
+            GameObject *prison = NULL;
 
-            for(uint8 i = 0; i < 12; i++)
+            for(uint8 i = 0; i < 12; ++i)
             {
-                GameObject* temp_prison;
-                temp_prison = m_creature->FindNearestGameObject(acherus_soul_prison[i],30);
-                if(temp_prison)
+                if(GameObject* temp_prison = m_creature->FindNearestGameObject(acherus_soul_prison[i],30))
                 {
                     if(dist == 99.0f || m_creature->IsWithinDist(temp_prison, dist, false))
                     {
                         temp_prison->GetPosition(x, y, z);
                         dist = m_creature->GetDistance2d(temp_prison);
-                        nearest_prison = temp_prison->GetGUID();
+                        prison = temp_prison;
                     }
                 }
             }
 
-            if(dist == 99)
+            if(!prison)
                 return;
 
-            Creature* trigger = m_creature->FindNearestCreature(29521,30);
-            if(trigger)
+            if(Creature* trigger = me->FindNearestCreature(29521, 30))
             {
-                if(GameObject* go_prison = GameObject::GetGameObject((*m_creature),nearest_prison))
-                    go_prison->ResetDoorOrButton();
-
+                prison->ResetDoorOrButton();
                 CAST_AI(npc_unworthy_initiate_anchorAI, trigger->AI())->SetTarget(m_creature->GetGUID());
-                trigger->CastSpell(m_creature,SPELL_SOUL_PRISON_CHAIN,true);
-                anchor = trigger->GetGUID();
+                trigger->CastSpell(me, SPELL_SOUL_PRISON_CHAIN, true);
+                anchorGUID = trigger->GetGUID();
             }
         }
         return;
@@ -791,16 +965,19 @@ bool GOHello_go_acherus_soul_prison(Player *player, GameObject* _GO)
 ## npc_death_knight_initiate
 ######*/
 
-#define GOSSIP_ACCEPT_DUEL      "[PH] I challenge you!"
+#define GOSSIP_ACCEPT_DUEL      "I challenge you, death knight!"
 
 enum
 {
-    SAY_DUEL_A                  = -1609017,
-    SAY_DUEL_B                  = -1609018,
-    SAY_DUEL_C                  = -1609019,
-    SAY_DUEL_D                  = -1609020,
-    SAY_DUEL_E                  = -1609021,
-    SAY_DUEL_F                  = -1609022,
+    SAY_DUEL_A                  = -1609080,
+    SAY_DUEL_B                  = -1609081,
+    SAY_DUEL_C                  = -1609082,
+    SAY_DUEL_D                  = -1609083,
+    SAY_DUEL_E                  = -1609084,
+    SAY_DUEL_F                  = -1609085,
+    SAY_DUEL_G                  = -1609086,
+    SAY_DUEL_H                  = -1609087,
+    SAY_DUEL_I                  = -1609088,
 
     SPELL_DUEL                  = 52996,
     SPELL_DUEL_TRIGGERED        = 52990,
@@ -813,37 +990,32 @@ enum
 
 int32 m_auiRandomSay[] =
 {
-    SAY_DUEL_A, SAY_DUEL_B, SAY_DUEL_C, SAY_DUEL_D, SAY_DUEL_E, SAY_DUEL_F
+    SAY_DUEL_A, SAY_DUEL_B, SAY_DUEL_C, SAY_DUEL_D, SAY_DUEL_E, SAY_DUEL_F, SAY_DUEL_G, SAY_DUEL_H, SAY_DUEL_I
 };
 
-struct TRINITY_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
+struct TRINITY_DLL_DECL npc_death_knight_initiateAI : public SpellAI
 {
-    npc_death_knight_initiateAI(Creature* pCreature) : ScriptedAI(pCreature) { }
+    npc_death_knight_initiateAI(Creature* pCreature) : SpellAI(pCreature)
+    {
+        m_bIsDuelInProgress = false;
+    }
 
+    bool lose;
     uint64 m_uiDuelerGUID;
     uint32 m_uiDuelTimer;
     bool m_bIsDuelInProgress;
 
     void Reset()
     {
+        lose = false;
         me->RestoreFaction();
+        SpellAI::Reset();
 
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_15);
 
         m_uiDuelerGUID = 0;
         m_uiDuelTimer = 5000;
         m_bIsDuelInProgress = false;
-    }
-
-    void AttackedBy(Unit* pAttacker)
-    {
-        if (m_creature->getVictim())
-            return;
-
-        if (m_creature->IsFriendlyTo(pAttacker))
-            return;
-
-        AttackStart(pAttacker);
     }
 
     void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
@@ -857,15 +1029,24 @@ struct TRINITY_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
 
    void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
     {
-        if (m_bIsDuelInProgress && uiDamage > m_creature->GetHealth())
+        if (m_bIsDuelInProgress && pDoneBy->IsControlledByPlayer())
         {
-            uiDamage = 0;
+            if(pDoneBy->GetGUID() != m_uiDuelerGUID && pDoneBy->GetOwnerGUID() != m_uiDuelerGUID) // other players cannot help
+                uiDamage = 0;
+            else if(uiDamage >= m_creature->GetHealth()) 
+            {
+                uiDamage = 0;
 
-            if (Unit* pUnit = Unit::GetUnit(*m_creature, m_uiDuelerGUID))
-                m_creature->CastSpell(pUnit, SPELL_DUEL_VICTORY, true);
-
-            //possibly not evade, but instead have end sequenze
-            EnterEvadeMode();
+                if(!lose)
+                {
+                    pDoneBy->RemoveGameObject(SPELL_DUEL_FLAG, true);
+                    pDoneBy->AttackStop();
+                    me->CastSpell(pDoneBy, SPELL_DUEL_VICTORY, true);
+                    lose = true;
+                    me->CastSpell(me, 7267, true);
+                    me->RestoreFaction();
+                }
+            }
         }
     }
 
@@ -888,9 +1069,27 @@ struct TRINITY_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
             return;
         }
 
+        if (m_bIsDuelInProgress)
+        {
+            if(lose)
+            {
+                if(!me->HasAura(7267))
+                    EnterEvadeMode();
+                return;
+            }
+            else if(me->getVictim()->GetTypeId() == TYPEID_PLAYER
+                && me->getVictim()->GetHealth() * 10 < me->getVictim()->GetMaxHealth())
+            {
+                me->getVictim()->CastSpell(me->getVictim(), 7267, true); // beg
+                me->getVictim()->RemoveGameObject(SPELL_DUEL_FLAG, true);
+                EnterEvadeMode();
+                return;
+            }
+        }
+
         // TODO: spells
 
-        DoMeleeAttackIfReady();
+        SpellAI::UpdateAI(uiDiff);
     }
 };
 
@@ -903,6 +1102,12 @@ bool GossipHello_npc_death_knight_initiate(Player* pPlayer, Creature* pCreature)
 {
     if (pPlayer->GetQuestStatus(QUEST_DEATH_CHALLENGE) == QUEST_STATUS_INCOMPLETE && pCreature->GetHealth() == pCreature->GetMaxHealth())
     {
+        if(pPlayer->GetHealth() * 10 < pPlayer->GetMaxHealth())
+            return true;
+
+        if(pPlayer->isInCombat() || pCreature->isInCombat())
+            return true;
+
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ACCEPT_DUEL, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
         pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(),pCreature->GetGUID());
     }
@@ -915,8 +1120,14 @@ bool GossipSelect_npc_death_knight_initiate(Player* pPlayer, Creature* pCreature
     {
         pPlayer->CLOSE_GOSSIP_MENU();
 
-        if (((npc_death_knight_initiateAI*)pCreature)->m_bIsDuelInProgress)
+        if(pPlayer->isInCombat() || pCreature->isInCombat())
             return true;
+
+        if (npc_death_knight_initiateAI* pInitiateAI = CAST_AI(npc_death_knight_initiateAI, pCreature->AI()))
+        {
+            if(pInitiateAI->m_bIsDuelInProgress)
+                return true;
+        }
 
         pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_15);
 
@@ -924,7 +1135,7 @@ bool GossipSelect_npc_death_knight_initiate(Player* pPlayer, Creature* pCreature
         DoScriptText(m_auiRandomSay[uiSayId], pCreature, pPlayer);
 
         pCreature->CastSpell(pPlayer, SPELL_DUEL, false);
-        pCreature->CastSpell(pPlayer, SPELL_DUEL_FLAG, true);
+        pPlayer->CastSpell(pPlayer, SPELL_DUEL_FLAG, true);
     }
     return true;
 }
@@ -1029,12 +1240,11 @@ struct TRINITY_DLL_DECL npc_salanar_the_horsemanAI : public ScriptedAI
             {
                 if( Unit *charmer = caster->GetCharmer() )
                 {
-                    CAST_PLR(charmer)->ExitVehicle();
+                    charmer->ExitVehicle();
                     caster->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
                     caster->setFaction(35);
                     DoCast(caster, CALL_DARK_RIDER, true);
-                    Creature* Dark_Rider = m_creature->FindNearestCreature(28654, 15);
-                    if (Dark_Rider)
+                    if(Creature* Dark_Rider = m_creature->FindNearestCreature(28654, 15))
                         CAST_AI(npc_dark_rider_of_acherusAI, Dark_Rider->AI())->InitDespawnHorse(caster);
                 }
             }
@@ -1181,7 +1391,7 @@ struct TRINITY_DLL_DECL npc_valkyr_battle_maidenAI : public ScriptedAI
         m_creature->GetPosition(x, y, z);
         z += 4; x -= 3.5; y -= 5;
         m_creature->GetMotionMaster()->Clear(false);
-        m_creature->Relocate(x, y, z);
+        m_creature->GetMap()->CreatureRelocation(m_creature, x, y, z, 0.0f);
     }
 
     void Aggro(Unit *who){}
@@ -1259,6 +1469,12 @@ void AddSC_the_scarlet_enclave()
     Script *newscript;
 
     newscript = new Script;
+    newscript->Name="npc_valkyr_battle_maiden";
+    newscript->GetAI = &GetAI_npc_valkyr_battle_maiden;
+    newscript->RegisterSelf();
+
+    // 12848 The Endless Hunger
+    newscript = new Script;
     newscript->Name="npc_unworthy_initiate";
     newscript->GetAI = &GetAI_npc_unworthy_initiate;
     newscript->RegisterSelf();
@@ -1273,6 +1489,7 @@ void AddSC_the_scarlet_enclave()
     newscript->pGOHello = &GOHello_go_acherus_soul_prison;
     newscript->RegisterSelf();
 
+    // Death's Challenge
     newscript = new Script;
     newscript->Name="npc_death_knight_initiate";
     newscript->GetAI = &GetAI_npc_death_knight_initiate;
@@ -1280,33 +1497,39 @@ void AddSC_the_scarlet_enclave()
     newscript->pGossipSelect = &GossipSelect_npc_death_knight_initiate;
     newscript->RegisterSelf();
 
-    newscript = new Script;
-    newscript->Name="npc_dark_rider_of_acherus";
-    newscript->GetAI = &GetAI_npc_dark_rider_of_acherus;
-    newscript->RegisterSelf();
-
+    // 12680 Grand Theft Palomino
     newscript = new Script;
     newscript->Name="npc_salanar_the_horseman";
     newscript->GetAI = &GetAI_npc_salanar_the_horseman;
     newscript->RegisterSelf();
 
     newscript = new Script;
+    newscript->Name="npc_dark_rider_of_acherus";
+    newscript->GetAI = &GetAI_npc_dark_rider_of_acherus;
+    newscript->RegisterSelf();
+
+    // 12687 Into the Realm of Shadows
+    newscript = new Script;
     newscript->Name="npc_ros_dark_rider";
     newscript->GetAI = &GetAI_npc_ros_dark_rider;
     newscript->RegisterSelf();
 
+    // 12698 The Gift That Keeps On Giving
     newscript = new Script;
     newscript->Name="npc_dkc1_gothik";
     newscript->GetAI = &GetAI_npc_dkc1_gothik;
     newscript->RegisterSelf();
 
+    // 12727 Bloody Breakout
+    newscript = new Script;
+    newscript->Name = "npc_koltira_deathweaver";
+    newscript->GetAI = &GetAI_npc_koltira_deathweaver;
+    newscript->pQuestAccept = &QuestAccept_npc_koltira_deathweaver;
+    newscript->RegisterSelf();
+
+    // A Special Suprise
     newscript = new Script;
     newscript->Name = "npc_a_special_surprise";
     newscript->GetAI = &GetAI_npc_a_special_surprise;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name="npc_valkyr_battle_maiden";
-    newscript->GetAI = &GetAI_npc_valkyr_battle_maiden;
     newscript->RegisterSelf();
 }

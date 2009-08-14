@@ -80,12 +80,7 @@ enum
 
 struct TRINITY_DLL_DECL npc_oox22feAI : public npc_escortAI
 {
-    npc_oox22feAI(Creature* pCreature) : npc_escortAI(pCreature)
-    {
-        normFaction = pCreature->getFaction();
-    }
-
-    uint32 normFaction;
+    npc_oox22feAI(Creature* pCreature) : npc_escortAI(pCreature) { }
 
     void WaypointReached(uint32 i)
     {
@@ -127,10 +122,7 @@ struct TRINITY_DLL_DECL npc_oox22feAI : public npc_escortAI
     void Reset()
     {
         if (!IsBeingEscorted)
-        {
-            m_creature->setFaction(normFaction);
             m_creature->SetStandState(UNIT_STAND_STATE_DEAD);
-        }
     }
 
     void EnterCombat(Unit* who)
@@ -190,7 +182,8 @@ bool QuestAccept_npc_oox22fe(Player* pPlayer, Creature* pCreature, const Quest* 
         if (pPlayer->GetTeam() == HORDE)
             pCreature->setFaction(FACTION_ESCORTEE_H);
 
-        CAST_AI(npc_escortAI, (pCreature->AI()))->Start(true, true, false, pPlayer->GetGUID());
+        if (npc_escortAI* pEscortAI = CAST_AI(npc_oox22feAI, pCreature->AI()))
+            pEscortAI->Start(true, false, pPlayer->GetGUID());
 
     }
     return true;

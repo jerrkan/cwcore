@@ -46,6 +46,8 @@ enum SpellCategories
     SPELLCATEGORY_HEALTH_MANA_POTIONS = 4,
     SPELLCATEGORY_DEVOUR_MAGIC        = 12,
     SPELLCATEGORY_JUDGEMENT           = 1210,               // Judgement (seal trigger)
+    SPELLCATEGORY_FOOD             = 11,
+    SPELLCATEGORY_DRINK            = 59,
 };
 
 enum SpellDisableTypes
@@ -123,6 +125,7 @@ enum SpellSpecific
     SPELL_WARRIOR_ENRAGE    = 25,
     SPELL_PRIEST_DIVINE_SPIRIT = 26,
     SPELL_HAND              = 27,
+    SPELL_PHASE             = 28,
 };
 
 #define SPELL_LINKED_MAX_SPELLS  200000
@@ -847,6 +850,16 @@ class SpellMgr
             if(SpellChainNode const* node = GetSpellChainNode(spell_id))
                 return node->first;
 
+            return spell_id;
+        }
+
+        uint32 GetSpellWithRank(uint32 spell_id, uint32 rank) const
+        {
+            if(SpellChainNode const* node = GetSpellChainNode(spell_id))
+            {
+                if (rank != node->rank)
+                    return GetSpellWithRank(node->rank < rank ? node->next : node->prev, rank);
+            }
             return spell_id;
         }
 

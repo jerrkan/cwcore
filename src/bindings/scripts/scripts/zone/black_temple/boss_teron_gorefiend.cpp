@@ -203,6 +203,7 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
     uint64 GhostGUID;                                       // Player that gets killed by Shadow of Death and gets turned into a ghost
 
     bool Intro;
+    bool Done;
 
     void Reset()
     {
@@ -223,6 +224,7 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
         AggroTimer = 20000;
         AggroTargetGUID = 0;
         Intro = false;
+        Done = false;
     }
 
     void EnterCombat(Unit *who) {}
@@ -244,8 +246,8 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
                 Intro = true;
             }
         }
-
-        ScriptedAI::MoveInLineOfSight(pWho);
+        if(Done)
+            ScriptedAI::MoveInLineOfSight(pWho);
     }
 
     void KilledUnit(Unit *victim)
@@ -286,7 +288,7 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
 
         std::list<HostilReference*>& m_threatlist = m_creature->getThreatManager().getThreatList();
         std::list<HostilReference*>::iterator i = m_threatlist.begin();
-        for(i = m_threatlist.begin(); i != m_threatlist.end(); i++)
+        for(i = m_threatlist.begin(); i != m_threatlist.end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if(pUnit && pUnit->isAlive())
@@ -344,7 +346,7 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(Intro)
+        if(Intro && !Done)
         {
             if(AggroTimer < diff)
             {
@@ -352,7 +354,7 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
                 m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 DoScriptText(SAY_AGGRO, m_creature);
                 m_creature->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_NONE);
-                Intro = false;
+                Done = true;
                 if(AggroTargetGUID)
                 {
                     Unit* pUnit = Unit::GetUnit((*m_creature), AggroTargetGUID);
@@ -369,7 +371,7 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
             }else AggroTimer -= diff;
         }
 
-        if(!UpdateVictim() || Intro)
+        if(!UpdateVictim() || !Done)
             return;
 
         if(SummonShadowsTimer < diff)
@@ -482,19 +484,19 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_mob_doom_blossom(Creature *_Creature)
+CreatureAI* GetAI_mob_doom_blossom(Creature* pCreature)
 {
-    return new mob_doom_blossomAI(_Creature);
+    return new mob_doom_blossomAI(pCreature);
 }
 
-CreatureAI* GetAI_mob_shadowy_construct(Creature *_Creature)
+CreatureAI* GetAI_mob_shadowy_construct(Creature* pCreature)
 {
-    return new mob_shadowy_constructAI(_Creature);
+    return new mob_shadowy_constructAI(pCreature);
 }
 
-CreatureAI* GetAI_boss_teron_gorefiend(Creature *_Creature)
+CreatureAI* GetAI_boss_teron_gorefiend(Creature* pCreature)
 {
-    return new boss_teron_gorefiendAI (_Creature);
+    return new boss_teron_gorefiendAI (pCreature);
 }
 
 void AddSC_boss_teron_gorefiend()

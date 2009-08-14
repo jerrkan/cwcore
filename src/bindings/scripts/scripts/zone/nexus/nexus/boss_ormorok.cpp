@@ -58,7 +58,6 @@ struct TRINITY_DLL_DECL boss_ormorokAI : public ScriptedAI
     boss_ormorokAI(Creature *c) : ScriptedAI(c) 
     {
         pInstance = c->GetInstanceData();
-        Reset();
         HeroicMode = c->GetMap()->IsHeroic();
     }
 
@@ -88,6 +87,7 @@ struct TRINITY_DLL_DECL boss_ormorokAI : public ScriptedAI
         SPELL_SUMMON_CRYSTALLINE_TANGLER_Timer = 17000;
         Frenzy = false;
         CrystalSpikes = false;
+
         if(pInstance)
             pInstance->SetData(DATA_ORMOROK_EVENT, NOT_STARTED);
     }
@@ -95,6 +95,22 @@ struct TRINITY_DLL_DECL boss_ormorokAI : public ScriptedAI
     void EnterCombat(Unit* who) 
     {
         DoScriptText(SAY_AGGRO, m_creature);
+
+        if (pInstance)
+            pInstance->SetData(DATA_ORMOROK_EVENT, IN_PROGRESS);
+    }
+
+    void JustDied(Unit* killer)  
+    {
+        DoScriptText(SAY_DEATH, m_creature);
+
+        if (pInstance)
+            pInstance->SetData(DATA_ORMOROK_EVENT, DONE);
+    }
+
+    void KilledUnit(Unit *victim)
+    {
+        DoScriptText(SAY_KILL, m_creature);
     }
 
     void UpdateAI(const uint32 diff) 
@@ -114,7 +130,7 @@ struct TRINITY_DLL_DECL boss_ormorokAI : public ScriptedAI
                 SpikeXY[2][1] = BaseY+(SPIKE_DISTANCE*CrystalSpikes_Count*sin(BaseO-(M_PI/2)));
                 SpikeXY[3][0] = BaseX-(SPIKE_DISTANCE*CrystalSpikes_Count*cos(BaseO-(M_PI/2)));
                 SpikeXY[3][1] = BaseY-(SPIKE_DISTANCE*CrystalSpikes_Count*sin(BaseO-(M_PI/2)));
-                for (uint8 i = 0; i < 4; i++)
+                for (uint8 i = 0; i < 4; ++i)
                     Creature* Spike = m_creature->SummonCreature(MOB_CRYSTAL_SPIKE, SpikeXY[i][0], SpikeXY[i][1], BaseZ, 0, TEMPSUMMON_TIMED_DESPAWN, 7000);
                 if (++CrystalSpikes_Count >= 13)
                     CrystalSpikes = false;
@@ -195,26 +211,12 @@ struct TRINITY_DLL_DECL boss_ormorokAI : public ScriptedAI
 
         DoMeleeAttackIfReady();    
     }
-
-    void JustDied(Unit* killer)  
-    {
-        DoScriptText(SAY_DEATH, m_creature);
-        if (pInstance)
-            pInstance->SetData(DATA_ORMOROK_EVENT, DONE);
-    }
-
-    void KilledUnit(Unit *victim)
-    {
-        DoScriptText(SAY_KILL, m_creature);
-    }
-
 };
 
 struct TRINITY_DLL_DECL mob_crystal_spikeAI : public Scripted_NoMovementAI
 {
     mob_crystal_spikeAI(Creature *c) : Scripted_NoMovementAI(c)
     {
-        Reset();
         HeroicMode = c->GetMap()->IsHeroic();
     }
 
@@ -251,10 +253,7 @@ struct TRINITY_DLL_DECL mob_crystal_spikeAI : public Scripted_NoMovementAI
 
 struct TRINITY_DLL_DECL mob_crystalline_tanglerAI : public ScriptedAI
 {
-    mob_crystalline_tanglerAI(Creature *c) : ScriptedAI(c)
-    {
-        Reset();
-    }
+    mob_crystalline_tanglerAI(Creature *c) : ScriptedAI(c) {}
 
     uint32 SPELL_ROOTS_Timer;
 
@@ -297,7 +296,7 @@ void AddSC_boss_ormorok()
 
     newscript = new Script;
     newscript->Name="boss_ormorok";
-    newscript->GetAI = GetAI_boss_ormorok;
+    newscript->GetAI = &GetAI_boss_ormorok;
     newscript->RegisterSelf();
 
     newscript = new Script;

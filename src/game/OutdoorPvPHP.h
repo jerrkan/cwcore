@@ -25,13 +25,13 @@
                                                          //  HP, citadel, ramparts, blood furnace, shattered halls, mag's lair
 const uint32 OutdoorPvPHPBuffZones[OutdoorPvPHPBuffZonesNum] = { 3483, 3563, 3562, 3713, 3714, 3836 };
 
-#define AllianceBuff 32071
-
-#define HordeBuff 32049
-
-const uint32 AlliancePlayerKillReward = 32155;
-
-const uint32 HordePlayerKillReward = 32158;
+enum OutdoorPvPHPSpells
+{
+    AlliancePlayerKillReward = 32155,
+    HordePlayerKillReward = 32158,
+    AllianceBuff = 32071,
+    HordeBuff = 32049
+};
 
 enum OutdoorPvPHPTowerType{
     HP_TOWER_BROKEN_HILL = 0,
@@ -86,7 +86,8 @@ class OPvPCapturePointHP : public OPvPCapturePoint
 {
 public:
     OPvPCapturePointHP(OutdoorPvP * pvp, OutdoorPvPHPTowerType type);
-    bool Update(uint32 diff);
+    void ChangeState();
+    void SendChangePhase();
     void FillInitialWorldStates(WorldPacket & data);
     // used when player is activated/inactivated in the area
     bool HandlePlayerEnter(Player * plr);

@@ -22,15 +22,14 @@
 // TODO: "sometimes" set to neutral
 
 #include "OutdoorPvPImpl.h"
-
+enum OutdoorPvPNASpells
+{
+    NA_KILL_TOKEN_ALLIANCE = 33005,
+    NA_KILL_TOKEN_HORDE = 33004,
+    NA_CAPTURE_BUFF = 33795  // strength of the halaani
+};
 // kill credit for pks
 const uint32 NA_CREDIT_MARKER = 24867;
-
-const uint32 NA_KILL_TOKEN_ALLIANCE = 33005;
-const uint32 NA_KILL_TOKEN_HORDE = 33004;
-
-const uint32 NA_CAPTURE_BUFF = 33795;  // strength of the halaani
-
 const uint32 NA_GUARDS_MAX = 15;
 
 const uint32 NA_BUFF_ZONE = 3518;
@@ -244,6 +243,8 @@ friend class OutdoorPvPNA;
 public:
     OPvPCapturePointNA(OutdoorPvP * pvp);
     bool Update(uint32 diff);
+    void ChangeState();
+    void SendChangePhase();
     void FillInitialWorldStates(WorldPacket & data);
     // used when player is activated/inactivated in the area
     bool HandlePlayerEnter(Player * plr);

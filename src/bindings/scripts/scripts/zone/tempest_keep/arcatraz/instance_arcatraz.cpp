@@ -24,7 +24,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_arcatraz.h"
 
-#define ENCOUNTERS 9
+#define MAX_ENCOUNTER 9
 
 #define CONTAINMENT_CORE_SECURITY_FIELD_ALPHA 184318        //door opened when Wrath-Scryer Soccothrates dies
 #define CONTAINMENT_CORE_SECURITY_FIELD_BETA  184319        //door opened when Dalliah the Doomsayer dies
@@ -50,7 +50,7 @@ struct TRINITY_DLL_DECL instance_arcatraz : public ScriptedInstance
 {
     instance_arcatraz(Map *map) : ScriptedInstance(map) {Initialize();};
 
-    uint32 Encounter[ENCOUNTERS];
+    uint32 m_auiEncounter[MAX_ENCOUNTER];
 
     GameObject *Containment_Core_Security_Field_Alpha;
     GameObject *Containment_Core_Security_Field_Beta;
@@ -66,6 +66,8 @@ struct TRINITY_DLL_DECL instance_arcatraz : public ScriptedInstance
 
     void Initialize()
     {
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+
         Containment_Core_Security_Field_Alpha = NULL;
         Containment_Core_Security_Field_Beta  = NULL;
         Pod_Alpha = NULL;
@@ -195,17 +197,17 @@ struct TRINITY_DLL_DECL instance_arcatraz : public ScriptedInstance
          switch(type)
         {
             case TYPE_HARBINGERSKYRISS:
-                return Encounter[3];
+                return m_auiEncounter[3];
             case TYPE_WARDEN_1:
-                return Encounter[4];
+                return m_auiEncounter[4];
             case TYPE_WARDEN_2:
-                return Encounter[5];
+                return m_auiEncounter[5];
             case TYPE_WARDEN_3:
-                return Encounter[6];
+                return m_auiEncounter[6];
             case TYPE_WARDEN_4:
-                return Encounter[7];
+                return m_auiEncounter[7];
             case TYPE_WARDEN_5:
-                return Encounter[8];
+                return m_auiEncounter[8];
         }
         return 0;
     }

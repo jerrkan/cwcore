@@ -180,7 +180,7 @@ struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
 
         std::list<HostilReference*>& m_threatlist = m_creature->getThreatManager().getThreatList();
         std::list<HostilReference*>::iterator i = m_threatlist.begin();
-        for(i = m_threatlist.begin(); i != m_threatlist.end(); i++)
+        for(i = m_threatlist.begin(); i != m_threatlist.end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if (pUnit && pUnit->isAlive())
@@ -195,10 +195,10 @@ struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
     {
         float x = KaelLocations[0][0];
         float y = KaelLocations[0][1];
-        m_creature->Relocate(x, y, LOCATION_Z, 0);
+        m_creature->GetMap()->CreatureRelocation(m_creature, x, y, LOCATION_Z, 0.0f);
         //m_creature->SendMonsterMove(x, y, LOCATION_Z, 0, 0, 0); // causes some issues...
         std::list<HostilReference*>::iterator i = m_creature->getThreatManager().getThreatList().begin();
-        for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end();++i)
+        for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
@@ -210,7 +210,7 @@ struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
     void CastGravityLapseKnockUp()
     {
         std::list<HostilReference*>::iterator i = m_creature->getThreatManager().getThreatList().begin();
-        for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end();++i)
+        for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
@@ -222,7 +222,7 @@ struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
     void CastGravityLapseFly()                              // Use Fly Packet hack for now as players can't cast "fly" spells unless in map 530. Has to be done a while after they get knocked into the air...
     {
         std::list<HostilReference*>::iterator i = m_creature->getThreatManager().getThreatList().begin();
-        for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end();++i)
+        for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
@@ -242,7 +242,7 @@ struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
     void RemoveGravityLapse()
     {
         std::list<HostilReference*>::iterator i = m_creature->getThreatManager().getThreatList().begin();
-        for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end();++i)
+        for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
@@ -274,6 +274,8 @@ struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
                 {
                     if (PyroblastTimer < diff)
                     {
+                        m_creature->InterruptSpell(CURRENT_CHANNELED_SPELL);
+                        m_creature->InterruptSpell(CURRENT_GENERIC_SPELL);
                         DoCast(m_creature, SPELL_SHOCK_BARRIER, true);
                         DoCast(m_creature->getVictim(), SPELL_PYROBLAST);
                         PyroblastTimer = 60000;
@@ -289,8 +291,7 @@ struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
                 if (PhoenixTimer < diff)
                 {
 
-                    Unit* target = NULL;
-                    target = SelectUnit(SELECT_TARGET_RANDOM,1);
+                    Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1);
 
                     uint32 random = rand()%2 + 1;
                     float x = KaelLocations[random][0];
@@ -313,6 +314,8 @@ struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
                 {
                     if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     {
+                        m_creature->InterruptSpell(CURRENT_CHANNELED_SPELL);
+                        m_creature->InterruptSpell(CURRENT_GENERIC_SPELL);
                         DoCast(target, SPELL_FLAMESTRIKE3, true);
                         DoScriptText(SAY_FLAMESTRIKE, m_creature);
                     }
@@ -465,7 +468,7 @@ struct TRINITY_DLL_DECL mob_felkael_phoenixAI : public ScriptedAI
         m_creature->AddUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
         m_creature->CastSpell(m_creature,SPELL_PHOENIX_BURN,true);
         BurnTimer = 2000;
-        Death_Timer = 2700;
+        Death_Timer = 3000;
         Rebirth = false;
         FakeDeath = false;
     }
@@ -552,7 +555,6 @@ struct TRINITY_DLL_DECL mob_felkael_phoenixAI : public ScriptedAI
             BurnTimer += 2000;
         } BurnTimer -= diff;
 
-
         DoMeleeAttackIfReady();
     }
 };
@@ -617,13 +619,12 @@ struct TRINITY_DLL_DECL mob_arcane_sphereAI : public ScriptedAI
 
         if (ChangeTargetTimer < diff)
         {
-
-            Unit* target = NULL;
-            target = SelectUnit(SELECT_TARGET_RANDOM,0);
-            if (target)
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
+            {
                 m_creature->AddThreat(target, 1.0f);
                 m_creature->TauntApply(target);
                 AttackStart(target);
+            }
 
             ChangeTargetTimer = 5000 + rand()%10000;
         }else ChangeTargetTimer -= diff;

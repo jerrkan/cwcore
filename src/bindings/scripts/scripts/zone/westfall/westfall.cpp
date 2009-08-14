@@ -144,15 +144,6 @@ struct TRINITY_DLL_DECL npc_daphne_stilwellAI : public npc_escortAI
         pSummoned->AI()->AttackStart(m_creature);
     }
 
-    void JustDied(Unit* killer)
-    {
-        if (Player* pPlayer = Unit::GetPlayer(PlayerGUID))
-        {
-                if (pPlayer->GetQuestStatus(QUEST_TOME_VALOR) == QUEST_STATUS_INCOMPLETE)
-                    pPlayer->FailQuest(QUEST_TOME_VALOR);
-        }
-    }
-
     void Update(const uint32 diff)
     {
         npc_escortAI::UpdateAI(diff);

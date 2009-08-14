@@ -42,10 +42,10 @@ struct TRINITY_DLL_DECL boss_marliAI : public ScriptedAI
 {
     boss_marliAI(Creature *c) : ScriptedAI(c)
     {
-        pInstance = c->GetInstanceData();
+        m_pInstance = c->GetInstanceData();
     }
 
-    ScriptedInstance *pInstance;
+    ScriptedInstance *m_pInstance;
 
     uint32 SpawnStartSpiders_Timer;
     uint32 PoisonVolley_Timer;
@@ -81,8 +81,8 @@ struct TRINITY_DLL_DECL boss_marliAI : public ScriptedAI
     void JustDied(Unit* Killer)
     {
         DoScriptText(SAY_DEATH, m_creature);
-        if(pInstance)
-            pInstance->SetData(DATA_MARLI_DEATH, 0);
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_MARLI, DONE);
     }
 
     void UpdateAI(const uint32 diff)
@@ -174,7 +174,7 @@ struct TRINITY_DLL_DECL boss_marliAI : public ScriptedAI
                     if (target)
                     {
                         DoCast(target, SPELL_CHARGE);
-                        //m_creature->Relocate(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0);
+                        //m_creature->GetMap()->CreatureRelocation(m_creature, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0);
                         //m_creature->SendMonsterMove(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0, true,1);
                         AttackStart(target);
                     }

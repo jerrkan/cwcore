@@ -80,9 +80,9 @@ public:
     virtual void FillInitialWorldStates(WorldPacket & data) {}
 
     // send world state update to all players present
-    virtual void SendUpdateWorldState(uint32 field, uint32 value);
+    void SendUpdateWorldState(uint32 field, uint32 value);
     // send kill notify to players in the controlling faction
-    virtual void SendObjectiveComplete(uint32 id, uint64 guid);
+    void SendObjectiveComplete(uint32 id, uint64 guid);
 
     // used when player is activated/inactivated in the area
     virtual bool HandlePlayerEnter(Player * plr);
@@ -97,6 +97,8 @@ public:
 
     // returns true if the state of the objective has changed, in this case, the OutdoorPvP must send a world state ui update.
     virtual bool Update(uint32 diff);
+    virtual void ChangeState() = 0;
+    virtual void SendChangePhase();
 
     virtual bool HandleGossipOption(Player *plr, uint64 guid, uint32 gossipid);
 
@@ -109,32 +111,36 @@ public:
     uint32 m_CapturePointGUID;
     GameObject *m_capturePoint;
 
+    void AddGO(uint32 type, uint32 guid, uint32 entry = 0);
+    void AddCre(uint32 type, uint32 guid, uint32 entry = 0);
+    bool AddCapturePoint(uint32 entry, uint32 map, float x, float y, float z, float o = 0, float rotation0 = 0, float rotation1 = 0, float rotation2 = 0, float rotation3 = 0);
+
 protected:
 
-    virtual bool AddCapturePoint(uint32 entry, uint32 map, float x, float y, float z, float o, float rotation0, float rotation1, float rotation2, float rotation3);
-    virtual bool AddObject(uint32 type, uint32 entry, uint32 map, float x, float y, float z, float o, float rotation0, float rotation1, float rotation2, float rotation3);
-    virtual bool AddCreature(uint32 type, uint32 entry, uint32 teamval, uint32 map, float x, float y, float z, float o, uint32 spawntimedelay = 0);
+    bool AddObject(uint32 type, uint32 entry, uint32 map, float x, float y, float z, float o, float rotation0, float rotation1, float rotation2, float rotation3);
+    bool AddCreature(uint32 type, uint32 entry, uint32 teamval, uint32 map, float x, float y, float z, float o, uint32 spawntimedelay = 0);
 
-    virtual bool DelCreature(uint32 type);
-    virtual bool DelObject(uint32 type);
-    virtual bool DelCapturePoint();
+    bool DelCreature(uint32 type);
+    bool DelObject(uint32 type);
+    bool DelCapturePoint();
 
 protected:
     // active players in the area of the objective, 0 - alliance, 1 - horde
     PlayerSet m_activePlayers[2];
     // total shift needed to capture the objective
-    float m_ShiftMaxPhase;
+    float m_maxValue;
+    float m_minValue;
     // maximum speed of capture
-    float m_ShiftMaxCaptureSpeed;
+    float m_maxSpeed;
     // the status of the objective
-    float m_ShiftPhase;
+    float m_value;
     // phase before update, used to check which faction is in conquer / control
-    float m_OldPhase;
+    float m_oldValue;
     // objective states
     uint32 m_OldState;
     uint32 m_State;
     // neutral value on capture bar
-    uint32 m_NeutralValue;
+    uint32 m_neutralValuePct;
 
     // pointer to the OutdoorPvP this objective belongs to
     OutdoorPvP* m_PvP;

@@ -16,8 +16,8 @@
 
 /* ScriptData
 SDName: Terokkar_Forest
-SD%Complete: 80
-SDComment: Quest support: 9889, 10009, 10873, 10896, 11096, 10052, 10051. Skettis->Ogri'la Flight
+SD%Complete: 85
+SDComment: Quest support: 9889, 10009, 10873, 10896, 10898, 11096, 10052, 10051. Skettis->Ogri'la Flight
 SDCategory: Terokkar Forest
 EndScriptData */
 
@@ -28,6 +28,7 @@ mob_rotting_forest_rager
 mob_netherweb_victim
 npc_floon
 npc_isla_starmane
+npc_slim
 EndContentData */
 
 #include "precompiled.h"
@@ -165,6 +166,66 @@ struct TRINITY_DLL_DECL mob_infested_root_walkerAI : public ScriptedAI
 CreatureAI* GetAI_mob_infested_root_walker(Creature *_Creature)
 {
     return new mob_infested_root_walkerAI (_Creature);
+}
+
+
+/*######
+## mob_skywing
+######*/
+struct TRINITY_DLL_DECL npc_skywingAI : public npc_escortAI
+{
+public:
+    npc_skywingAI(Creature *c) : npc_escortAI(c) {}
+
+    void WaypointReached(uint32 i)
+    {
+        Player *pPlayer = Unit::GetPlayer(PlayerGUID);
+        if( !pPlayer )
+            return;
+
+        switch(i)
+        {
+            case 8:
+                pPlayer->AreaExploredOrEventHappens(10898);
+                break;
+        }
+    }
+
+    void EnterCombat(Unit* who) {}
+
+    void MoveInLineOfSight(Unit *who)
+    {
+        if( IsBeingEscorted )
+            return;
+
+        if( who->GetTypeId() == TYPEID_PLAYER )
+        {
+            if( CAST_PLR(who)->GetQuestStatus(10898) == QUEST_STATUS_INCOMPLETE )
+            {
+                float Radius = 10.0;
+                if( m_creature->IsWithinDistInMap(who, Radius) )
+                {
+                    Start(false, false, who->GetGUID());
+                }
+            }
+        }
+    }
+
+    void Reset() {}
+
+    void UpdateAI(const uint32 diff)
+    {
+        npc_escortAI::UpdateAI(diff);
+    }
+};
+
+CreatureAI* GetAI_npc_skywingAI(Creature *_Creature)
+{
+    npc_skywingAI* skywingAI = new npc_skywingAI(_Creature);
+
+    skywingAI->FillPointMovementListForCreature();
+
+    return skywingAI;
 }
 
 /*######
@@ -423,7 +484,7 @@ bool QuestAccept_npc_isla_starmane(Player* player, Creature* creature, Quest con
 {
     if (quest->GetQuestId() == QUEST_EFTW_H || quest->GetQuestId() == QUEST_EFTW_A)
     {
-        CAST_AI(npc_escortAI, (creature->AI()))->Start(true, true, false, player->GetGUID());
+        CAST_AI(npc_escortAI, (creature->AI()))->Start(true, false, player->GetGUID());
         creature->setFaction(113);
     }
     return true;
@@ -522,6 +583,105 @@ bool GossipSelect_go_skull_pile(Player *player, GameObject* _GO, uint32 sender, 
     return true;
 }
 
+/*######
+## npc_slim
+######*/
+
+enum
+{
+    FACTION_CONSORTIUM  = 933
+};
+
+bool GossipHello_npc_slim(Player* pPlayer, Creature* pCreature)
+{
+    if (pCreature->isVendor() && pPlayer->GetReputationRank(FACTION_CONSORTIUM) >= REP_FRIENDLY)
+    {
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
+        pPlayer->SEND_GOSSIP_MENU(9896, pCreature->GetGUID());
+    }
+    else
+        pPlayer->SEND_GOSSIP_MENU(9895, pCreature->GetGUID());
+
+    return true;
+}
+
+bool GossipSelect_npc_slim(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    if (uiAction == GOSSIP_ACTION_TRADE)
+        pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
+
+    return true;
+}
+
+/*########
+####npc_Akuno
+#####*/
+
+#define QUEST_NPC_AKUNO 10887
+#define Summon 21661
+
+struct TRINITY_DLL_DECL npc_akunoAI : public npc_escortAI
+{
+    npc_akunoAI(Creature *c) : npc_escortAI(c) {}
+
+    bool IsWalking;
+
+    void WaypointReached(uint32 i)
+    {
+        Player* pPlayer = Unit::GetPlayer(PlayerGUID);
+
+        if(!pPlayer)
+            return;
+
+        if(IsWalking && !m_creature->HasUnitMovementFlag(MOVEMENTFLAG_WALK_MODE))
+            m_creature->AddUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
+    
+        
+        switch(i) 
+        {
+        case 0: m_creature->setFaction(5); break;
+        case 3:
+            m_creature->SummonCreature(Summon,-2795.99,5420.33,-34.53,0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 25000);
+            m_creature->SummonCreature(Summon,-2793.55,5412.79,-34.53,0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 25000);
+            break;
+        case 11:
+            if(pPlayer && pPlayer->GetTypeId() == TYPEID_PLAYER)
+                pPlayer->GroupEventHappens(QUEST_NPC_AKUNO,m_creature);
+            m_creature->setFaction(18);
+            break;
+        }
+    }
+
+    void Reset()
+    {
+        if (IsWalking && !m_creature->HasUnitMovementFlag(MOVEMENTFLAG_WALK_MODE))
+        {
+            m_creature->AddUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
+            return;
+        }
+        IsWalking=false;
+    }
+};
+
+bool QuestAccept_npc_akuno(Player* player, Creature* pCreature, Quest const* pQuest)
+{
+    if(pQuest->GetQuestId() == QUEST_NPC_AKUNO)
+    {
+        if (npc_akunoAI* pEscortAI = CAST_AI(npc_akunoAI, pCreature->AI()))
+          pEscortAI->Start(false,true,player->GetGUID());
+    }
+    return true;
+}
+
+CreatureAI* GetAI_npc_akuno(Creature* pCreature)
+{
+    npc_akunoAI* thisAI = new npc_akunoAI(pCreature);
+
+    thisAI->FillPointMovementListForCreature();
+
+    return(CreatureAI*)thisAI;
+}
+
 void AddSC_terokkar_forest()
 {
     Script *newscript;
@@ -565,5 +725,21 @@ void AddSC_terokkar_forest()
     newscript->pGOSelect = &GossipSelect_go_skull_pile;
     newscript->RegisterSelf();
 
+    newscript = new Script;
+    newscript->Name="npc_skywing";
+    newscript->GetAI = &GetAI_npc_skywingAI;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_slim";
+    newscript->pGossipHello =  &GossipHello_npc_slim;
+    newscript->pGossipSelect = &GossipSelect_npc_slim;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="npc_akuno";
+    newscript->GetAI = &GetAI_npc_akuno;
+    newscript->pQuestAccept = &QuestAccept_npc_akuno;
+    newscript->RegisterSelf();
 }
 

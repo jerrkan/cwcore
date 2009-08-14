@@ -72,14 +72,15 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 ( 20594, 65116, 0, 'Stoneform'),
 ( 49039, 50397, 2, 'Lichborne - shapeshift'),
 ( 64382, 64380, 0, 'Shattering Throw'),
-( 19574, 24395, 2, 'Beast Within'),
-( 19574, 24396, 2, 'Beast Within'),
-( 19574, 24397, 2, 'Beast Within'),
-( 19574, 26592, 2, 'Beast Within'),
-( 34471, 24395, 2, 'Beast Within'),
-( 34471, 24396, 2, 'Beast Within'),
-( 34471, 24397, 2, 'Beast Within'),
-( 34471, 26592, 2, 'Beast Within'),
+( 19574, 24395, 2, 'Bestial Wrath'),
+( 19574, 24396, 2, 'Bestial Wrath'),
+( 19574, 24397, 2, 'Bestial Wrath'),
+( 19574, 26592, 2, 'Bestial Wrath'),
+( 34471, 24395, 2, 'The Beast Within'),
+( 34471, 24396, 2, 'The Beast Within'),
+( 34471, 24397, 2, 'The Beast Within'),
+( 34471, 26592, 2, 'The Beast Within'),
+(-59907,     7, 0, 'Lightwell Charges - Suicide'),
 
 -- Creature
 ( 36574, 36650, 0, 'Apply Phase Slip Vulnerability'),
@@ -1340,7 +1341,7 @@ INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `Spell
 ( 56834, 0x00,  15, 0x00440000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Reaping (Rank 2)
 ( 56835, 0x00,  15, 0x00440000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Reaping (Rank 3)
 ( 57345, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,  45), -- Darkmoon Card: Greatness 
-( 57352, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,  45), -- Darkmoon Card: Death 
+( 57352, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00051154,   0,   0,  45), -- Darkmoon Card: Death 
 ( 57878, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000010,   0,   0,   0), -- Natural Reaction (Rank 1)
 ( 57880, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000010,   0,   0,   0), -- Natural Reaction (Rank 2)
 ( 57881, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000010,   0,   0,   0), -- Natural Reaction (Rank 3)
@@ -1617,7 +1618,9 @@ INSERT INTO `spell_bonus_data` (`entry`, `direct_bonus`, `dot_bonus`, `ap_bonus`
 (1978, -1, -1, -1, 0.04, 'Hunter - Serpent Sting($RAP*0.2 / number of ticks)'),
 (56641, -1, -1, 0.1, -1, 'Hunter - Steady Shot'),
 (42243, -1, -1, 0.07, -1, 'Hunter - Volley'),
+(53352, -1, -1, 0.14, -1, 'Hunter - Explosive Shot (triggered)'),
 (55039, 0, 0, 0, 0, 'Item - Gnomish Lightning Generator'),
+(40293, 0, 0, 0, 0, 'Item - Siphon Essence'),
 (44425, 0.7143, -1, -1, -1, 'Mage - Arcane Barrage'),
 (30451, 0.7143, -1, -1, -1, 'Mage - Arcane Blast'),
 (1449, 0.2128, -1, -1, -1, 'Mage - Arcane Explosion'),
@@ -1686,6 +1689,12 @@ INSERT INTO `spell_bonus_data` (`entry`, `direct_bonus`, `dot_bonus`, `ap_bonus`
 (14914, 0.5711, 0.024, -1, -1, 'Priest - Holy Fire'),
 (15237, 0.1606, -1, -1, -1, 'Priest - Holy Nova Damage'),
 (23455, 0.3035, -1, -1, -1, 'Priest - Holy Nova Heal Rank 1'),
+(7001, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 1'),
+(27873, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 2'),
+(27874, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 3'),
+(28276, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 4'),
+(48084, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 5'),
+(48085, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 6'),
 (8129, 0, 0, 0, 0, 'Priest - Mana Burn'),
 (8092, 0.428, -1, -1, -1, 'Priest - Mind Blast'),
 (15407, 0.257, -1, -1, -1, 'Priest - Mind Flay'),
@@ -1983,7 +1992,8 @@ INSERT INTO `spell_target_position` (`id`, `target_map`, `target_position_x`, `t
 -- death charger
 DELETE FROM spell_area WHERE spell = 52693;
 INSERT INTO spell_area (`spell`, `area`, `quest_start`, `quest_start_active`, `quest_end`, `aura_spell`, `racemask`, `gender`, `autocast`) VALUES
-(52693, 4298, 12687, 1, 12687, 0, 0, 0, 1);
+(52693, 4298, 12687, 1, 12687, 0, 0, 2, 1);
+update spell_area set gender=2 where spell in (33836,50426,46023,52693);
 
 DELETE FROM `npc_spellclick_spells` WHERE `spell_id` IN (
 54568, 54575, 52263, 52280, 52447);
@@ -2043,6 +2053,39 @@ INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
 (27936, 1, 16060); # To Anchor 2 - Gothik
 
 -- --------
+-- ULDUAR
+-- --------
+INSERT INTO creature_template (entry, vehicleid) VALUES
+(33113, 340), # Flame Leviathan
+(33114, 341) # Flame Leviathan Seat
+ON DUPLICATE KEY UPDATE
+vehicleid = VALUES(vehicleid);
+
+UPDATE creature_template SET flags_extra = 128 WHERE entry IN (33114);
+
+INSERT INTO creature_template (entry, spell1, spell2, spell3, spell4, spell5, spell6, vehicleid) VALUES
+(33062, 62974, 62286, 62299, 64660, 0, 0, 335), # Salvaged Chopper
+(33109, 62306, 62490, 62308, 62324, 0, 0, 338), # Salvaged Demolisher
+(33167, 62634, 64979, 62479, 62471, 0, 62428, 345), # Salvaged Demolisher Mechanic Seat
+(33060, 62345, 62522, 62346, 0, 0, 0, 336), # Salvaged Siege Engine
+(33067, 62358, 62359, 64677, 0, 0, 0, 337) # Salvaged Siege Turret
+ON DUPLICATE KEY UPDATE
+spell1 = VALUES(spell1),
+spell2 = VALUES(spell2),
+spell3 = VALUES(spell3),
+spell4 = VALUES(spell4),
+spell5 = VALUES(spell5),
+spell6 = VALUES(spell6),
+vehicleid = VALUES(vehicleid);
+
+DELETE FROM `spell_script_target` WHERE `entry` IN (62374,62399);
+INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
+(62374, 1, 33060), # Pursued
+(62374, 1, 33109),
+(62399, 1, 33139); # Overload Circuit
+
+
+-- --------
 -- WINTERGRASP
 -- --------
 DELETE FROM `game_event` WHERE `entry` IN (50,51);
@@ -2070,3 +2113,13 @@ INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
 DELETE FROM `spell_linked_spell` WHERE `spell_trigger` IN (54643);
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 ( 54643,-54643, 2, 'Wintergrasp Defender Teleport');
+
+
+-- lightwell
+REPLACE INTO `npc_spellclick_spells` (npc_entry, spell_id, quest_start, quest_start_active, quest_end, cast_flags, quest_status) VALUES
+(31883, 60123, 0, 0, 0, 2, 0),
+(31893, 60123, 0, 0, 0, 2, 0),
+(31894, 60123, 0, 0, 0, 2, 0),
+(31895, 60123, 0, 0, 0, 2, 0),
+(31896, 60123, 0, 0, 0, 2, 0),
+(31897, 60123, 0, 0, 0, 2, 0);

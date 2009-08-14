@@ -26,7 +26,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_utgarde_keep.h"
 
-#define ENCOUNTERS     3
+#define MAX_ENCOUNTER     3
 
 #define ENTRY_BELLOW_1          186688
 #define ENTRY_BELLOW_2          186689
@@ -59,11 +59,13 @@ struct TRINITY_DLL_DECL instance_utgarde_keep : public ScriptedInstance
     uint64 forge_fire[3];
     uint64 forge_anvil[3];
 
-    uint32 Encounters[ENCOUNTERS];
+    uint32 m_auiEncounter[MAX_ENCOUNTER];
     std::string str_data;
 
    void Initialize()
    {
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+
         Keleseth = 0;
         Skarvald = 0;
         Dalronn =0;
@@ -223,9 +225,9 @@ struct TRINITY_DLL_DECL instance_utgarde_keep : public ScriptedInstance
     {
         switch(type)
         {
-            case DATA_PRINCEKELESETH_EVENT:     return Encounters[0];
-            case DATA_SKARVALD_DALRONN_EVENT:   return Encounters[1];
-            case DATA_INGVAR_EVENT:             return Encounters[2];
+            case DATA_PRINCEKELESETH_EVENT:     return m_auiEncounter[0];
+            case DATA_SKARVALD_DALRONN_EVENT:   return m_auiEncounter[1];
+            case DATA_INGVAR_EVENT:             return m_auiEncounter[2];
         }
 
         return 0;
@@ -236,8 +238,8 @@ struct TRINITY_DLL_DECL instance_utgarde_keep : public ScriptedInstance
         OUT_SAVE_INST_DATA;
 
         std::ostringstream saveStream;
-        saveStream << "U K " << Encounters[0] << " " << Encounters[1] << " "
-            << Encounters[2];
+        saveStream << "U K " << m_auiEncounter[0] << " " << m_auiEncounter[1] << " "
+            << m_auiEncounter[2];
 
         str_data = saveStream.str();
 
@@ -263,13 +265,13 @@ struct TRINITY_DLL_DECL instance_utgarde_keep : public ScriptedInstance
 
         if( dataHead1 == 'U' && dataHead2 == 'K')
         {
-            Encounters[0] = data0;
-            Encounters[1] = data1;
-            Encounters[2] = data2;
+            m_auiEncounter[0] = data0;
+            m_auiEncounter[1] = data1;
+            m_auiEncounter[2] = data2;
 
-            for(uint8 i = 0; i < ENCOUNTERS; ++i)
-                if (Encounters[i] == IN_PROGRESS)
-                    Encounters[i] = NOT_STARTED;
+            for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+                if (m_auiEncounter[i] == IN_PROGRESS)
+                    m_auiEncounter[i] = NOT_STARTED;
 
         }else OUT_LOAD_INST_DATA_FAIL;
 

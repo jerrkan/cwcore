@@ -24,7 +24,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_shadow_labyrinth.h"
 
-#define ENCOUNTERS 5
+#define MAX_ENCOUNTER 5
 
 #define REFECTORY_DOOR          183296                      //door opened when blackheart the inciter dies
 #define SCREAMING_HALL_DOOR     183295                      //door opened when grandmaster vorpil dies
@@ -38,118 +38,125 @@ EndScriptData */
 
 struct TRINITY_DLL_DECL instance_shadow_labyrinth : public ScriptedInstance
 {
-    instance_shadow_labyrinth(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_shadow_labyrinth(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
-    uint32 Encounter[ENCOUNTERS];
+    uint32 m_auiEncounter[MAX_ENCOUNTER];
     std::string str_data;
 
-    uint64 RefectoryDoorGUID;
-    uint64 ScreamingHallDoorGUID;
+    uint64 m_uiRefectoryDoorGUID;
+    uint64 m_uiScreamingHallDoorGUID;
 
-    uint64 GrandmasterVorpil;
-    uint32 FelOverseerCount;
+    uint64 m_uiGrandmasterVorpil;
+    uint32 m_uiFelOverseerCount;
 
     void Initialize()
     {
-        RefectoryDoorGUID = 0;
-        ScreamingHallDoorGUID = 0;
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
-        GrandmasterVorpil = 0;
-        FelOverseerCount = 0;
+        m_uiRefectoryDoorGUID = 0;
+        m_uiScreamingHallDoorGUID = 0;
 
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
-            Encounter[i] = NOT_STARTED;
+        m_uiGrandmasterVorpil = 0;
+        m_uiFelOverseerCount = 0;
     }
 
     bool IsEncounterInProgress() const
     {
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
-            if(Encounter[i] == IN_PROGRESS) return true;
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            if (m_auiEncounter[i] == IN_PROGRESS) return true;
 
         return false;
     }
 
-    void OnGameObjectCreate(GameObject *go, bool add)
+    void OnGameObjectCreate(GameObject* pGo, bool add)
     {
-        switch(go->GetEntry())
+        switch(pGo->GetEntry())
         {
             case REFECTORY_DOOR:
-                RefectoryDoorGUID = go->GetGUID();
-                if (Encounter[2] == DONE)
-                    DoUseDoorOrButton(RefectoryDoorGUID);
+                m_uiRefectoryDoorGUID = pGo->GetGUID();
+                if (m_auiEncounter[2] == DONE)
+                    pGo->SetGoState(GO_STATE_ACTIVE);
                 break;
             case SCREAMING_HALL_DOOR:
-                ScreamingHallDoorGUID = go->GetGUID();
-                if (Encounter[3] == DONE)
-                    DoUseDoorOrButton(ScreamingHallDoorGUID);
+                m_uiScreamingHallDoorGUID = pGo->GetGUID();
+                if (m_auiEncounter[3] == DONE)
+                    pGo->SetGoState(GO_STATE_ACTIVE);
                 break;
         }
     }
 
-    void OnCreatureCreate(Creature *creature, bool add)
+    void OnCreatureCreate(Creature* pCreature, bool add)
     {
-        switch(creature->GetEntry())
+        switch(pCreature->GetEntry())
         {
             case 18732:
-                GrandmasterVorpil = creature->GetGUID();
+                m_uiGrandmasterVorpil = pCreature->GetGUID();
                 break;
             case 18796:
-                ++FelOverseerCount;
-                debug_log("TSCR: Shadow Labyrinth: counting %u Fel Overseers.",FelOverseerCount);
+                if (pCreature->isAlive())
+                {
+                    ++m_uiFelOverseerCount;
+                    debug_log("TSCR: Shadow Labyrinth: counting %u Fel Overseers.",m_uiFelOverseerCount);
+                }
                 break;
         }
     }
 
-    void SetData(uint32 type, uint32 data)
+    void SetData(uint32 type, uint32 uiData)
     {
         switch(type)
         {
             case TYPE_HELLMAW:
-                Encounter[0] = data;
+                m_auiEncounter[0] = uiData;
                 break;
 
             case TYPE_OVERSEER:
-                if( data != DONE )
+                if (uiData != DONE)
+                {
                     error_log("TSCR: Shadow Labyrinth: TYPE_OVERSEER did not expect other data than DONE");
-                if( FelOverseerCount )
-                {
-                    --FelOverseerCount;
-                    debug_log("TSCR: Shadow Labyrinth: %u Fel Overseers left to kill.",FelOverseerCount);
+                    return;
                 }
-                if( FelOverseerCount == 0 )
+                if (m_uiFelOverseerCount)
                 {
-                    Encounter[1] = DONE;
-                    debug_log("TSCR: Shadow Labyrinth: TYPE_OVERSEER == DONE");
+                    --m_uiFelOverseerCount;
+
+                    if (m_uiFelOverseerCount)
+                        debug_log("TSCR: Shadow Labyrinth: %u Fel Overseers left to kill.",m_uiFelOverseerCount);
+                    else
+                    {
+                        m_auiEncounter[1] = DONE;
+                        debug_log("TSCR: Shadow Labyrinth: TYPE_OVERSEER == DONE");
+                    }
                 }
                 break;
 
             case DATA_BLACKHEARTTHEINCITEREVENT:
-                if( data == DONE )
-                    DoUseDoorOrButton(RefectoryDoorGUID);
-                Encounter[2] = data;
+                if (uiData == DONE)
+                    DoUseDoorOrButton(m_uiRefectoryDoorGUID);
+                m_auiEncounter[2] = uiData;
                 break;
 
             case DATA_GRANDMASTERVORPILEVENT:
-                if( data == DONE )
-                    DoUseDoorOrButton(ScreamingHallDoorGUID);
-                Encounter[3] = data;
+                if (uiData == DONE)
+                    DoUseDoorOrButton(m_uiScreamingHallDoorGUID);
+                m_auiEncounter[3] = uiData;
                 break;
 
             case DATA_MURMUREVENT:
-                Encounter[4] = data;
+                m_auiEncounter[4] = uiData;
                 break;
         }
 
-        if (data == DONE)
+        if (uiData == DONE)
         {
-            if (type == TYPE_OVERSEER && FelOverseerCount != 0)
+            if (type == TYPE_OVERSEER && m_uiFelOverseerCount != 0)
                 return;
 
             OUT_SAVE_INST_DATA;
 
             std::ostringstream saveStream;
-            saveStream << Encounter[0] << " " << Encounter[1] << " "
-                << Encounter[2] << " " << Encounter[3] << " " << Encounter[4];
+            saveStream << m_auiEncounter[0] << " " << m_auiEncounter[1] << " "
+                << m_auiEncounter[2] << " " << m_auiEncounter[3] << " " << m_auiEncounter[4];
 
             str_data = saveStream.str();
 
@@ -160,20 +167,20 @@ struct TRINITY_DLL_DECL instance_shadow_labyrinth : public ScriptedInstance
 
     uint32 GetData(uint32 type)
     {
-        switch( type )
+        switch(type)
         {
-            case TYPE_HELLMAW: return Encounter[0];
-            case TYPE_OVERSEER: return Encounter[1];
-            case DATA_GRANDMASTERVORPILEVENT: return Encounter[3];
-            case DATA_MURMUREVENT: return Encounter[4];
+            case TYPE_HELLMAW: return m_auiEncounter[0];
+            case TYPE_OVERSEER: return m_auiEncounter[1];
+            case DATA_GRANDMASTERVORPILEVENT: return m_auiEncounter[3];
+            case DATA_MURMUREVENT: return m_auiEncounter[4];
         }
         return false;
     }
 
     uint64 GetData64(uint32 identifier)
     {
-        if(identifier == DATA_GRANDMASTERVORPIL)
-            return GrandmasterVorpil;
+        if (identifier == DATA_GRANDMASTERVORPIL)
+            return m_uiGrandmasterVorpil;
 
         return 0;
     }
@@ -194,19 +201,19 @@ struct TRINITY_DLL_DECL instance_shadow_labyrinth : public ScriptedInstance
         OUT_LOAD_INST_DATA(in);
 
         std::istringstream loadStream(in);
-        loadStream >> Encounter[0] >> Encounter[1] >> Encounter[2] >> Encounter[3] >> Encounter[4];
+        loadStream >> m_auiEncounter[0] >> m_auiEncounter[1] >> m_auiEncounter[2] >> m_auiEncounter[3] >> m_auiEncounter[4];
 
-        for(uint8 i = 0; i < ENCOUNTERS; ++i)
-            if (Encounter[i] == IN_PROGRESS)
-                Encounter[i] = NOT_STARTED;
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            if (m_auiEncounter[i] == IN_PROGRESS)
+                m_auiEncounter[i] = NOT_STARTED;
 
         OUT_LOAD_INST_DATA_COMPLETE;
     }
 };
 
-InstanceData* GetInstanceData_instance_shadow_labyrinth(Map* map)
+InstanceData* GetInstanceData_instance_shadow_labyrinth(Map* pMap)
 {
-    return new instance_shadow_labyrinth(map);
+    return new instance_shadow_labyrinth(pMap);
 }
 
 void AddSC_instance_shadow_labyrinth()

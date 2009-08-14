@@ -12,7 +12,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_sunwell_plateau.h"
 
-#define ENCOUNTERS 6
+#define MAX_ENCOUNTER 6
 
 /* Sunwell Plateau:
 0 - Kalecgos and Sathrovarr
@@ -27,7 +27,7 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
 {
     instance_sunwell_plateau(Map *map) : ScriptedInstance(map) {Initialize();};
 
-    uint32 Encounters[ENCOUNTERS];
+    uint32 m_auiEncounter[MAX_ENCOUNTER];
 
     /** Creatures **/
     uint64 Kalecgos_Dragon;
@@ -55,6 +55,8 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
 
     void Initialize()
     {
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+
         /*** Creatures ***/
         Kalecgos_Dragon         = 0;
         Kalecgos_Human          = 0;
@@ -154,12 +156,12 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
     {
         switch(id)
         {
-            case DATA_KALECGOS_EVENT:     return Encounters[0];
-            case DATA_BRUTALLUS_EVENT:    return Encounters[1];
-            case DATA_FELMYST_EVENT:      return Encounters[2];
-            case DATA_EREDAR_TWINS_EVENT: return Encounters[3];
-            case DATA_MURU_EVENT:         return Encounters[4];
-            case DATA_KILJAEDEN_EVENT:    return Encounters[5];
+            case DATA_KALECGOS_EVENT:     return m_auiEncounter[0];
+            case DATA_BRUTALLUS_EVENT:    return m_auiEncounter[1];
+            case DATA_FELMYST_EVENT:      return m_auiEncounter[2];
+            case DATA_EREDAR_TWINS_EVENT: return m_auiEncounter[3];
+            case DATA_MURU_EVENT:         return m_auiEncounter[4];
+            case DATA_KILJAEDEN_EVENT:    return m_auiEncounter[5];
         }
         return 0;
     }
@@ -216,8 +218,8 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
                         HandleGameObject(MurusGate[1], false);
                         break;
                 }
-                Encounters[4] = data; break;
-            case DATA_KILJAEDEN_EVENT:     Encounters[5] = data; break;
+                m_auiEncounter[4] = data; break;
+            case DATA_KILJAEDEN_EVENT:     m_auiEncounter[5] = data; break;
         }
 
         if(data == DONE)
@@ -228,8 +230,8 @@ struct TRINITY_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
     {
         OUT_SAVE_INST_DATA;
         std::ostringstream stream;
-        stream << Encounters[0] << " "  << Encounters[1] << " "  << Encounters[2] << " "  << Encounters[3] << " "
-            << Encounters[4] << " "  << Encounters[5];
+        stream << m_auiEncounter[0] << " "  << m_auiEncounter[1] << " "  << m_auiEncounter[2] << " "  << m_auiEncounter[3] << " "
+            << m_auiEncounter[4] << " "  << m_auiEncounter[5];
         char* out = new char[stream.str().length() + 1];
         strcpy(out, stream.str().c_str());
         if(out)

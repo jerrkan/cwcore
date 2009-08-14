@@ -65,18 +65,18 @@ struct TRINITY_DLL_DECL boss_azuregosAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
-        if(Teleport_Timer < diff)
+        if (Teleport_Timer < diff)
         {
             DoScriptText(SAY_TELEPORT, m_creature);
             std::list<HostilReference*>& m_threatlist = m_creature->getThreatManager().getThreatList();
             std::list<HostilReference*>::iterator i = m_threatlist.begin();
-            for (i = m_threatlist.begin(); i!= m_threatlist.end();++i)
+            for (i = m_threatlist.begin(); i!= m_threatlist.end(); ++i)
             {
                 Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
-                if(pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
+                if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
                 {
                     DoTeleportPlayer(pUnit, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ()+3, pUnit->GetOrientation());
                 }
@@ -139,9 +139,9 @@ struct TRINITY_DLL_DECL boss_azuregosAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_azuregos(Creature *_Creature)
+CreatureAI* GetAI_boss_azuregos(Creature* pCreature)
 {
-    return new boss_azuregosAI (_Creature);
+    return new boss_azuregosAI (pCreature);
 }
 
 void AddSC_boss_azuregos()

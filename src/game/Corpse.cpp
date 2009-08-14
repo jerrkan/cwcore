@@ -29,6 +29,7 @@
 #include "World.h"
 
 Corpse::Corpse(CorpseType type) : WorldObject()
+, m_type(type)
 {
     m_objectType |= TYPEMASK_CORPSE;
     m_objectTypeId = TYPEID_CORPSE;
@@ -37,13 +38,14 @@ Corpse::Corpse(CorpseType type) : WorldObject()
 
     m_valuesCount = CORPSE_END;
 
-    m_type = type;
-
     m_mapId = 0;
 
     m_time = time(NULL);
 
     lootForBody = false;
+
+    if(type != CORPSE_BONES)
+        m_isWorldObject = true;
 }
 
 Corpse::~Corpse()
@@ -68,8 +70,9 @@ void Corpse::RemoveFromWorld()
     Object::RemoveFromWorld();
 }
 
-bool Corpse::Create( uint32 guidlow )
+bool Corpse::Create( uint32 guidlow, Map *map )
 {
+    SetMap(map);
     Object::_Create(guidlow, 0, HIGHGUID_CORPSE);
     return true;
 }
@@ -77,10 +80,6 @@ bool Corpse::Create( uint32 guidlow )
 bool Corpse::Create( uint32 guidlow, Player *owner)
 {
     ASSERT(owner);
-
-    //we need to assign owner's map for corpse
-    //in other way we will get a crash in Corpse::SaveToDB()
-    SetMap(owner->GetMap());
 
     Relocate(owner->GetPositionX(), owner->GetPositionY(), owner->GetPositionZ(), owner->GetOrientation());
 
@@ -90,6 +89,10 @@ bool Corpse::Create( uint32 guidlow, Player *owner)
             guidlow, owner->GetName(), owner->GetPositionX(), owner->GetPositionY());
         return false;
     }
+
+    //we need to assign owner's map for corpse
+    //in other way we will get a crash in Corpse::SaveToDB()
+    SetMap(owner->GetMap());
 
     WorldObject::_Create(guidlow, HIGHGUID_CORPSE, owner->GetPhaseMask());
 
@@ -210,6 +213,9 @@ bool Corpse::LoadFromDB(uint32 guid, Field *fields)
         sLog.outError("Corpse (guidlow %d, owner %d) have wrong corpse type, not load.",GetGUIDLow(),GUID_LOPART(GetOwnerGUID()));
         return false;
     }
+
+    if(m_type != CORPSE_BONES)
+        m_isWorldObject = true;
 
     uint32 phaseMask   = fields[9].GetUInt32();
 

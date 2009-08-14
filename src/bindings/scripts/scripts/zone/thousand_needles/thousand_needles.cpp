@@ -17,11 +17,12 @@
 /* ScriptData
 SDName: Thousand Needles
 SD%Complete: 100
-SDComment: Support for Quest: 4770, 1950
+SDComment: Support for Quest: 1950, 4770, 4904
 SDCategory: Thousand Needles
 EndScriptData */
 
 /* ContentData
+npc_lakota_windsong
 npc_swiftmountain
 npc_plucky
 EndContentData */
@@ -308,9 +309,15 @@ void AddSC_thousand_needles()
     Script *newscript;
 
     newscript = new Script;
-    newscript->Name = "npc_swiftmountain";
-    newscript->GetAI = &GetAI_npc_swiftmountain;
-    newscript->pQuestAccept = &QuestAccept_npc_swiftmountain;
+    newscript->Name = "npc_lakota_windsong";
+    newscript->GetAI = &GetAI_npc_lakota_windsong;
+    newscript->pQuestAccept = &QuestAccept_npc_lakota_windsong;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_paoka_swiftmountain";
+    newscript->GetAI = &GetAI_npc_paoka_swiftmountain;
+    newscript->pQuestAccept = &QuestAccept_npc_paoka_swiftmountain;
     newscript->RegisterSelf();
 
     newscript = new Script;

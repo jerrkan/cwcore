@@ -401,7 +401,7 @@ struct TRINITY_DLL_DECL boss_illidan_stormrageAI : public ScriptedAI
     {
         if(summon->GetCreatureInfo()->Entry == FLAME_OF_AZZINOTH)
         {
-            for(uint8 i = 0; i < 2; i++)
+            for(uint8 i = 0; i < 2; ++i)
                 if(summon->GetGUID() == FlameGUID[i])
                     FlameGUID[i] = 0;
 
@@ -598,7 +598,7 @@ struct TRINITY_DLL_DECL boss_illidan_stormrageAI : public ScriptedAI
             Timer[EVENT_FLIGHT_SEQUENCE] = 0;
             break;
         case 8://glaive return
-            for(uint8 i = 0; i < 2; i++)
+            for(uint8 i = 0; i < 2; ++i)
             {
                 if(GlaiveGUID[i])
                 {
@@ -616,7 +616,7 @@ struct TRINITY_DLL_DECL boss_illidan_stormrageAI : public ScriptedAI
             m_creature->RemoveUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
             m_creature->StopMoving();
             m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
-            for(uint8 i = 0; i < 2; i++)
+            for(uint8 i = 0; i < 2; ++i)
             {
                 if(GlaiveGUID[i])
                 {
@@ -696,7 +696,7 @@ struct TRINITY_DLL_DECL boss_illidan_stormrageAI : public ScriptedAI
             return;
 
         Event = EVENT_NULL;
-        for(uint32 i = 1; i <= MaxTimer[Phase]; i++)
+        for(uint32 i = 1; i <= MaxTimer[Phase]; ++i)
         {
             if(Timer[i]) // Event is enabled
                 if(Timer[i] <= diff)
@@ -1001,7 +1001,7 @@ struct TRINITY_DLL_DECL npc_akama_illidanAI : public ScriptedAI
 
             pInstance->HandleGameObject(GateGUID, false);
 
-            for(uint8 i = 0; i < 2; i++)
+            for(uint8 i = 0; i < 2; ++i)
                 pInstance->HandleGameObject(DoorGUID[i], false);
 
         }
@@ -1072,7 +1072,7 @@ struct TRINITY_DLL_DECL npc_akama_illidanAI : public ScriptedAI
             
         pInstance->SetData(DATA_ILLIDANSTORMRAGEEVENT, IN_PROGRESS);
 
-        for(uint8 i = 0; i < 2; i++)
+        for(uint8 i = 0; i < 2; ++i)
             pInstance->HandleGameObject(DoorGUID[i], false);
 
         if(GETCRE(Illidan, IllidanGUID))
@@ -1269,7 +1269,7 @@ struct TRINITY_DLL_DECL npc_akama_illidanAI : public ScriptedAI
         switch(WalkCount)
         {
         case 6:
-            for(uint8 i = 0; i < 2; i++)
+            for(uint8 i = 0; i < 2; ++i)
                 pInstance->HandleGameObject(DoorGUID[i], true);
             break;
         case 8:
@@ -1500,7 +1500,7 @@ struct TRINITY_DLL_DECL boss_maievAI : public ScriptedAI
             return;
 
         Event = EVENT_MAIEV_NULL;
-        for(uint8 i = 1; i <= MaxTimer; i++)
+        for(uint8 i = 1; i <= MaxTimer; ++i)
             if(Timer[i])
             {
                 if(Timer[i] <= diff)
@@ -1734,7 +1734,7 @@ struct TRINITY_DLL_DECL mob_parasitic_shadowfiendAI : public ScriptedAI
                 && !m_creature->getVictim()->HasAura(SPELL_PARASITIC_SHADOWFIEND2))
             {
                 if(Creature* illidan = Unit::GetCreature((*m_creature),IllidanGUID))//summon only in 1. phase
-                    if(((boss_illidan_stormrageAI*)illidan->AI())->Phase == PHASE_NORMAL)
+                    if(CAST_AI(boss_illidan_stormrageAI, illidan->AI())->Phase == PHASE_NORMAL)
                         m_creature->CastSpell(m_creature->getVictim(), SPELL_PARASITIC_SHADOWFIEND2, true, 0, 0, IllidanGUID); //do not stack
             }
             m_creature->AttackerStateUpdate(m_creature->getVictim());
@@ -1930,8 +1930,8 @@ void boss_illidan_stormrageAI::HandleTalkSequence()
                 x += 10; y += 10;
                 Akama->GetMotionMaster()->Clear(false);
                 //Akama->GetMotionMaster()->MoveIdle();
-                Akama->Relocate(x, y, z);
-                Akama->SendMonsterMove(x, y, z, 0);//Illidan must not die until Akama arrives.
+                Akama->GetMap()->CreatureRelocation(m_creature, x, y, z, 0.0f);
+                Akama->SendMonsterMove(x, y, z, 0, MOVEMENTFLAG_NONE, 0);//Illidan must not die until Akama arrives.
                 Akama->GetMotionMaster()->MoveChase(m_creature);
             }
         }
@@ -2114,44 +2114,44 @@ void boss_illidan_stormrageAI::EnterPhase(PhaseIllidan NextPhase)
     Event = EVENT_NULL;
 }
 
-CreatureAI* GetAI_boss_illidan_stormrage(Creature *_Creature)
+CreatureAI* GetAI_boss_illidan_stormrage(Creature* pCreature)
 {
-    return new boss_illidan_stormrageAI (_Creature);
+    return new boss_illidan_stormrageAI (pCreature);
 }
 
-CreatureAI* GetAI_npc_akama_at_illidan(Creature *_Creature)
+CreatureAI* GetAI_npc_akama_at_illidan(Creature* pCreature)
 {
-    return new npc_akama_illidanAI(_Creature);
+    return new npc_akama_illidanAI(pCreature);
 }
 
-CreatureAI* GetAI_boss_maiev(Creature *_Creature)
+CreatureAI* GetAI_boss_maiev(Creature* pCreature)
 {
-    return new boss_maievAI (_Creature);
+    return new boss_maievAI (pCreature);
 }
 
-CreatureAI* GetAI_mob_flame_of_azzinoth(Creature *_Creature)
+CreatureAI* GetAI_mob_flame_of_azzinoth(Creature* pCreature)
 {
-    return new flame_of_azzinothAI (_Creature);
+    return new flame_of_azzinothAI (pCreature);
 }
 
-CreatureAI* GetAI_cage_trap_trigger(Creature *_Creature)
+CreatureAI* GetAI_cage_trap_trigger(Creature* pCreature)
 {
-    return new cage_trap_triggerAI (_Creature);
+    return new cage_trap_triggerAI (pCreature);
 }
 
-CreatureAI* GetAI_shadow_demon(Creature *_Creature)
+CreatureAI* GetAI_shadow_demon(Creature* pCreature)
 {
-    return new shadow_demonAI (_Creature);
+    return new shadow_demonAI (pCreature);
 }
 
-CreatureAI* GetAI_blade_of_azzinoth(Creature *_Creature)
+CreatureAI* GetAI_blade_of_azzinoth(Creature* pCreature)
 {
-    return new blade_of_azzinothAI (_Creature);
+    return new blade_of_azzinothAI (pCreature);
 }
 
-CreatureAI* GetAI_parasitic_shadowfiend(Creature *_Creature)
+CreatureAI* GetAI_parasitic_shadowfiend(Creature* pCreature)
 {
-    return new mob_parasitic_shadowfiendAI (_Creature);
+    return new mob_parasitic_shadowfiendAI (pCreature);
 }
 
 void AddSC_boss_illidan()

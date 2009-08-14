@@ -212,6 +212,7 @@ bool WorldSession::Update(uint32 /*diff*/)
                     (this->*opHandle.handler)(*packet);
                     break;
                 case STATUS_NEVER:
+                    break;
                     sLog.outError( "SESSION: received not allowed opcode %s (0x%.4X)",
                         LookupOpcodeName(packet->GetOpcode()),
                         packet->GetOpcode());
@@ -387,6 +388,7 @@ void WorldSession::LogoutPlayer(bool Save)
         // the player may not be in the world when logging out
         // e.g if he got disconnected during a transfer to another map
         // calls to GetMap in this case may cause crashes
+        _player->CleanupsBeforeDelete();
         Map* _map = _player->GetMap();
         _map->Remove(_player, true);
         _player = NULL;                                     // deleted in Remove call

@@ -101,9 +101,8 @@ class TRINITY_DLL_SPEC Aura
         bool IsPassive() const { return m_isPassive; }
         bool IsDeathPersistent() const { return m_isDeathPersist; }
         bool IsRemovedOnShapeLost() const { return m_isRemovedOnShapeLost; }
-        bool IsUpdated() const { return m_updated; }
+        bool CanBeSaved() const;
         bool IsRemoved() const { return m_isRemoved; }
-        void SetUpdated(bool val) { m_updated = val; }
 
         bool IsPersistent() const;
         bool IsAreaAura() const;
@@ -162,7 +161,6 @@ class TRINITY_DLL_SPEC Aura
         bool m_positive:1;
         bool m_permanent:1;
         bool m_isRemoved:1;
-        bool m_updated:1;                                   // Prevent remove aura by stack if set
         bool m_isSingleTargetAura:1;                        // true if it's a single target spell and registered at caster - can change at spell steal for example
 
         bool IsVisible() const;
@@ -221,7 +219,6 @@ class TRINITY_DLL_SPEC AuraEffect
         void HandlePeriodicTriggerSpellWithValue(bool apply, bool Real, bool changeAmount);
         void HandlePeriodicEnergize(bool Apply, bool Real, bool changeAmount);
         void HandleAuraModResistanceExclusive(bool Apply, bool Real, bool changeAmount);
-        void HandleAuraSafeFall(bool Apply, bool Real, bool changeAmount);
         void HandleAuraModPetTalentsPoints(bool Apply, bool Real, bool changeAmount);
         void HandleModStealth(bool Apply, bool Real, bool changeAmount);
         void HandleInvisibility(bool Apply, bool Real, bool changeAmount);
@@ -320,9 +317,7 @@ class TRINITY_DLL_SPEC AuraEffect
         void HandleForceMoveForward(bool apply, bool Real, bool changeAmount);
         void HandleAuraModResistenceOfStatPercent(bool apply, bool Real, bool changeAmount);
         void HandleAuraPowerBurn(bool apply, bool Real, bool changeAmount);
-        void HandleSchoolAbsorb(bool apply, bool Real, bool changeAmount);
         void HandlePreventFleeing(bool apply, bool Real, bool changeAmount);
-        void HandleManaShield(bool apply, bool Real, bool changeAmount);
         void HandleArenaPreparation(bool apply, bool Real, bool changeAmount);
         void HandleAuraConvertRune(bool apply, bool Real, bool changeAmount);
         void HandleAuraIncreaseBaseHealthPercent(bool Apply, bool Real, bool changeAmount);
@@ -330,11 +325,10 @@ class TRINITY_DLL_SPEC AuraEffect
         void HandlePhase(bool Apply, bool Real, bool changeAmount);
         void HandleAuraAllowOnlyAbility(bool apply, bool Real, bool changeAmount);
         void HandleCharmConvert(bool apply, bool Real, bool changeAmount);
-        void HandleReflectSpells( bool Apply, bool Real , bool changeAmount);
-        void HandleModArmorPenetrationPct(bool Apply, bool Real, bool changeAmount);
         void HandleAuraInitializeImages(bool Apply, bool Real, bool changeAmount);
         void HandleAuraCloneCaster(bool Apply, bool Real, bool changeAmount);
 
+        void HandleAuraEffectSpecificMods(bool apply, bool Real, bool changeAmount);
         int32 CalculateCrowdControlAuraAmount(Unit * caster);
 
         // add/remove SPELL_AURA_MOD_SHAPESHIFT (36) linked auras

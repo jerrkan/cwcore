@@ -256,7 +256,7 @@ struct TRINITY_DLL_DECL boss_warchief_kargath_bladefistAI : public ScriptedAI
             {
                 Unit* target = NULL;
 
-                for(uint8 i = 0; i < summoned; i++)
+                for(uint8 i = 0; i < summoned; ++i)
                 {
                     switch(rand()%3)
                     {
@@ -297,7 +297,7 @@ void AddSC_boss_warchief_kargath_bladefist()
     Script *newscript;
     newscript = new Script;
     newscript->Name="boss_warchief_kargath_bladefist";
-    newscript->GetAI = GetAI_boss_warchief_kargath_bladefist;
+    newscript->GetAI = &GetAI_boss_warchief_kargath_bladefist;
     newscript->RegisterSelf();
 }
 

@@ -62,7 +62,6 @@ struct TRINITY_DLL_DECL boss_magus_telestraAI : public ScriptedAI
     boss_magus_telestraAI(Creature* c) : ScriptedAI(c) 
     {
         pInstance = c->GetInstanceData();
-        Reset();
         HeroicMode = c->GetMap()->IsHeroic();
     }
 
@@ -111,6 +110,22 @@ struct TRINITY_DLL_DECL boss_magus_telestraAI : public ScriptedAI
     void EnterCombat(Unit* who) 
     {
         DoScriptText(SAY_AGGRO, m_creature);
+
+        if(pInstance)
+            pInstance->SetData(DATA_MAGUS_TELESTRA_EVENT, IN_PROGRESS);
+    }
+
+    void JustDied(Unit* killer)
+    {
+        DoScriptText(SAY_DEATH, m_creature);
+
+        if (pInstance)
+            pInstance->SetData(DATA_MAGUS_TELESTRA_EVENT, DONE);
+    }
+
+    void KilledUnit(Unit *victim)
+    {
+        DoScriptText(SAY_KILL, m_creature);
     }
 
     uint64 SplitPersonality(uint32 entry)
@@ -184,7 +199,7 @@ struct TRINITY_DLL_DECL boss_magus_telestraAI : public ScriptedAI
             if (FireMagusDead && FrostMagusDead && ArcaneMagusDead)
             {
                 m_creature->GetMotionMaster()->Clear();
-                m_creature->Relocate(CenterOfRoom[0][0], CenterOfRoom[0][1], CenterOfRoom[0][2], CenterOfRoom[0][3]);
+                m_creature->GetMap()->CreatureRelocation(m_creature, CenterOfRoom[0][0], CenterOfRoom[0][1], CenterOfRoom[0][2], CenterOfRoom[0][3]);
                 DoCast(m_creature, SPELL_TELESTRA_BACK);
                 m_creature->SetVisibility(VISIBILITY_ON);
                 if (Phase == 1)
@@ -283,18 +298,6 @@ struct TRINITY_DLL_DECL boss_magus_telestraAI : public ScriptedAI
         }else SPELL_FIREBOMB_Timer -=diff;
 
         DoMeleeAttackIfReady();    
-    }
-
-    void JustDied(Unit* killer)
-    {
-        DoScriptText(SAY_DEATH, m_creature);
-        if (pInstance)
-            pInstance->SetData(DATA_MAGUS_TELESTRA_EVENT, DONE);
-    }
-
-    void KilledUnit(Unit *victim)
-    {
-        DoScriptText(SAY_KILL, m_creature);
     }
 };
 

@@ -24,7 +24,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_old_hillsbrad.h"
 
-#define ENCOUNTERS      6
+#define MAX_ENCOUNTER      6
 
 #define THRALL_ENTRY    17876
 #define TARETHA_ENTRY   18887
@@ -39,7 +39,7 @@ struct TRINITY_DLL_DECL instance_old_hillsbrad : public ScriptedInstance
 {
     instance_old_hillsbrad(Map *map) : ScriptedInstance(map) {Initialize();};
 
-    uint32 Encounter[ENCOUNTERS];
+    uint32 m_auiEncounter[MAX_ENCOUNTER];
     uint32 mBarrelCount;
     uint32 mThrallEventCount;
 
@@ -49,14 +49,13 @@ struct TRINITY_DLL_DECL instance_old_hillsbrad : public ScriptedInstance
 
     void Initialize()
     {
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+
         mBarrelCount        = 0;
         mThrallEventCount   = 0;
         ThrallGUID          = 0;
         TarethaGUID         = 0;
-    EpochGUID        = 0;
-
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
-            Encounter[i] = NOT_STARTED;
+        EpochGUID        = 0;
     }
 
     Player* GetPlayerInMap()
@@ -199,17 +198,17 @@ struct TRINITY_DLL_DECL instance_old_hillsbrad : public ScriptedInstance
         switch(data)
         {
             case TYPE_BARREL_DIVERSION:
-                return Encounter[0];
+                return m_auiEncounter[0];
             case TYPE_THRALL_EVENT:
-                return Encounter[1];
+                return m_auiEncounter[1];
             case TYPE_THRALL_PART1:
-                return Encounter[2];
+                return m_auiEncounter[2];
             case TYPE_THRALL_PART2:
-                return Encounter[3];
+                return m_auiEncounter[3];
             case TYPE_THRALL_PART3:
-                return Encounter[4];
+                return m_auiEncounter[4];
             case TYPE_THRALL_PART4:
-                return Encounter[5];
+                return m_auiEncounter[5];
         }
         return 0;
     }

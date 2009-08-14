@@ -59,18 +59,18 @@ struct TRINITY_DLL_DECL npc_torekAI : public npc_escortAI
 
     void WaypointReached(uint32 i)
     {
-        Player* player = Unit::GetPlayer(PlayerGUID);
+        Player* pPlayer = Unit::GetPlayer(PlayerGUID);
 
-        if (!player)
+        if (!pPlayer)
             return;
 
         switch (i)
         {
         case 1:
-            DoScriptText(SAY_MOVE, m_creature, player);
+            DoScriptText(SAY_MOVE, m_creature, pPlayer);
             break;
         case 8:
-            DoScriptText(SAY_PREPARE, m_creature, player);
+            DoScriptText(SAY_PREPARE, m_creature, pPlayer);
             break;
         case 19:
             //TODO: verify location and creatures amount.
@@ -79,13 +79,13 @@ struct TRINITY_DLL_DECL npc_torekAI : public npc_escortAI
             m_creature->SummonCreature(ENTRY_SILVERWING_WARRIOR,1778.73,-2049.50,109.83,1.67,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,25000);
             break;
         case 20:
-            DoScriptText(SAY_WIN, m_creature, player);
+            DoScriptText(SAY_WIN, m_creature, pPlayer);
             Completed = true;
-            if (player && player->GetTypeId() == TYPEID_PLAYER)
-                CAST_PLR(player)->GroupEventHappens(QUEST_TOREK_ASSULT,m_creature);
+            if (pPlayer && pPlayer->GetTypeId() == TYPEID_PLAYER)
+                CAST_PLR(pPlayer)->GroupEventHappens(QUEST_TOREK_ASSULT,m_creature);
             break;
         case 21:
-            DoScriptText(SAY_END, m_creature, player);
+            DoScriptText(SAY_END, m_creature, pPlayer);
             break;
         }
     }
@@ -104,18 +104,6 @@ struct TRINITY_DLL_DECL npc_torekAI : public npc_escortAI
     void JustSummoned(Creature* summoned)
     {
         summoned->AI()->AttackStart(m_creature);
-    }
-
-    void JustDied(Unit* killer)
-    {
-        if (killer->GetEntry() == m_creature->GetEntry())
-            return;
-
-        if (PlayerGUID && !Completed)
-        {
-            if (Player* player = Unit::GetPlayer(PlayerGUID))
-                CAST_PLR(player)->FailQuest(QUEST_TOREK_ASSULT);
-        }
     }
 
     void UpdateAI(const uint32 diff)
@@ -139,14 +127,16 @@ struct TRINITY_DLL_DECL npc_torekAI : public npc_escortAI
     }
 };
 
-bool QuestAccept_npc_torek(Player* player, Creature* creature, Quest const* quest)
+bool QuestAccept_npc_torek(Player* pPlayer, Creature* pCreature, Quest const* quest)
 {
     if (quest->GetQuestId() == QUEST_TOREK_ASSULT)
     {
         //TODO: find companions, make them follow Torek, at any time (possibly done by mangos/database in future?)
-        CAST_AI(npc_escortAI, (creature->AI()))->Start(true, true, true, player->GetGUID());
-        DoScriptText(SAY_READY, creature, player);
-        creature->setFaction(113);
+        DoScriptText(SAY_READY, pCreature, pPlayer);
+        pCreature->setFaction(113);
+
+        if (npc_escortAI* pEscortAI = CAST_AI(npc_torekAI, pCreature->AI()))
+            pEscortAI->Start(true, true, pPlayer->GetGUID());
     }
 
     return true;
@@ -174,9 +164,9 @@ struct TRINITY_DLL_DECL npc_ruul_snowhoofAI : public npc_escortAI
 
     void WaypointReached(uint32 i)
     {
-        Player* player = Unit::GetPlayer(PlayerGUID);
+        Player* pPlayer = Unit::GetPlayer(PlayerGUID);
 
-        if (!player)
+        if (!pPlayer)
             return;
 
         switch(i)
@@ -184,7 +174,7 @@ struct TRINITY_DLL_DECL npc_ruul_snowhoofAI : public npc_escortAI
         case 0:    {
                 m_creature->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
                 GameObject* Cage = m_creature->FindNearestGameObject(GO_CAGE, 20);
-                if(Cage)
+                if (Cage)
                     Cage->SetGoState(GO_STATE_ACTIVE);
                 break;}
         case 13:
@@ -199,8 +189,8 @@ struct TRINITY_DLL_DECL npc_ruul_snowhoofAI : public npc_escortAI
                 break;
 
         case 21:{
-                if (player && player->GetTypeId() == TYPEID_PLAYER)
-                    CAST_PLR(player)->GroupEventHappens(QUEST_FREEDOM_TO_RUUL,m_creature);
+                if (pPlayer && pPlayer->GetTypeId() == TYPEID_PLAYER)
+                    CAST_PLR(pPlayer)->GroupEventHappens(QUEST_FREEDOM_TO_RUUL,m_creature);
 
                 break;  }
         }
@@ -210,11 +200,8 @@ struct TRINITY_DLL_DECL npc_ruul_snowhoofAI : public npc_escortAI
 
     void Reset()
     {
-        if (!IsBeingEscorted)
-            m_creature->setFaction(1602);
-
         GameObject* Cage = m_creature->FindNearestGameObject(GO_CAGE, 20);
-        if(Cage)
+        if (Cage)
             Cage->SetGoState(GO_STATE_READY);
     }
 
@@ -223,35 +210,27 @@ struct TRINITY_DLL_DECL npc_ruul_snowhoofAI : public npc_escortAI
         summoned->AI()->AttackStart(m_creature);
     }
 
-    void JustDied(Unit* killer)
-    {
-        if (PlayerGUID)
-        {
-            Player* player = Unit::GetPlayer(PlayerGUID);
-            if (player)
-                CAST_PLR(player)->FailQuest(QUEST_FREEDOM_TO_RUUL);
-        }
-    }
-
     void UpdateAI(const uint32 diff)
     {
         npc_escortAI::UpdateAI(diff);
     }
 };
 
-bool QuestAccept_npc_ruul_snowhoof(Player* player, Creature* creature, Quest const* quest)
+bool QuestAccept_npc_ruul_snowhoof(Player* pPlayer, Creature* pCreature, Quest const* quest)
 {
     if (quest->GetQuestId() == QUEST_FREEDOM_TO_RUUL)
     {
-        creature->setFaction(113);
-        CAST_AI(npc_escortAI, (creature->AI()))->Start(true, true, false, player->GetGUID());
+        pCreature->setFaction(113);
+
+        if (npc_escortAI* pEscortAI = CAST_AI(npc_ruul_snowhoofAI, (pCreature->AI())))
+            pEscortAI->Start(true, false, pPlayer->GetGUID());
     }
     return true;
 }
 
-CreatureAI* GetAI_npc_ruul_snowhoofAI(Creature *_Creature)
+CreatureAI* GetAI_npc_ruul_snowhoofAI(Creature* pCreature)
 {
-    npc_ruul_snowhoofAI* ruul_snowhoofAI = new npc_ruul_snowhoofAI(_Creature);
+    npc_ruul_snowhoofAI* ruul_snowhoofAI = new npc_ruul_snowhoofAI(pCreature);
 
     ruul_snowhoofAI->FillPointMovementListForCreature();
 

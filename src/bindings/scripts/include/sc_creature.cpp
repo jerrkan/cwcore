@@ -79,7 +79,7 @@ void SummonList::DespawnAll()
     }
 }
 
-ScriptedAI::ScriptedAI(Creature* creature) : CreatureAI(creature), m_creature(creature), IsFleeing(false), CombatMovement(true), m_uiEvadeCheckCooldown(2500)
+ScriptedAI::ScriptedAI(Creature* creature) : CreatureAI(creature), m_creature(creature), IsFleeing(false), m_bCombatMovement(true), m_uiEvadeCheckCooldown(2500)
 {
     HeroicMode = m_creature->GetMap()->IsHeroic();
 }
@@ -572,9 +572,9 @@ void ScriptedAI::SetEquipmentSlots(bool bLoadDefault, int32 uiMainHand, int32 ui
         m_creature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, uint32(uiRanged));
 }
 
-void ScriptedAI::SetCombatMovement(bool CombatMove)
+void ScriptedAI::SetCombatMovement(bool bCombatMove)
 {
-    CombatMovement = CombatMove;
+    m_bCombatMovement = bCombatMove;
 }
 
 // Hacklike storage used for misc creatures that are expected to evade of outside of a certain area.
@@ -611,7 +611,7 @@ bool ScriptedAI::EnterEvadeIfOutOfCombatArea(const uint32 uiDiff)
                 return false;
             break;
         case 28860:                                         // sartharion (calculate box)
-            if (fX > 3218.86f && fX < 3275.69f && fY > 572.40f && fY < 484.68f)
+            if (fX > 3218.86f && fX < 3275.69f && fY < 572.40f && fY > 484.68f)
                 return false;
             break;
         default:
@@ -622,22 +622,6 @@ bool ScriptedAI::EnterEvadeIfOutOfCombatArea(const uint32 uiDiff)
     EnterEvadeMode();
     return true;
 }
-
-/*void Scripted_NoMovementAI::MoveInLineOfSight(Unit *who)
-{
-    if( !m_creature->getVictim() && m_creature->canAttack(who) && ( m_creature->IsHostileTo( who )) && who->isInAccessiblePlaceFor(m_creature) )
-    {
-        if (!m_creature->canFly() && !m_creature->IsWithinDist(who, CREATURE_Z_ATTACK_RANGE))
-            return;
-
-        float attackRadius = m_creature->GetAttackDistance(who);
-        if( m_creature->IsWithinDistInMap(who, attackRadius) && m_creature->IsWithinLOSInMap(who) )
-        {
-            who->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
-            AttackStart(who);
-        }
-    }
-}*/
 
 void Scripted_NoMovementAI::AttackStart(Unit* who)
 {
@@ -783,12 +767,6 @@ void LoadOverridenDBCData()
             // Black Temple : Illidan : Parasitic Shadowfiend Passive
             case 41013:
                 spellInfo->EffectApplyAuraName[0] = 4; // proc debuff, and summon infinite fiends
-                break;
-            //temp, not needed in 310
-            case 28531:
-            case 55799:
-                spellInfo->DurationIndex = 21;
-                spellInfo->Effect[0] = SPELL_EFFECT_APPLY_AREA_AURA_ENEMY;
                 break;
             // Naxxramas : Gothik : Inform Inf range
             case 27892:

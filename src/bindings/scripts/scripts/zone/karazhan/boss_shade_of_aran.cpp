@@ -140,8 +140,8 @@ struct TRINITY_DLL_DECL boss_aranAI : public ScriptedAI
         if(pInstance)
         {
             // Not in progress
-            pInstance->SetData(DATA_SHADEOFARAN_EVENT, NOT_STARTED);
-            pInstance->HandleGameObject(pInstance->GetData64(DATA_GAMEOBJECT_LIBRARY_DOOR), true); 
+            pInstance->SetData(TYPE_ARAN, NOT_STARTED);
+            pInstance->HandleGameObject(pInstance->GetData64(DATA_GO_LIBRARY_DOOR), true); 
         }
     }
 
@@ -160,8 +160,8 @@ struct TRINITY_DLL_DECL boss_aranAI : public ScriptedAI
 
         if(pInstance)
         {
-            pInstance->SetData(DATA_SHADEOFARAN_EVENT, DONE);
-            pInstance->HandleGameObject(pInstance->GetData64(DATA_GAMEOBJECT_LIBRARY_DOOR), true);
+            pInstance->SetData(TYPE_ARAN, DONE);
+            pInstance->HandleGameObject(pInstance->GetData64(DATA_GO_LIBRARY_DOOR), true);
         }
     }
 
@@ -176,8 +176,8 @@ struct TRINITY_DLL_DECL boss_aranAI : public ScriptedAI
 
         if(pInstance)
         {
-            pInstance->SetData(DATA_SHADEOFARAN_EVENT, IN_PROGRESS);
-            pInstance->HandleGameObject(pInstance->GetData64(DATA_GAMEOBJECT_LIBRARY_DOOR), false);
+            pInstance->SetData(TYPE_ARAN, IN_PROGRESS);
+            pInstance->HandleGameObject(pInstance->GetData64(DATA_GO_LIBRARY_DOOR), false);
         }
     }
 
@@ -211,7 +211,7 @@ struct TRINITY_DLL_DECL boss_aranAI : public ScriptedAI
                 FWTargPosX[i] = (*itr)->GetPositionX();
                 FWTargPosY[i] = (*itr)->GetPositionY();
                 m_creature->CastSpell((*itr), SPELL_FLAME_WREATH, true);
-                i++;
+                ++i;
             }
         }
     }
@@ -227,7 +227,7 @@ struct TRINITY_DLL_DECL boss_aranAI : public ScriptedAI
             {
                 if(pInstance)
                 {
-                    pInstance->HandleGameObject(pInstance->GetData64(DATA_GAMEOBJECT_LIBRARY_DOOR), false);
+                    pInstance->HandleGameObject(pInstance->GetData64(DATA_GO_LIBRARY_DOOR), false);
                     CloseDoorTimer = 0;
                 }
             }else CloseDoorTimer -= diff;
@@ -430,7 +430,7 @@ struct TRINITY_DLL_DECL boss_aranAI : public ScriptedAI
         {
             ElementalsSpawned = true;
 
-            for (uint32 i = 0; i < 4; i++)
+            for (uint32 i = 0; i < 4; ++i)
             {
                 if (Creature* pUnit = m_creature->SummonCreature(CREATURE_WATER_ELEMENTAL, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 90000))
                 {
@@ -444,7 +444,7 @@ struct TRINITY_DLL_DECL boss_aranAI : public ScriptedAI
 
         if(BerserkTimer < diff)
         {
-            for (uint32 i = 0; i < 5; i++)
+            for (uint32 i = 0; i < 5; ++i)
             {
                 if (Creature* pUnit = m_creature->SummonCreature(CREATURE_SHADOW_OF_ARAN, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000))
                 {
@@ -467,7 +467,7 @@ struct TRINITY_DLL_DECL boss_aranAI : public ScriptedAI
 
             if (FlameWreathCheckTime < diff)
             {
-                for (uint32 i = 0; i < 3; i++)
+                for (uint32 i = 0; i < 3; ++i)
                 {
                     if (!FlameWreathTarget[i])
                         continue;

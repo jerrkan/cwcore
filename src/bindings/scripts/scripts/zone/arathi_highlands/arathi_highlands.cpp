@@ -32,34 +32,35 @@ EndContentData */
 ## npc_professor_phizzlethorpe
 ######*/
 
-#define SAY_PROGRESS_1      -1000235
-#define SAY_PROGRESS_2      -1000236
-#define SAY_PROGRESS_3      -1000237
-#define EMOTE_PROGRESS_4    -1000238
-#define SAY_AGGRO           -1000239
-#define SAY_PROGRESS_5      -1000240
-#define SAY_PROGRESS_6      -1000241
-#define SAY_PROGRESS_7      -1000242
-#define EMOTE_PROGRESS_8    -1000243
-#define SAY_PROGRESS_9      -1000244
+enum
+{
+    SAY_PROGRESS_1      = -1000235,
+    SAY_PROGRESS_2      = -1000236,
+    SAY_PROGRESS_3      = -1000237,
+    EMOTE_PROGRESS_4    = -1000238,
+    SAY_AGGRO           = -1000239,
+    SAY_PROGRESS_5      = -1000240,
+    SAY_PROGRESS_6      = -1000241,
+    SAY_PROGRESS_7      = -1000242,
+    EMOTE_PROGRESS_8    = -1000243,
+    SAY_PROGRESS_9      = -1000244,
 
-#define QUEST_SUNKEN_TREASURE   665
-#define MOB_VENGEFUL_SURGE  2776
+    QUEST_SUNKEN_TREASURE   = 665,
+    MOB_VENGEFUL_SURGE      = 2776
+};
 
 struct TRINITY_DLL_DECL npc_professor_phizzlethorpeAI : public npc_escortAI
 {
     npc_professor_phizzlethorpeAI(Creature *c) : npc_escortAI(c) {}
 
-    bool Completed;
-
-    void WaypointReached(uint32 i)
+    void WaypointReached(uint32 uiPointId)
     {
-        Player* player = Unit::GetPlayer(PlayerGUID);
+        Player* pPlayer = Unit::GetPlayer(PlayerGUID);
 
-        switch(i)
+        switch(uiPointId)
         {
-        case 4:DoScriptText(SAY_PROGRESS_2, m_creature, player);break;
-        case 5:DoScriptText(SAY_PROGRESS_3, m_creature, player);break;
+        case 4:DoScriptText(SAY_PROGRESS_2, m_creature, pPlayer);break;
+        case 5:DoScriptText(SAY_PROGRESS_3, m_creature, pPlayer);break;
         case 8:DoScriptText(EMOTE_PROGRESS_4, m_creature);break;
         case 9:
             {
@@ -67,43 +68,29 @@ struct TRINITY_DLL_DECL npc_professor_phizzlethorpeAI : public npc_escortAI
             m_creature->SummonCreature(MOB_VENGEFUL_SURGE, -2052.96, -2142.49, 20.15, 1.0f, TEMPSUMMON_CORPSE_DESPAWN, 0);
             break;
             }
-        case 10:DoScriptText(SAY_PROGRESS_5, m_creature, player);break;
-        case 11:DoScriptText(SAY_PROGRESS_6, m_creature, player);break;
-        case 19:DoScriptText(SAY_PROGRESS_7, m_creature, player); break;
+        case 10:DoScriptText(SAY_PROGRESS_5, m_creature, pPlayer);break;
+        case 11:
+            DoScriptText(SAY_PROGRESS_6, m_creature, pPlayer);
+            SetRun();
+            break;
+        case 19:DoScriptText(SAY_PROGRESS_7, m_creature, pPlayer); break;
         case 20:
             DoScriptText(EMOTE_PROGRESS_8, m_creature);
-            DoScriptText(SAY_PROGRESS_9, m_creature, player);
-            Completed = true;
-            if(player)
-                CAST_PLR(player)->GroupEventHappens(QUEST_SUNKEN_TREASURE, m_creature);
+            DoScriptText(SAY_PROGRESS_9, m_creature, pPlayer);
+            if (pPlayer)
+                CAST_PLR(pPlayer)->GroupEventHappens(QUEST_SUNKEN_TREASURE, m_creature);
             break;
         }
     }
 
-    void JustSummoned(Creature *summoned)
+    void JustSummoned(Creature* pSummoned)
     {
-        summoned->AI()->AttackStart(m_creature);
+        pSummoned->AI()->AttackStart(m_creature);
     }
 
-    void Reset()
+    void EnterCombat(Unit* pWho)
     {
-        Completed = true;
-        m_creature->setFaction(35);
-    }
-
-    void EnterCombat(Unit* who)
-    {
-        DoScriptText(SAY_AGGRO, m_creature, NULL);
-    }
-
-    void JustDied(Unit* killer)
-    {
-        if (PlayerGUID && !Completed )
-        {
-            Player* player = Unit::GetPlayer(PlayerGUID);
-            if (player)
-                CAST_PLR(player)->FailQuest(QUEST_SUNKEN_TREASURE);
-        }
+        DoScriptText(SAY_AGGRO, m_creature);
     }
 
     void UpdateAI(const uint32 diff)
@@ -112,20 +99,22 @@ struct TRINITY_DLL_DECL npc_professor_phizzlethorpeAI : public npc_escortAI
     }
 };
 
-bool QuestAccept_npc_professor_phizzlethorpe(Player* player, Creature* creature, Quest const* quest)
+bool QuestAccept_npc_professor_phizzlethorpe(Player* pPlayer, Creature* pCreature, Quest const* pQuest)
 {
-    if (quest->GetQuestId() == QUEST_SUNKEN_TREASURE)
+    if (pQuest->GetQuestId() == QUEST_SUNKEN_TREASURE)
     {
-        DoScriptText(SAY_PROGRESS_1, creature, player);
-        CAST_AI(npc_escortAI, (creature->AI()))->Start(false, false, false, player->GetGUID());
-        creature->setFaction(113);
+        DoScriptText(SAY_PROGRESS_1, pCreature, pPlayer);
+        if (npc_escortAI* pEscortAI = CAST_AI(npc_professor_phizzlethorpeAI, (pCreature->AI())))
+            pEscortAI->Start(false, false, pPlayer->GetGUID(), pQuest);
+
+        pCreature->setFaction(113);
     }
     return true;
 }
 
-CreatureAI* GetAI_npc_professor_phizzlethorpeAI(Creature *_Creature)
+CreatureAI* GetAI_npc_professor_phizzlethorpeAI(Creature* pCreature)
 {
-    npc_professor_phizzlethorpeAI* professor_phizzlethorpeAI = new npc_professor_phizzlethorpeAI(_Creature);
+    npc_professor_phizzlethorpeAI* professor_phizzlethorpeAI = new npc_professor_phizzlethorpeAI(pCreature);
 
     professor_phizzlethorpeAI->FillPointMovementListForCreature();
 

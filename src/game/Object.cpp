@@ -80,6 +80,20 @@ Object::Object( ) : m_PackGUID(sizeof(uint64)+1)
     m_PackGUID.appendPackGUID(0);
 }
 
+WorldObject::~WorldObject()
+{
+    // this may happen because there are many !create/delete
+    if(m_isWorldObject && m_currMap)
+    {
+        if(GetTypeId() == TYPEID_CORPSE)
+        {
+            sLog.outCrash("Object::~Object Corpse guid="UI64FMTD", type=%d, entry=%u deleted but still in map!!", GetGUID(), ((Corpse*)this)->GetType(), GetEntry());
+            assert(false);
+        }
+        ResetMap();
+    }
+}
+
 Object::~Object( )
 {
     if(IsInWorld())
@@ -1069,7 +1083,7 @@ WorldObject::WorldObject()
     : m_phaseMask(PHASEMASK_NORMAL),
     m_positionX(0.0f), m_positionY(0.0f), m_positionZ(0.0f), m_orientation(0.0f), m_currMap(NULL)
     , m_zoneScript(NULL)
-    , m_isActive(false), IsTempWorldObject(false)
+    , m_isActive(false), m_isWorldObject(false)
     , m_name("")
 {
 }
@@ -1668,18 +1682,14 @@ void Unit::BuildHeartBeatMsg(WorldPacket *data) const
 
 void WorldObject::SendMessageToSet(WorldPacket *data, bool /*fake*/)
 {
-    //if object is in world, map for it already created!
-    Map * _map = IsInWorld() ? GetMap() : MapManager::Instance().FindMap(GetMapId(), GetInstanceId());
-    if(_map)
-        _map->MessageBroadcast(this, data);
+    Trinity::MessageDistDeliverer notifier(this, data, World::GetMaxVisibleDistance());
+    VisitNearbyWorldObject(World::GetMaxVisibleDistance(), notifier);
 }
 
 void WorldObject::SendMessageToSetInRange(WorldPacket *data, float dist, bool /*bToSelf*/)
 {
-    //if object is in world, map for it already created!
-    Map * _map = IsInWorld() ? GetMap() : MapManager::Instance().FindMap(GetMapId(), GetInstanceId());
-    if(_map)
-        _map->MessageDistBroadcast(this, data, dist);
+    Trinity::MessageDistDeliverer notifier(this, data, dist);
+    VisitNearbyWorldObject(dist, notifier);
 }
 
 void WorldObject::SendObjectDeSpawnAnim(uint64 guid)
@@ -1692,7 +1702,23 @@ void WorldObject::SendObjectDeSpawnAnim(uint64 guid)
 void WorldObject::SetMap(Map * map)
 {
     ASSERT(map);
+    ASSERT(!IsInWorld() || GetTypeId() == TYPEID_CORPSE);
+    if(m_currMap == map) // command add npc: first create, than loadfromdb
+        return;
+
+    ASSERT(!m_currMap);
     m_currMap = map;
+    if(m_isWorldObject)
+        m_currMap->AddWorldObject(this);
+}
+
+void WorldObject::ResetMap()
+{
+    ASSERT(m_currMap);
+    ASSERT(!IsInWorld());
+    if(m_isWorldObject)
+        m_currMap->RemoveWorldObject(this);
+    m_currMap = NULL;
 }
 
 Map const* WorldObject::GetBaseMap() const

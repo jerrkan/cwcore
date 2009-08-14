@@ -50,7 +50,6 @@ SpellMgr::SpellMgr()
             case SPELL_EFFECT_SUMMON_OBJECT_SLOT3:  //106
             case SPELL_EFFECT_SUMMON_OBJECT_SLOT4:  //107
             case SPELL_EFFECT_SUMMON_DEAD_PET:      //109
-            //case SPELL_EFFECT_SUMMON_DEMON:         //112 not 303
             case SPELL_EFFECT_TRIGGER_SPELL_2:      //151 ritual of summon
                 EffectTargetType[i] = SPELL_REQUIRE_DEST;
                 break;
@@ -408,7 +407,7 @@ AuraState GetSpellAuraState(SpellEntry const * spellInfo)
 {
     // Seals
     if (IsSealSpell(spellInfo))
-        return (AURA_STATE_JUDGEMENT);
+        return AURA_STATE_JUDGEMENT;
 
     // Conflagrate aura state on Immolate and Shadowflame
     if (spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK &&
@@ -416,35 +415,35 @@ AuraState GetSpellAuraState(SpellEntry const * spellInfo)
         ((spellInfo->SpellFamilyFlags[0] & 4) ||
         // Shadowflame
         (spellInfo->SpellFamilyFlags[2] & 2)))
-        return (AURA_STATE_CONFLAGRATE);
+        return AURA_STATE_CONFLAGRATE;
 
     // Faerie Fire (druid versions)
     if (spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && spellInfo->SpellFamilyFlags[0] & 0x400)
-        return (AURA_STATE_FAERIE_FIRE);
+        return AURA_STATE_FAERIE_FIRE;
 
     // Sting (hunter's pet ability)
     if (spellInfo->Category == 1133)
-        return (AURA_STATE_FAERIE_FIRE);
+        return AURA_STATE_FAERIE_FIRE;
 
     // Victorious
     if (spellInfo->SpellFamilyName == SPELLFAMILY_WARRIOR &&  spellInfo->SpellFamilyFlags[1] & 0x00040000)
-        return (AURA_STATE_WARRIOR_VICTORY_RUSH);
+        return AURA_STATE_WARRIOR_VICTORY_RUSH;
 
     // Swiftmend state on Regrowth & Rejuvenation
     if (spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && spellInfo->SpellFamilyFlags[0] & 0x50 )
-        return (AURA_STATE_SWIFTMEND);
+        return AURA_STATE_SWIFTMEND;
 
     // Deadly poison aura state
     if(spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && spellInfo->SpellFamilyFlags[0] & 0x10000)
-        return (AURA_STATE_DEADLY_POISON);
+        return AURA_STATE_DEADLY_POISON;
 
     // Enrage aura state
     if(spellInfo->Dispel == DISPEL_ENRAGE)
-        return (AURA_STATE_ENRAGE);
+        return AURA_STATE_ENRAGE;
 
     // Bleeding aura state
     if (GetAllSpellMechanicMask(spellInfo) & 1<<MECHANIC_BLEED)
-        return (AURA_STATE_BLEEDING);
+        return AURA_STATE_BLEEDING;
 
     if(GetSpellSchoolMask(spellInfo) & SPELL_SCHOOL_MASK_FROST)
     {
@@ -452,10 +451,7 @@ AuraState GetSpellAuraState(SpellEntry const * spellInfo)
         {
             if (spellInfo->EffectApplyAuraName[i]==SPELL_AURA_MOD_STUN
                 || spellInfo->EffectApplyAuraName[i]==SPELL_AURA_MOD_ROOT)
-            {
-                return (AURA_STATE_FROZEN);
-                break;
-            }
+                return AURA_STATE_FROZEN;
         }
     }
     return AURA_STATE_NONE;
@@ -501,7 +497,6 @@ SpellSpecific GetSpellSpecific(uint32 spellId)
                         return SPELL_SCROLL;
                     case 12880: // Enrage (Enrage)
                     case 57518: // Enrage (Wrecking Crew)
-                    case 12292: // Death Wish
                         return SPELL_WARRIOR_ENRAGE;
                 }
             }
@@ -532,8 +527,10 @@ SpellSpecific GetSpellSpecific(uint32 spellId)
         }
         case SPELLFAMILY_WARRIOR:
         {
-            if (spellInfo->SpellFamilyFlags[1] & 0x000080 || spellInfo->SpellFamilyFlags[0] & 0x10000LL)
+            if (spellInfo->SpellFamilyFlags[1] & 0x000080 || spellInfo->SpellFamilyFlags[0] & 0x10000)
                 return SPELL_POSITIVE_SHOUT;
+            if (spellInfo->Id == 12292) // Death Wish
+                return SPELL_WARRIOR_ENRAGE;
 
             break;
         }
@@ -618,6 +615,8 @@ SpellSpecific GetSpellSpecific(uint32 spellId)
                 case SPELL_AURA_TRACK_RESOURCES:
                 case SPELL_AURA_TRACK_STEALTHED:
                     return SPELL_TRACKER;
+                case SPELL_AURA_PHASE:
+                    return SPELL_PHASE;
             }
         }
     }
@@ -652,6 +651,7 @@ bool IsSingleFromSpellSpecificPerTarget(uint32 spellSpec1,uint32 spellSpec2)
 {
     switch(spellSpec1)
     {
+        case SPELL_PHASE:
         case SPELL_TRACKER:
         case SPELL_WARLOCK_ARMOR:
         case SPELL_MAGE_ARMOR:
@@ -713,14 +713,12 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
         case  1852:                                         // Silenced (GM)
         case 46392:                                         // Focused Assault
         case 46393:                                         // Brutal Assault
-        case 28441:                                         // not positive dummy spell
-        case 37675:                                         // Chaos Blast
+        //case 37675:                                         // Chaos Blast removed from mangos
         case 41519:                                         // Mark of Stormrage
         case 34877:                                         // Custodian of Time
         case 34700:                                         // Allergic Reaction
         case 31719:                                         // Suspension
         case 61987:                                         // Avenging Wrath Marker
-        case 11196:                                         // Recently Bandadged
         case 50524:                                         // Runic Power Feed
             return false;
         case 12042:                                         // Arcane Power
@@ -744,6 +742,15 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
 
     switch(spellproto->Effect[effIndex])
     {
+        case SPELL_EFFECT_DUMMY:
+            // some explicitly required dummy effect sets
+            switch(spellId)
+            {
+                case 28441: return false;                   // AB Effect 000
+                default:
+                    break;
+            }
+            break;
         // always positive effects (check before target checks that provided non-positive result in some case for positive effects)
         case SPELL_EFFECT_HEAL:
         case SPELL_EFFECT_LEARN_SPELL:
@@ -771,28 +778,26 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                         case 38639:                         // Nether Exhaustion (blue)
                         case 11196:                         // Recently Bandaged
                             return false;
-                        // some spells have unclear target modes for selection, so just make effect positive
-                        case 27184:                         
-                        case 27190:
-                        case 27191:
-                        case 27201:
-                        case 27202:
-                        case 27203:
-                            return true;
                         default:
                             break;
                     }
                 }   break;
-                case SPELL_AURA_MOD_STAT:
                 case SPELL_AURA_MOD_DAMAGE_DONE:            // dependent from bas point sign (negative -> negative)
+                case SPELL_AURA_MOD_STAT:
+                case SPELL_AURA_MOD_SKILL:
+                case SPELL_AURA_MOD_HEALING_PCT:
                 case SPELL_AURA_MOD_HEALING_DONE:
                 case SPELL_AURA_MOD_DAMAGE_PERCENT_DONE:
                     if(spellproto->CalculateSimpleValue(effIndex) < 0)
                         return false;
                     break;
+                case SPELL_AURA_MOD_DAMAGE_TAKEN:           // dependent from bas point sign (positive -> negative)
+                    if(spellproto->CalculateSimpleValue(effIndex) > 0)
+                        return false;
+                    break;
                 case SPELL_AURA_MOD_SPELL_CRIT_CHANCE:
                     if(spellproto->CalculateSimpleValue(effIndex) > 0)
-                        return true;                        // some expected possitive spells have SPELL_ATTR_EX_NEGATIVE
+                        return true;                        // some expected positive spells have SPELL_ATTR_EX_NEGATIVE
                     break;
                 case SPELL_AURA_ADD_TARGET_TRIGGER:
                     return true;
@@ -828,11 +833,14 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                     if(spellproto->Id == 17624)
                         return false;
                     break;
+                case SPELL_AURA_MOD_PACIFY_SILENCE:
+                    if(spellproto->Id == 24740)             // Wisp Costume
+                        return true;
+                    return false;
                 case SPELL_AURA_MOD_ROOT:
                 case SPELL_AURA_MOD_SILENCE:
                 case SPELL_AURA_GHOST:
                 case SPELL_AURA_PERIODIC_LEECH:
-                case SPELL_AURA_MOD_PACIFY_SILENCE:
                 case SPELL_AURA_MOD_STALKED:
                 case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
                     return false;
@@ -913,14 +921,6 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                             break;
                     }
                 }   break;
-                case SPELL_AURA_MOD_HEALING_PCT:
-                    if(spellproto->CalculateSimpleValue(effIndex) < 0)
-                        return false;
-                    break;
-                case SPELL_AURA_MOD_SKILL:
-                    if(spellproto->CalculateSimpleValue(effIndex) < 0)
-                        return false;
-                    break;
                 case SPELL_AURA_FORCE_REACTION:
                     if(spellproto->Id==42792)               // Recently Dropped Flag (prevent cancel)
                         return false;
@@ -954,11 +954,15 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
 
 bool IsPositiveSpell(uint32 spellId)
 {
+    if(!sSpellStore.LookupEntry(spellId)) // non-existing spells such as 61988 (Forbearance)
+        return false;
     return !(spellmgr.GetSpellCustomAttr(spellId) & SPELL_ATTR_CU_NEGATIVE);
 }
 
 bool IsPositiveEffect(uint32 spellId, uint32 effIndex)
 {
+    if(!sSpellStore.LookupEntry(spellId))
+        return false;
     switch(effIndex)
     {
         default:
@@ -995,12 +999,6 @@ bool IsSingleTargetSpell(SpellEntry const *spellInfo)
         default:
             break;
     }
-
-    // single target triggered spell.
-    // Not real client side single target spell, but it' not triggered until prev. aura expired.
-    // This is allow store it in single target spells list for caster for spell proc checking
-    if(spellInfo->Id==38324)                                // Regeneration (triggered by 38299 (HoTs on Heals))
-        return true;
 
     return false;
 }
@@ -2421,17 +2419,17 @@ void SpellMgr::LoadSpellAreas()
             SpellAreaMapBounds sa_bounds = GetSpellAreaMapBounds(spellArea.spellId);
             for(SpellAreaMap::const_iterator itr = sa_bounds.first; itr != sa_bounds.second; ++itr)
             {
-                if(spellArea.spellId && itr->second.spellId && spellArea.spellId != itr->second.spellId)
+                if (spellArea.spellId != itr->second.spellId)
                     continue;
-                if(spellArea.areaId && itr->second.areaId && spellArea.areaId!= itr->second.areaId)
+                if (spellArea.areaId != itr->second.areaId)
                     continue;
-                if(spellArea.questStart && itr->second.questStart && spellArea.questStart!= itr->second.questStart)
+                if (spellArea.questStart != itr->second.questStart)
                     continue;
-                if(spellArea.auraSpell && itr->second.auraSpell && spellArea.auraSpell!= itr->second.auraSpell)
+                if (spellArea.auraSpell != itr->second.auraSpell)
                     continue;
-                if(spellArea.raceMask && itr->second.raceMask && (spellArea.raceMask & itr->second.raceMask)==0)
+                if ((spellArea.raceMask & itr->second.raceMask) == 0)
                     continue;
-                if(spellArea.gender != GENDER_NONE && itr->second.gender != GENDER_NONE && spellArea.gender!= itr->second.gender)
+                if (spellArea.gender != itr->second.gender)
                     continue;
 
                 // duplicate by requirements
@@ -2731,12 +2729,9 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellEntry const* spellproto
             break;
         case SPELLFAMILY_MAGE:
         {
-            // Frostbite 0x80000000
+            // Frostbite
             if (spellproto->SpellFamilyFlags[1] & 0x80000000)
                 return DIMINISHING_TRIGGER_ROOT;
-            // Frost Nova / Freeze (Water Elemental)
-            else if (spellproto->SpellIconID == 193)
-                return DIMINISHING_CONTROL_ROOT;
             break;
         }
         case SPELLFAMILY_ROGUE:
@@ -2776,7 +2771,7 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellEntry const* spellproto
             // Cyclone
             else if (spellproto->SpellFamilyFlags[1] & 0x20)
                 return DIMINISHING_CYCLONE;
-            //Entangling Roots: to force natures grasp proc to be control root
+            // Entangling Roots: to force natures grasp proc to be control root
             else if (spellproto->SpellFamilyFlags[0] & 0x00000200)
                 return DIMINISHING_CONTROL_ROOT;
             // Faerie Fire
@@ -2863,35 +2858,35 @@ int32 GetDiminishingReturnsLimitDuration(DiminishingGroup group, SpellEntry cons
         {
             // Wyvern Sting
             if (spellproto->SpellFamilyFlags[1] & 0x1000)
-                return 6000;
+                return 6 * IN_MILISECONDS;
             break;
         }
         case SPELLFAMILY_PALADIN:
         {
             // Repentance - limit to 6 seconds in PvP
             if (spellproto->SpellFamilyFlags[0] & 0x4)
-                return 6000;
+                return 6 * IN_MILISECONDS;
             break;
         }
         case SPELLFAMILY_DRUID:
         {
             // Faerie Fire - limit to 40 seconds in PvP (3.1)
             if (spellproto->SpellFamilyFlags[0] & 0x400)
-                return 40000;
+                return 40 * IN_MILISECONDS;
             break;
         }
         case SPELLFAMILY_PRIEST:
         {
             // Vampiric Embrace - limit to 60 seconds in PvP (3.1)
             if ((spellproto->SpellFamilyFlags[0] & 0x4) && spellproto->SpellIconID == 150)
-                return 60000;
+                return 60 * IN_MILISECONDS;
             break;
         }
         default:
             break;
     }
 
-    return 10000;
+    return 10 * IN_MILISECONDS;
 }
 
 bool IsDiminishingReturnsGroupDurationLimited(DiminishingGroup group)
@@ -3506,21 +3501,6 @@ void SpellMgr::LoadSpellCustomAttr()
         if(!spellInfo)
             continue;
 
-        bool auraSpell = true;
-        for(uint32 j = 0; j < 3; ++j)
-        {
-            if(spellInfo->Effect[j])
-                if(spellInfo->Effect[j] != SPELL_EFFECT_APPLY_AURA
-                || SpellTargetType[spellInfo->EffectImplicitTargetA[j]] != TARGET_TYPE_UNIT_TARGET)
-                //ignore target party for now
-                {
-                    auraSpell = false;
-                    break;
-                }
-        }
-        if(auraSpell)
-            mSpellCustomAttr[i] |= SPELL_ATTR_CU_AURA_SPELL;
-
         for(uint32 j = 0; j < 3; ++j)
         {
             switch(spellInfo->EffectApplyAuraName[j])
@@ -3643,6 +3623,7 @@ void SpellMgr::LoadSpellCustomAttr()
         case 42384:                             // Brutal Swipe
         case 45150:                             // Meteor Slash
         case 64422: case 64688:                 // Sonic Screech
+            // ONLY SPELLS WITH SPELLFAMILY_GENERIC and EFFECT_SCHOOL_DAMAGE
             mSpellCustomAttr[i] |= SPELL_ATTR_CU_SHARE_DAMAGE;
             break;
         case 59725:                             // Improved Spell Reflection - aoe aura

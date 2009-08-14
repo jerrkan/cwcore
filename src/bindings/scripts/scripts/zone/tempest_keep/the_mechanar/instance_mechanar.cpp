@@ -52,7 +52,7 @@ struct TRINITY_DLL_DECL instance_mechanar : public ScriptedInstance
     {
         switch(type)
         {
-        case DATA_NETHERMANCER_EVENT:   return Encounters[0];
+        case DATA_NETHERMANCER_EVENT:   return m_auiEncounter[0];
         }
 
         return false;
@@ -67,7 +67,7 @@ struct TRINITY_DLL_DECL instance_mechanar : public ScriptedInstance
     {
         switch(type)
         {
-        case DATA_NETHERMANCER_EVENT:   Encounters[0] = data;   break;
+        case DATA_NETHERMANCER_EVENT:   m_auiEncounter[0] = data;   break;
         }
     }
 };

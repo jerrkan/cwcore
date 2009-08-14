@@ -31,7 +31,7 @@ EndScriptData */
 #define CHAMBER_CENTER_Y              1.8
 #define CHAMBER_CENTER_Z             -0.4
 
-#define ENCOUNTERS 2
+#define MAX_ENCOUNTER 2
 
 struct TRINITY_DLL_DECL instance_magtheridons_lair : public ScriptedInstance
 {
@@ -40,7 +40,7 @@ struct TRINITY_DLL_DECL instance_magtheridons_lair : public ScriptedInstance
         Initialize();
     }
 
-    uint32 Encounters[ENCOUNTERS];
+    uint32 m_auiEncounter[MAX_ENCOUNTER];
 
     uint64 MagtheridonGUID;
     std::set<uint64> ChannelerGUID;
@@ -52,8 +52,7 @@ struct TRINITY_DLL_DECL instance_magtheridons_lair : public ScriptedInstance
 
     void Initialize()
     {
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
-            Encounters[i] = NOT_STARTED;
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         MagtheridonGUID = 0;
         ChannelerGUID.clear();
@@ -66,7 +65,7 @@ struct TRINITY_DLL_DECL instance_magtheridons_lair : public ScriptedInstance
 
     bool IsEncounterInProgress() const
     {
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
+        for(uint8 i = 0; i < ENCOUNTERS; ++i)
             if(Encounters[i] == IN_PROGRESS) return true;
         return false;
     }
@@ -179,7 +178,7 @@ struct TRINITY_DLL_DECL instance_magtheridons_lair : public ScriptedInstance
                     }
                 }break;
             }
-            Encounters[1] = data;
+            m_auiEncounter[1] = data;
             break;
         case DATA_COLLAPSE:
             // true - collapse / false - reset

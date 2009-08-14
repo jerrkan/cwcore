@@ -47,6 +47,8 @@ struct TRINITY_DLL_DECL boss_flame_leviathanAI : public BossAI
         assert(c->isVehicle());
     }
 
+    void MoveInLineOfSight(Unit* who) {}
+
     void EnterCombat(Unit *who)
     {
         _EnterCombat();
@@ -153,7 +155,7 @@ struct TRINITY_DLL_DECL boss_flame_leviathan_turretAI : public ScriptedAI
                     events.PopEvent();
                     break;
             }
-        }       
+        }
     }
 };
 
@@ -210,7 +212,7 @@ struct TRINITY_DLL_DECL boss_flame_leviathan_defense_turretAI : public ScriptedA
 
         if(who->GetTypeId() != TYPEID_PLAYER || !who->m_Vehicle || who->m_Vehicle->GetEntry() != 33114)
             return;
-        
+
         AttackStart(who);
     }
 

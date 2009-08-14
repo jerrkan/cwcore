@@ -1386,10 +1386,14 @@ void ObjectMgr::RemoveCreatureFromGrid(uint32 guid, CreatureData const* data)
     }
 }
 
-uint32 ObjectMgr::AddGameObject(uint32 entry, uint32 mapId, float x, float y, float z, float o, uint32 spawntimedelay, float rotation0, float rotation1, float rotation2, float rotation3)
+uint32 ObjectMgr::AddGOData(uint32 entry, uint32 mapId, float x, float y, float z, float o, uint32 spawntimedelay, float rotation0, float rotation1, float rotation2, float rotation3)
 {
     GameObjectInfo const* goinfo = GetGameObjectInfo(entry);
     if (!goinfo)
+        return 0;
+
+    Map* map = const_cast<Map*>(MapManager::Instance().CreateBaseMap(mapId));
+    if(!map)
         return 0;
 
     uint32 guid = GenerateLowGuid(HIGHGUID_GAMEOBJECT);
@@ -1414,26 +1418,25 @@ uint32 ObjectMgr::AddGameObject(uint32 entry, uint32 mapId, float x, float y, fl
     AddGameobjectToGrid(guid, &data);
 
     // Spawn if necessary (loaded grids only)
-    if(Map* map = const_cast<Map*>(MapManager::Instance().CreateBaseMap(mapId)))
+    // We use spawn coords to spawn
+    if(!map->Instanceable() && !map->IsRemovalGrid(x, y))
     {
-        // We use spawn coords to spawn
-        if(!map->Instanceable() && !map->IsRemovalGrid(x, y))
+        GameObject *go = new GameObject;
+        if(!go->LoadFromDB(guid, map))
         {
-            GameObject *go = new GameObject;
-            if(!go->LoadFromDB(guid, map))
-            {
-                sLog.outError("AddGameObject: cannot add gameobject entry %u to map", entry);
-                delete go;
-                return 0;
-            }
-            map->Add(go);
+            sLog.outError("AddGOData: cannot add gameobject entry %u to map", entry);
+            delete go;
+            return 0;
         }
+        map->Add(go);
     }
+
+    sLog.outDebug("AddGOData: dbguid %u entry %u map %u x %f y %f z %f o %f", guid, entry, mapId, x, y, z, o);
 
     return guid;
 }
 
-uint32 ObjectMgr::AddCreature(uint32 entry, uint32 team, uint32 mapId, float x, float y, float z, float o, uint32 spawntimedelay)
+uint32 ObjectMgr::AddCreData(uint32 entry, uint32 team, uint32 mapId, float x, float y, float z, float o, uint32 spawntimedelay)
 {
     CreatureInfo const *cInfo = GetCreatureTemplate(entry);
     if(!cInfo)

@@ -67,6 +67,13 @@ void WorldSession::HandleMoveWorldportAckOpcode()
     GetPlayer()->SetSemaphoreTeleportFar(false);
 
     Map * oldMap = GetPlayer()->GetMap();
+    assert(oldMap);
+    if(GetPlayer()->IsInWorld())
+    {
+        sLog.outCrash("Player is still in world when teleported out of map %u! to new map %u", oldMap->GetId(), loc.mapid);
+        oldMap->Remove(GetPlayer(), false);
+    }
+
     // relocate the player to the teleport destination
     Map * newMap = MapManager::Instance().CreateMap(loc.mapid, GetPlayer(), 0);
     // the CanEnter checks are done in TeleporTo but conditions may change
@@ -155,7 +162,7 @@ void WorldSession::HandleMoveWorldportAckOpcode()
 
     // honorless target
     if(GetPlayer()->pvpInfo.inHostileArea)
-        GetPlayer()->CastSpell(GetPlayer(), 2479, true);
+        GetPlayer()->CastSpell(GetPlayer(), SPELL_ID_HONORLESS_TARGET, true);
 
     // resummon pet
     GetPlayer()->ResummonPetTemporaryUnSummonedIfAny();
@@ -205,7 +212,7 @@ void WorldSession::HandleMoveTeleportAck(WorldPacket& recv_data)
     {
         // honorless target
         if(plMover->pvpInfo.inHostileArea)
-            plMover->CastSpell(plMover, 2479, true);
+            plMover->CastSpell(plMover, SPELL_ID_HONORLESS_TARGET, true);
     }
 
     // resummon pet

@@ -58,6 +58,8 @@ m_declinedname(NULL), m_owner(owner)
 
     m_name = "Pet";
     m_regenTimer = 4000;
+
+    m_isWorldObject = true;
 }
 
 Pet::~Pet()
@@ -938,6 +940,16 @@ bool Guardian::InitStatsForLevel(uint32 petlevel)
                     }
                     break;
                 }
+                case 27829: // Ebon Gargoyle
+                {
+                    SetBonusDamage( int32(m_owner->GetTotalAttackPowerValue(BASE_ATTACK) * 0.4f));
+                    if(!pInfo)
+                    {
+                        SetCreateMana(28 + 10*petlevel);
+                        SetCreateHealth(28 + 30*petlevel);
+                    }
+                    break;
+                }
                 default:
                 {
                     if(!pInfo)
@@ -1167,6 +1179,11 @@ void Pet::_LoadAuras(uint32 timediff)
 
             Aura* aura = new Aura(spellproto, effmask, NULL, this, NULL, NULL);
             aura->SetLoadedState(caster_guid,maxduration,remaintime,remaincharges, stackcount, &damage[0]);
+            if(!aura->CanBeSaved())
+            {
+                delete aura;
+                continue;
+            }
             AddAura(aura);
             sLog.outDetail("Added aura spellid %u, effectmask %u", spellproto->Id, effmask);
         }
@@ -1183,15 +1200,8 @@ void Pet::_SaveAuras()
     AuraMap const& auras = GetAuras();
     for(AuraMap::const_iterator itr = auras.begin(); itr !=auras.end() ; ++itr)
     {
-        // skip all auras from spell that apply at cast SPELL_AURA_MOD_SHAPESHIFT or pet area auras.
-        // do not save single target auras (unless they were cast by the player)
-        if (itr->second->IsPassive() || itr->second->IsAuraType(SPELL_AURA_MOD_STEALTH))
+        if(!itr->second->CanBeSaved())
             continue;
-        bool isCaster = itr->second->GetCasterGUID() == GetGUID();
-        if (!isCaster)
-            if (itr->second->IsSingleTarget()
-                || itr->second->IsAreaAura())
-                continue;
 
         int32 amounts[MAX_SPELL_EFFECTS];
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)

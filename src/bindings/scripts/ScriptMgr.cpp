@@ -85,7 +85,7 @@ extern void AddSC_npc_taxi();
 //------ ZONE --------
 
 //Alterac Mountains
-extern void AddSC_alterac_mountains();
+//extern void AddSC_alterac_mountains();
 
 //Arathi Highlands
 extern void AddSC_arathi_highlands();
@@ -650,17 +650,24 @@ extern void AddSC_zuldrak();
 
 //Northrend
 //Dungeon
+
 //Vault of Archavon
 extern void AddSC_boss_archavon();
 extern void AddSC_boss_emalon();
 extern void AddSC_instance_archavon();
 
 //Ulduar
+extern void AddSC_boss_auriaya();
 extern void AddSC_boss_flame_leviathan();
+extern void AddSC_boss_ignis();
 extern void AddSC_boss_razorscale();
+extern void AddSC_boss_xt002();
+//extern void AddSC_instance_ulduar();
 
-//Halls of lightning
+//Halls of Lightning
 extern void AddSC_boss_bjarngrim();
+extern void AddSC_boss_loken();
+extern void AddSC_instance_halls_of_lightning();
 
 //Region
 extern void AddSC_wintergrasp();
@@ -917,7 +924,7 @@ void ScriptsFree()
     delete []SpellSummary;
 
     // Free resources before library unload
-    for(uint16 i =0;i<MAX_SCRIPTS;i++)
+    for(uint16 i =0;i<MAX_SCRIPTS;++i)
         delete m_scripts[i];
 
     num_sc_scripts = 0;
@@ -957,7 +964,7 @@ void ScriptsInit(char const* cfg_file = "trinitycore.conf")
     bar.step();
     outstring_log("");
 
-    for(uint16 i =0;i<MAX_SCRIPTS;i++)
+    for(uint16 i =0;i<MAX_SCRIPTS;++i)
         m_scripts[i]=NULL;
 
     FillSpellSummary();
@@ -1005,7 +1012,7 @@ void ScriptsInit(char const* cfg_file = "trinitycore.conf")
     //------ ZONE --------
 
     //Alterac Mountains
-    AddSC_alterac_mountains();
+    //AddSC_alterac_mountains();
 
     //Arathi Highlands
     AddSC_arathi_highlands();
@@ -1569,17 +1576,24 @@ void ScriptsInit(char const* cfg_file = "trinitycore.conf")
 
     //Northrend
     //Dungeon
+
     //Vault of Archavon
     AddSC_boss_archavon();
     AddSC_boss_emalon();
     AddSC_instance_archavon();
 
     //Ulduar
+    AddSC_boss_auriaya();
     AddSC_boss_flame_leviathan();
+    AddSC_boss_ignis();
     AddSC_boss_razorscale();
+    AddSC_boss_xt002();
+    //AddSC_instance_ulduar();
 
-    //Halls of lightning
+    //Halls of Lightning
     AddSC_boss_bjarngrim();
+    AddSC_boss_loken();
+    AddSC_instance_halls_of_lightning();
 
     //Region
     AddSC_wintergrasp();

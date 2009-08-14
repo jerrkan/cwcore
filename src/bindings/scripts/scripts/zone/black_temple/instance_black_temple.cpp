@@ -24,7 +24,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_black_temple.h"
 
-#define ENCOUNTERS      9
+#define MAX_ENCOUNTER      9
 
 /* Black Temple encounters:
 0 - High Warlord Naj'entus event
@@ -42,7 +42,7 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
 {
     instance_black_temple(Map *map) : ScriptedInstance(map) {Initialize();};
 
-    uint32 Encounters[ENCOUNTERS];
+    uint32 m_auiEncounter[MAX_ENCOUNTER];
     std::string str_data;
     
     uint64 Najentus;
@@ -73,6 +73,8 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
 
     void Initialize()
     {
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+
         Najentus = 0;
         Akama = 0;
         Akama_Shade = 0;
@@ -264,8 +266,8 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
                 HandleGameObject(CouncilDoor, true);
                 HandleGameObject(SimpleDoor, true);
             }
-            Encounters[7] = data; break;
-        case DATA_ILLIDANSTORMRAGEEVENT:      Encounters[8] = data;         break;
+            m_auiEncounter[7] = data; break;
+        case DATA_ILLIDANSTORMRAGEEVENT:      m_auiEncounter[8] = data;         break;
         }
 
         if (data == DONE)
@@ -273,10 +275,10 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
             OUT_SAVE_INST_DATA;
 
             std::ostringstream saveStream;
-            saveStream << Encounters[0] << " " << Encounters[1] << " "
-                << Encounters[2] << " " << Encounters[3] << " " << Encounters[4]
-            << " " << Encounters[5] << " " << Encounters[6] << " " << Encounters[7]
-            << " " << Encounters[8];
+            saveStream << m_auiEncounter[0] << " " << m_auiEncounter[1] << " "
+                << m_auiEncounter[2] << " " << m_auiEncounter[3] << " " << m_auiEncounter[4]
+            << " " << m_auiEncounter[5] << " " << m_auiEncounter[6] << " " << m_auiEncounter[7]
+            << " " << m_auiEncounter[8];
 
             str_data = saveStream.str();
 
@@ -289,15 +291,15 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
     {
         switch(type)
         {
-        case DATA_HIGHWARLORDNAJENTUSEVENT:         return Encounters[0];
-        case DATA_SUPREMUSEVENT:                    return Encounters[1];
-        case DATA_SHADEOFAKAMAEVENT:                return Encounters[2];
-        case DATA_TERONGOREFIENDEVENT:              return Encounters[3];
-        case DATA_GURTOGGBLOODBOILEVENT:            return Encounters[4];
-        case DATA_RELIQUARYOFSOULSEVENT:            return Encounters[5];
-        case DATA_MOTHERSHAHRAZEVENT:               return Encounters[6];
-        case DATA_ILLIDARICOUNCILEVENT:             return Encounters[7];
-        case DATA_ILLIDANSTORMRAGEEVENT:            return Encounters[8];
+        case DATA_HIGHWARLORDNAJENTUSEVENT:         return m_auiEncounter[0];
+        case DATA_SUPREMUSEVENT:                    return m_auiEncounter[1];
+        case DATA_SHADEOFAKAMAEVENT:                return m_auiEncounter[2];
+        case DATA_TERONGOREFIENDEVENT:              return m_auiEncounter[3];
+        case DATA_GURTOGGBLOODBOILEVENT:            return m_auiEncounter[4];
+        case DATA_RELIQUARYOFSOULSEVENT:            return m_auiEncounter[5];
+        case DATA_MOTHERSHAHRAZEVENT:               return m_auiEncounter[6];
+        case DATA_ILLIDARICOUNCILEVENT:             return m_auiEncounter[7];
+        case DATA_ILLIDANSTORMRAGEEVENT:            return m_auiEncounter[8];
         }
 
         return 0;
@@ -319,13 +321,13 @@ struct TRINITY_DLL_DECL instance_black_temple : public ScriptedInstance
         OUT_LOAD_INST_DATA(in);
 
         std::istringstream loadStream(in);
-        loadStream >> Encounters[0] >> Encounters[1] >> Encounters[2]
-        >> Encounters[3] >> Encounters[4] >> Encounters[5] >> Encounters[6]
-        >> Encounters[7] >> Encounters[8];
+        loadStream >> m_auiEncounter[0] >> m_auiEncounter[1] >> m_auiEncounter[2]
+        >> m_auiEncounter[3] >> m_auiEncounter[4] >> m_auiEncounter[5] >> m_auiEncounter[6]
+        >> m_auiEncounter[7] >> m_auiEncounter[8];
 
-        for(uint8 i = 0; i < ENCOUNTERS; ++i)
-            if (Encounters[i] == IN_PROGRESS)
-                Encounters[i] = NOT_STARTED;
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            if (m_auiEncounter[i] == IN_PROGRESS)
+                m_auiEncounter[i] = NOT_STARTED;
 
         OUT_LOAD_INST_DATA_COMPLETE;
     }
