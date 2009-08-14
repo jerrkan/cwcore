@@ -561,6 +561,7 @@ bool Player::Create( uint32 guidlow, const std::string& name, uint8 race, uint8 
     for (uint8 i = 0; i < PLAYER_SLOTS_COUNT; i++)
         m_items[i] = NULL;
 
+    SetLocationMapId(info->mapId);
     Relocate(info->positionX,info->positionY,info->positionZ);
 
     ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(class_);
@@ -14729,6 +14730,10 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
 
     InitPrimaryProfessions();                               // to max set before any spell loaded
 
+	// init saved position, and fix it later if problematic
+    uint32 transGUID = fields[31].GetUInt32();
+    Relocate(fields[13].GetFloat(),fields[14].GetFloat(),fields[15].GetFloat(),fields[17].GetFloat());
+    SetLocationMapId(fields[16].GetUInt32());
     SetDungeonDifficulty(fields[39].GetUInt32());                  // may be changed in _LoadGroup
 
     _LoadGroup(holder->GetResult(PLAYER_LOGIN_QUERY_LOADGROUP));
@@ -14762,7 +14767,8 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
     // load player map related values
     uint32 transGUID = fields[31].GetUInt32();
     Relocate(fields[13].GetFloat(),fields[14].GetFloat(),fields[15].GetFloat(),fields[17].GetFloat());
-    uint32 mapId = fields[16].GetUInt32();
+    //SetLocationMapId(fields[16].GetUInt32());
+	uint32 mapId = fields[16].GetUInt32();
     uint32 instanceId = fields[41].GetFloat();
     std::string taxi_nodes = fields[38].GetCppString();
 
@@ -14770,7 +14776,7 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
     if(!IsPositionValid())
     {
         sLog.outError("Player (guidlow %d) have invalid coordinates (X: %f Y: %f Z: %f O: %f). Teleport to default race/class locations.",guid,GetPositionX(),GetPositionY(),GetPositionZ(),GetOrientation());
-        RelocateToHomebind(mapId);
+        RelocateToHomebind();
 
         transGUID = 0;
         instanceId = 0;
@@ -14812,7 +14818,7 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
         {
             // Do not look for instance if bg not found
             const WorldLocation& _loc = GetBattleGroundEntryPoint();
-            mapId = _loc.mapid; instanceId = 0;
+            SetLocationMapId(_loc.mapid);
             Relocate(_loc.coord_x, _loc.coord_y, _loc.coord_z, _loc.orientation);
         }
     }
@@ -14847,7 +14853,7 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
                 {
                     m_transport = *iter;
                     m_transport->AddPassenger(this);
-                    mapId = (m_transport->GetMapId());
+                    SetLocationMapId(m_transport->GetMapId());
                     break;
                 }
             }
@@ -14886,7 +14892,7 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
             else                                                // have start node, to it
             {
                 sLog.outError("Character %u have too short taxi destination list, teleport to original node.",GetGUIDLow());
-                mapId = nodeEntry->map_id;
+                SetLocationMapId(nodeEntry->map_id);
                 Relocate(nodeEntry->x, nodeEntry->y, nodeEntry->z,0.0f);
             }
             m_taxi.ClearTaxiDestinations();

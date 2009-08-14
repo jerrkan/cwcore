@@ -818,9 +818,11 @@ enum PlayerLoginQueryIndex
 
 enum PlayerDelayedOperations
 {
-    DELAYED_SAVE_PLAYER = 1,
-    DELAYED_RESURRECT_PLAYER = 2,
-    DELAYED_SPELL_CAST_DESERTER = 4,
+    DELAYED_SAVE_PLAYER         = 0x01,
+    DELAYED_RESURRECT_PLAYER    = 0x02,
+    DELAYED_SPELL_CAST_DESERTER = 0x04,
+    DELAYED_BG_MOUNT_RESTORE    = 0x08,                     ///< Flag to restore mount state after teleport from BG
+    DELAYED_BG_TAXI_RESTORE     = 0x10,                     ///< Flag to restore taxi state after teleport from BG
     DELAYED_END
 };
 
@@ -2100,6 +2102,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         float m_homebindX;
         float m_homebindY;
         float m_homebindZ;
+		//void RelocateToHomebind() { SetLocationMapId(m_homebindMapId); Relocate(m_homebindX,m_homebindY,m_homebindZ); }
 
         // currently visible objects at player client
         typedef std::set<uint64> ClientGUIDs;
@@ -2271,6 +2274,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         void _LoadDeclinedNames(QueryResult *result);
         void _LoadArenaTeamInfo(QueryResult *result);
         void _LoadEquipmentSets(QueryResult *result);
+		void _LoadBGData(QueryResult* result);
         void _LoadGlyphs(QueryResult *result);
         void _LoadTalents(QueryResult *result);
 
@@ -2286,6 +2290,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         void _SaveDailyQuestStatus();
         void _SaveSpells();
         void _SaveEquipmentSets();
+		void _SaveBGData();
         void _SaveGlyphs();
         void _SaveTalents();
 

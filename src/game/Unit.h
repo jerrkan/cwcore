@@ -656,6 +656,7 @@ enum MovementFlags
     MOVEMENTFLAG_CAN_FLY        = 0x00800000,
     MOVEMENTFLAG_FLY_MODE       = 0x01000000,               // can fly
     MOVEMENTFLAG_FLYING         = 0x02000000,               // hover
+	MOVEMENTFLAG_FLYING2        = 0x02000000,               // Actual flying mode
     MOVEMENTFLAG_SPLINE         = 0x04000000,               // used for flight paths
     MOVEMENTFLAG_SPLINE2        = 0x08000000,               // used for flight paths
     MOVEMENTFLAG_WATERWALKING   = 0x10000000,               // prevent unit from falling through water
@@ -727,7 +728,7 @@ struct MovementInfo
     // last fall time
     uint32  fallTime;
     // jumping
-    float   j_zspeed, j_sinAngle, j_cosAngle, j_xyspeed;
+    float   j_unk, j_zspeed, j_sinAngle, j_cosAngle, j_xyspeed;
     // spline
     float   u_unk1;
 
@@ -736,7 +737,7 @@ struct MovementInfo
         flags = 0;
         time = t_time = fallTime = 0;
         unk1 = 0;
-        x = y = z = o = t_x = t_y = t_z = t_o = s_pitch = j_zspeed = j_sinAngle = j_cosAngle = j_xyspeed = u_unk1 = 0.0f;
+        x = y = z = o = t_x = t_y = t_z = t_o = s_pitch = j_unk = j_zspeed = j_sinAngle = j_cosAngle = j_xyspeed = u_unk1 = 0.0f;
         t_guid = 0;
     }
 
