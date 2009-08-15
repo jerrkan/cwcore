@@ -3646,8 +3646,13 @@ void SpellMgr::LoadSpellCustomAttr()
         case 39365: // Thundering Storm
         case 41071: // Raise Dead (HACK)
         case 52124: // Sky Darkener Assault
+            spellInfo->MaxAffectedTargets = 1;
+            break;
         case 52479: // Gift of the Harvester
             spellInfo->MaxAffectedTargets = 1;
+            // a trap always has dst = src?
+            spellInfo->EffectImplicitTargetA[0] = TARGET_DST_CASTER;
+            spellInfo->EffectImplicitTargetA[1] = TARGET_DST_CASTER;
             break;
         case 41376: // Spite
         case 39992: // Needle Spine
@@ -3726,6 +3731,9 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         case 48422:
             spellInfo->Stances = 1 << (FORM_TREE - 1);
+            break;
+        case 30421:     // Nether Portal - Perseverence
+            spellInfo->EffectBasePoints[2] += 30000;
             break;
         default:
             break;
