@@ -561,7 +561,6 @@ bool Player::Create( uint32 guidlow, const std::string& name, uint8 race, uint8 
     for (uint8 i = 0; i < PLAYER_SLOTS_COUNT; i++)
         m_items[i] = NULL;
 
-    SetLocationMapId(info->mapId);
     Relocate(info->positionX,info->positionY,info->positionZ);
 
     ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(class_);
@@ -14733,7 +14732,6 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
 	// init saved position, and fix it later if problematic
     uint32 transGUID = fields[31].GetUInt32();
     Relocate(fields[13].GetFloat(),fields[14].GetFloat(),fields[15].GetFloat(),fields[17].GetFloat());
-    SetLocationMapId(fields[16].GetUInt32());
     SetDungeonDifficulty(fields[39].GetUInt32());                  // may be changed in _LoadGroup
 
     _LoadGroup(holder->GetResult(PLAYER_LOGIN_QUERY_LOADGROUP));
@@ -14765,9 +14763,6 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
     _LoadBoundInstances(holder->GetResult(PLAYER_LOGIN_QUERY_LOADBOUNDINSTANCES));
 
     // load player map related values
-    uint32 transGUID = fields[31].GetUInt32();
-    Relocate(fields[13].GetFloat(),fields[14].GetFloat(),fields[15].GetFloat(),fields[17].GetFloat());
-    //SetLocationMapId(fields[16].GetUInt32());
 	uint32 mapId = fields[16].GetUInt32();
     uint32 instanceId = fields[41].GetFloat();
     std::string taxi_nodes = fields[38].GetCppString();
@@ -14790,11 +14785,11 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
     else if (mapEntry && mapEntry->IsBattleGroundOrArena())
     {
         // Get Entry Point(bg master) or Homebind
-        SetBattleGroundEntryPoint(fields[43].GetUInt32(),fields[44].GetFloat(),fields[45].GetFloat(),fields[46].GetFloat(),fields[47].GetFloat());
+        //SetBattleGroundEntryPoint(fields[43].GetUInt32(),fields[44].GetFloat(),fields[45].GetFloat(),fields[46].GetFloat(),fields[47].GetFloat());
 
-        MapEntry const* bgEntry = sMapStore.LookupEntry(m_bgEntryPoint.mapid);
-        if(!bgEntry || bgEntry->Instanceable() || !MapManager::IsValidMapCoord(m_bgEntryPoint))
-            SetBattleGroundEntryPoint(m_homebindMapId,m_homebindX,m_homebindY,m_homebindZ,0.0f);
+        //MapEntry const* bgEntry = sMapStore.LookupEntry(m_bgEntryPoint.mapid);
+        //if(!bgEntry || bgEntry->Instanceable() || !MapManager::IsValidMapCoord(m_bgEntryPoint))
+            //SetBattleGroundEntryPoint(m_homebindMapId,m_homebindX,m_homebindY,m_homebindZ,0.0f);
 
         // Bg still exists - join it!
         BattleGround *currentBg = sBattleGroundMgr.GetBattleGround(instanceId, BATTLEGROUND_TYPE_NONE);
@@ -14818,7 +14813,7 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
         {
             // Do not look for instance if bg not found
             const WorldLocation& _loc = GetBattleGroundEntryPoint();
-            SetLocationMapId(_loc.mapid);
+            mapId = _loc.mapid; instanceId = 0;
             Relocate(_loc.coord_x, _loc.coord_y, _loc.coord_z, _loc.orientation);
         }
     }
@@ -14853,7 +14848,7 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
                 {
                     m_transport = *iter;
                     m_transport->AddPassenger(this);
-                    SetLocationMapId(m_transport->GetMapId());
+                    mapId = (m_transport->GetMapId());
                     break;
                 }
             }
@@ -14892,7 +14887,7 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
             else                                                // have start node, to it
             {
                 sLog.outError("Character %u have too short taxi destination list, teleport to original node.",GetGUIDLow());
-                SetLocationMapId(nodeEntry->map_id);
+                mapId = nodeEntry->map_id;
                 Relocate(nodeEntry->x, nodeEntry->y, nodeEntry->z,0.0f);
             }
             m_taxi.ClearTaxiDestinations();
@@ -16344,11 +16339,11 @@ void Player::SaveToDB()
     ss << GetSession()->GetLatency() << ", ";
     ss << GetBattleGroundId() << ", ";
     ss << GetBGTeam() << ", ";
-    ss << m_bgEntryPoint.mapid << ", "
+    /*ss << m_bgEntryPoint.mapid << ", "
        << finiteAlways(m_bgEntryPoint.coord_x) << ", "
        << finiteAlways(m_bgEntryPoint.coord_y) << ", "
        << finiteAlways(m_bgEntryPoint.coord_z) << ", "
-       << finiteAlways(m_bgEntryPoint.orientation);
+       << finiteAlways(m_bgEntryPoint.orientation);*/
     
     ss << ", ";
     ss << uint32(m_specsCount);
