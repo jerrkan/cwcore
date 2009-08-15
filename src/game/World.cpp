@@ -256,6 +256,8 @@ World::AddSession_ (WorldSession* s)
     pkt << uint32(sWorld.getConfig(CONFIG_CLIENTCACHE_VERSION));
     s->SendPacket(&pkt);
 
+    s->SendAccountDataTimes(GLOBAL_CACHE_MASK);
+
     s->SendTutorialsData();
 
     UpdateMaxSessionCounters ();
@@ -263,7 +265,7 @@ World::AddSession_ (WorldSession* s)
     // Updates the population
     if (pLimit > 0)
     {
-        float popu = GetActiveSessionCount ();              //updated number of users on the server
+        float popu = GetActiveSessionCount ();              // updated number of users on the server
         popu /= pLimit;
         popu *= 2;
         loginDatabase.PExecute ("UPDATE realmlist SET population = '%f' WHERE id = '%d'", popu, realmID);
