@@ -72,7 +72,7 @@ struct TRINITY_DLL_DECL boss_jandicebarovAI : public ScriptedAI
         }
         Rand = 0;
         Summoned = DoSpawnCreature(11439, RandX, RandY, 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 60000);
-        if(Summoned)
+        if (Summoned)
             (Summoned->AI())->AttackStart(victim);
     }
 
@@ -122,7 +122,7 @@ struct TRINITY_DLL_DECL boss_jandicebarovAI : public ScriptedAI
             for(uint8 i = 0; i < 10; ++i)
             {
                 target = SelectUnit(SELECT_TARGET_RANDOM,0);
-                if(target)
+                if (target)
                     SummonIllusions(target);
             }
             Invisible = true;
@@ -196,14 +196,14 @@ struct TRINITY_DLL_DECL mob_illusionofjandicebarovAI : public ScriptedAI
 };
 
 
-CreatureAI* GetAI_boss_jandicebarov(Creature *_Creature)
+CreatureAI* GetAI_boss_jandicebarov(Creature* pCreature)
 {
-    return new boss_jandicebarovAI (_Creature);
+    return new boss_jandicebarovAI (pCreature);
 }
 
-CreatureAI* GetAI_mob_illusionofjandicebarov(Creature *_Creature)
+CreatureAI* GetAI_mob_illusionofjandicebarov(Creature* pCreature)
 {
-    return new mob_illusionofjandicebarovAI (_Creature);
+    return new mob_illusionofjandicebarovAI (pCreature);
 }
 
 

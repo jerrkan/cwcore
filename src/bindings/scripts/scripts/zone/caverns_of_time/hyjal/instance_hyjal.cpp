@@ -41,7 +41,7 @@ enum
 
 struct TRINITY_DLL_DECL instance_mount_hyjal : public ScriptedInstance
 {
-    instance_mount_hyjal(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_mount_hyjal(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
     uint32 m_auiEncounter[MAX_ENCOUNTER];
     std::string str_data;
@@ -95,48 +95,48 @@ struct TRINITY_DLL_DECL instance_mount_hyjal : public ScriptedInstance
 
     bool IsEncounterInProgress() const
     {
-        for(uint8 i = 0; i < ENCOUNTERS; ++i)
-            if(Encounters[i] == IN_PROGRESS) return true;
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            if (m_auiEncounter[i] == IN_PROGRESS) return true;
 
         return false;
     }
 
-    void OnGameObjectCreate(GameObject *go, bool add)
+    void OnGameObjectCreate(GameObject* pGo, bool add)
     {
-        switch(go->GetEntry())
+        switch(pGo->GetEntry())
         {
             case 182060:
-                HordeGate = go->GetGUID();
-                if(allianceRetreat)
-                    HandleGameObject(0, true, go);
+                HordeGate = pGo->GetGUID();
+                if (allianceRetreat)
+                    HandleGameObject(0, true, pGo);
                 else
-                    HandleGameObject(0, false, go);
+                    HandleGameObject(0, false, pGo);
                 break;
             case 182061:
-                ElfGate = go->GetGUID();
-                if(hordeRetreat)
-                    HandleGameObject(0, true, go);
+                ElfGate = pGo->GetGUID();
+                if (hordeRetreat)
+                    HandleGameObject(0, true, pGo);
                 else
-                    HandleGameObject(0, false, go);
+                    HandleGameObject(0, false, pGo);
                 break;
             case GO_ANCIENT_GEM:
-                m_uiAncientGemGUID.push_back(go->GetGUID());
+                m_uiAncientGemGUID.push_back(pGo->GetGUID());
                 break;
         }
     }
 
-    void OnCreatureCreate(Creature *creature, bool add)
+    void OnCreatureCreate(Creature* pCreature, bool add)
     {
-        switch(creature->GetEntry())
+        switch(pCreature->GetEntry())
         {
-            case 17767: RageWinterchill = creature->GetGUID(); break;
-            case 17808: Anetheron = creature->GetGUID(); break;
-            case 17888: Kazrogal = creature->GetGUID();  break;
-            case 17842: Azgalor = creature->GetGUID(); break;
-            case 17968: Archimonde = creature->GetGUID(); break;
-            case 17772: JainaProudmoore = creature->GetGUID(); break;
-            case 17852: Thrall = creature->GetGUID(); break;
-            case 17948: TyrandeWhisperwind = creature->GetGUID(); break;
+            case 17767: RageWinterchill = pCreature->GetGUID(); break;
+            case 17808: Anetheron = pCreature->GetGUID(); break;
+            case 17888: Kazrogal = pCreature->GetGUID();  break;
+            case 17842: Azgalor = pCreature->GetGUID(); break;
+            case 17968: Archimonde = pCreature->GetGUID(); break;
+            case 17772: JainaProudmoore = pCreature->GetGUID(); break;
+            case 17852: Thrall = pCreature->GetGUID(); break;
+            case 17948: TyrandeWhisperwind = pCreature->GetGUID(); break;
         }
     }
 
@@ -161,29 +161,29 @@ struct TRINITY_DLL_DECL instance_mount_hyjal : public ScriptedInstance
     {
         switch(type)
         {
-            case DATA_RAGEWINTERCHILLEVENT: Encounters[0] = data; break;
+            case DATA_RAGEWINTERCHILLEVENT: m_auiEncounter[0] = data; break;
             case DATA_ANETHERONEVENT:
-                Encounters[1] = data;
+                m_auiEncounter[1] = data;
                 break;
-            case DATA_KAZROGALEVENT:        Encounters[2] = data; break;
+            case DATA_KAZROGALEVENT:        m_auiEncounter[2] = data; break;
             case DATA_AZGALOREVENT:
                 {
-                    Encounters[3] = data;
-                    if(data==DONE)
+                    m_auiEncounter[3] = data;
+                    if (data==DONE)
                     {
-                        if(ArchiYell)break;
+                        if (ArchiYell)break;
                         ArchiYell = true;
 
                         Creature* pCreature = instance->GetCreature(Azgalor);
-                        if(pCreature)
+                        if (pCreature)
                         {
                             Creature* pUnit = pCreature->SummonCreature(21987,pCreature->GetPositionX(),pCreature->GetPositionY(),pCreature->GetPositionZ(),0,TEMPSUMMON_TIMED_DESPAWN,10000);
 
-                            Map *map = pCreature->GetMap();
-                            if (map->IsDungeon() && pUnit)
+                            Map* pMap = pCreature->GetMap();
+                            if (pMap->IsDungeon() && pUnit)
                             {
                                 pUnit->SetVisibility(VISIBILITY_OFF);
-                                Map::PlayerList const &PlayerList = map->GetPlayers();
+                                Map::PlayerList const &PlayerList = pMap->GetPlayers();
                                 if (PlayerList.isEmpty())
                                      return;
 
@@ -209,9 +209,9 @@ struct TRINITY_DLL_DECL instance_mount_hyjal : public ScriptedInstance
             case DATA_RESET_TRASH_COUNT:    Trash = 0;            break;
 
             case DATA_TRASH:
-                if(data) Trash = data;
+                if (data) Trash = data;
                 else     Trash--;
-                UpdateWorldState(WORLD_STATE_ENEMYCOUNT, Trash);
+                DoUpdateWorldState(WORLD_STATE_ENEMYCOUNT, Trash);
                 break;
             case TYPE_RETREAT:
                 if (data == SPECIAL)
@@ -238,7 +238,7 @@ struct TRINITY_DLL_DECL instance_mount_hyjal : public ScriptedInstance
                 break;
             case DATA_RAIDDAMAGE:
                 RaidDamage += data;
-                if(RaidDamage >= MINRAIDDAMAGE)
+                if (RaidDamage >= MINRAIDDAMAGE)
                     RaidDamage = MINRAIDDAMAGE;
                 break;
             case DATA_RESET_RAIDDAMAGE:
@@ -248,7 +248,7 @@ struct TRINITY_DLL_DECL instance_mount_hyjal : public ScriptedInstance
 
          debug_log("TSCR: Instance Hyjal: Instance data updated for event %u (Data=%u)",type,data);
 
-        if(data == DONE)
+        if (data == DONE)
         {
             OUT_SAVE_INST_DATA;
 
@@ -283,20 +283,6 @@ struct TRINITY_DLL_DECL instance_mount_hyjal : public ScriptedInstance
         return 0;
     }
 
-    void UpdateWorldState(uint32 id, uint32 state)
-    {
-        Map::PlayerList const& players = instance->GetPlayers();
-
-        if (!players.isEmpty())
-        {
-                for(Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
-                {
-                    if (Player* player = itr->getSource())
-                        player->SendUpdateWorldState(id,state);
-                }
-        }else debug_log("TSCR: Instance Hyjal: UpdateWorldState, but PlayerList is empty!");
-    }
-
     std::string GetSaveData()
     {
         return str_data;
@@ -312,17 +298,17 @@ struct TRINITY_DLL_DECL instance_mount_hyjal : public ScriptedInstance
 
         OUT_LOAD_INST_DATA(in);
         std::istringstream loadStream(in);
-        loadStream >> Encounters[0] >> Encounters[1] >> Encounters[2] >> Encounters[3] >> Encounters[4] >> allianceRetreat >> hordeRetreat >> RaidDamage;
-        for(uint8 i = 0; i < ENCOUNTERS; ++i)
-            if(Encounters[i] == IN_PROGRESS)                // Do not load an encounter as IN_PROGRESS - reset it instead.
-                Encounters[i] = NOT_STARTED;
+        loadStream >> m_auiEncounter[0] >> m_auiEncounter[1] >> m_auiEncounter[2] >> m_auiEncounter[3] >> m_auiEncounter[4] >> allianceRetreat >> hordeRetreat >> RaidDamage;
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            if (m_auiEncounter[i] == IN_PROGRESS)                // Do not load an encounter as IN_PROGRESS - reset it instead.
+                m_auiEncounter[i] = NOT_STARTED;
         OUT_LOAD_INST_DATA_COMPLETE;
     }
 };
 
-InstanceData* GetInstanceData_instance_mount_hyjal(Map* map)
+InstanceData* GetInstanceData_instance_mount_hyjal(Map* pMap)
 {
-    return new instance_mount_hyjal(map);
+    return new instance_mount_hyjal(pMap);
 }
 
 void AddSC_instance_mount_hyjal()

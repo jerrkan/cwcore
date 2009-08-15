@@ -56,7 +56,7 @@ struct TRINITY_DLL_DECL boss_instructormaliciaAI : public ScriptedAI
     void JustDied(Unit *killer)
     {
         ScriptedInstance *pInstance = (m_creature->GetInstanceData()) ? (m_creature->GetInstanceData()) : NULL;
-        if(pInstance)
+        if (pInstance)
         {
             pInstance->SetData(DATA_INSTRUCTORMALICIA_DEATH, 0);
 
@@ -137,9 +137,9 @@ struct TRINITY_DLL_DECL boss_instructormaliciaAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_instructormalicia(Creature *_Creature)
+CreatureAI* GetAI_boss_instructormalicia(Creature* pCreature)
 {
-    return new boss_instructormaliciaAI (_Creature);
+    return new boss_instructormaliciaAI (pCreature);
 }
 
 void AddSC_boss_instructormalicia()

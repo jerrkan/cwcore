@@ -45,7 +45,7 @@ struct TRINITY_DLL_DECL boss_loathebAI : public BossAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         events.Update(diff);
@@ -74,9 +74,9 @@ struct TRINITY_DLL_DECL boss_loathebAI : public BossAI
     }
 };
 
-CreatureAI* GetAI_boss_loatheb(Creature *_Creature)
+CreatureAI* GetAI_boss_loatheb(Creature* pCreature)
 {
-    return new boss_loathebAI (_Creature);
+    return new boss_loathebAI (pCreature);
 }
 
 void AddSC_boss_loatheb()

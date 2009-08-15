@@ -86,7 +86,7 @@ struct TRINITY_DLL_DECL boss_anomalusAI : public ScriptedAI
 
         DeadChaoticRift = false;
 
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(DATA_ANOMALUS_EVENT, NOT_STARTED);
     }
 
@@ -94,7 +94,7 @@ struct TRINITY_DLL_DECL boss_anomalusAI : public ScriptedAI
     {
         DoScriptText(SAY_AGGRO, m_creature);
 
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(DATA_ANOMALUS_EVENT, IN_PROGRESS);
     }
 
@@ -102,22 +102,22 @@ struct TRINITY_DLL_DECL boss_anomalusAI : public ScriptedAI
     {
         DoScriptText(SAY_DEATH, m_creature);
 
-        if(HeroicMode && !DeadChaoticRift)
+        if (HeroicMode && !DeadChaoticRift)
         {
             AchievementEntry const *AchievChaosTheory = GetAchievementStore()->LookupEntry(ACHIEVEMENT_CHAOS_THEORY);
-            if(AchievChaosTheory)
+            if (AchievChaosTheory)
             {
-                Map *map = m_creature->GetMap();
-                if(map && map->IsDungeon())
+                Map* pMap = m_creature->GetMap();
+                if (pMap && pMap->IsDungeon())
                 {
-                    Map::PlayerList const &players = map->GetPlayers();
+                    Map::PlayerList const &players = pMap->GetPlayers();
                     for(Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
                         itr->getSource()->CompletedAchievement(AchievChaosTheory);
                 }
             }
         }
 
-        if(pInstance)
+        if (pInstance)
             pInstance->SetData(DATA_ANOMALUS_EVENT, DONE);
     }
 
@@ -218,9 +218,9 @@ struct TRINITY_DLL_DECL boss_anomalusAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_boss_anomalus(Creature *_Creature)
+CreatureAI* GetAI_boss_anomalus(Creature* pCreature)
 {
-    return new boss_anomalusAI (_Creature);
+    return new boss_anomalusAI (pCreature);
 }
 
 struct TRINITY_DLL_DECL mob_chaotic_riftAI : public Scripted_NoMovementAI
@@ -281,9 +281,9 @@ struct TRINITY_DLL_DECL mob_chaotic_riftAI : public Scripted_NoMovementAI
     }
 };
 
-CreatureAI* GetAI_mob_chaotic_rift(Creature *_Creature)
+CreatureAI* GetAI_mob_chaotic_rift(Creature* pCreature)
 {
-    return new mob_chaotic_riftAI (_Creature);
+    return new mob_chaotic_riftAI (pCreature);
 }
 
 void AddSC_boss_anomalus()

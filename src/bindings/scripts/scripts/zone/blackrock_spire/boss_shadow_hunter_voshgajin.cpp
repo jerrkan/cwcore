@@ -51,7 +51,7 @@ struct TRINITY_DLL_DECL boss_shadowvoshAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         //CurseOfBlood_Timer
@@ -80,9 +80,9 @@ struct TRINITY_DLL_DECL boss_shadowvoshAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_shadowvosh(Creature *_Creature)
+CreatureAI* GetAI_boss_shadowvosh(Creature* pCreature)
 {
-    return new boss_shadowvoshAI (_Creature);
+    return new boss_shadowvoshAI (pCreature);
 }
 
 void AddSC_boss_shadowvosh()

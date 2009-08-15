@@ -52,7 +52,7 @@ struct TRINITY_DLL_DECL boss_drakkisathAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         //FireNova_Timer
@@ -86,9 +86,9 @@ struct TRINITY_DLL_DECL boss_drakkisathAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_drakkisath(Creature *_Creature)
+CreatureAI* GetAI_boss_drakkisath(Creature* pCreature)
 {
-    return new boss_drakkisathAI (_Creature);
+    return new boss_drakkisathAI (pCreature);
 }
 
 void AddSC_boss_drakkisath()

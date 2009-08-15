@@ -26,7 +26,7 @@ EndScriptData */
 
 struct TRINITY_DLL_DECL instance_temple_of_ahnqiraj : public ScriptedInstance
 {
-    instance_temple_of_ahnqiraj(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_temple_of_ahnqiraj(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
     //If Vem is dead...
     bool IsBossDied[3];
@@ -59,15 +59,15 @@ struct TRINITY_DLL_DECL instance_temple_of_ahnqiraj : public ScriptedInstance
         CthunPhase = 0;
     }
 
-    void OnCreatureCreate(Creature *creature, bool add)
+    void OnCreatureCreate(Creature* pCreature, bool add)
     {
-        switch (creature->GetEntry())
+        switch (pCreature->GetEntry())
         {
-            case 15263: SkeramGUID = creature->GetGUID(); break;
-            case 15544: VemGUID = creature->GetGUID(); break;
-            case 15511: KriGUID = creature->GetGUID(); break;
-            case 15276: VeklorGUID = creature->GetGUID(); break;
-            case 15275: VeknilashGUID = creature->GetGUID(); break;
+            case 15263: SkeramGUID = pCreature->GetGUID(); break;
+            case 15544: VemGUID = pCreature->GetGUID(); break;
+            case 15511: KriGUID = pCreature->GetGUID(); break;
+            case 15276: VeklorGUID = pCreature->GetGUID(); break;
+            case 15275: VeknilashGUID = pCreature->GetGUID(); break;
         }
     }
 
@@ -82,17 +82,17 @@ struct TRINITY_DLL_DECL instance_temple_of_ahnqiraj : public ScriptedInstance
         switch(type)
         {
             case DATA_VEMISDEAD:
-                if(IsBossDied[0])
+                if (IsBossDied[0])
                     return 1;
                 break;
 
             case DATA_VEKLORISDEAD:
-                if(IsBossDied[1])
+                if (IsBossDied[1])
                     return 1;
                 break;
 
             case DATA_VEKNILASHISDEAD:
-                if(IsBossDied[2])
+                if (IsBossDied[2])
                     return 1;
                 break;
 
@@ -150,9 +150,9 @@ struct TRINITY_DLL_DECL instance_temple_of_ahnqiraj : public ScriptedInstance
     }
 };
 
-InstanceData* GetInstanceData_instance_temple_of_ahnqiraj(Map* map)
+InstanceData* GetInstanceData_instance_temple_of_ahnqiraj(Map* pMap)
 {
-    return new instance_temple_of_ahnqiraj(map);
+    return new instance_temple_of_ahnqiraj(pMap);
 }
 
 void AddSC_instance_temple_of_ahnqiraj()

@@ -24,25 +24,24 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_mechanar.h"
 
-#define ENCOUNTERS      1
+#define MAX_ENCOUNTER      1
 
 struct TRINITY_DLL_DECL instance_mechanar : public ScriptedInstance
 {
-    instance_mechanar(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_mechanar(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
 
-    uint32 Encounters[ENCOUNTERS];
+    uint32 m_auiEncounter[MAX_ENCOUNTER];
 
     void Initialize()
     {
-        for(uint8 i = 0; i < ENCOUNTERS; ++i)
-            Encounters[i] = NOT_STARTED;
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
     }
 
     bool IsEncounterInProgress() const
     {
-        for(uint8 i = 0; i < ENCOUNTERS; ++i)
-            if(Encounters[i] == IN_PROGRESS)
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            if (m_auiEncounter[i] == IN_PROGRESS)
                 return true;
 
         return false;
@@ -72,9 +71,9 @@ struct TRINITY_DLL_DECL instance_mechanar : public ScriptedInstance
     }
 };
 
-InstanceData* GetInstanceData_instance_mechanar(Map* map)
+InstanceData* GetInstanceData_instance_mechanar(Map* pMap)
 {
-    return new instance_mechanar(map);
+    return new instance_mechanar(pMap);
 }
 
 void AddSC_instance_mechanar()

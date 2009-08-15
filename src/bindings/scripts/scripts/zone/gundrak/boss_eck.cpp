@@ -35,10 +35,10 @@ struct TRINITY_DLL_DECL boss_eckAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if(berserk < diff)
+        if (berserk < diff)
         {
             DoCast(m_creature,SPELL_ECK_BERSERK);
             berserk = 120000;
@@ -49,9 +49,9 @@ struct TRINITY_DLL_DECL boss_eckAI : public ScriptedAI
     void JustDied(Unit* killer)  {}
 };
 
-CreatureAI* GetAI_boss_eck(Creature *_Creature)
+CreatureAI* GetAI_boss_eck(Creature* pCreature)
 {
-    return new boss_eckAI (_Creature);
+    return new boss_eckAI (pCreature);
 }
 
 void AddSC_boss_eck()

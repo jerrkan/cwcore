@@ -40,7 +40,7 @@ EndScriptData */
 
 struct TRINITY_DLL_DECL instance_molten_core : public ScriptedInstance
 {
-    instance_molten_core(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_molten_core(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
     uint64 Lucifron, Magmadar, Gehennas, Garr, Geddon, Shazzrah, Sulfuron, Golemagg, Domo, Ragnaros, FlamewakerPriest;
     uint64 RuneKoro, RuneZeth, RuneMazj, RuneTheri, RuneBlaz, RuneKress, RuneMohn, m_uiFirelordCacheGUID;;
@@ -94,84 +94,84 @@ struct TRINITY_DLL_DECL instance_molten_core : public ScriptedInstance
     };
 
 
-    void OnGameObjectCreate(GameObject *go, bool add)
+    void OnGameObjectCreate(GameObject* pGo, bool add)
     {
-        switch(go->GetEntry())
+        switch(pGo->GetEntry())
         {
         case 176951:                                    //Sulfuron
-            RuneKoro = go->GetGUID();
+            RuneKoro = pGo->GetGUID();
             break;
         case 176952:                                    //Geddon
-            RuneZeth = go->GetGUID();
+            RuneZeth = pGo->GetGUID();
             break;
         case 176953:                                    //Shazzrah
-            RuneMazj = go->GetGUID();
+            RuneMazj = pGo->GetGUID();
             break;
         case 176954:                                    //Golemagg
-            RuneTheri = go->GetGUID();
+            RuneTheri = pGo->GetGUID();
             break;
         case 176955:                                    //Garr
-            RuneBlaz = go->GetGUID();
+            RuneBlaz = pGo->GetGUID();
             break;
         case 176956:                                    //Magmadar
-            RuneKress = go->GetGUID();
+            RuneKress = pGo->GetGUID();
             break;
         case 176957:                                    //Gehennas
-            RuneMohn = go->GetGUID();
+            RuneMohn = pGo->GetGUID();
             break;
         case 179703:
-            m_uiFirelordCacheGUID = go->GetGUID();      //when majordomo event == DONE DoRespawnGameObject(m_uiFirelordCacheGUID,);
+            m_uiFirelordCacheGUID = pGo->GetGUID();      //when majordomo event == DONE DoRespawnGameObject(m_uiFirelordCacheGUID,);
             break;
         }
     }
 
 
-    void OnCreatureCreate(Creature *creature, bool add)
+    void OnCreatureCreate(Creature* pCreature, bool add)
     {
-        switch (creature->GetEntry())
+        switch (pCreature->GetEntry())
         {
             case ID_LUCIFRON:
-                Lucifron = creature->GetGUID();
+                Lucifron = pCreature->GetGUID();
                 break;
 
             case ID_MAGMADAR:
-                Magmadar = creature->GetGUID();
+                Magmadar = pCreature->GetGUID();
                 break;
 
             case ID_GEHENNAS:
-                Gehennas = creature->GetGUID();
+                Gehennas = pCreature->GetGUID();
                 break;
 
             case ID_GARR:
-                Garr = creature->GetGUID();
+                Garr = pCreature->GetGUID();
                 break;
 
             case ID_GEDDON:
-                Geddon = creature->GetGUID();
+                Geddon = pCreature->GetGUID();
                 break;
 
             case ID_SHAZZRAH:
-                Shazzrah = creature->GetGUID();
+                Shazzrah = pCreature->GetGUID();
                 break;
 
             case ID_SULFURON:
-                Sulfuron = creature->GetGUID();
+                Sulfuron = pCreature->GetGUID();
                 break;
 
             case ID_GOLEMAGG:
-                Golemagg = creature->GetGUID();
+                Golemagg = pCreature->GetGUID();
                 break;
 
             case ID_DOMO:
-                Domo = creature->GetGUID();
+                Domo = pCreature->GetGUID();
                 break;
 
             case ID_RAGNAROS:
-                Ragnaros = creature->GetGUID();
+                Ragnaros = pCreature->GetGUID();
                 break;
 
             case ID_FLAMEWAKERPRIEST:
-                FlamewakerPriest = creature->GetGUID();
+                FlamewakerPriest = pCreature->GetGUID();
                 break;
         }
     }
@@ -197,47 +197,47 @@ struct TRINITY_DLL_DECL instance_molten_core : public ScriptedInstance
         switch(type)
         {
             case DATA_LUCIFRONISDEAD:
-                if(IsBossDied[0])
+                if (IsBossDied[0])
                     return 1;
                 break;
 
             case DATA_MAGMADARISDEAD:
-                if(IsBossDied[1])
+                if (IsBossDied[1])
                     return 1;
                 break;
 
             case DATA_GEHENNASISDEAD:
-                if(IsBossDied[2])
+                if (IsBossDied[2])
                     return 1;
                 break;
 
             case DATA_GARRISDEAD:
-                if(IsBossDied[3])
+                if (IsBossDied[3])
                     return 1;
                 break;
 
             case DATA_GEDDONISDEAD:
-                if(IsBossDied[4])
+                if (IsBossDied[4])
                     return 1;
                 break;
 
             case DATA_SHAZZRAHISDEAD:
-                if(IsBossDied[5])
+                if (IsBossDied[5])
                     return 1;
                 break;
 
             case DATA_SULFURONISDEAD:
-                if(IsBossDied[6])
+                if (IsBossDied[6])
                     return 1;
                 break;
 
             case DATA_GOLEMAGGISDEAD:
-                if(IsBossDied[7])
+                if (IsBossDied[7])
                     return 1;
                 break;
 
             case DATA_MAJORDOMOISDEAD:
-                if(IsBossDied[8])
+                if (IsBossDied[8])
                     return 1;
                 break;
         }
@@ -252,9 +252,9 @@ struct TRINITY_DLL_DECL instance_molten_core : public ScriptedInstance
     }
 };
 
-InstanceData* GetInstance_instance_molten_core(Map *map)
+InstanceData* GetInstance_instance_molten_core(Map* pMap)
 {
-    return new instance_molten_core (map);
+    return new instance_molten_core (pMap);
 }
 
 void AddSC_instance_molten_core()

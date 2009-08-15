@@ -44,7 +44,7 @@ struct TRINITY_DLL_DECL boss_zuramatAI : public ScriptedAI
     void UpdateAI(const uint32 diff) 
     {
         //Return since we have no target
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
         
         DoMeleeAttackIfReady();    
@@ -55,7 +55,7 @@ struct TRINITY_DLL_DECL boss_zuramatAI : public ScriptedAI
     }
     void KilledUnit(Unit *victim)
     {
-        if(victim == m_creature)
+        if (victim == m_creature)
             return;
         switch(rand()%3)
         {
@@ -66,9 +66,9 @@ struct TRINITY_DLL_DECL boss_zuramatAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_boss_zuramat(Creature *_Creature)
+CreatureAI* GetAI_boss_zuramat(Creature* pCreature)
 {
-    return new boss_zuramatAI (_Creature);
+    return new boss_zuramatAI (pCreature);
 }
 
 void AddSC_boss_zuramat()

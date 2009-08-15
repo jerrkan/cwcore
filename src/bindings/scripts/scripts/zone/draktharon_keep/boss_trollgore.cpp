@@ -42,7 +42,7 @@ struct TRINITY_DLL_DECL boss_trollgoreAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         DoMeleeAttackIfReady();
@@ -59,9 +59,9 @@ struct TRINITY_DLL_DECL boss_trollgoreAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_boss_trollgore(Creature *_Creature)
+CreatureAI* GetAI_boss_trollgore(Creature* pCreature)
 {
-    return new boss_trollgoreAI (_Creature);
+    return new boss_trollgoreAI (pCreature);
 }
 
 void AddSC_boss_trollgore()

@@ -72,14 +72,14 @@ struct TRINITY_DLL_DECL boss_hazzarahAI : public ScriptedAI
             //We will summon 3 illusions that will spawn on a random gamer and attack this gamer
             //We will just use one model for the beginning
             Unit* target = NULL;
-            for(uint8 i = 0; i < 3;i++)
+            for(uint8 i = 0; i < 3; ++i)
             {
                 target = SelectUnit(SELECT_TARGET_RANDOM,0);
-                if(!target)
+                if (!target)
                     return;
 
                 Illusion = m_creature->SummonCreature(15163,target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(),0,TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN,30000);
-                if(Illusion)
+                if (Illusion)
                     (Illusion->AI())->AttackStart(target);
             }
 
@@ -89,9 +89,9 @@ struct TRINITY_DLL_DECL boss_hazzarahAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_hazzarah(Creature *_Creature)
+CreatureAI* GetAI_boss_hazzarah(Creature* pCreature)
 {
-    return new boss_hazzarahAI (_Creature);
+    return new boss_hazzarahAI (pCreature);
 }
 
 void AddSC_boss_hazzarah()

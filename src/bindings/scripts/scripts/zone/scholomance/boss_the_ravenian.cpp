@@ -51,7 +51,7 @@ struct TRINITY_DLL_DECL boss_theravenianAI : public ScriptedAI
     void JustDied(Unit *killer)
     {
         ScriptedInstance *pInstance = (m_creature->GetInstanceData()) ? (m_creature->GetInstanceData()) : NULL;
-        if(pInstance)
+        if (pInstance)
         {
             pInstance->SetData(DATA_THERAVENIAN_DEATH, 0);
 
@@ -101,9 +101,9 @@ struct TRINITY_DLL_DECL boss_theravenianAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_boss_theravenian(Creature *_Creature)
+CreatureAI* GetAI_boss_theravenian(Creature* pCreature)
 {
-    return new boss_theravenianAI (_Creature);
+    return new boss_theravenianAI (pCreature);
 }
 
 void AddSC_boss_theravenian()

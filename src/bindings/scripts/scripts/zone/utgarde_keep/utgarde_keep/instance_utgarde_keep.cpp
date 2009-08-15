@@ -48,7 +48,7 @@ EndScriptData */
 
 struct TRINITY_DLL_DECL instance_utgarde_keep : public ScriptedInstance
 {
-    instance_utgarde_keep(Map *Map) : ScriptedInstance(Map) {Initialize();};
+    instance_utgarde_keep(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
     uint64 Keleseth;
     uint64 Skarvald;
@@ -71,21 +71,18 @@ struct TRINITY_DLL_DECL instance_utgarde_keep : public ScriptedInstance
         Dalronn =0;
         Ingvar =0;
 
-        for(uint8 i= 0; i < 3; i++)
+        for(uint8 i= 0; i < 3; ++i)
         {
             forge_bellow[i] = 0;
             forge_fire[i] = 0;
             forge_anvil[i] = 0;
         }
-
-        for(uint8 i = 0; i < ENCOUNTERS; ++i)
-            Encounters[i] = NOT_STARTED;
     }
 
     bool IsEncounterInProgress() const
     {
-        for(uint8 i = 0; i < ENCOUNTERS; ++i)
-            if(Encounters[i] == IN_PROGRESS) return true;
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            if (m_auiEncounter[i] == IN_PROGRESS) return true;
 
         return false;
     }
@@ -107,31 +104,31 @@ struct TRINITY_DLL_DECL instance_utgarde_keep : public ScriptedInstance
         return NULL;
     }
 
-    void OnCreatureCreate(Creature *creature, bool add)
+    void OnCreatureCreate(Creature* pCreature, bool add)
     {
-        switch(creature->GetEntry())
+        switch(pCreature->GetEntry())
         {
-            case 23953:    Keleseth = creature->GetGUID();             break;
-            case 24201:    Dalronn = creature->GetGUID();              break;
-            case 24200:    Skarvald = creature->GetGUID();             break;
-            case 23954:    Ingvar = creature->GetGUID();               break;
+            case 23953:    Keleseth = pCreature->GetGUID();             break;
+            case 24201:    Dalronn = pCreature->GetGUID();              break;
+            case 24200:    Skarvald = pCreature->GetGUID();             break;
+            case 23954:    Ingvar = pCreature->GetGUID();               break;
         }
     }
 
-    void OnGameObjectCreate(GameObject *go, bool add)
+    void OnGameObjectCreate(GameObject* pGo, bool add)
     {
-        switch(go->GetEntry())
+        switch(pGo->GetEntry())
         {
         //door and object id
-        case ENTRY_BELLOW_1: forge_bellow[0] = go->GetGUID(); break;
-        case ENTRY_BELLOW_2: forge_bellow[1] = go->GetGUID(); break;
-        case ENTRY_BELLOW_3: forge_bellow[2] = go->GetGUID(); break;
-        case ENTRY_FORGEFIRE_1: forge_fire[0] = go->GetGUID(); break;
-        case ENTRY_FORGEFIRE_2: forge_fire[1] = go->GetGUID(); break;
-        case ENTRY_FORGEFIRE_3: forge_fire[2] = go->GetGUID(); break;
-        case ENTRY_GLOWING_ANVIL_1: forge_anvil[0] = go->GetGUID(); break;
-        case ENTRY_GLOWING_ANVIL_2: forge_anvil[1] = go->GetGUID(); break;
-        case ENTRY_GLOWING_ANVIL_3: forge_anvil[2] = go->GetGUID(); break;
+        case ENTRY_BELLOW_1: forge_bellow[0] = pGo->GetGUID(); break;
+        case ENTRY_BELLOW_2: forge_bellow[1] = pGo->GetGUID(); break;
+        case ENTRY_BELLOW_3: forge_bellow[2] = pGo->GetGUID(); break;
+        case ENTRY_FORGEFIRE_1: forge_fire[0] = pGo->GetGUID(); break;
+        case ENTRY_FORGEFIRE_2: forge_fire[1] = pGo->GetGUID(); break;
+        case ENTRY_FORGEFIRE_3: forge_fire[2] = pGo->GetGUID(); break;
+        case ENTRY_GLOWING_ANVIL_1: forge_anvil[0] = pGo->GetGUID(); break;
+        case ENTRY_GLOWING_ANVIL_2: forge_anvil[1] = pGo->GetGUID(); break;
+        case ENTRY_GLOWING_ANVIL_3: forge_anvil[2] = pGo->GetGUID(); break;
         }
     }
 
@@ -153,28 +150,28 @@ struct TRINITY_DLL_DECL instance_utgarde_keep : public ScriptedInstance
         switch(type)
         {
         case DATA_PRINCEKELESETH_EVENT:
-            if(data == DONE)
+            if (data == DONE)
             {
                 //HandleGameObject(doorname, 0);
             }
-            Encounters[0] = data;
+            m_auiEncounter[0] = data;
             break;
         case DATA_SKARVALD_DALRONN_EVENT:
-            if(data == DONE)
+            if (data == DONE)
             {
                 //HandleGameObject(doorname, 0);
             }
-            Encounters[1] = data;
+            m_auiEncounter[1] = data;
             break;
         case DATA_INGVAR_EVENT:
-            if(data == DONE)
+            if (data == DONE)
             {
                 //HandleGameObject(doorname, 0);
             }
-            Encounters[2] = data;
+            m_auiEncounter[2] = data;
             break;
         case EVENT_FORGE_1:
-            if(data == NOT_STARTED)
+            if (data == NOT_STARTED)
             {
                 HandleGameObject(forge_bellow[0],false);
                 HandleGameObject(forge_fire[0],false);
@@ -187,7 +184,7 @@ struct TRINITY_DLL_DECL instance_utgarde_keep : public ScriptedInstance
             }
             break;
         case EVENT_FORGE_2:
-            if(data == NOT_STARTED)
+            if (data == NOT_STARTED)
             {
                 HandleGameObject(forge_bellow[1],false);
                 HandleGameObject(forge_fire[1],false);
@@ -200,7 +197,7 @@ struct TRINITY_DLL_DECL instance_utgarde_keep : public ScriptedInstance
             }
             break;
         case EVENT_FORGE_3:
-            if(data == NOT_STARTED)
+            if (data == NOT_STARTED)
             {
                 HandleGameObject(forge_bellow[2],false);
                 HandleGameObject(forge_fire[2],false);
@@ -263,7 +260,7 @@ struct TRINITY_DLL_DECL instance_utgarde_keep : public ScriptedInstance
         std::istringstream loadStream(in);
         loadStream >> dataHead1 >> dataHead2 >> data0 >> data1 >> data2;
 
-        if( dataHead1 == 'U' && dataHead2 == 'K')
+        if (dataHead1 == 'U' && dataHead2 == 'K')
         {
             m_auiEncounter[0] = data0;
             m_auiEncounter[1] = data1;
@@ -279,9 +276,9 @@ struct TRINITY_DLL_DECL instance_utgarde_keep : public ScriptedInstance
     }
 };
 
-InstanceData* GetInstanceData_instance_utgarde_keep(Map* map)
+InstanceData* GetInstanceData_instance_utgarde_keep(Map* pMap)
 {
-   return new instance_utgarde_keep(map);
+   return new instance_utgarde_keep(pMap);
 }
 
 void AddSC_instance_utgarde_keep()

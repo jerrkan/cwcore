@@ -36,7 +36,7 @@ EndScriptData */
 // But we cannot add loots to gameobject, so we have to use the fixed loot_template
 struct SHostageInfo
 {
-    uint32 npc, go;
+    uint32 npc, pGo;
     float x, y, z, o;
 };
 
@@ -51,7 +51,7 @@ static SHostageInfo HostageInfo[] =
 
 struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
 {
-    instance_zulaman(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_zulaman(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
     uint64 HarkorsSatchelGUID;
     uint64 TanzarsTrunkGUID;
@@ -92,23 +92,21 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
         BossKilled = 0;
         ChestLooted = 0;
 
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
-            Encounters[i] = NOT_STARTED;
-        for(uint8 i = 0; i < RAND_VENDOR; i++)
+        for(uint8 i = 0; i < RAND_VENDOR; ++i)
             RandVendor[i] = NOT_STARTED;
     }
 
     bool IsEncounterInProgress() const
     {
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
-            if(Encounters[i] == IN_PROGRESS) return true;
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            if (m_auiEncounter[i] == IN_PROGRESS) return true;
 
         return false;
     }
 
-    void OnCreatureCreate(Creature *creature, bool add)
+    void OnCreatureCreate(Creature* pCreature, bool add)
     {
-        switch(creature->GetEntry())
+        switch(pCreature->GetEntry())
         {
         case 23578://janalai
         case 23863://zuljin
@@ -119,20 +117,20 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
         }
     }
 
-    void OnGameObjectCreate(GameObject *go, bool add)
+    void OnGameObjectCreate(GameObject* pGo, bool add)
     {
-        switch(go->GetEntry())
+        switch(pGo->GetEntry())
         {
-        case 186303: HalazziDoorGUID = go->GetGUID(); break;
-        case 186304: ZulJinGateGUID  = go->GetGUID(); break;
-        case 186305: HexLordGateGUID = go->GetGUID(); break;
-        case 186858: AkilzonDoorGUID = go->GetGUID(); break;
-        case 186859: ZulJinDoorGUID  = go->GetGUID(); break;
+        case 186303: HalazziDoorGUID = pGo->GetGUID(); break;
+        case 186304: ZulJinGateGUID  = pGo->GetGUID(); break;
+        case 186305: HexLordGateGUID = pGo->GetGUID(); break;
+        case 186858: AkilzonDoorGUID = pGo->GetGUID(); break;
+        case 186859: ZulJinDoorGUID  = pGo->GetGUID(); break;
 
-        case 187021: HarkorsSatchelGUID  = go->GetGUID(); break;
-        case 186648: TanzarsTrunkGUID = go->GetGUID(); break;
-        case 186672: AshlisBagGUID = go->GetGUID(); break;
-        case 186667: KrazsPackageGUID  = go->GetGUID(); break;
+        case 187021: HarkorsSatchelGUID  = pGo->GetGUID(); break;
+        case 186648: TanzarsTrunkGUID = pGo->GetGUID(); break;
+        case 186672: AshlisBagGUID = pGo->GetGUID(); break;
+        case 186667: KrazsPackageGUID  = pGo->GetGUID(); break;
         default: break;
 
         }
@@ -141,7 +139,7 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
 
     void SummonHostage(uint8 num)
     {
-        if(!QuestMinute)
+        if (!QuestMinute)
             return;
 
         Map::PlayerList const &PlayerList = instance->GetPlayers();
@@ -149,9 +147,9 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
             return;
 
         Map::PlayerList::const_iterator i = PlayerList.begin();
-        if(Player* i_pl = i->getSource())
+        if (Player* i_pl = i->getSource())
         {
-            if(Unit* Hostage = i_pl->SummonCreature(HostageInfo[num].npc, HostageInfo[num].x, HostageInfo[num].y, HostageInfo[num].z, HostageInfo[num].o, TEMPSUMMON_DEAD_DESPAWN, 0))
+            if (Unit* Hostage = i_pl->SummonCreature(HostageInfo[num].npc, HostageInfo[num].x, HostageInfo[num].y, HostageInfo[num].z, HostageInfo[num].o, TEMPSUMMON_DEAD_DESPAWN, 0))
             {
                 Hostage->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 Hostage->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
@@ -161,18 +159,11 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
 
     void CheckInstanceStatus()
     {
-        if(BossKilled >= 4)
+        if (BossKilled >= 4)
             HandleGameObject(HexLordGateGUID, true);
 
-        if(BossKilled >= 5)
+        if (BossKilled >= 5)
             HandleGameObject(ZulJinGateGUID, true);
-    }
-
-    void UpdateWorldState(uint32 field, uint32 value)
-    {
-        WorldPacket data(SMSG_UPDATE_WORLD_STATE, 8);
-        data << field << value;
-        instance->SendToPlayers(&data);
     }
 
     std::string GetSaveData()
@@ -187,14 +178,14 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
 
     void Load(const char* load)
     {
-        if(!load) return;
+        if (!load) return;
         std::istringstream ss(load);
         //error_log("TSCR: Zul'aman loaded, %s.", ss.str().c_str());
         char dataHead; // S
         uint16 data1, data2, data3;
         ss >> dataHead >> data1 >> data2 >> data3;
         //error_log("TSCR: Zul'aman loaded, %d %d %d.", data1, data2, data3);
-        if(dataHead == 'S')
+        if (dataHead == 'S')
         {
             BossKilled = data1;
             ChestLooted = data2;
@@ -207,13 +198,13 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
         switch(type)
         {
         case DATA_NALORAKKEVENT:
-            Encounters[0] = data;
-            if(data == DONE)
+            m_auiEncounter[0] = data;
+            if (data == DONE)
             {
-                if(QuestMinute)
+                if (QuestMinute)
                 {
                     QuestMinute += 15;
-                    UpdateWorldState(3106, QuestMinute);
+                    DoUpdateWorldState(3106, QuestMinute);
                 }
                 SummonHostage(0);
             }
@@ -221,34 +212,34 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
         case DATA_AKILZONEVENT:
             m_auiEncounter[1] = data;
             HandleGameObject(AkilzonDoorGUID, data != IN_PROGRESS);
-            if(data == DONE)
+            if (data == DONE)
             {
-                if(QuestMinute)
+                if (QuestMinute)
                 {
                     QuestMinute += 10;
-                    UpdateWorldState(3106, QuestMinute);
+                    DoUpdateWorldState(3106, QuestMinute);
                 }
                 SummonHostage(1);
             }
             break;
         case DATA_JANALAIEVENT:
-            Encounters[2] = data;
-            if(data == DONE) SummonHostage(2);
+            m_auiEncounter[2] = data;
+            if (data == DONE) SummonHostage(2);
             break;
         case DATA_HALAZZIEVENT:
-            Encounters[3] = data;
+            m_auiEncounter[3] = data;
             HandleGameObject(HalazziDoorGUID, data != IN_PROGRESS);
-            if(data == DONE) SummonHostage(3);
+            if (data == DONE) SummonHostage(3);
             break;
         case DATA_HEXLORDEVENT:
-            Encounters[4] = data;
-            if(data == IN_PROGRESS)
+            m_auiEncounter[4] = data;
+            if (data == IN_PROGRESS)
                 HandleGameObject(HexLordGateGUID, false);
-            else if(data == NOT_STARTED)
+            else if (data == NOT_STARTED)
                 CheckInstanceStatus();
             break;
         case DATA_ZULJINEVENT:
-            Encounters[5] = data;
+            m_auiEncounter[5] = data;
             HandleGameObject(ZulJinDoorGUID, data != IN_PROGRESS);
             break;
         case DATA_CHESTLOOTED:
@@ -263,13 +254,13 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
             break;
         }
 
-        if(data == DONE)
+        if (data == DONE)
         {
             BossKilled++;
-            if(QuestMinute && BossKilled >= 4)
+            if (QuestMinute && BossKilled >= 4)
             {
                 QuestMinute = 0;
-                UpdateWorldState(3104, 0);
+                DoUpdateWorldState(3104, 0);
             }
             CheckInstanceStatus();
             SaveToDB();
@@ -295,27 +286,27 @@ struct TRINITY_DLL_DECL instance_zulaman : public ScriptedInstance
 
     void Update(uint32 diff)
     {
-        if(QuestMinute)
+        if (QuestMinute)
         {
-            if(QuestTimer < diff)
+            if (QuestTimer < diff)
             {
                 QuestMinute--;
                 SaveToDB();
                 QuestTimer += 60000;
-                if(QuestMinute)
+                if (QuestMinute)
                 {
-                    UpdateWorldState(3104, 1);
-                    UpdateWorldState(3106, QuestMinute);
-                }else UpdateWorldState(3104, 0);
+                    DoUpdateWorldState(3104, 1);
+                    DoUpdateWorldState(3106, QuestMinute);
+                }else DoUpdateWorldState(3104, 0);
             }
             QuestTimer -= diff;
         }
     }
 };
 
-InstanceData* GetInstanceData_instance_zulaman(Map* map)
+InstanceData* GetInstanceData_instance_zulaman(Map* pMap)
 {
-    return new instance_zulaman(map);
+    return new instance_zulaman(pMap);
 }
 
 void AddSC_instance_zulaman()

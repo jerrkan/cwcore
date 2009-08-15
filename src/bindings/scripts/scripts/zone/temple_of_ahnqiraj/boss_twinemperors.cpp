@@ -94,7 +94,7 @@ struct TRINITY_DLL_DECL boss_twinemperorsAI : public ScriptedAI
 
     Creature *GetOtherBoss()
     {
-        if(pInstance)
+        if (pInstance)
         {
             return Unit::GetCreature(*m_creature, pInstance->GetData64(IAmVeklor() ? DATA_VEKNILASH : DATA_VEKLOR));
         }
@@ -212,7 +212,7 @@ struct TRINITY_DLL_DECL boss_twinemperorsAI : public ScriptedAI
 
         Teleport_Timer = TELEPORTTIME;
 
-        if(IAmVeklor())
+        if (IAmVeklor())
             return;                                         // mechanics handled by veknilash so they teleport exactly at the same time and to correct coordinates
 
         Creature *pOtherBoss = GetOtherBoss();
@@ -265,7 +265,7 @@ struct TRINITY_DLL_DECL boss_twinemperorsAI : public ScriptedAI
                 m_creature->clearUnitState(UNIT_STAT_STUNNED);
                 Unit *nearu = m_creature->SelectNearestTarget(100);
                 //DoYell(nearu->GetName(), LANG_UNIVERSAL, 0);
-                if(nearu)
+                if (nearu)
                 {
                     AttackStart(nearu);
                     m_creature->getThreatManager().addThreat(nearu, 10000);
@@ -305,7 +305,7 @@ struct TRINITY_DLL_DECL boss_twinemperorsAI : public ScriptedAI
                 attackRadius = PULL_RANGE;
             if (m_creature->IsWithinDistInMap(who, attackRadius) && m_creature->GetDistanceZ(who) <= /*CREATURE_Z_ATTACK_RANGE*/7 /*there are stairs*/)
             {
-                //if(who->HasStealthAura())
+                //if (who->HasStealthAura())
                 //    who->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
                 AttackStart(who);
             }
@@ -328,7 +328,7 @@ struct TRINITY_DLL_DECL boss_twinemperorsAI : public ScriptedAI
             Creature *c = *iter;
             if (c)
             {
-                if(c->isDead())
+                if (c->isDead())
                 {
                     c->Respawn();
                     c->setFaction(7);
@@ -418,7 +418,7 @@ struct TRINITY_DLL_DECL boss_veknilashAI : public boss_twinemperorsAI
         (target->AI())->AttackStart(m_creature->getThreatManager().getHostilTarget());
         SpellEntry *spell = GET_SPELL(SPELL_MUTATE_BUG);
         uint8 eff_mask=0;
-        for (int i=0; i<3; i++)
+        for (int i=0; i<3; ++i)
         {
             if (!spell->Effect[i])
                 continue;
@@ -458,7 +458,7 @@ struct TRINITY_DLL_DECL boss_veknilashAI : public boss_twinemperorsAI
         TryHealBrother(diff);
 
         //Teleporting to brother
-        if(Teleport_Timer < diff)
+        if (Teleport_Timer < diff)
         {
             TeleportToMyBrother();
         }else Teleport_Timer -= diff;
@@ -503,7 +503,7 @@ struct TRINITY_DLL_DECL boss_veklorAI : public boss_twinemperorsAI
         target->setFaction(14);
         SpellEntry *spell = GET_SPELL(SPELL_EXPLODEBUG);
         uint8 eff_mask=0;
-        for (int i=0; i<3; i++)
+        for (int i=0; i<3; ++i)
         {
             if (!spell->Effect[i])
                 continue;
@@ -563,7 +563,7 @@ struct TRINITY_DLL_DECL boss_veklorAI : public boss_twinemperorsAI
         TryHealBrother(diff);
 
         //Teleporting to brother
-        if(Teleport_Timer < diff)
+        if (Teleport_Timer < diff)
         {
             TeleportToMyBrother();
         }else Teleport_Timer -= diff;
@@ -582,7 +582,7 @@ struct TRINITY_DLL_DECL boss_veklorAI : public boss_twinemperorsAI
         if (who->isTargetableForAttack())
         {
             // VL doesn't melee
-            if ( m_creature->Attack(who, false) )
+            if (m_creature->Attack(who, false))
             {
                 m_creature->GetMotionMaster()->MoveChase(who, VEKLOR_DIST, 0);
                 m_creature->AddThreat(who, 0.0f);
@@ -591,14 +591,14 @@ struct TRINITY_DLL_DECL boss_veklorAI : public boss_twinemperorsAI
     }
 };
 
-CreatureAI* GetAI_boss_veknilash(Creature *_Creature)
+CreatureAI* GetAI_boss_veknilash(Creature* pCreature)
 {
-    return new boss_veknilashAI (_Creature);
+    return new boss_veknilashAI (pCreature);
 }
 
-CreatureAI* GetAI_boss_veklor(Creature *_Creature)
+CreatureAI* GetAI_boss_veklor(Creature* pCreature)
 {
-    return new boss_veklorAI (_Creature);
+    return new boss_veklorAI (pCreature);
 }
 
 void AddSC_boss_twinemperors()

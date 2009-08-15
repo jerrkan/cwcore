@@ -59,7 +59,7 @@ struct TRINITY_DLL_DECL boss_ayamissAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         //If he is 70% start phase 2
@@ -92,9 +92,9 @@ struct TRINITY_DLL_DECL boss_ayamissAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_ayamiss(Creature *_Creature)
+CreatureAI* GetAI_boss_ayamiss(Creature* pCreature)
 {
-    return new boss_ayamissAI (_Creature);
+    return new boss_ayamissAI (pCreature);
 }
 
 void AddSC_boss_ayamiss()

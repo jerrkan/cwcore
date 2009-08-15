@@ -58,7 +58,7 @@ struct TRINITY_DLL_DECL boss_moira_bronzebeardAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         //MindBlast_Timer
@@ -84,9 +84,9 @@ struct TRINITY_DLL_DECL boss_moira_bronzebeardAI : public ScriptedAI
 
     }
 };
-CreatureAI* GetAI_boss_moira_bronzebeard(Creature *_Creature)
+CreatureAI* GetAI_boss_moira_bronzebeard(Creature* pCreature)
 {
-    return new boss_moira_bronzebeardAI (_Creature);
+    return new boss_moira_bronzebeardAI (pCreature);
 }
 
 void AddSC_boss_moira_bronzebeard()

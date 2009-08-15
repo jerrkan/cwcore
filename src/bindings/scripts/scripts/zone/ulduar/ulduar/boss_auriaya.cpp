@@ -56,17 +56,17 @@ struct TRINITY_DLL_DECL boss_auriaya_AI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
-        if( TERRIFYING_SCREECH_Timer < diff )
+        if (TERRIFYING_SCREECH_Timer < diff)
         {
             DoCast(m_creature,SPELL_TERRIFYING_SCREECH);
             DoScriptText(SAY_SLAY_1, m_creature);
             TERRIFYING_SCREECH_Timer = 360000;
         } else TERRIFYING_SCREECH_Timer -= diff;
 
-        if( SONIC_BOOM_Timer < diff )
+        if (SONIC_BOOM_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_SONIC_BOOM);
             SONIC_BOOM_Timer = 20000;
@@ -76,9 +76,9 @@ struct TRINITY_DLL_DECL boss_auriaya_AI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_boss_auriaya(Creature *_Creature)
+CreatureAI* GetAI_boss_auriaya(Creature* pCreature)
 {
-    return new boss_auriaya_AI (_Creature);
+    return new boss_auriaya_AI (pCreature);
 }
 void AddSC_boss_auriaya()
 {

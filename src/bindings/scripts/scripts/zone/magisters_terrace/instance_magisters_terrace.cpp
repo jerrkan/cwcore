@@ -35,7 +35,7 @@ EndScriptData */
 
 struct TRINITY_DLL_DECL instance_magisters_terrace : public ScriptedInstance
 {
-    instance_magisters_terrace(Map* map) : ScriptedInstance(map) {Initialize();}
+    instance_magisters_terrace(Map* pMap) : ScriptedInstance(pMap) {Initialize();}
 
     uint32 m_auiEncounter[MAX_ENCOUNTER];
     uint32 DelrissaDeathCount;
@@ -77,8 +77,8 @@ struct TRINITY_DLL_DECL instance_magisters_terrace : public ScriptedInstance
 
     bool IsEncounterInProgress() const
     {
-        for(uint8 i = 0; i < NUMBER_OF_ENCOUNTERS; ++i)
-            if(Encounters[i] == IN_PROGRESS)
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            if (m_auiEncounter[i] == IN_PROGRESS)
                 return true;
         return false;
     }
@@ -125,29 +125,29 @@ struct TRINITY_DLL_DECL instance_magisters_terrace : public ScriptedInstance
         }
     }
 
-    void OnCreatureCreate(Creature *creature, bool add)
+    void OnCreatureCreate(Creature* pCreature, bool add)
     {
-        switch(creature->GetEntry())
+        switch(pCreature->GetEntry())
         {
-            case 24723: SelinGUID = creature->GetGUID(); break;
-            case 24560: DelrissaGUID = creature->GetGUID(); break;
-            case 24722: FelCrystals.push_back(creature->GetGUID()); break;
+            case 24723: SelinGUID = pCreature->GetGUID(); break;
+            case 24560: DelrissaGUID = pCreature->GetGUID(); break;
+            case 24722: FelCrystals.push_back(pCreature->GetGUID()); break;
         }
     }
 
-    void OnGameObjectCreate(GameObject *go, bool add)
+    void OnGameObjectCreate(GameObject* pGo, bool add)
     {
-        switch(go->GetEntry())
+        switch(pGo->GetEntry())
         {
-            case 187896:  VexallusDoorGUID = go->GetGUID();       break;
+            case 187896:  VexallusDoorGUID = pGo->GetGUID();       break;
             //SunwellRaid Gate 02
-            case 187979:  SelinDoorGUID = go->GetGUID();          break;
+            case 187979:  SelinDoorGUID = pGo->GetGUID();          break;
             //Assembly Chamber Door
-            case 188065:  SelinEncounterDoorGUID = go->GetGUID(); break;
-            case 187770:  DelrissaDoorGUID = go->GetGUID();       break;
-            case 188064:  KaelDoorGUID = go->GetGUID();           break;
-            case 188165:  KaelStatue[0] = go->GetGUID();          break;
-            case 188166:  KaelStatue[1] = go->GetGUID();          break;
+            case 188065:  SelinEncounterDoorGUID = pGo->GetGUID(); break;
+            case 187770:  DelrissaDoorGUID = pGo->GetGUID();       break;
+            case 188064:  KaelDoorGUID = pGo->GetGUID();           break;
+            case 188165:  KaelStatue[0] = pGo->GetGUID();          break;
+            case 188166:  KaelStatue[1] = pGo->GetGUID();          break;
         }
     }
 
@@ -167,13 +167,13 @@ struct TRINITY_DLL_DECL instance_magisters_terrace : public ScriptedInstance
 
             case DATA_FEL_CRYSTAL:
             {
-                if(FelCrystals.empty())
+                if (FelCrystals.empty())
                 {
                     error_log("TSCR: Magisters Terrace: No Fel Crystals loaded in Inst Data");
                     return 0;
                 }
 
-                if(!InitializedItr)
+                if (!InitializedItr)
                 {
                     CrystalItr = FelCrystals.begin();
                     InitializedItr = true;
@@ -188,9 +188,9 @@ struct TRINITY_DLL_DECL instance_magisters_terrace : public ScriptedInstance
     }
 };
 
-InstanceData* GetInstanceData_instance_magisters_terrace(Map* map)
+InstanceData* GetInstanceData_instance_magisters_terrace(Map* pMap)
 {
-    return new instance_magisters_terrace(map);
+    return new instance_magisters_terrace(pMap);
 }
 
 void AddSC_instance_magisters_terrace()

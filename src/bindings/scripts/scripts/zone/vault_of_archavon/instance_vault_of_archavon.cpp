@@ -5,37 +5,36 @@
 
 struct TRINITY_DLL_DECL instance_archavon : public ScriptedInstance
 {
-    instance_archavon(Map *Map) : ScriptedInstance(Map) {Initialize();};
+    instance_archavon(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
     std::string strInstData;
     uint64 Archavon;
     uint64 Emalon;
-    uint32 Encounters[NUMBER_OF_ENCOUNTERS];
+    uint32 m_auiEncounter[NUMBER_OF_ENCOUNTERS];
 
     void Initialize()
     {
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+
         Archavon = 0;
         Emalon = 0;
-
-        for(uint8 i = 0; i < NUMBER_OF_ENCOUNTERS; i++)
-            Encounters[i] = NOT_STARTED;
     }
 
     bool IsEncounterInProgress() const
     {
         for(uint8 i = 0; i < NUMBER_OF_ENCOUNTERS; ++i)
-            if(Encounters[i] == IN_PROGRESS)
+            if (m_auiEncounter[i] == IN_PROGRESS)
                 return true;
 
         return false;
     }
 
-    void OnCreatureCreate(Creature *creature, bool add)
+    void OnCreatureCreate(Creature* pCreature, bool add)
     {
-        switch(creature->GetEntry())
+        switch(pCreature->GetEntry())
         {
-            case 31125:    Archavon = creature->GetGUID();        break;
-            case 33993:    Emalon = creature->GetGUID();        break;
+            case 31125:    Archavon = pCreature->GetGUID();        break;
+            case 33993:    Emalon = pCreature->GetGUID();        break;
         }
     }
 
@@ -109,9 +108,9 @@ struct TRINITY_DLL_DECL instance_archavon : public ScriptedInstance
     }
 };
 
-InstanceData* GetInstanceData_instance_archavon(Map* map)
+InstanceData* GetInstanceData_instance_archavon(Map* pMap)
 {
-    return new instance_archavon(map);
+    return new instance_archavon(pMap);
 }
 
 void AddSC_instance_archavon()

@@ -51,7 +51,7 @@ struct TRINITY_DLL_DECL npc_forest_frogAI : public ScriptedAI
 
     void DoSpawnRandom()
     {
-        if( pInstance )
+        if (pInstance)
         {
             uint32 cEntry = 0;
             switch(rand()%11)
@@ -69,31 +69,31 @@ struct TRINITY_DLL_DECL npc_forest_frogAI : public ScriptedAI
                 case 10: cEntry = 24455; break;         //Hollee
             }
 
-            if( !pInstance->GetData(TYPE_RAND_VENDOR_1) )
-                if(rand()%10 == 1) cEntry = 24408;      //Gunter
-            if( !pInstance->GetData(TYPE_RAND_VENDOR_2) )
-                if(rand()%10 == 1) cEntry = 24409;      //Kyren
+            if (!pInstance->GetData(TYPE_RAND_VENDOR_1))
+                if (rand()%10 == 1) cEntry = 24408;      //Gunter
+            if (!pInstance->GetData(TYPE_RAND_VENDOR_2))
+                if (rand()%10 == 1) cEntry = 24409;      //Kyren
 
-            if( cEntry ) m_creature->UpdateEntry(cEntry);
+            if (cEntry) m_creature->UpdateEntry(cEntry);
 
-            if( cEntry == 24408) pInstance->SetData(TYPE_RAND_VENDOR_1,DONE);
-            if( cEntry == 24409) pInstance->SetData(TYPE_RAND_VENDOR_2,DONE);
+            if (cEntry == 24408) pInstance->SetData(TYPE_RAND_VENDOR_1,DONE);
+            if (cEntry == 24409) pInstance->SetData(TYPE_RAND_VENDOR_2,DONE);
         }
     }
 
     void SpellHit(Unit *caster, const SpellEntry *spell)
     {
-        if( spell->Id == SPELL_REMOVE_AMANI_CURSE && caster->GetTypeId() == TYPEID_PLAYER && m_creature->GetEntry() == ENTRY_FOREST_FROG )
+        if (spell->Id == SPELL_REMOVE_AMANI_CURSE && caster->GetTypeId() == TYPEID_PLAYER && m_creature->GetEntry() == ENTRY_FOREST_FROG)
         {
             //increase or decrease chance of mojo?
-            if( rand()%99 == 50 ) DoCast(caster,SPELL_PUSH_MOJO,true);
+            if (rand()%99 == 50) DoCast(caster,SPELL_PUSH_MOJO,true);
             else DoSpawnRandom();
         }
     }
 };
-CreatureAI* GetAI_npc_forest_frog(Creature *_Creature)
+CreatureAI* GetAI_npc_forest_frog(Creature* pCreature)
 {
-    return new npc_forest_frogAI (_Creature);
+    return new npc_forest_frogAI (pCreature);
 }
 
 /*######
@@ -114,51 +114,51 @@ struct TRINITY_DLL_DECL npc_zulaman_hostageAI : public ScriptedAI
     void EnterCombat(Unit *who) {}
     void JustDied(Unit* who)
     {
-        Player* player = Unit::GetPlayer(PlayerGUID);
-        if(player) player->SendLoot(m_creature->GetGUID(), LOOT_CORPSE);
+        Player* pPlayer = Unit::GetPlayer(PlayerGUID);
+        if (pPlayer) pPlayer->SendLoot(m_creature->GetGUID(), LOOT_CORPSE);
     }
     void UpdateAI(const uint32 diff)
     {
-        if(IsLoot) m_creature->CastSpell(m_creature, 7, false);
+        if (IsLoot) m_creature->CastSpell(m_creature, 7, false);
     }
 };
 
-bool GossipHello_npc_zulaman_hostage(Player* player, Creature* _Creature)
+bool GossipHello_npc_zulaman_hostage(Player* pPlayer, Creature* pCreature)
 {
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HOSTAGE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    player->SEND_GOSSIP_MENU(_Creature->GetNpcTextId(), _Creature->GetGUID());
+    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HOSTAGE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+    pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
     return true;
 }
 
-bool GossipSelect_npc_zulaman_hostage(Player* player, Creature* _Creature, uint32 sender, uint32 action)
+bool GossipSelect_npc_zulaman_hostage(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
 {
-    if(action == GOSSIP_ACTION_INFO_DEF + 1)
-        player->CLOSE_GOSSIP_MENU();
+    if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
+        pPlayer->CLOSE_GOSSIP_MENU();
 
-    if(!_Creature->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP))
+    if (!pCreature->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP))
         return true;
-    _Creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+    pCreature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
 
-    ScriptedInstance* pInstance = (_Creature->GetInstanceData());
-    if(pInstance)
+    ScriptedInstance* pInstance = (pCreature->GetInstanceData());
+    if (pInstance)
     {
         //uint8 progress = pInstance->GetData(DATA_CHESTLOOTED);
         pInstance->SetData(DATA_CHESTLOOTED, 0);
         float x, y, z;
-        _Creature->GetPosition(x, y, z);
-        uint32 entry = _Creature->GetEntry();
+        pCreature->GetPosition(x, y, z);
+        uint32 entry = pCreature->GetEntry();
         for(uint8 i = 0; i < 4; ++i)
         {
-            if(HostageEntry[i] == entry)
+            if (HostageEntry[i] == entry)
             {
-                _Creature->SummonGameObject(ChestEntry[i], x-2, y, z, 0, 0, 0, 0, 0, 0);
+                pCreature->SummonGameObject(ChestEntry[i], x-2, y, z, 0, 0, 0, 0, 0, 0);
                 break;
             }
         }
-        /*Creature* summon = _Creature->SummonCreature(HostageInfo[progress], x-2, y, z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
-        if(summon)
+        /*Creature* summon = pCreature->SummonCreature(HostageInfo[progress], x-2, y, z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
+        if (summon)
         {
-            CAST_AI(npc_zulaman_hostageAI, summon->AI())->PlayerGUID = player->GetGUID();
+            CAST_AI(npc_zulaman_hostageAI, summon->AI())->PlayerGUID = pPlayer->GetGUID();
             CAST_AI(npc_zulaman_hostageAI, summon->AI())->IsLoot = true;
             summon->SetDisplayId(10056);
             summon->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -168,9 +168,9 @@ bool GossipSelect_npc_zulaman_hostage(Player* player, Creature* _Creature, uint3
     return true;
 }
 
-CreatureAI* GetAI_npc_zulaman_hostage(Creature *_Creature)
+CreatureAI* GetAI_npc_zulaman_hostage(Creature* pCreature)
 {
-    return new npc_zulaman_hostageAI(_Creature);
+    return new npc_zulaman_hostageAI(pCreature);
 }
 
 void AddSC_zulaman()

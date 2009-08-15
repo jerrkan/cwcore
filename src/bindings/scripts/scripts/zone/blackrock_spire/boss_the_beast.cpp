@@ -49,7 +49,7 @@ struct TRINITY_DLL_DECL boss_thebeastAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         //Flamebreak_Timer
@@ -78,9 +78,9 @@ struct TRINITY_DLL_DECL boss_thebeastAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_thebeast(Creature *_Creature)
+CreatureAI* GetAI_boss_thebeast(Creature* pCreature)
 {
-    return new boss_thebeastAI (_Creature);
+    return new boss_thebeastAI (pCreature);
 }
 
 void AddSC_boss_thebeast()

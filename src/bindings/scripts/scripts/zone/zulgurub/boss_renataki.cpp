@@ -111,13 +111,13 @@ struct TRINITY_DLL_DECL boss_renatakiAI : public ScriptedAI
         }
 
         //Resetting some aggro so he attacks other gamers
-        if(!Invisible)
+        if (!Invisible)
             if (Aggro_Timer < diff)
         {
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,1);
 
-            if(DoGetThreat(m_creature->getVictim()))
+            if (DoGetThreat(m_creature->getVictim()))
                 DoModifyThreatPercent(m_creature->getVictim(),-50);
 
             if (target)
@@ -127,7 +127,7 @@ struct TRINITY_DLL_DECL boss_renatakiAI : public ScriptedAI
         }else Aggro_Timer -= diff;
 
         if (!Invisible)
-            if(ThousandBlades_Timer < diff)
+            if (ThousandBlades_Timer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_THOUSANDBLADES);
             ThousandBlades_Timer = 7000 + rand()%5000;
@@ -136,9 +136,9 @@ struct TRINITY_DLL_DECL boss_renatakiAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_renataki(Creature *_Creature)
+CreatureAI* GetAI_boss_renataki(Creature* pCreature)
 {
-    return new boss_renatakiAI (_Creature);
+    return new boss_renatakiAI (pCreature);
 }
 
 void AddSC_boss_renataki()

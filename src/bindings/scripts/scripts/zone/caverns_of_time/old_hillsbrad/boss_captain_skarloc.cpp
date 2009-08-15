@@ -91,7 +91,7 @@ struct TRINITY_DLL_DECL boss_captain_skarlocAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         //Holy_Light
@@ -102,7 +102,7 @@ struct TRINITY_DLL_DECL boss_captain_skarlocAI : public ScriptedAI
         }else Holy_Light_Timer -= diff;
 
         //Cleanse
-        if(Cleanse_Timer  < diff)
+        if (Cleanse_Timer  < diff)
         {
             DoCast(m_creature, SPELL_CLEANSE);
             Cleanse_Timer = 10000;
@@ -140,9 +140,9 @@ struct TRINITY_DLL_DECL boss_captain_skarlocAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_boss_captain_skarloc(Creature *_Creature)
+CreatureAI* GetAI_boss_captain_skarloc(Creature* pCreature)
 {
-    return new boss_captain_skarlocAI (_Creature);
+    return new boss_captain_skarlocAI (pCreature);
 }
 
 void AddSC_boss_captain_skarloc()

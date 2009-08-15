@@ -59,7 +59,7 @@ struct TRINITY_DLL_DECL boss_grilekAI : public ScriptedAI
 
             target = SelectUnit(SELECT_TARGET_RANDOM,1);
 
-            if(DoGetThreat(m_creature->getVictim()))
+            if (DoGetThreat(m_creature->getVictim()))
                 DoModifyThreatPercent(m_creature->getVictim(),-50);
             if (target)
                 AttackStart(target);
@@ -77,9 +77,9 @@ struct TRINITY_DLL_DECL boss_grilekAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_grilek(Creature *_Creature)
+CreatureAI* GetAI_boss_grilek(Creature* pCreature)
 {
-    return new boss_grilekAI (_Creature);
+    return new boss_grilekAI (pCreature);
 }
 
 void AddSC_boss_grilek()

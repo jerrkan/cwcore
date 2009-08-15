@@ -61,7 +61,7 @@ struct TRINITY_DLL_DECL boss_highlordomokkAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         //WarStomp_Timer
@@ -116,9 +116,9 @@ struct TRINITY_DLL_DECL boss_highlordomokkAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_highlordomokk(Creature *_Creature)
+CreatureAI* GetAI_boss_highlordomokk(Creature* pCreature)
 {
-    return new boss_highlordomokkAI (_Creature);
+    return new boss_highlordomokkAI (pCreature);
 }
 
 void AddSC_boss_highlordomokk()

@@ -49,7 +49,7 @@ struct TRINITY_DLL_DECL boss_skadiAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         phase = 0;
@@ -62,7 +62,7 @@ struct TRINITY_DLL_DECL boss_skadiAI : public ScriptedAI
     }
     void KilledUnit(Unit *victim)
     {
-        if(victim == m_creature)
+        if (victim == m_creature)
             return;
         switch(rand()%3)
         {
@@ -73,9 +73,9 @@ struct TRINITY_DLL_DECL boss_skadiAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_boss_skadi(Creature *_Creature)
+CreatureAI* GetAI_boss_skadi(Creature* pCreature)
 {
-    return new boss_skadiAI (_Creature);
+    return new boss_skadiAI (pCreature);
 }
 
 void AddSC_boss_skadi()

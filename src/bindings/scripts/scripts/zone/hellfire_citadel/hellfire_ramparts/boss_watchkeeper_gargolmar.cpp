@@ -76,7 +76,7 @@ struct TRINITY_DLL_DECL boss_watchkeeper_gargolmarAI : public ScriptedAI
 
     void MoveInLineOfSight(Unit* who)
     {
-        if (!m_creature->getVictim() && who->isTargetableForAttack() && ( m_creature->IsHostileTo( who )) && who->isInAccessiblePlaceFor(m_creature) )
+        if (!m_creature->getVictim() && who->isTargetableForAttack() && (m_creature->IsHostileTo(who)) && who->isInAccessiblePlaceFor(m_creature))
         {
             if (!m_creature->canFly() && m_creature->GetDistanceZ(who) > CREATURE_Z_ATTACK_RANGE)
                 return;
@@ -152,9 +152,9 @@ struct TRINITY_DLL_DECL boss_watchkeeper_gargolmarAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_boss_watchkeeper_gargolmarAI(Creature *_Creature)
+CreatureAI* GetAI_boss_watchkeeper_gargolmarAI(Creature* pCreature)
 {
-    return new boss_watchkeeper_gargolmarAI (_Creature);
+    return new boss_watchkeeper_gargolmarAI (pCreature);
 }
 
 void AddSC_boss_watchkeeper_gargolmar()

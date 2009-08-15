@@ -24,30 +24,29 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_wailing_caverns.h"
 
-#define ENCOUNTERS   9
+#define MAX_ENCOUNTER   9
 
 struct TRINITY_DLL_DECL instance_wailing_caverns : public ScriptedInstance
 {
-    instance_wailing_caverns(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_wailing_caverns(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
-    uint32 Encounter[ENCOUNTERS];
+    uint32 m_auiEncounter[MAX_ENCOUNTER];
 
     bool yelled;
     uint64 NaralexGUID;
 
     void Initialize()
     {
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+
         yelled = false;
         NaralexGUID = 0;
-
-        for (uint8 i = 0; i < ENCOUNTERS; i++)
-            Encounter[i] = NOT_STARTED;
     }
 
-    void OnCreatureCreate(Creature *creature, bool add)
+    void OnCreatureCreate(Creature* pCreature, bool add)
     {
-        if (creature->GetEntry() == DATA_NARALEX)
-            NaralexGUID = creature->GetGUID();
+        if (pCreature->GetEntry() == DATA_NARALEX)
+            NaralexGUID = pCreature->GetGUID();
     }
 
     void SetData(uint32 type, uint32 data)
@@ -65,7 +64,7 @@ struct TRINITY_DLL_DECL instance_wailing_caverns : public ScriptedInstance
             case TYPE_MUTANUS_THE_DEVOURER: m_auiEncounter[8] = data;break;
             case TYPE_NARALEX_YELLED:       yelled = true;      break;
         }
-        if(data == DONE)SaveToDB();
+        if (data == DONE)SaveToDB();
     }
 
     uint32 GetData(uint32 type)
@@ -128,9 +127,9 @@ struct TRINITY_DLL_DECL instance_wailing_caverns : public ScriptedInstance
 
 };
 
-InstanceData* GetInstanceData_instance_wailing_caverns(Map* map)
+InstanceData* GetInstanceData_instance_wailing_caverns(Map* pMap)
 {
-    return new instance_wailing_caverns(map);
+    return new instance_wailing_caverns(pMap);
 }
 
 void AddSC_instance_wailing_caverns()

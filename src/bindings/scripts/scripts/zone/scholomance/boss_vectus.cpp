@@ -68,7 +68,7 @@ struct TRINITY_DLL_DECL boss_vectusAI : public ScriptedAI
         }else BlastWave_Timer -= diff;
 
         //Frenzy_Timer
-        if ( m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 25 )
+        if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 25)
         {
             if (Frenzy_Timer < diff)
             {
@@ -82,9 +82,9 @@ struct TRINITY_DLL_DECL boss_vectusAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_vectus(Creature *_Creature)
+CreatureAI* GetAI_boss_vectus(Creature* pCreature)
 {
-    return new boss_vectusAI (_Creature);
+    return new boss_vectusAI (pCreature);
 }
 
 void AddSC_boss_vectus()

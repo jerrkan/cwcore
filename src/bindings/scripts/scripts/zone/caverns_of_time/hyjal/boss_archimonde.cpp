@@ -313,7 +313,7 @@ struct TRINITY_DLL_DECL boss_archimondeAI : public hyjal_trashAI
 
         std::list<Unit*> targets;
         std::list<HostilReference*>::iterator itr = m_threatlist.begin();
-        for( ; itr != m_threatlist.end(); ++itr)
+        for(; itr != m_threatlist.end(); ++itr)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid());
             if (pUnit && pUnit->isAlive())
@@ -458,7 +458,7 @@ struct TRINITY_DLL_DECL boss_archimondeAI : public hyjal_trashAI
             }else DrainNordrassilTimer -= diff;
         }
 
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         if (((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 10) && !BelowTenPercent && !Enraged)
@@ -468,7 +468,7 @@ struct TRINITY_DLL_DECL boss_archimondeAI : public hyjal_trashAI
         {
             if (EnrageTimer < diff)
             {
-                if((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) > 10)
+                if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) > 10)
                 {
                     m_creature->GetMotionMaster()->Clear(false);
                     m_creature->GetMotionMaster()->MoveIdle();
@@ -479,7 +479,7 @@ struct TRINITY_DLL_DECL boss_archimondeAI : public hyjal_trashAI
 
             if (CheckDistanceTimer < diff)
             {
-                // To simplify the check, we simply summon a creature in the location and then check how far we are from the creature
+                // To simplify the check, we simply summon a Creature in the location and then check how far we are from the creature
                 Creature* Check = m_creature->SummonCreature(CREATURE_CHANNEL_TARGET, NORDRASSIL_X, NORDRASSIL_Y, NORDRASSIL_Z, 0, TEMPSUMMON_TIMED_DESPAWN, 2000);
                 if (Check)
                 {
@@ -595,24 +595,24 @@ struct TRINITY_DLL_DECL boss_archimondeAI : public hyjal_trashAI
     void WaypointReached(uint32 i){}
 };
 
-CreatureAI* GetAI_boss_archimonde(Creature *_Creature)
+CreatureAI* GetAI_boss_archimonde(Creature* pCreature)
 {
-    return new boss_archimondeAI (_Creature);
+    return new boss_archimondeAI (pCreature);
 }
 
-CreatureAI* GetAI_mob_doomfire(Creature* _Creature)
+CreatureAI* GetAI_mob_doomfire(Creature* pCreature)
 {
-    return new mob_doomfireAI(_Creature);
+    return new mob_doomfireAI(pCreature);
 }
 
-CreatureAI* GetAI_mob_doomfire_targetting(Creature* _Creature)
+CreatureAI* GetAI_mob_doomfire_targetting(Creature* pCreature)
 {
-    return new mob_doomfire_targettingAI(_Creature);
+    return new mob_doomfire_targettingAI(pCreature);
 }
 
-CreatureAI* GetAI_mob_ancient_wisp(Creature* _Creature)
+CreatureAI* GetAI_mob_ancient_wisp(Creature* pCreature)
 {
-    return new mob_ancient_wispAI(_Creature);
+    return new mob_ancient_wispAI(pCreature);
 }
 
 void AddSC_boss_archimonde()

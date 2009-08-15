@@ -40,7 +40,7 @@ struct TRINITY_DLL_DECL boss_krystallusAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         DoMeleeAttackIfReady();
@@ -51,15 +51,15 @@ struct TRINITY_DLL_DECL boss_krystallusAI : public ScriptedAI
     }
     void KilledUnit(Unit *victim)
     {
-        if(victim == m_creature)
+        if (victim == m_creature)
             return;
         DoScriptText(SAY_KILL, m_creature);
     }
 };
 
-CreatureAI* GetAI_boss_krystallus(Creature *_Creature)
+CreatureAI* GetAI_boss_krystallus(Creature* pCreature)
 {
-    return new boss_krystallusAI (_Creature);
+    return new boss_krystallusAI (pCreature);
 }
 
 void AddSC_boss_krystallus()

@@ -75,7 +75,7 @@ struct TRINITY_DLL_DECL boss_magmadarAI : public ScriptedAI
         //Lavabomb_Timer
         if (Lavabomb_Timer < diff)
         {
-            if( Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0) )
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 DoCast(target,SPELL_LAVABOMB_ALT);
 
             Lavabomb_Timer = 12000;
@@ -84,9 +84,9 @@ struct TRINITY_DLL_DECL boss_magmadarAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_magmadar(Creature *_Creature)
+CreatureAI* GetAI_boss_magmadar(Creature* pCreature)
 {
-    return new boss_magmadarAI (_Creature);
+    return new boss_magmadarAI (pCreature);
 }
 
 void AddSC_boss_magmadar()

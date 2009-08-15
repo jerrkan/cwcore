@@ -55,7 +55,7 @@ struct TRINITY_DLL_DECL boss_anubshiahAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         //ShadowBolt_Timer
@@ -100,9 +100,9 @@ struct TRINITY_DLL_DECL boss_anubshiahAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_anubshiah(Creature *_Creature)
+CreatureAI* GetAI_boss_anubshiah(Creature* pCreature)
 {
-    return new boss_anubshiahAI (_Creature);
+    return new boss_anubshiahAI (pCreature);
 }
 
 void AddSC_boss_anubshiah()

@@ -97,7 +97,7 @@ struct TRINITY_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
                 Unit* pUnit = Unit::GetUnit(*m_creature, *itr);
                 if (pUnit)
                 {
-                    if(!pUnit->isAlive())
+                    if (!pUnit->isAlive())
                         CAST_CRE(pUnit)->Respawn();      // Let MaNGOS handle setting death state, etc.
 
                     // Only need to set unselectable flag. You can't attack unselectable units so non_attackable flag is not necessary here.
@@ -142,7 +142,7 @@ struct TRINITY_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
             if (pCrystal && pCrystal->isAlive())
             {
                 // select nearest
-                if(!CrystalChosen || m_creature->GetDistanceOrder(pCrystal, CrystalChosen, false))
+                if (!CrystalChosen || m_creature->GetDistanceOrder(pCrystal, CrystalChosen, false))
                 {
                     CrystalGUID = pCrystal->GetGUID();
                     CrystalChosen = pCrystal;               // Store a copy of pCrystal so we don't need to recreate a pointer to closest crystal for the movement and yell.
@@ -309,9 +309,9 @@ struct TRINITY_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_boss_selin_fireheart(Creature *_Creature)
+CreatureAI* GetAI_boss_selin_fireheart(Creature* pCreature)
 {
-    return new boss_selin_fireheartAI (_Creature);
+    return new boss_selin_fireheartAI (pCreature);
 };
 
 struct TRINITY_DLL_DECL mob_fel_crystalAI : public ScriptedAI
@@ -331,9 +331,9 @@ struct TRINITY_DLL_DECL mob_fel_crystalAI : public ScriptedAI
             Creature* Selin = (Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_SELIN)));
             if (Selin && Selin->isAlive())
             {
-                if(CAST_AI(boss_selin_fireheartAI, Selin->AI())->CrystalGUID == m_creature->GetGUID())
+                if (CAST_AI(boss_selin_fireheartAI, Selin->AI())->CrystalGUID == m_creature->GetGUID())
                 {
-                    // Set this to false if we are the creature that Selin is draining so his AI flows properly
+                    // Set this to false if we are the Creature that Selin is draining so his AI flows properly
                     CAST_AI(boss_selin_fireheartAI, Selin->AI())->DrainingCrystal = false;
                     CAST_AI(boss_selin_fireheartAI, Selin->AI())->IsDraining = false;
                     CAST_AI(boss_selin_fireheartAI, Selin->AI())->EmpowerTimer = 10000;
@@ -348,9 +348,9 @@ struct TRINITY_DLL_DECL mob_fel_crystalAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_mob_fel_crystal(Creature *_Creature)
+CreatureAI* GetAI_mob_fel_crystal(Creature* pCreature)
 {
-    return new mob_fel_crystalAI (_Creature);
+    return new mob_fel_crystalAI (pCreature);
 };
 
 void AddSC_boss_selin_fireheart()

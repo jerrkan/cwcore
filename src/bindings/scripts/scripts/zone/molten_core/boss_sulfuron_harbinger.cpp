@@ -152,7 +152,7 @@ struct TRINITY_DLL_DECL mob_flamewaker_priestAI : public ScriptedAI
             return;
 
         //Casting Heal to Sulfuron or other Guards.
-        if(Heal_Timer < diff)
+        if (Heal_Timer < diff)
         {
             Unit* pUnit = DoSelectLowestHpFriendly(60.0f, 1);
             if (!pUnit)
@@ -187,14 +187,14 @@ struct TRINITY_DLL_DECL mob_flamewaker_priestAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_boss_sulfuron(Creature *_Creature)
+CreatureAI* GetAI_boss_sulfuron(Creature* pCreature)
 {
-    return new boss_sulfuronAI (_Creature);
+    return new boss_sulfuronAI (pCreature);
 }
 
-CreatureAI* GetAI_mob_flamewaker_priest(Creature *_Creature)
+CreatureAI* GetAI_mob_flamewaker_priest(Creature* pCreature)
 {
-    return new mob_flamewaker_priestAI (_Creature);
+    return new mob_flamewaker_priestAI (pCreature);
 }
 
 void AddSC_boss_sulfuron()

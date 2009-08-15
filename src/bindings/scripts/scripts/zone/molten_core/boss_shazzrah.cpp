@@ -95,7 +95,7 @@ struct TRINITY_DLL_DECL boss_shazzrahAI : public ScriptedAI
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
 
-            if(target)
+            if (target)
             {
             DoTeleportTo(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
             DoCast(target,SPELL_ARCANEEXPLOSION);
@@ -108,9 +108,9 @@ struct TRINITY_DLL_DECL boss_shazzrahAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_shazzrah(Creature *_Creature)
+CreatureAI* GetAI_boss_shazzrah(Creature* pCreature)
 {
-    return new boss_shazzrahAI (_Creature);
+    return new boss_shazzrahAI (pCreature);
 }
 
 void AddSC_boss_shazzrah()

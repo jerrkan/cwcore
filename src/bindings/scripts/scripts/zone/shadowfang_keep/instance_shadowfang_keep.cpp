@@ -41,7 +41,7 @@ enum
 
 struct TRINITY_DLL_DECL instance_shadowfang_keep : public ScriptedInstance
 {
-    instance_shadowfang_keep(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_shadowfang_keep(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
     uint32 m_auiEncounter[MAX_ENCOUNTER];
     std::string str_data;
@@ -74,22 +74,22 @@ struct TRINITY_DLL_DECL instance_shadowfang_keep : public ScriptedInstance
         }
     }
 
-    void OnGameObjectCreate(GameObject *go, bool add)
+    void OnGameObjectCreate(GameObject* pGo, bool add)
     {
-        switch(go->GetEntry())
+        switch(pGo->GetEntry())
         {
             case GO_COURTYARD_DOOR:
-                DoorCourtyardGUID = go->GetGUID();
+                DoorCourtyardGUID = pGo->GetGUID();
                 if (m_auiEncounter[0] == DONE)
                     DoUseDoorOrButton(DoorCourtyardGUID);
                 break;
             case GO_SORCERER_DOOR:
-                DoorSorcererGUID = go->GetGUID();
+                DoorSorcererGUID = pGo->GetGUID();
                 if (m_auiEncounter[2] == DONE)
                     DoUseDoorOrButton(DoorSorcererGUID);
                 break;
             case GO_ARUGAL_DOOR:
-                DoorArugalGUID = go->GetGUID();
+                DoorArugalGUID = pGo->GetGUID();
                 if (m_auiEncounter[3] == DONE)
                     DoUseDoorOrButton(DoorArugalGUID);
                 break;
@@ -113,24 +113,24 @@ struct TRINITY_DLL_DECL instance_shadowfang_keep : public ScriptedInstance
         switch(type)
         {
             case TYPE_FREE_NPC:
-                if(data == DONE)
+                if (data == DONE)
                     DoUseDoorOrButton(DoorCourtyardGUID);
-                Encounter[0] = data;
+                m_auiEncounter[0] = data;
                 break;
             case TYPE_RETHILGORE:
                 if (data == DONE)
                     DoSpeech();
-                Encounter[1] = data;
+                m_auiEncounter[1] = data;
                 break;
             case TYPE_FENRUS:
-                if(data == DONE)
+                if (data == DONE)
                     DoUseDoorOrButton(DoorSorcererGUID);
-                Encounter[2] = data;
+                m_auiEncounter[2] = data;
                 break;
             case TYPE_NANDOS:
-                if(data == DONE)
+                if (data == DONE)
                     DoUseDoorOrButton(DoorArugalGUID);
-                Encounter[3] = data;
+                m_auiEncounter[3] = data;
                 break;
         }
 
@@ -192,9 +192,9 @@ struct TRINITY_DLL_DECL instance_shadowfang_keep : public ScriptedInstance
     }
 };
 
-InstanceData* GetInstanceData_instance_shadowfang_keep(Map* map)
+InstanceData* GetInstanceData_instance_shadowfang_keep(Map* pMap)
 {
-    return new instance_shadowfang_keep(map);
+    return new instance_shadowfang_keep(pMap);
 }
 
 void AddSC_instance_shadowfang_keep()

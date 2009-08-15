@@ -53,7 +53,7 @@ struct TRINITY_DLL_DECL boss_broggokAI : public ScriptedAI
         AcidSpray_Timer = 10000;
         PoisonSpawn_Timer = 5000;
         PoisonBolt_Timer = 7000;
-        if(pInstance)
+        if (pInstance)
         {
             pInstance->SetData(TYPE_BROGGOK_EVENT, NOT_STARTED);
             pInstance->HandleGameObject(pInstance->GetData64(DATA_DOOR4), true);
@@ -63,7 +63,7 @@ struct TRINITY_DLL_DECL boss_broggokAI : public ScriptedAI
     void EnterCombat(Unit *who)
     {
         DoScriptText(SAY_AGGRO, m_creature);
-        if(pInstance)
+        if (pInstance)
         {
             pInstance->SetData(TYPE_BROGGOK_EVENT, IN_PROGRESS);
             pInstance->HandleGameObject(pInstance->GetData64(DATA_DOOR4), false);
@@ -80,7 +80,7 @@ struct TRINITY_DLL_DECL boss_broggokAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         if (AcidSpray_Timer < diff)
@@ -106,7 +106,7 @@ struct TRINITY_DLL_DECL boss_broggokAI : public ScriptedAI
     
     void JustDied(Unit* who)
     {   
-        if(pInstance)
+        if (pInstance)
         {
             pInstance->HandleGameObject(pInstance->GetData64(DATA_DOOR4), true);
             pInstance->HandleGameObject(pInstance->GetData64(DATA_DOOR5), true);
@@ -116,9 +116,9 @@ struct TRINITY_DLL_DECL boss_broggokAI : public ScriptedAI
     
 };
 
-CreatureAI* GetAI_boss_broggok(Creature *_Creature)
+CreatureAI* GetAI_boss_broggok(Creature* pCreature)
 {
-    return new boss_broggokAI (_Creature);
+    return new boss_broggokAI (pCreature);
 }
 
 void AddSC_boss_broggok()

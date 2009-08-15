@@ -46,7 +46,7 @@ struct TRINITY_DLL_DECL boss_gal_darahAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         DoMeleeAttackIfReady();
@@ -69,9 +69,9 @@ struct TRINITY_DLL_DECL boss_gal_darahAI : public ScriptedAI
     }
 };
 
-CreatureAI* GetAI_boss_gal_darah(Creature *_Creature)
+CreatureAI* GetAI_boss_gal_darah(Creature* pCreature)
 {
-    return new boss_gal_darahAI (_Creature);
+    return new boss_gal_darahAI (pCreature);
 }
 
 void AddSC_boss_gal_darah()

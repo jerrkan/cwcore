@@ -48,7 +48,7 @@ EndScriptData */
 
 struct TRINITY_DLL_DECL instance_arcatraz : public ScriptedInstance
 {
-    instance_arcatraz(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_arcatraz(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
     uint32 m_auiEncounter[MAX_ENCOUNTER];
 
@@ -79,40 +79,37 @@ struct TRINITY_DLL_DECL instance_arcatraz : public ScriptedInstance
 
         GoSphereGUID = 0;
         MellicharGUID = 0;
-
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
-            Encounter[i] = NOT_STARTED;
     }
 
     bool IsEncounterInProgress() const
     {
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
-            if(Encounter[i] == IN_PROGRESS)
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            if (m_auiEncounter[i] == IN_PROGRESS)
                 return true;
 
         return false;
     }
 
-    void OnGameObjectCreate(GameObject *go, bool add)
+    void OnGameObjectCreate(GameObject* pGo, bool add)
     {
-        switch(go->GetEntry())
+        switch(pGo->GetEntry())
         {
-            case CONTAINMENT_CORE_SECURITY_FIELD_ALPHA: Containment_Core_Security_Field_Alpha = go; break;
-            case CONTAINMENT_CORE_SECURITY_FIELD_BETA:  Containment_Core_Security_Field_Beta =  go; break;
-            case SEAL_SPHERE: GoSphereGUID = go->GetGUID(); break;
-            case POD_ALPHA: Pod_Alpha = go; break;
-            case POD_BETA:  Pod_Beta =  go; break;
-            case POD_DELTA: Pod_Delta = go; break;
-            case POD_GAMMA: Pod_Gamma = go; break;
-            case POD_OMEGA: Pod_Omega = go; break;
-            //case WARDENS_SHIELD: Wardens_Shield = go; break;
+            case CONTAINMENT_CORE_SECURITY_FIELD_ALPHA: Containment_Core_Security_Field_Alpha = pGo; break;
+            case CONTAINMENT_CORE_SECURITY_FIELD_BETA:  Containment_Core_Security_Field_Beta =  pGo; break;
+            case SEAL_SPHERE: GoSphereGUID = pGo->GetGUID(); break;
+            case POD_ALPHA: Pod_Alpha = pGo; break;
+            case POD_BETA:  Pod_Beta =  pGo; break;
+            case POD_DELTA: Pod_Delta = pGo; break;
+            case POD_GAMMA: Pod_Gamma = pGo; break;
+            case POD_OMEGA: Pod_Omega = pGo; break;
+            //case WARDENS_SHIELD: Wardens_Shield = pGo; break;
         }
     }
 
-    void OnCreatureCreate(Creature *creature, bool add)
+    void OnCreatureCreate(Creature* pCreature, bool add)
     {
-        if (creature->GetEntry() == MELLICHAR)
-            MellicharGUID = creature->GetGUID();
+        if (pCreature->GetEntry() == MELLICHAR)
+            MellicharGUID = pCreature->GetGUID();
     }
 
     void SetData(uint32 type, uint32 data)
@@ -120,73 +117,73 @@ struct TRINITY_DLL_DECL instance_arcatraz : public ScriptedInstance
         switch(type)
         {
             case TYPE_ZEREKETH:
-                Encounter[0] = data;
+                m_auiEncounter[0] = data;
                 break;
 
             case TYPE_DALLIAH:
-                if( data == DONE )
-                    if( Containment_Core_Security_Field_Beta )
+                if (data == DONE)
+                    if (Containment_Core_Security_Field_Beta)
                         Containment_Core_Security_Field_Beta->UseDoorOrButton();
-                Encounter[1] = data;
+                m_auiEncounter[1] = data;
                 break;
 
             case TYPE_SOCCOTHRATES:
-                if( data == DONE )
-                    if( Containment_Core_Security_Field_Alpha )
+                if (data == DONE)
+                    if (Containment_Core_Security_Field_Alpha)
                         Containment_Core_Security_Field_Alpha->UseDoorOrButton();
-                Encounter[2] = data;
+                m_auiEncounter[2] = data;
                 break;
 
             case TYPE_HARBINGERSKYRISS:
-                if( data == NOT_STARTED || data == FAIL )
+                if (data == NOT_STARTED || data == FAIL)
                 {
-                    Encounter[4] = NOT_STARTED;
-                    Encounter[5] = NOT_STARTED;
-                    Encounter[6] = NOT_STARTED;
-                    Encounter[7] = NOT_STARTED;
-                    Encounter[8] = NOT_STARTED;
+                    m_auiEncounter[4] = NOT_STARTED;
+                    m_auiEncounter[5] = NOT_STARTED;
+                    m_auiEncounter[6] = NOT_STARTED;
+                    m_auiEncounter[7] = NOT_STARTED;
+                    m_auiEncounter[8] = NOT_STARTED;
                 }
-                Encounter[3] = data;
+                m_auiEncounter[3] = data;
                 break;
 
             case TYPE_WARDEN_1:
-                if( data == IN_PROGRESS )
-                    if( Pod_Alpha )
+                if (data == IN_PROGRESS)
+                    if (Pod_Alpha)
                         Pod_Alpha->UseDoorOrButton();
-                Encounter[4] = data;
+                m_auiEncounter[4] = data;
                 break;
 
             case TYPE_WARDEN_2:
-                if( data == IN_PROGRESS )
-                    if( Pod_Beta )
+                if (data == IN_PROGRESS)
+                    if (Pod_Beta)
                         Pod_Beta->UseDoorOrButton();
-                Encounter[5] = data;
+                m_auiEncounter[5] = data;
                 break;
 
             case TYPE_WARDEN_3:
-                if( data == IN_PROGRESS )
-                    if( Pod_Delta )
+                if (data == IN_PROGRESS)
+                    if (Pod_Delta)
                         Pod_Delta->UseDoorOrButton();
-                Encounter[6] = data;
+                m_auiEncounter[6] = data;
                 break;
 
             case TYPE_WARDEN_4:
-                if( data == IN_PROGRESS )
-                    if( Pod_Gamma )
+                if (data == IN_PROGRESS)
+                    if (Pod_Gamma)
                         Pod_Gamma->UseDoorOrButton();
-                Encounter[7] = data;
+                m_auiEncounter[7] = data;
                 break;
 
             case TYPE_WARDEN_5:
-                if( data == IN_PROGRESS )
-                    if( Pod_Omega )
+                if (data == IN_PROGRESS)
+                    if (Pod_Omega)
                         Pod_Omega->UseDoorOrButton();
-                Encounter[8] = data;
+                m_auiEncounter[8] = data;
                 break;
 
             case TYPE_SHIELD_OPEN:
-                if( data == IN_PROGRESS )
-                    if( Wardens_Shield )
+                if (data == IN_PROGRESS)
+                    if (Wardens_Shield)
                         Wardens_Shield->UseDoorOrButton();
                 break;
         }
@@ -225,9 +222,9 @@ struct TRINITY_DLL_DECL instance_arcatraz : public ScriptedInstance
     }
 };
 
-InstanceData* GetInstanceData_instance_arcatraz(Map* map)
+InstanceData* GetInstanceData_instance_arcatraz(Map* pMap)
 {
-    return new instance_arcatraz(map);
+    return new instance_arcatraz(pMap);
 }
 
 void AddSC_instance_arcatraz()

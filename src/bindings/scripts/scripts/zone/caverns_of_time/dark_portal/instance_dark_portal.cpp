@@ -61,7 +61,7 @@ static Wave RiftWaves[]=
 
 struct TRINITY_DLL_DECL instance_dark_portal : public ScriptedInstance
 {
-    instance_dark_portal(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_dark_portal(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
     uint32 m_auiEncounter[MAX_ENCOUNTER];
 
@@ -95,25 +95,11 @@ struct TRINITY_DLL_DECL instance_dark_portal : public ScriptedInstance
         NextPortal_Timer    = 0;
     }
 
-    void UpdateBMWorldState(uint32 id, uint32 state)
-    {
-        Map::PlayerList const& players = instance->GetPlayers();
-
-        if (!players.isEmpty())
-        {
-            for(Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
-            {
-                if (Player* player = itr->getSource())
-                    player->SendUpdateWorldState(id,state);
-            }
-        }else debug_log("TSCR: Instance Black Portal: UpdateBMWorldState, but PlayerList is empty!");
-    }
-
     void InitWorldState(bool Enable = true)
     {
-        UpdateBMWorldState(WORLD_STATE_BM,Enable ? 1 : 0);
-        UpdateBMWorldState(WORLD_STATE_BM_SHIELD,100);
-        UpdateBMWorldState(WORLD_STATE_BM_RIFT,0);
+        DoUpdateWorldState(WORLD_STATE_BM,Enable ? 1 : 0);
+        DoUpdateWorldState(WORLD_STATE_BM_SHIELD, 100);
+        DoUpdateWorldState(WORLD_STATE_BM_RIFT, 0);
     }
 
     bool IsEncounterInProgress()
@@ -124,18 +110,18 @@ struct TRINITY_DLL_DECL instance_dark_portal : public ScriptedInstance
         return false;
     }
 
-    void OnPlayerEnter(Player *player)
+    void OnPlayerEnter(Player* pPlayer)
     {
         if (GetData(TYPE_MEDIVH) == IN_PROGRESS)
             return;
 
-        player->SendUpdateWorldState(WORLD_STATE_BM,0);
+        pPlayer->SendUpdateWorldState(WORLD_STATE_BM,0);
     }
 
-    void OnCreatureCreate(Creature *creature, bool add)
+    void OnCreatureCreate(Creature* pCreature, bool add)
     {
-        if (creature->GetEntry() == C_MEDIVH)
-            MedivhGUID = creature->GetGUID();
+        if (pCreature->GetEntry() == C_MEDIVH)
+            MedivhGUID = pCreature->GetGUID();
     }
 
     //what other conditions to check?
@@ -172,7 +158,8 @@ struct TRINITY_DLL_DECL instance_dark_portal : public ScriptedInstance
             if (data == SPECIAL && m_auiEncounter[0] == IN_PROGRESS)
             {
                 --mShieldPercent;
-                UpdateBMWorldState(WORLD_STATE_BM_SHIELD,mShieldPercent);
+
+                DoUpdateWorldState(WORLD_STATE_BM_SHIELD, mShieldPercent);
 
                 if (!mShieldPercent)
                 {
@@ -337,7 +324,8 @@ struct TRINITY_DLL_DECL instance_dark_portal : public ScriptedInstance
             if (NextPortal_Timer <= diff)
             {
                 ++mRiftPortalCount;
-                UpdateBMWorldState(WORLD_STATE_BM_RIFT,mRiftPortalCount);
+
+                DoUpdateWorldState(WORLD_STATE_BM_RIFT, mRiftPortalCount);
 
                 DoSpawnPortal();
                 NextPortal_Timer = RiftWaves[GetRiftWaveId()].NextPortalTime;
@@ -346,9 +334,9 @@ struct TRINITY_DLL_DECL instance_dark_portal : public ScriptedInstance
     }
 };
 
-InstanceData* GetInstanceData_instance_dark_portal(Map* map)
+InstanceData* GetInstanceData_instance_dark_portal(Map* pMap)
 {
-    return new instance_dark_portal(map);
+    return new instance_dark_portal(pMap);
 }
 
 void AddSC_instance_dark_portal()

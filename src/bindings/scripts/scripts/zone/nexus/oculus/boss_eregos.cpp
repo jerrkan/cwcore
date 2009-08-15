@@ -78,7 +78,7 @@ struct TRINITY_DLL_DECL boss_eregosAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if(!UpdateVictim())
+        if (!UpdateVictim())
             return;
 
         phase =1;
@@ -88,9 +88,9 @@ struct TRINITY_DLL_DECL boss_eregosAI : public ScriptedAI
     void JustDied(Unit* killer)  {}
 };
 
-CreatureAI* GetAI_boss_eregos(Creature *_Creature)
+CreatureAI* GetAI_boss_eregos(Creature* pCreature)
 {
-    return new boss_eregosAI (_Creature);
+    return new boss_eregosAI (pCreature);
 }
 
 void AddSC_boss_eregos()

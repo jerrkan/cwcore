@@ -58,7 +58,7 @@ struct TRINITY_DLL_DECL boss_warmastervooneAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         //Snapkick_Timer
@@ -106,9 +106,9 @@ struct TRINITY_DLL_DECL boss_warmastervooneAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-CreatureAI* GetAI_boss_warmastervoone(Creature *_Creature)
+CreatureAI* GetAI_boss_warmastervoone(Creature* pCreature)
 {
-    return new boss_warmastervooneAI (_Creature);
+    return new boss_warmastervooneAI (pCreature);
 }
 
 void AddSC_boss_warmastervoone()

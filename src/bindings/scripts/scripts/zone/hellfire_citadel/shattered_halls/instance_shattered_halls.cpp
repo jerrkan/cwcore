@@ -30,7 +30,7 @@ EndScriptData */
 
 struct TRINITY_DLL_DECL instance_shattered_halls : public ScriptedInstance
 {
-    instance_shattered_halls(Map *map) : ScriptedInstance(map) {Initialize();};
+    instance_shattered_halls(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
     uint32 m_auiEncounter[MAX_ENCOUNTER];
     uint64 nethekurseGUID;
@@ -44,25 +44,25 @@ struct TRINITY_DLL_DECL instance_shattered_halls : public ScriptedInstance
         nethekurseDoorGUID = 0;
     }
 
-    void OnGameObjectCreate(GameObject *go, bool add)
+    void OnGameObjectCreate(GameObject* pGo, bool add)
     {
-        switch( go->GetEntry() )
+        switch(pGo->GetEntry())
         {
-            case DOOR_NETHEKURSE: nethekurseDoorGUID = go->GetGUID(); break;
+            case DOOR_NETHEKURSE: nethekurseDoorGUID = pGo->GetGUID(); break;
         }
     }
 
-    void OnCreatureCreate(Creature *creature, bool add)
+    void OnCreatureCreate(Creature* pCreature, bool add)
     {
-        switch(creature->GetEntry())
+        switch(pCreature->GetEntry())
         {
-            case 16807: nethekurseGUID = creature->GetGUID(); break;
+            case 16807: nethekurseGUID = pCreature->GetGUID(); break;
         }
     }
 
     void SetData(uint32 type, uint32 data)
     {
-        switch( type )
+        switch(type)
         {
             case TYPE_NETHEKURSE:
                 m_auiEncounter[0] = data;
@@ -75,7 +75,7 @@ struct TRINITY_DLL_DECL instance_shattered_halls : public ScriptedInstance
 
     uint32 GetData(uint32 type)
     {
-        switch( type )
+        switch(type)
         {
             case TYPE_NETHEKURSE:
                 return m_auiEncounter[0];
@@ -98,9 +98,9 @@ struct TRINITY_DLL_DECL instance_shattered_halls : public ScriptedInstance
     }
 };
 
-InstanceData* GetInstanceData_instance_shattered_halls(Map* map)
+InstanceData* GetInstanceData_instance_shattered_halls(Map* pMap)
 {
-    return new instance_shattered_halls(map);
+    return new instance_shattered_halls(pMap);
 }
 
 void AddSC_instance_shattered_halls()

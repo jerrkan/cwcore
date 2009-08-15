@@ -251,7 +251,7 @@ struct TRINITY_DLL_DECL boss_grand_warlock_nethekurseAI : public ScriptedAI
             }
         }
 
-        if (!UpdateVictim() )
+        if (!UpdateVictim())
             return;
 
         if (!IsMainEvent)
@@ -326,7 +326,7 @@ struct TRINITY_DLL_DECL mob_fel_orc_convertAI : public ScriptedAI
                 {
                     CAST_AI(boss_grand_warlock_nethekurseAI, pKurse->AI())->DoYellForPeonAggro();
 
-                    if (pInstance->GetData(TYPE_NETHEKURSE) == IN_PROGRESS )
+                    if (pInstance->GetData(TYPE_NETHEKURSE) == IN_PROGRESS)
                         return;
                     else pInstance->SetData(TYPE_NETHEKURSE,IN_PROGRESS);
                 }
@@ -364,7 +364,7 @@ struct TRINITY_DLL_DECL mob_fel_orc_convertAI : public ScriptedAI
     }
 };
 
-//NOTE: this creature are also summoned by other spells, for different creatures
+//NOTE: this Creature are also summoned by other spells, for different creatures
 struct TRINITY_DLL_DECL mob_lesser_shadow_fissureAI : public ScriptedAI
 {
     mob_lesser_shadow_fissureAI(Creature *c) : ScriptedAI(c) {}
@@ -375,19 +375,19 @@ struct TRINITY_DLL_DECL mob_lesser_shadow_fissureAI : public ScriptedAI
     void EnterCombat(Unit* who) { }
 };
 
-CreatureAI* GetAI_boss_grand_warlock_nethekurse(Creature *_Creature)
+CreatureAI* GetAI_boss_grand_warlock_nethekurse(Creature* pCreature)
 {
-    return new boss_grand_warlock_nethekurseAI (_Creature);
+    return new boss_grand_warlock_nethekurseAI (pCreature);
 }
 
-CreatureAI* GetAI_mob_fel_orc_convert(Creature *_Creature)
+CreatureAI* GetAI_mob_fel_orc_convert(Creature* pCreature)
 {
-    return new mob_fel_orc_convertAI (_Creature);
+    return new mob_fel_orc_convertAI (pCreature);
 }
 
-CreatureAI* GetAI_mob_lesser_shadow_fissure(Creature *_Creature)
+CreatureAI* GetAI_mob_lesser_shadow_fissure(Creature* pCreature)
 {
-    return new mob_lesser_shadow_fissureAI (_Creature);
+    return new mob_lesser_shadow_fissureAI (pCreature);
 }
 
 void AddSC_boss_grand_warlock_nethekurse()
