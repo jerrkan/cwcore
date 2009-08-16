@@ -29,8 +29,8 @@ EndScriptData */
 
 #define LOCALE_TRICK_OR_TREAT_0 "Trick or Treat!"
 #define LOCALE_TRICK_OR_TREAT_2 "Des bonbons ou des blagues!"
-#define LOCALE_TRICK_OR_TREAT_3 "Sï¿½der Saures!"
-#define LOCALE_TRICK_OR_TREAT_6 "ï¿½Truco o trato!"
+#define LOCALE_TRICK_OR_TREAT_3 "Süßes oder Saures!"
+#define LOCALE_TRICK_OR_TREAT_6 "¡Truco o trato!"
 
 bool isEventActive()
 {

@@ -930,7 +930,7 @@ CreatureAI* GetAI_npc_unworthy_initiate_anchor(Creature* pCreature)
     return new npc_unworthy_initiate_anchorAI(pCreature);
 }
 
-bool GOHello_go_acherus_soul_prison(Player* pPlayer, GameObject* pGo)
+/*bool GOHello_go_acherus_soul_prison(Player* pPlayer, GameObject* pGo)
 {
     if (Creature *anchor = pGo->FindNearestCreature(29521, 15))
         if (uint64 prisonerGUID = anchor->AI()->GetGUID())
@@ -938,7 +938,7 @@ bool GOHello_go_acherus_soul_prison(Player* pPlayer, GameObject* pGo)
                 CAST_AI(npc_unworthy_initiateAI, (prisoner->AI()))->EventStart(anchor, pPlayer);
 
     return false;
-}
+}*/
 
 /*######
 ## npc_death_knight_initiate
@@ -1644,10 +1644,10 @@ void AddSC_the_scarlet_enclave()
     newscript->GetAI = &GetAI_npc_unworthy_initiate_anchor;
     newscript->RegisterSelf();
 
-    newscript = new Script;
+    /*newscript = new Script;
     newscript->Name="go_acherus_soul_prison";
     newscript->pGOHello = &GOHello_go_acherus_soul_prison;
-    newscript->RegisterSelf();
+    newscript->RegisterSelf();*/
 
     // Death's Challenge
     newscript = new Script;

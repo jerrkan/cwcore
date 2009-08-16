@@ -21848,6 +21848,7 @@ void Player::ActivateSpec(uint32 spec)
 
     uint32 oldSpec = m_activeSpec;
     SetActiveSpec(spec);
+	uint32 spentTalents = 0;
     m_usedTalentCount = 0;
 
     for(uint32 i = 0; i < 3; ++i)
@@ -21871,6 +21872,7 @@ void Player::ActivateSpec(uint32 spec)
                 if(talentInfo->RankID[k] && HasTalent(talentInfo->RankID[k], m_activeSpec))
                 {
                     learnSpell(talentInfo->RankID[k], false);
+					spentTalents += k+1;
 
                     m_usedTalentCount += GetTalentSpellCost(talentInfo->RankID[k]);
                 }
