@@ -37,7 +37,7 @@ npc_rocknot
 EndContentData */
 
 #include "precompiled.h"
-#include "../../npc/npc_escortAI.h"
+#include "escortAI.h"
 #include "def_blackrock_depths.h"
 
 /*######
@@ -330,11 +330,7 @@ struct TRINITY_DLL_DECL npc_grimstoneAI : public npc_escortAI
 
 CreatureAI* GetAI_npc_grimstone(Creature* pCreature)
 {
-    npc_grimstoneAI* Grimstone_AI = new npc_grimstoneAI(pCreature);
-
-    Grimstone_AI->FillPointMovementListForCreature();
-
-    return Grimstone_AI;
+    return new npc_grimstoneAI(pCreature);
 }
 
 /*######
@@ -759,7 +755,7 @@ CreatureAI* GetAI_npc_marshal_windsor(Creature* pCreature)
     marshal_windsorAI->AddWaypoint(12, 400.98,-72.01, -62.31,0);
     marshal_windsorAI->AddWaypoint(13, 404.22,-62.30, -63.50,2300);
     marshal_windsorAI->AddWaypoint(14, 404.22,-62.30, -63.50,1500);
-    marshal_windsorAI->AddWaypoint(154, 407.65,-51.86, -63.96,0);
+    marshal_windsorAI->AddWaypoint(15, 407.65,-51.86, -63.96,0);
     marshal_windsorAI->AddWaypoint(16, 403.61,-51.71, -63.92,1000);
     marshal_windsorAI->AddWaypoint(17, 403.61,-51.71, -63.92,2000);
     marshal_windsorAI->AddWaypoint(18, 403.61,-51.71, -63.92,1000);
@@ -1191,11 +1187,7 @@ struct TRINITY_DLL_DECL npc_rocknotAI : public npc_escortAI
 
 CreatureAI* GetAI_npc_rocknot(Creature* pCreature)
 {
-    npc_rocknotAI* Rocknot_AI = new npc_rocknotAI(pCreature);
-
-    Rocknot_AI->FillPointMovementListForCreature();
-
-    return Rocknot_AI;
+    return new npc_rocknotAI(pCreature);
 }
 
 bool ChooseReward_npc_rocknot(Player* pPlayer, Creature* pCreature, const Quest *_Quest, uint32 item)

@@ -209,6 +209,12 @@ enum ItemQualities
 
 #define MAX_ITEM_QUALITY                 8
 
+enum SpellCategory
+{
+    SPELL_CATEGORY_FOOD             = 11,
+    SPELL_CATEGORY_DRINK            = 59,
+};
+
 // ***********************************
 // Spell Attributes definitions
 // ***********************************
@@ -444,6 +450,9 @@ enum ItemQualities
 #define SPELL_ATTR_EX6_UNK30                      0x40000000            // 30 not set in 3.0.3
 #define SPELL_ATTR_EX6_UNK31                      0x80000000            // 31 not set in 3.0.3
 
+#define MIN_TALENT_SPEC         0
+#define MAX_TALENT_SPEC         1
+#define MIN_TALENT_SPECS        1
 #define MAX_TALENT_SPECS        2
 #define MAX_GLYPH_SLOT_INDEX    6
 
