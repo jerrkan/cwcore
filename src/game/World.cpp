@@ -256,8 +256,6 @@ World::AddSession_ (WorldSession* s)
     pkt << uint32(sWorld.getConfig(CONFIG_CLIENTCACHE_VERSION));
     s->SendPacket(&pkt);
 
-    s->SendAccountDataTimes(GLOBAL_CACHE_MASK);
-
     s->SendTutorialsData();
 
     UpdateMaxSessionCounters ();

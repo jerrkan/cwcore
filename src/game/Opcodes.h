@@ -1308,8 +1308,7 @@ enum Opcodes
     UMSG_UNKNOWN_1269                               = 0x4F5, // not found 3.2
     CMSG_WORLD_STATE_UI_TIMER_UPDATE                = 0x4F6,
     SMSG_WORLD_STATE_UI_TIMER_UPDATE                = 0x4F7,
-    CMSG_UNKNOWN_1272                               = 0x4F8, // called from lua: CreateCharacter
-    NUM_MSG_TYPES                                   = 0x4F9
+    NUM_MSG_TYPES                                   = 0x4F8
 };
 
 /// Player state

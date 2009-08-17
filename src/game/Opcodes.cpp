@@ -550,7 +550,7 @@ OpcodeHandler opcodeTable[NUM_MSG_TYPES] =
     /*0x207*/ { "CMSG_GMTICKET_UPDATETEXT",                     STATUS_LOGGEDIN, &WorldSession::HandleGMTicketUpdateOpcode       },
     /*0x208*/ { "SMSG_GMTICKET_UPDATETEXT",                     STATUS_NEVER,    &WorldSession::Handle_ServerSide               },
     /*0x209*/ { "SMSG_ACCOUNT_DATA_TIMES",                      STATUS_NEVER,    &WorldSession::Handle_ServerSide               },
-    /*0x20A*/ { "CMSG_REQUEST_ACCOUNT_DATA",                    STATUS_AUTHED,   &WorldSession::HandleRequestAccountData        },
+    /*0x20A*/ { "CMSG_REQUEST_ACCOUNT_DATA",                    STATUS_LOGGEDIN, &WorldSession::HandleRequestAccountData        },
     /*0x20B*/ { "CMSG_UPDATE_ACCOUNT_DATA",                     STATUS_AUTHED,   &WorldSession::HandleUpdateAccountData         },
     /*0x20C*/ { "SMSG_UPDATE_ACCOUNT_DATA",                     STATUS_NEVER,    &WorldSession::Handle_ServerSide               },
     /*0x20D*/ { "SMSG_CLEAR_FAR_SIGHT_IMMEDIATE",               STATUS_NEVER,    &WorldSession::Handle_ServerSide               },
@@ -1300,6 +1300,5 @@ OpcodeHandler opcodeTable[NUM_MSG_TYPES] =
     /*0x4F5*/ { "UMSG_UNKNOWN_1269",                            STATUS_NEVER,    &WorldSession::Handle_NULL                     },
     /*0x4F6*/ { "CMSG_WORLD_STATE_UI_TIMER_UPDATE",             STATUS_LOGGEDIN, &WorldSession::HandleWorldStateUITimerUpdate   },
     /*0x4F7*/ { "SMSG_WORLD_STATE_UI_TIMER_UPDATE",             STATUS_NEVER,    &WorldSession::Handle_ServerSide               },
-    /*0x4F8*/ { "CMSG_UNKNOWN_1272",                            STATUS_NEVER,    &WorldSession::Handle_NULL                     },
 };
 

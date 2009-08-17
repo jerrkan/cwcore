@@ -128,5 +128,5 @@ LogColors = "13 11 9 5"
 EnableLogDB = 0
 DBLogLevel = 1
 MinBuild = 10192
-MaxBuild = 10257
+MaxBuild = 10192
 
