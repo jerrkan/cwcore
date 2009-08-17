@@ -2043,6 +2043,9 @@ void Player::RegenerateAll()
 
 void Player::Regenerate(Powers power)
 {
+    // TODO: possible use of miscvalueb instead of amount
+    if (HasAuraTypeWithValue(SPELL_AURA_PREVENT_REGENERATE_POWER, power))
+        return;
     uint32 curValue = GetPower(power);
     uint32 maxValue = GetMaxPower(power);
 
@@ -2431,11 +2434,6 @@ void Player::GiveXP(uint32 xp, Unit* victim)
     // XP to money conversion processed in Player::RewardQuest
     if(level >= sWorld.getConfig(CONFIG_MAX_PLAYER_LEVEL))
         return;
-
-    // handle SPELL_AURA_MOD_XP_PCT auras
-    Unit::AuraEffectList const& ModXPPctAuras = GetAurasByType(SPELL_AURA_MOD_XP_PCT);
-    for(Unit::AuraEffectList::const_iterator i = ModXPPctAuras.begin();i != ModXPPctAuras.end(); ++i)
-        xp = uint32(xp*(1.0f + (*i)->GetAmount() / 100.0f));
 
     // XP resting bonus for kill
     uint32 rested_bonus_xp = victim ? GetXPRestBonus(xp) : 0;
@@ -3563,6 +3561,12 @@ void Player::removeSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
             }
         }
     }
+    
+    if(spell_id == 46917 && m_canTitanGrip)
+        SetCanTitanGrip(false);
+
+    if(sWorld.getConfig(CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN))
+        AutoUnequipOffhandIfNeed();
 
     // remove from spell book if not replaced by lesser rank
     if(!prev_activate)
@@ -3833,14 +3837,6 @@ bool Player::resetTalents(bool no_cost)
             RemovePet(NULL,PET_SAVE_NOT_IN_SLOT, true);
     }
     */
-
-
-    if(m_canTitanGrip)
-    {
-        m_canTitanGrip = false;
-        if(sWorld.getConfig(CONFIG_OFFHAND_CHECK_AT_TALENTS_RESET))
-            AutoUnequipOffhandIfNeed();
-    }
 
     return true;
 }
@@ -5852,6 +5848,11 @@ void Player::removeActionButton(uint8 button)
     if (buttonItr==m_actionButtons.end())
         return;
 
+    if (!buttonItr->second.canRemoveByClient)
+    {
+        buttonItr->second.canRemoveByClient = true;    
+        return;
+    }    
     if(buttonItr->second.uState==ACTIONBUTTON_NEW)
         m_actionButtons.erase(buttonItr);                   // new and not saved
     else
@@ -6098,7 +6099,7 @@ int32 Player::CalculateReputationGain(uint32 creatureOrQuestLevel, int32 rep, in
     if (percent <= 0.0f)
         return 0;
 
-    return int32(rep*percent)/100;
+    return int32(rep*percent/100);
 }
 
 //Calculates how many reputation points player gains in victim's enemy factions
@@ -7101,7 +7102,7 @@ void Player::_ApplyItemBonuses(ItemPrototype const *proto, uint8 slot, bool appl
 
 void Player::_ApplyWeaponDependentAuraMods(Item *item,WeaponAttackType attackType,bool apply)
 {
-    AuraEffectList const& auraCritList = GetAurasByType(SPELL_AURA_MOD_CRIT_PERCENT);
+    AuraEffectList const& auraCritList = GetAurasByType(SPELL_AURA_MOD_WEAPON_CRIT_PERCENT);
     for(AuraEffectList::const_iterator itr = auraCritList.begin(); itr!=auraCritList.end();++itr)
         _ApplyWeaponDependentAuraCritMod(item,attackType,*itr,apply);
 
@@ -7334,6 +7335,18 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
 
             if(spellData.SpellPPMRate)
             {
+                if(spellData.SpellId == 52781) // Persuasive Strike
+                {
+                    switch(target->GetEntry())
+                    {
+                        default:
+                            return;
+                        case 28939:
+                        case 28940:
+                        case 28610:
+                            break;
+                    }
+                }
                 uint32 WeaponSpeed = GetAttackTime(attType);
                 chance = GetPPMProcChance(WeaponSpeed, spellData.SpellPPMRate, spellInfo);
             }
@@ -7383,10 +7396,13 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
 
             float chance = pEnchant->amount[s] != 0 ? float(pEnchant->amount[s]) : GetWeaponProcChance();
 
-            if (entry && entry->PPMChance)
-                chance = GetPPMProcChance(proto->Delay, entry->PPMChance, spellInfo);
-            else if (entry && entry->customChance)
-                chance = entry->customChance;
+            if (entry)
+            {
+                if(entry->PPMChance)
+                    chance = GetPPMProcChance(proto->Delay, entry->PPMChance, spellInfo);
+                else if(entry->customChance)
+                    chance = entry->customChance;
+            }
 
             // Apply spell mods
             ApplySpellMod(pEnchant->spellid[s],SPELLMOD_CHANCE_OF_SUCCESS,chance);
@@ -13159,6 +13175,11 @@ void Player::RewardQuest( Quest const *pQuest, uint32 reward, Object* questGiver
     // Not give XP in case already completed once repeatable quest
     uint32 XP = q_status.m_rewarded ? 0 : uint32(pQuest->XPValue( this )*sWorld.getRate(RATE_XP_QUEST));
 
+    // handle SPELL_AURA_MOD_XP_QUEST_PCT auras
+    Unit::AuraEffectList const& ModXPPctAuras = GetAurasByType(SPELL_AURA_MOD_XP_QUEST_PCT);
+    for(Unit::AuraEffectList::const_iterator i = ModXPPctAuras.begin();i != ModXPPctAuras.end(); ++i)
+        XP = uint32(XP*(100.0f + (*i)->GetAmount() / 100.0f));
+
     if (getLevel() < sWorld.getConfig(CONFIG_MAX_PLAYER_LEVEL))
         GiveXP( XP , NULL );
     else
@@ -15141,7 +15162,7 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
     // update items with duration and realtime
     UpdateItemDuration(time_diff, true);
 
-    _LoadActions(holder->GetResult(PLAYER_LOGIN_QUERY_LOADACTIONS));
+    _LoadActions(holder->GetResult(PLAYER_LOGIN_QUERY_LOADACTIONS), true);
 
     // unread mails and next delivery time, actual mails not loaded
     _LoadMailInit(holder->GetResult(PLAYER_LOGIN_QUERY_LOADMAILCOUNT), holder->GetResult(PLAYER_LOGIN_QUERY_LOADMAILDATE));
@@ -15270,7 +15291,7 @@ bool Player::isAllowedToLoot(Creature* creature)
         return !creature->hasLootRecipient();
 }
 
-void Player::_LoadActions(QueryResult *result)
+void Player::_LoadActions(QueryResult *result, bool startup)
 {
     if(result)
     {
@@ -15283,7 +15304,11 @@ void Player::_LoadActions(QueryResult *result)
             uint8 type = fields[2].GetUInt8();
 
             if(ActionButton* ab = addActionButton(button, action, type))
+            {
                 ab->uState = ACTIONBUTTON_UNCHANGED;
+                if(!startup) // Switching specs
+                    ab->canRemoveByClient = false;
+            }
             else
             {
                 sLog.outError( "  ...at loading, and will deleted in DB also");
@@ -20040,6 +20065,11 @@ bool Player::RewardPlayerAndGroupAtKill(Unit* pVictim)
                     {
                         uint32 itr_xp = (member_with_max_level == not_gray_member_with_max_level) ? uint32(xp*rate) : uint32((xp*rate/2)+1);
 
+                        // handle SPELL_AURA_MOD_XP_PCT auras
+                        Unit::AuraEffectList const& ModXPPctAuras = GetAurasByType(SPELL_AURA_MOD_XP_PCT);
+                        for(Unit::AuraEffectList::const_iterator i = ModXPPctAuras.begin();i != ModXPPctAuras.end(); ++i)
+                            itr_xp = uint32(itr_xp*(100.0f + (*i)->GetAmount() / 100.0f));
+
                         pGroupGuy->GiveXP(itr_xp, pVictim);
                         if(Pet* pet = pGroupGuy->GetPet())
                             pet->GivePetXP(itr_xp/2);
@@ -20068,6 +20098,12 @@ bool Player::RewardPlayerAndGroupAtKill(Unit* pVictim)
         if(!PvP)
         {
             RewardReputation(pVictim,1);
+
+            // handle SPELL_AURA_MOD_XP_PCT auras
+            Unit::AuraEffectList const& ModXPPctAuras = GetAurasByType(SPELL_AURA_MOD_XP_PCT);
+            for(Unit::AuraEffectList::const_iterator i = ModXPPctAuras.begin();i != ModXPPctAuras.end(); ++i)
+                xp = uint32(xp*(100.0f + (*i)->GetAmount() / 100.0f));
+
             GiveXP(xp, pVictim);
 
             if(Pet* pet = GetPet())
@@ -21314,7 +21350,7 @@ bool Player::canSeeSpellClickOn(Creature const *c) const
         return true;
 
     for(SpellClickInfoMap::const_iterator itr = clickPair.first; itr != clickPair.second; ++itr)
-        if(itr->second.IsFitToRequirements(this))
+        if(itr->second.IsFitToRequirements(this, c))
             return true;
 
     return false;
@@ -21893,7 +21929,7 @@ void Player::ActivateSpec(uint32 spec)
     QueryResult *result = CharacterDatabase.PQuery("SELECT button,action,type FROM character_action WHERE guid = '%u' AND spec = '%u' ORDER BY button", GetGUIDLow(), m_activeSpec);
     if (result)    
     {
-        _LoadActions(result);
+        _LoadActions(result, false);
     }
 
     SendActionButtons(m_activeSpec);

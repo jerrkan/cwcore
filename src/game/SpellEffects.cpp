@@ -669,23 +669,6 @@ void Spell::EffectDummy(uint32 i)
                                     m_caster->DealDamage(casttarget, damage, NULL, SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_ARCANE, spellInfo, false);
                             }
                 }
-                // Demon Broiled Surprise
-                case 43723:
-                {
-                    if (!unitTarget || unitTarget->isAlive() || unitTarget->GetTypeId() != TYPEID_UNIT ||
-                        ((Creature*)unitTarget)->isPet()) return;
-
-                    Player *player = (Player*)m_caster;
-
-                    if (!player) return;
-
-                    player->CastSpell(unitTarget, 43753, true);
-
-                    if (player->GetQuestStatus(11379) == QUEST_STATUS_INCOMPLETE && unitTarget->GetEntry() == 19973)
-                        player->CastedCreatureOrGO(19973, unitTarget->GetGUID(), 43723);
-
-                    return;
-                }
                 case 8063:                                  // Deviate Fish
                 {
                     if(m_caster->GetTypeId() != TYPEID_PLAYER)
@@ -1068,16 +1051,26 @@ void Spell::EffectDummy(uint32 i)
                     return;
                 }
                 // Demon Broiled Surprise
-                /* FIX ME: Required for correct work implementing implicit target 7 (in pair (22,7))
                 case 43723:
                 {
                     if (m_caster->GetTypeId() != TYPEID_PLAYER)
                         return;
 
-                    ((Player*)m_caster)->CastSpell(unitTarget, 43753, true);
+                    Player *player = (Player*)m_caster;
+
+                    if (player && player->GetQuestStatus(11379) == QUEST_STATUS_INCOMPLETE)
+                    {
+                        Creature *creature = player->FindNearestCreature(19973, 10, false);
+                        if (!creature)
+                        {
+                            SendCastResult(SPELL_FAILED_NOT_HERE);
+                            return;
+                        }
+
+                        player->CastSpell(player, 43753, false);
+                    }
                     return;
                 }
-                */
                 case 44875:                                 // Complete Raptor Capture
                 {
                     if(!unitTarget || unitTarget->GetTypeId() != TYPEID_UNIT)
@@ -1554,6 +1547,13 @@ void Spell::EffectDummy(uint32 i)
                     m_caster->InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
                     m_caster->AttackStop();
                     ((Player*)m_caster)->SendAttackSwingCancelAttack();
+                    return;
+                }
+                // Last Stand (pet)
+                case 53478:
+                {
+                    int32 healthModSpellBasePoints0 = int32(m_caster->GetMaxHealth()*0.3);
+                    m_caster->CastCustomSpell(m_caster, 53479, &healthModSpellBasePoints0, NULL, NULL, true, NULL);
                     return;
                 }
             }
@@ -4015,6 +4015,8 @@ void Spell::EffectTameCreature(uint32 /*i*/)
 
     // caster have pet now
     m_caster->SetMinion(pet, true);
+    
+    pet->InitTalentForLevel();
 
     if(m_caster->GetTypeId() == TYPEID_PLAYER)
     {
@@ -5146,56 +5148,34 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                         if(Unit *passenger = ((Vehicle*)m_caster)->GetPassenger(0))
                             passenger->CastSpell(m_caster->m_Vehicle, damage, true);
                     return;
-                case 60123:                                 // Lightwell Renew, TODO: 30% Attackdamage check for Lightwell
+                case 60123: // Lightwell
                 {
-                    if(unitTarget && m_originalCaster)
+                    if (m_caster->GetTypeId() != TYPEID_UNIT || !((Creature*)m_caster)->isSummon())
+                        return;
+
+                    uint32 spell_heal;
+
+                    switch(m_caster->GetEntry())
                     {
-                        Unit* owner = m_originalCaster->GetOwner();
-                        uint32 spell_heal;
-                        uint32 spell_charges = 59907;
-
-                        switch(m_originalCaster->GetEntry())
-                        {
-                            case 31897: spell_heal = 7001; break;
-                            case 31896: spell_heal = 27873; break;
-                            case 31895: spell_heal = 27874; break;
-                            case 31894: spell_heal = 28276; break;
-                            case 31893: spell_heal = 48084; break;
-                            case 31883: spell_heal = 48085; break;
-                        }
-
-                        if(owner && spell_heal && spell_charges)
-                        {
-                            if(owner->GetTypeId() == TYPEID_PLAYER && unitTarget->GetTypeId() == TYPEID_PLAYER)
-                            {
-                                if(((Player*)owner)->IsInSameRaidWith(((Player*)unitTarget)) && (!((Player*)unitTarget)->duel || unitTarget == owner) && !unitTarget->HasAura(spell_heal))
-                                {
-                                    Aura *chargesaura = m_originalCaster->GetAura(spell_charges);
-                                    if(chargesaura)
-                                    {
-                                        if(chargesaura->GetAuraCharges() > 1)
-                                        {
-                                            chargesaura->SetAuraCharges(chargesaura->GetAuraCharges() - 1);
-                                            owner->CastSpell(unitTarget, spell_heal, true);
-                                            if(unitTarget->IsPvP() && !owner->IsPvP())
-                                            {
-                                                owner->SetPvP(true);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            m_originalCaster->RemoveAura(chargesaura);
-                                            owner->CastSpell(unitTarget, spell_heal, true);
-                                            if(unitTarget->IsPvP() && !owner->IsPvP())
-                                            {
-                                                owner->SetPvP(true);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        case 31897: spell_heal = 7001; break;
+                        case 31896: spell_heal = 27873; break;
+                        case 31895: spell_heal = 27874; break;
+                        case 31894: spell_heal = 28276; break;
+                        case 31893: spell_heal = 48084; break;
+                        case 31883: spell_heal = 48085; break;
+                        default:
+                            sLog.outError("Unknown Lightwell spell caster %u", m_caster->GetEntry());
+                            return;
                     }
+                    Aura * chargesaura = m_caster->GetAura(59907);
+
+                    if(chargesaura && chargesaura->GetAuraCharges() > 1)
+                    {
+                        chargesaura->SetAuraCharges(chargesaura->GetAuraCharges() - 1);
+                        m_caster->CastSpell(unitTarget, spell_heal, true, NULL, NULL, ((TempSummon*)m_caster)->GetSummonerGUID());
+                    }
+                    else
+                        ((TempSummon*)m_caster)->UnSummon();
                 }
             }
             break;

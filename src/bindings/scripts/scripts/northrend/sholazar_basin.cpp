@@ -17,16 +17,17 @@
 /* ScriptData
 SDName: Sholazar_Basin
 SD%Complete: 100
-SDComment: Quest support: 12570
+SDComment: Quest support: 12570, 12573
 SDCategory: Sholazar_Basin
 EndScriptData */
 
 /* ContentData
 npc_injured_rainspeaker_oracle
+npc_vekjik
 EndContentData */
 
 #include "precompiled.h"
-#include "escortAI.h"
+#include "escort_ai.h"
 
 /*######
 ## npc_injured_rainspeaker_oracle
@@ -64,7 +65,7 @@ struct TRINITY_DLL_DECL npc_injured_rainspeaker_oracleAI : public npc_escortAI
 
     void WaypointReached(uint32 i)
     {
-        Player* pPlayer = Unit::GetPlayer(PlayerGUID);
+        Player* pPlayer = GetPlayerForEscort();
 
         if (!pPlayer)
             return;
@@ -90,7 +91,7 @@ struct TRINITY_DLL_DECL npc_injured_rainspeaker_oracleAI : public npc_escortAI
             m_creature->SetUnitMovementFlags(MOVEMENTFLAG_JUMPING);
             break;
         case 28:
-            if (Player* pPlayer = Unit::GetPlayer(PlayerGUID))
+            if (Player* pPlayer = GetPlayerForEscort())
                 pPlayer->GroupEventHappens(QUEST_FORTUNATE_MISUNDERSTANDINGS, m_creature);
           //  me->RestoreFaction();
             DoScriptText(SAY_END_IRO,m_creature);
@@ -104,16 +105,11 @@ struct TRINITY_DLL_DECL npc_injured_rainspeaker_oracleAI : public npc_escortAI
         if (!IsBeingEscorted)
             return;
 
-        if (Player* pPlayer = Unit::GetPlayer(PlayerGUID))
+        if (Player* pPlayer = GetPlayerForEscort())
         {            
           if (pPlayer->GetQuestStatus(QUEST_FORTUNATE_MISUNDERSTANDINGS) != QUEST_STATUS_COMPLETE)
             pPlayer->FailQuest(QUEST_FORTUNATE_MISUNDERSTANDINGS);
         }
-    }
-
-    void UpdateAI(Player* pPlayer, Creature* pCreature,const uint32 diff)
-    {
-        npc_escortAI::UpdateAI(diff);
     }
 };
 
@@ -163,6 +159,60 @@ CreatureAI* GetAI_npc_injured_rainspeaker_oracle(Creature* pCreature)
     return new npc_injured_rainspeaker_oracleAI(pCreature);
 }
 
+/*######
+## npc_vekjik
+######*/
+
+#define GOSSIP_VEKJIK_ITEM1 "Shaman Vekjik, I have spoken with the big-tongues and they desire peace. I have brought this offering on their behalf."
+#define GOSSIP_VEKJIK_ITEM2 "No no... I had no intentions of betraying your people. I was only defending myself. it was all a misunderstanding."
+
+enum
+{
+    GOSSIP_TEXTID_VEKJIK1       = 13137,
+    GOSSIP_TEXTID_VEKJIK2       = 13138,
+
+    SAY_TEXTID_VEKJIK1          = -1000208,
+
+    SPELL_FREANZYHEARTS_FURY    = 51469,
+
+    QUEST_MAKING_PEACE          = 12573
+};
+
+bool GossipHello_npc_vekjik(Player* pPlayer, Creature* pCreature)
+{
+    if (pCreature->isQuestGiver())
+        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+
+    if (pPlayer->GetQuestStatus(QUEST_MAKING_PEACE) == QUEST_STATUS_INCOMPLETE)
+    {
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_VEKJIK_ITEM1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VEKJIK1, pCreature->GetGUID());
+        return true;
+    }
+
+    pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_npc_vekjik(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    switch(uiAction)
+    {
+        case GOSSIP_ACTION_INFO_DEF+1:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_VEKJIK_ITEM2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+            pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VEKJIK2, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+2:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            DoScriptText(SAY_TEXTID_VEKJIK1, pCreature, pPlayer);
+            pPlayer->AreaExploredOrEventHappens(QUEST_MAKING_PEACE);
+            pCreature->CastSpell(pPlayer, SPELL_FREANZYHEARTS_FURY, false);
+            break;
+    }
+
+    return true;
+}
+
 void AddSC_sholazar_basin()
 {
     Script *newscript;
@@ -172,5 +222,11 @@ void AddSC_sholazar_basin()
     newscript->pGossipHello = &GossipHello_npc_injured_rainspeaker_oracle;
     newscript->pGossipSelect = &GossipSelect_npc_injured_rainspeaker_oracle;
     newscript->pQuestAccept = &QuestAccept_npc_injured_rainspeaker_oracle;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_vekjik";
+    newscript->pGossipHello = &GossipHello_npc_vekjik;
+    newscript->pGossipSelect = &GossipSelect_npc_vekjik;
     newscript->RegisterSelf();
 }

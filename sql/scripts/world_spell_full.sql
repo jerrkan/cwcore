@@ -1066,9 +1066,9 @@ INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `Spell
 ( 44472, 0x00,   3, 0x20E21277, 0x00019048, 0x00000000, 0x00000000, 0x00000002,   0,   0,   0), -- Burnout (Rank 5)
 ( 44543, 0x00,   3, 0x00100220, 0x00001000, 0x00000000, 0x00010000, 0x00000000,   0,   7,   0), -- Fingers of Frost (Rank 1)
 ( 44545, 0x00,   3, 0x00100220, 0x00001000, 0x00000000, 0x00010000, 0x00000000,   0,  15,   0), -- Fingers of Frost (Rank 2)
-( 44546, 0x00,   3, 0x020002A0, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Brain Freeze (Rank 1)
-( 44548, 0x00,   3, 0x020002A0, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Brain Freeze (Rank 2)
-( 44549, 0x00,   3, 0x020002A0, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Brain Freeze (Rank 3)
+( 44546, 0x00,   3, 0x00100220, 0x00001000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Brain Freeze (Rank 1)
+( 44548, 0x00,   3, 0x00100220, 0x00001000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Brain Freeze (Rank 2)
+( 44549, 0x00,   3, 0x00100220, 0x00001000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Brain Freeze (Rank 3)
 ( 44745, 0x00,   3, 0x00000000, 0x00000001, 0x00000000, 0x00004000, 0x00002000,   0,   0,   0), -- Shattered Barrier (Rank 1)
 ( 44835, 0x00,   7, 0x00000000, 0x00000080, 0x00000000, 0x00000010, 0x00000000,   0,   0,   0), -- Maim Interrupt 
 ( 45054, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,  15), -- Augment Pain 
@@ -1526,7 +1526,10 @@ INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `Spell
 ( 61434, 0x00,  15, 0x00400000, 0x00010000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Blood of the north
 ( 49467, 0x00,  15, 0x00000010, 0x00020000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Death Rune Mastery
 ( 50033, 0x00,  15, 0x00000010, 0x00020000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Death Rune Mastery
-( 50034, 0x00,  15, 0x00000010, 0x00020000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0); -- Death Rune Mastery
+( 50034, 0x00,  15, 0x00000010, 0x00020000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Death Rune Mastery
+( 63373, 0x00,  11, 0x80000000, 0x00000000, 0x00000000, 0x00010000, 0x00000000,   0,   0,   0), -- Frozen Power (Rank 1)
+( 63374, 0x00,  11, 0x80000000, 0x00000000, 0x00000000, 0x00010000, 0x00000000,   0,   0,   0), -- Frozen Power (Rank 2)
+( 54821, 0x00,   7, 0x00001000, 0x00000000, 0x00000000, 0x00000010, 0x00000000,   0,   0,   0); -- Glyph of Rake
 
 -- --------
 -- ENCHANT PROC
@@ -1691,12 +1694,6 @@ INSERT INTO `spell_bonus_data` (`entry`, `direct_bonus`, `dot_bonus`, `ap_bonus`
 (14914, 0.5711, 0.024, -1, -1, 'Priest - Holy Fire'),
 (15237, 0.1606, -1, -1, -1, 'Priest - Holy Nova Damage'),
 (23455, 0.3035, -1, -1, -1, 'Priest - Holy Nova Heal Rank 1'),
-(7001, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 1'),
-(27873, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 2'),
-(27874, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 3'),
-(28276, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 4'),
-(48084, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 5'),
-(48085, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 6'),
 (8129, 0, 0, 0, 0, 'Priest - Mana Burn'),
 (8092, 0.428, -1, -1, -1, 'Priest - Mind Blast'),
 (15407, 0.257, -1, -1, -1, 'Priest - Mind Flay'),
@@ -1715,6 +1712,7 @@ INSERT INTO `spell_bonus_data` (`entry`, `direct_bonus`, `dot_bonus`, `ap_bonus`
 (34433, 0.65, -1, -1, -1, 'Priest - Shadowfiend'),
 (585, 0.714, -1, -1, -1, 'Priest - Smite'),
 (34914, -1, 0.4, -1, -1, 'Priest - Vampiric Touch'),
+(7001, -1, 0.3333, -1, -1, 'Priest - Lightwell Renew Rank 1'),
 (2818, -1, -1, -1, 0.03, 'Rogue - Deadly Poison Rank 1($AP*0.12 / number of ticks)'),
 (2819, -1, -1, -1, 0.03, 'Rogue - Deadly Poison Rank 2($AP*0.12 / number of ticks)'),
 (11353, -1, -1, -1, 0.03, 'Rogue - Deadly Poison Rank 3($AP*0.12 / number of ticks)'),
@@ -2009,13 +2007,41 @@ INSERT INTO `npc_spellclick_spells` (`npc_entry`, `spell_id`, `quest_start`, `qu
 (28833, 52447, 12701, 1, 12701, 1); -- Scarlet Cannon Master
 # (28887, 52447, 12701, 1, 12701, 1); -- dead cannon
 
-UPDATE creature_template SET spell1=52435,spell2=52576,spell5=52588,VehicleId=79,speed=0 WHERE entry = 28833;
-UPDATE `creature_template` SET vehicleid=138 WHERE (`entry`='28817'); -- mine car
+DELETE FROM `npc_spellclick_spells` WHERE `npc_entry` IN(31883, 31893, 31894, 31895, 31896, 31897);
+INSERT INTO `npc_spellclick_spells` (npc_entry, spell_id, quest_start, quest_start_active, quest_end, cast_flags, aura_required, aura_forbidden, user_type) VALUES
+(31883, 60123, 0, 0, 0, 0x2, 0, 48085, 2),
+(31893, 60123, 0, 0, 0, 0x2, 0, 48084, 2),
+(31894, 60123, 0, 0, 0, 0x2, 0, 28276, 2),
+(31895, 60123, 0, 0, 0, 0x2, 0, 27874, 2),
+(31896, 60123, 0, 0, 0, 0x2, 0, 27873, 2),
+(31897, 60123, 0, 0, 0, 0x2, 0, 7001, 2);
+
+update item_template set spellppmRate_1 = 1 where entry = 39371; -- persuader
+
+DELETE FROM `creature_questrelation` WHERE `quest` = 12754; 
+INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES (28914, 12754); 
+DELETE FROM `creature_involvedrelation` WHERE `quest` = 12754; 
+INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES (28914, 12754); 
+DELETE FROM `creature_questrelation` WHERE `quest` = 12755; 
+INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES (28914, 12755);
+DELETE FROM `creature_involvedrelation` WHERE `quest` = 12755; 
+INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES (29077, 12755);
+DELETE FROM `creature_questrelation` WHERE `quest` = 12756; 
+INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES (29077, 12756);
+DELETE FROM `creature_involvedrelation` WHERE `quest` = 12756; 
+INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES (28914, 12756); 
+DELETE FROM `creature_questrelation` WHERE `quest` = 12757; 
+INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES (28914, 12757);
+
+UPDATE `quest_template` SET `PrevQuestId`=12751 WHERE `entry`=12754;
+
+update spell_area set quest_end = 12756 where spell=53081;
 
 
 -- --------
 -- NAXXARAMAS
 -- --------
+
 DELETE FROM `spell_linked_spell` WHERE `spell_trigger` IN
 (28732,54097,-29865,-55053,-28169,28059,39088,-28059,-39088,28062,39090,28084,
 39091,-28084,-39091,28085,39093);
@@ -2057,6 +2083,8 @@ INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
 (27929, 1, 16060), # To Anchor 2 - Gothik
 (27935, 1, 16060), # To Anchor 1 - Gothik
 (27936, 1, 16060); # To Anchor 2 - Gothik
+
+
 
 -- --------
 -- ULDUAR
@@ -2119,16 +2147,6 @@ INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
 DELETE FROM `spell_linked_spell` WHERE `spell_trigger` IN (54643);
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 ( 54643,-54643, 2, 'Wintergrasp Defender Teleport');
-
-
--- lightwell
-REPLACE INTO `npc_spellclick_spells` (npc_entry, spell_id, quest_start, quest_start_active, quest_end, cast_flags, quest_status) VALUES
-(31883, 60123, 0, 0, 0, 2, 0),
-(31893, 60123, 0, 0, 0, 2, 0),
-(31894, 60123, 0, 0, 0, 2, 0),
-(31895, 60123, 0, 0, 0, 2, 0),
-(31896, 60123, 0, 0, 0, 2, 0),
-(31897, 60123, 0, 0, 0, 2, 0);
 
 
 -- temp

@@ -795,6 +795,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                     if(spellproto->CalculateSimpleValue(effIndex) > 0)
                         return false;
                     break;
+                case SPELL_AURA_MOD_CRIT_PCT:
                 case SPELL_AURA_MOD_SPELL_CRIT_CHANCE:
                     if(spellproto->CalculateSimpleValue(effIndex) > 0)
                         return true;                        // some expected positive spells have SPELL_ATTR_EX_NEGATIVE
@@ -3505,15 +3506,6 @@ void SpellMgr::LoadSpellCustomAttr()
         {
             switch(spellInfo->EffectApplyAuraName[j])
             {
-                case SPELL_AURA_PERIODIC_DAMAGE:
-                case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
-                case SPELL_AURA_PERIODIC_LEECH:
-                    mSpellCustomAttr[i] |= SPELL_ATTR_CU_AURA_DOT;
-                    break;
-                case SPELL_AURA_PERIODIC_HEAL:
-                case SPELL_AURA_OBS_MOD_HEALTH:
-                    mSpellCustomAttr[i] |= SPELL_ATTR_CU_AURA_HOT;
-                    break;
                 case SPELL_AURA_MOD_ROOT:
                     mSpellCustomAttr[i] |= SPELL_ATTR_CU_AURA_CC;
                     mSpellCustomAttr[i] |= SPELL_ATTR_CU_MOVEMENT_IMPAIR;

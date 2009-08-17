@@ -103,13 +103,20 @@ UPDATE `creature_template` SET `ScriptName`='npc_dark_rider_of_acherus' WHERE `e
 UPDATE `creature_template` SET `ScriptName`='npc_ros_dark_rider' WHERE `entry`=28768;
 UPDATE `creature_template` SET `ScriptName`='npc_dkc1_gothik' WHERE `entry`=28658;
 UPDATE `creature_template` SET `ScriptName`='npc_a_special_surprise' WHERE `entry` IN (29032,29061,29065,29067,29068,29070,29074,29072,29073,29071);
-UPDATE `creature_template` SET `ScriptName`='npc_koltira_deathweaver' WHERE `entry`=28912;
+UPDATE `creature_template` SET `ScriptName`='npc_koltira_deathweaver' WHERE `entry`='28912';
+UPDATE `creature_template` SET `ScriptName`='mob_high_inquisitor_valroth' WHERE `entry`='29001';
 UPDATE `creature_template` SET `ScriptName`='npc_demolisher_engineerer' WHERE `entry` IN (30400,30499);
 UPDATE `creature_template` SET `ScriptName`='npc_valkyr_battle_maiden' WHERE `entry`=28534;
 UPDATE `creature_template` SET `ScriptName`='npc_mirror_image' WHERE `entry`=31216;
 UPDATE `creature_template` SET `ScriptName`='npc_training_dummy' WHERE `entry` IN (17578,24792,32543,32546,32542,32545,30527,31143,31144,31146,32541,32666,32667);
 UPDATE `creature_template` SET `ScriptName`='npc_lightwell' WHERE `entry` IN (31883,31893,31894,31895,31896,31897);
 UPDATE `creature_template` SET `ScriptName`='npc_ebon_gargoyle' WHERE `entry`=27829;
+UPDATE `gameobject_template` SET `ScriptName`='go_inconspicuous_mine_car' WHERE (`entry`='190767');
+UPDATE `creature_template` SET `ScriptName`='npc_scarlet_miner_cart' WHERE (`entry`='28817');
+UPDATE `creature_template` SET `ScriptName`='npc_scarlet_miner' WHERE (`entry`='28841');
+UPDATE `creature_template` SET `ScriptName`='npc_crusade_persuaded' WHERE `entry` IN (28939,28940,28610);
+
+UPDATE `creature_template` SET `ScriptName`='mob_scarlet_courier' WHERE `entry`='29076';
 
 /*  */
 /* ZONE */
@@ -547,10 +554,13 @@ UPDATE `creature_template` SET `ScriptName`='npc_wounded_blood_elf' WHERE `entry
 UPDATE `creature_template` SET `ScriptName`='npc_aeranas' WHERE `entry`=17085;
 UPDATE `gameobject_template` SET `ScriptName`='go_haaleshi_altar' WHERE `entry`=181606;
 UPDATE `creature_template` SET `ScriptName`='npc_naladu' WHERE `entry`=19361;
+UPDATE `creature_template` SET `ScriptName`='npc_tracy_proudwell' WHERE `entry`=18266;
+UPDATE `creature_template` SET `ScriptName`='npc_trollbane' WHERE `entry`=16819;
 
 /* HILLSBRAD FOOTHILLS */
 
 /* HINTERLANDS */
+UPDATE `creature_template` SET `ScriptName`='npc_00x09hl' WHERE `entry`=7806;
 UPDATE `creature_template` SET `ScriptName`='npc_rinji' WHERE `entry`=7780;
 
 /* ICECROWN */
@@ -829,6 +839,7 @@ UPDATE `creature_template` SET `ScriptName`='npc_khadgar' WHERE `entry`=18166;
 
 /* Sholazar Basin */
 UPDATE `creature_template` SET `ScriptName`='npc_injured_rainspeaker_oracle' WHERE `entry`=28217;
+UPDATE `creature_template` SET `ScriptName`='npc_vekjik' WHERE `entry`=28315;
 
 /* SILITHUS */
 UPDATE `creature_template` SET `ScriptName`='npcs_rutgar_and_frankal' WHERE `entry` IN (15170,15171);
@@ -1082,6 +1093,8 @@ UPDATE `creature_template` SET `ScriptName`='npc_defias_traitor' WHERE `entry`=4
 UPDATE `creature_template` SET `ScriptName`='npc_daphne_stilwell' WHERE `entry`=6182;
 
 /* WETLANDS */
+UPDATE creature_template SET ScriptName='npc_tapoke_slim_jahn' WHERE entry=4962;
+UPDATE creature_template SET ScriptName='npc_mikhail' WHERE entry=4963;
 
 /* WINTERSPRING */
 UPDATE `creature_template` SET `ScriptName`='npc_lorax' WHERE `entry`=10918;
@@ -1094,6 +1107,7 @@ UPDATE `creature_template` SET `ScriptName`='npc_cooshcoosh' WHERE `entry`=18586
 UPDATE `creature_template` SET `ScriptName`='npc_elder_kuruti' WHERE `entry`=18197;
 UPDATE `creature_template` SET `ScriptName`='npc_mortog_steamhead' WHERE `entry`=23373;
 UPDATE `creature_template` SET `ScriptName`='npc_kayra_longmane' WHERE `entry`=17969;
+UPDATE `creature_template` SET `ScriptName`='npc_timothy_daniels' WHERE `entry`=18019;
 
 /* ZUL'AMAN */
 UPDATE `instance_template` SET `script`='instance_zulaman' WHERE `map`=568;
