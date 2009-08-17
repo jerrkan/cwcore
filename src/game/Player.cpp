@@ -16355,16 +16355,8 @@ void Player::SaveToDB()
 
     ss << m_taxi.SaveTaxiDestinationsToString() << "', ";
     ss << "'0', ";                                          // arena_pending_points
-    ss << GetSession()->GetLatency() << ", ";
-    ss << GetBattleGroundId() << ", ";
-    ss << GetBGTeam() << ", ";
-    /*ss << m_bgEntryPoint.mapid << ", "
-       << finiteAlways(m_bgEntryPoint.coord_x) << ", "
-       << finiteAlways(m_bgEntryPoint.coord_y) << ", "
-       << finiteAlways(m_bgEntryPoint.coord_z) << ", "
-       << finiteAlways(m_bgEntryPoint.orientation);*/
-    
-    ss << ", ";
+    ss << GetSession()->GetLatency();
+	ss << ", ";
     ss << uint32(m_specsCount);
     ss << ", ";
     ss << uint32(m_activeSpec);
