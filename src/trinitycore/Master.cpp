@@ -33,6 +33,7 @@
 #include "Config/ConfigEnv.h"
 #include "Database/DatabaseEnv.h"
 #include "Policies/SingletonImp.h"
+#include "revision.h"
 
 #include "CliRunnable.h"
 #include "Log.h"
@@ -48,6 +49,8 @@
 #include "sockets/Socket.h"
 #include "sockets/SocketHandler.h"
 #include "sockets/ListenSocket.h"
+
+#define _FULLVERSION (_REVISION)
 
 #ifdef WIN32
 #include "ServiceWin32.h"
@@ -200,18 +203,18 @@ Master::~Master()
 /// Main function
 int Master::Run()
 {
-    sLog.outString( "%s (core-daemon)", _FULLVERSION );
+	sLog.outString( "(core-daemon) Revision: %s", _FULLVERSION );
     sLog.outString( "<Ctrl-C> to stop.\n" );
 
-    sLog.outString( " ______                       __");
-    sLog.outString( "/\\__  _\\       __          __/\\ \\__");
-    sLog.outString( "\\/_/\\ \\/ _ __ /\\_\\    ___ /\\_\\ \\ ,_\\  __  __");
-    sLog.outString( "   \\ \\ \\/\\`'__\\/\\ \\ /' _ `\\/\\ \\ \\ \\/ /\\ \\/\\ \\");
-    sLog.outString( "    \\ \\ \\ \\ \\/ \\ \\ \\/\\ \\/\\ \\ \\ \\ \\ \\_\\ \\ \\_\\ \\");
-    sLog.outString( "     \\ \\_\\ \\_\\  \\ \\_\\ \\_\\ \\_\\ \\_\\ \\__\\\\/`____ \\");
-    sLog.outString( "      \\/_/\\/_/   \\/_/\\/_/\\/_/\\/_/\\/__/ `/___/> \\");
-    sLog.outString( "                                 C O R E  /\\___/");
-    sLog.outString( "http://TrinityCore.org                    \\/__/\n");
+	sLog.outString( "####### ##      ## ####### ######### ######### #######");
+	sLog.outString( "##      ##      ## ##      ##     ## ##     ## ##     ");
+	sLog.outString( "##      ##      ## ##      ##     ## ##     ## ##     ");
+	sLog.outString( "##      ##  ##  ## ##      ##     ## ######### ###### ");
+	sLog.outString( "##      ##  ##  ## ##      ##     ## ##   ##   ##     ");
+	sLog.outString( "##      ##  ##  ## ##      ##     ## ##    ##  ##     ");
+	sLog.outString( "####### ########## ####### ######### ##     ## #######");
+	sLog.outString( "..:::::..:::::::::..::::::..::::::::..::::::::..::::..");
+	sLog.outString( "http://www.wow-extrem.de\n");
 
     /// worldd PID file creation
     std::string pidfile = sConfig.GetStringDefault("PidFile", "");

@@ -14716,8 +14716,8 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
         return false;
     }
 
-    m_specsCount = fields[48].GetUInt32();
-    m_activeSpec = fields[49].GetUInt32();
+    m_specsCount = fields[42].GetUInt32();
+    m_activeSpec = fields[43].GetUInt32();
 
     // sanity check
     if (m_specsCount < 2)
@@ -14778,8 +14778,13 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
 
 	// init saved position, and fix it later if problematic
     uint32 transGUID = fields[31].GetUInt32();
-    Relocate(fields[13].GetFloat(),fields[14].GetFloat(),fields[15].GetFloat(),fields[17].GetFloat());
+	Relocate(fields[13].GetFloat(),fields[14].GetFloat(),fields[15].GetFloat(),fields[17].GetFloat());
+    uint32 mapId = fields[16].GetUInt32();
+    uint32 instanceId = fields[41].GetFloat();
     SetDungeonDifficulty(fields[39].GetUInt32());                  // may be changed in _LoadGroup
+	std::string taxi_nodes = fields[38].GetCppString();
+
+#define RelocateToHomebind() mapId = m_homebindMapId; instanceId = 0; Relocate(m_homebindX, m_homebindY, m_homebindZ)
 
     _LoadGroup(holder->GetResult(PLAYER_LOGIN_QUERY_LOADGROUP));
 
@@ -14808,11 +14813,6 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
     }
 
     _LoadBoundInstances(holder->GetResult(PLAYER_LOGIN_QUERY_LOADBOUNDINSTANCES));
-
-    // load player map related values
-	uint32 mapId = fields[16].GetUInt32();
-    uint32 instanceId = fields[41].GetFloat();
-    std::string taxi_nodes = fields[38].GetCppString();
 
     MapEntry const * mapEntry = sMapStore.LookupEntry(mapId);
     if(!IsPositionValid())
