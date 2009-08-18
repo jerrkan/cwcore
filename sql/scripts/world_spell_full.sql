@@ -81,7 +81,9 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 ( 34471, 24397, 2, 'The Beast Within'),
 ( 34471, 26592, 2, 'The Beast Within'),
 (-59907,     7, 0, 'Lightwell Charges - Suicide'),
-
+-- Quest
+( 40214, 40216, 2, 'Dragonmaw Illusion'),
+( 40214, 42016, 2, 'Dragonmaw Illusion'),
 -- Creature
 ( 36574, 36650, 0, 'Apply Phase Slip Vulnerability'),
 -- instance
@@ -1982,7 +1984,8 @@ INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
 (52479, 1, 28822),
 (52576, 1, 28834), -- Electro-magnetic Pulse
 (52576, 1, 28886),
-(53110, 1, 28940); -- Devour Humanoid
+(53110, 1, 29102),
+(53110, 1, 29103); -- Devour Humanoid
 
 -- Eye of Acherus
 DELETE FROM `spell_target_position` WHERE `id`=51852;
@@ -2037,6 +2040,8 @@ UPDATE `quest_template` SET `PrevQuestId`=12751 WHERE `entry`=12754;
 
 update spell_area set quest_end = 12756 where spell=53081;
 
+update creature_template set spell1=53117 where entry=29104;
+update creature_template set spell1=53348,killcredit1=29150 where entry IN (29102,29103);
 
 -- --------
 -- NAXXARAMAS

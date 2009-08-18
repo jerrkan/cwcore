@@ -30,6 +30,8 @@
 #include "CreatureAI.h"
 
 bool IsAreaEffectTarget[TOTAL_SPELL_TARGETS];
+SpellEffectTargetTypes EffectTargetType[TOTAL_SPELL_EFFECTS];
+SpellSelectTargetTypes SpellTargetType[TOTAL_SPELL_TARGETS];
 
 SpellMgr::SpellMgr()
 {
@@ -2583,10 +2585,6 @@ void SpellMgr::LoadSpellAreas()
 
 SpellCastResult SpellMgr::GetSpellAllowedInLocationError(SpellEntry const *spellInfo, uint32 map_id, uint32 zone_id, uint32 area_id, Player const* player)
 {
-    // allow in GM-mode
-    if (player && player->isGameMaster())
-        return SPELL_CAST_OK;
-
     // normal case
     if (spellInfo->AreaGroupId > 0)
     {
@@ -3759,6 +3757,8 @@ void SpellMgr::LoadSpellCustomAttr()
     }
 
     SummonPropertiesEntry *properties = const_cast<SummonPropertiesEntry*>(sSummonPropertiesStore.LookupEntry(121));
+    properties->Type = SUMMON_TYPE_TOTEM;
+    properties = const_cast<SummonPropertiesEntry*>(sSummonPropertiesStore.LookupEntry(647)); // 52893
     properties->Type = SUMMON_TYPE_TOTEM;
 
     CreatureAI::FillAISpellInfo();

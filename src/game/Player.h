@@ -2105,6 +2105,8 @@ class MANGOS_DLL_SPEC Player : public Unit
         float m_homebindZ;
 		void RelocateToHomebind() { /*SetLocationMapId*/(m_homebindMapId); Relocate(m_homebindX,m_homebindY,m_homebindZ); }
 
+        WorldLocation GetStartPosition() const;
+
         // currently visible objects at player client
         typedef std::set<uint64> ClientGUIDs;
         ClientGUIDs m_clientGUIDs;

@@ -224,28 +224,32 @@ void npc_unworthy_initiateAI::UpdateAI(const uint32 diff)
     case PHASE_TO_EQUIP:
         if (wait_timer)
         {
-            if (wait_timer < diff)
+            if (wait_timer > diff)
+                wait_timer -= diff;
+            else
             {
                 me->GetMotionMaster()->MovePoint(1, anchorX, anchorY, me->GetPositionZ());
-                debug_log("npc_unworthy_initiateAI: move to %f %f %f", anchorX, anchorY, me->GetPositionZ());
+                //debug_log("npc_unworthy_initiateAI: move to %f %f %f", anchorX, anchorY, me->GetPositionZ());
                 phase = PHASE_EQUIPING;
                 wait_timer = 0;
-            }else wait_timer -= diff;
+            }
         }
         return;
     case PHASE_TO_ATTACK:
         if (wait_timer)
         {
-            if (wait_timer < diff)
+            if (wait_timer > diff)
+                wait_timer -= diff;
+            else
             {
                 me->setFaction(14);
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                 phase = PHASE_ATTACKING;
 
-                if (Unit* target = Unit::GetUnit((*me),playerGUID))
+                if (Player* target = Unit::GetPlayer(playerGUID))
                     me->AI()->AttackStart(target);
                 wait_timer = 0;
-            }else wait_timer -= diff;
+            }
         }
         return;
     case PHASE_ATTACKING:
@@ -282,7 +286,6 @@ void npc_unworthy_initiateAI::UpdateAI(const uint32 diff)
         }
 
         DoMeleeAttackIfReady();
-        return;
     }
 }
 
@@ -320,7 +323,7 @@ enum
     SAY_DUEL_I                  = -1609088,
 
     SPELL_DUEL                  = 52996,
-    SPELL_DUEL_TRIGGERED        = 52990,
+    //SPELL_DUEL_TRIGGERED        = 52990,
     SPELL_DUEL_VICTORY          = 52994,
     SPELL_DUEL_FLAG             = 52991,
 
@@ -360,7 +363,7 @@ struct TRINITY_DLL_DECL npc_death_knight_initiateAI : public SpellAI
 
     void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
     {
-        if (!m_bIsDuelInProgress && pSpell->Id == SPELL_DUEL_TRIGGERED)
+        if (!m_bIsDuelInProgress && pSpell->Id == SPELL_DUEL)
         {
             m_uiDuelerGUID = pCaster->GetGUID();
             m_bIsDuelInProgress = true;
@@ -383,7 +386,7 @@ struct TRINITY_DLL_DECL npc_death_knight_initiateAI : public SpellAI
                     pDoneBy->AttackStop();
                     me->CastSpell(pDoneBy, SPELL_DUEL_VICTORY, true);
                     lose = true;
-                    me->CastSpell(me, 7267, true);
+                    me->CastSpell(me, SPELL_ID_DUEL_BEG, true);
                     me->RestoreFaction();
                 }
             }
@@ -413,14 +416,14 @@ struct TRINITY_DLL_DECL npc_death_knight_initiateAI : public SpellAI
         {
             if (lose)
             {
-                if (!me->HasAura(7267))
+                if (!me->HasAura(SPELL_ID_DUEL_BEG))
                     EnterEvadeMode();
                 return;
             }
             else if (me->getVictim()->GetTypeId() == TYPEID_PLAYER
                 && me->getVictim()->GetHealth() * 10 < me->getVictim()->GetMaxHealth())
             {
-                me->getVictim()->CastSpell(me->getVictim(), 7267, true); // beg
+                me->getVictim()->CastSpell(me->getVictim(), SPELL_ID_DUEL_BEG, true); // beg
                 me->getVictim()->RemoveGameObject(SPELL_DUEL_FLAG, true);
                 EnterEvadeMode();
                 return;
@@ -969,3 +972,10 @@ void AddSC_the_scarlet_enclave_c1()
     newscript->pGOHello = &GOHello_go_inconspicuous_mine_car;
     newscript->RegisterSelf();
 }
+
+/*   
+DELETE FROM `script_texts` WHERE `entry` IN(-1609301, -1609302);
+INSERT INTO `script_texts` (`entry`,`content_default`,`type`,`language`,`emote`,`comment`) VALUES
+(-1609301, 'Come, weakling! Strike me down!', 0, 0, 0, 'SAY_DEATH_RIDER_FINAL'),
+(-1609302, '%s rears up, beckoning you to ride it.', 2, 0, 0, 'SAY_DEATH_CHARGER');
+*/
