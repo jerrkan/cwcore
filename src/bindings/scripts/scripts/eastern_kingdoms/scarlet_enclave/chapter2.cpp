@@ -998,16 +998,4 @@ void AddSC_the_scarlet_enclave_c2()
     newscript->Name = "npc_a_special_surprise";
     newscript->GetAI = &GetAI_npc_a_special_surprise;
     newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name="npc_highlord_darion_mograine";
-    newscript->GetAI = &GetAI_npc_highlord_darion_mograine;
-    newscript->pGossipHello =  &GossipHello_npc_highlord_darion_mograine;
-    newscript->pGossipSelect = &GossipSelect_npc_highlord_darion_mograine;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name="npc_the_lich_king_tirion_dawn";
-    newscript->GetAI = &GetAI_npc_the_lich_king_tirion_dawn;
-    newscript->RegisterSelf();
 }
