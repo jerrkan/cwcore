@@ -67,18 +67,9 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data )
     if (!GetPlayer()->GetGameObjectIfCanInteractWith(mailbox, GAMEOBJECT_TYPE_MAILBOX))
         return;
 
-    // recheck
-    CHECK_PACKET_SIZE(recv_data, 8+(receiver.size()+1)+1+1+4+4+1+4+4+8+1);
-
     recv_data >> subject;
 
-    // recheck
-    CHECK_PACKET_SIZE(recv_data, 8+(receiver.size()+1)+(subject.size()+1)+1+4+4+1+4+4+8+1);
-
     recv_data >> body;
-
-    // recheck
-    CHECK_PACKET_SIZE(recv_data, 8+(receiver.size()+1)+(subject.size()+1)+(body.size()+1)+4+4+1+4+4+8+1);
 
     recv_data >> unk1;                                      // stationery?
     recv_data >> unk2;                                      // 0x00000000
@@ -93,9 +84,6 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data )
         GetPlayer()->SendMailResult(0, MAIL_SEND, MAIL_ERR_TOO_MANY_ATTACHMENTS);
         return;
     }
-
-    // recheck
-    CHECK_PACKET_SIZE(recv_data, 8+(receiver.size()+1)+(subject.size()+1)+(body.size()+1)+4+4+1+items_count*(1+8)+4+4+8+1);
 
     if(items_count)
     {

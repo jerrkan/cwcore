@@ -34,7 +34,8 @@ void WorldSession::HandleSplitItemOpcode( WorldPacket & recv_data )
     CHECK_PACKET_SIZE(recv_data, 1+1+1+1+1);
 
     //sLog.outDebug("WORLD: CMSG_SPLIT_ITEM");
-    uint8 srcbag, srcslot, dstbag, dstslot, count;
+    uint8 srcbag, srcslot, dstbag, dstslot;
+    uint32 count;
 
     recv_data >> srcbag >> srcslot >> dstbag >> dstslot >> count;
     //sLog.outDebug("STORAGE: receive srcbag = %u, srcslot = %u, dstbag = %u, dstslot = %u, count = %u", srcbag, srcslot, dstbag, dstslot, count);
@@ -292,8 +293,6 @@ void WorldSession::HandleDestroyItemOpcode( WorldPacket & recv_data )
 // Only _static_ data send in this packet !!!
 void WorldSession::HandleItemQuerySingleOpcode( WorldPacket & recv_data )
 {
-    CHECK_PACKET_SIZE(recv_data, 4);
-
     //sLog.outDebug("WORLD: CMSG_ITEM_QUERY_SINGLE");
     uint32 item;
     recv_data >> item;
@@ -510,12 +509,9 @@ void WorldSession::HandleSellItemOpcode( WorldPacket & recv_data )
 
     sLog.outDebug(  "WORLD: Received CMSG_SELL_ITEM" );
     uint64 vendorguid, itemguid;
-    uint8 _count;
+    uint32 count;
 
-    recv_data >> vendorguid >> itemguid >> _count;
-
-    // prevent possible overflow, as Trinity uses uint32 for item count
-    uint32 count = _count;
+    recv_data >> vendorguid >> itemguid >> count;
 
     if(!itemguid)
         return;
@@ -855,8 +851,6 @@ void WorldSession::HandleAutoStoreBagItemOpcode( WorldPacket & recv_data )
 
 void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
 {
-    CHECK_PACKET_SIZE(recvPacket, 8);
-
     sLog.outDebug("WORLD: CMSG_BUY_BANK_SLOT");
 
     uint64 guid;
@@ -1011,6 +1005,8 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPacket & recv_data)
 
     uint32 itemid;
     recv_data >> itemid;
+    recv_data.read_skip<uint64>();                          // guid
+
     sLog.outDebug("WORLD: CMSG_ITEM_NAME_QUERY %u", itemid);
     ItemPrototype const *pProto = objmgr.GetItemPrototype( itemid );
     if( pProto )

@@ -585,7 +585,7 @@ void ObjectMgr::LoadCreatureTemplates()
             CreatureInfo const* heroicInfo = GetCreatureTemplate(cInfo->HeroicEntry);
             if (!heroicInfo)
             {
-                sLog.outErrorDb("Creature (Entry: %u) have `heroic_entry`=%u but creature entry %u not exist.",cInfo->HeroicEntry,cInfo->HeroicEntry);
+                sLog.outErrorDb("Creature (Entry: %u) have `heroic_entry`=%u but creature entry %u not exist.", i, cInfo->HeroicEntry, cInfo->HeroicEntry);
                 continue;
             }
 
@@ -3764,6 +3764,8 @@ void ObjectMgr::LoadQuests()
                         qinfo->GetQuestId(),j+1,id,id);
                     // no changes, quest can't be done for this requirement
                 }
+                else if(!qinfo->ReqSourceCount[j])
+                    qinfo->ReqSourceCount[j] = 1;
             }
             else
             {

@@ -46,8 +46,6 @@ class QueryResult;
 class LoginQueryHolder;
 class CharacterHandler;
 
-#define CHECK_PACKET_SIZE(P,S) if((P).size() < (S)) return SizeError((P),(S));
-
 #define NUM_ACCOUNT_DATA_TYPES 8
 
 struct AccountData
@@ -728,7 +726,9 @@ class TRINITY_DLL_SPEC WorldSession
         void moveItems(Item* myItems[], Item* hisItems[]);
 
         // logging helper
-        void logUnexpectedOpcode(WorldPacket *packet, const char * reason);
+        void LogUnexpectedOpcode(WorldPacket *packet, const char * reason);
+        void LogUnprocessedTail(WorldPacket *packet);
+
         Player *_player;
         WorldSocket *m_Socket;
         std::string m_Address;

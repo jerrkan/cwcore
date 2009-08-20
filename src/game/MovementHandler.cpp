@@ -232,7 +232,10 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
     // ignore, waiting processing in WorldSession::HandleMoveWorldportAckOpcode and WorldSession::HandleMoveTeleportAck
     if(plMover && plMover->IsBeingTeleported())
+    {
+        recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
         return;
+    }
 
     /* extract packet */
     uint64 guid;
@@ -507,6 +510,7 @@ void WorldSession::HandleMoveNotActiveMover(WorldPacket &recv_data)
     {
         sLog.outError("MovementHandler: player %s (guid %d, account %u) sent a packet (opcode %u) that is " SIZEFMTD " bytes larger than it should be. Kicked as cheater.", _player->GetName(), _player->GetGUIDLow(), _player->GetSession()->GetAccountId(), recv_data.GetOpcode(), recv_data.size() - recv_data.rpos());
         KickPlayer();
+        recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
         return;
     }
 }
@@ -519,7 +523,10 @@ void WorldSession::HandleDismissControlledVehicle(WorldPacket &recv_data)
     uint64 vehicleGUID = _player->GetCharmGUID();
 
     if(!vehicleGUID)                                        // something wrong here...
+    {
+        recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
         return;
+    }
 
 	uint64 guid;
     if(!recv_data.readPackGUID(guid))

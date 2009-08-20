@@ -31,12 +31,8 @@
 #include "WaypointMovementGenerator.h"
 #include "DestinationHolderImp.h"
 
-#include <cassert>
-
 void WorldSession::HandleTaxiNodeStatusQueryOpcode( WorldPacket & recv_data )
 {
-    CHECK_PACKET_SIZE(recv_data,8);
-
     sLog.outDebug( "WORLD: Received CMSG_TAXINODE_STATUS_QUERY" );
 
     uint64 guid;
@@ -72,8 +68,6 @@ void WorldSession::SendTaxiStatus( uint64 guid )
 
 void WorldSession::HandleTaxiQueryAvailableNodes( WorldPacket & recv_data )
 {
-    CHECK_PACKET_SIZE(recv_data,8);
-
     sLog.outDebug( "WORLD: Received CMSG_TAXIQUERYAVAILABLENODES" );
 
     uint64 guid;
@@ -264,8 +258,6 @@ void WorldSession::HandleMoveSplineDoneOpcode(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleActivateTaxiOpcode( WorldPacket & recv_data )
 {
-    CHECK_PACKET_SIZE(recv_data,8+4+4);
-
     sLog.outDebug( "WORLD: Received CMSG_ACTIVATETAXI" );
 
     uint64 guid;

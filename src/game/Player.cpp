@@ -6703,7 +6703,13 @@ void Player::DuelComplete(DuelCompleteType type)
     {
         GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOSE_DUEL, 1);
         if (duel->opponent)
-            duel->opponent->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_DUEL, 1);
+        {
+             duel->opponent->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_DUEL, 1);
+
+            //Credit for quest Death's Challenge
+            if (getClass() == CLASS_DEATH_KNIGHT && duel->opponent->GetQuestStatus(12733) == QUEST_STATUS_INCOMPLETE)
+                duel->opponent->CastSpell(duel->opponent, 52994, true);
+        }
     }
 
     //Remove Duel Flag object
@@ -17799,13 +17805,15 @@ bool Player::ActivateTaxiPathTo(std::vector<uint32> const& nodes, Creature* npc 
         if( m_ShapeShiftFormSpellId && m_form != FORM_BATTLESTANCE && m_form != FORM_BERSERKERSTANCE && m_form != FORM_DEFENSIVESTANCE && m_form != FORM_SHADOW )
             RemoveAurasDueToSpell(m_ShapeShiftFormSpellId);
 
-        if(m_currentSpells[CURRENT_GENERIC_SPELL] && m_currentSpells[CURRENT_GENERIC_SPELL]->m_spellInfo->Id != spellid)
-            InterruptSpell(CURRENT_GENERIC_SPELL,false);
+        if (Spell* spell = GetCurrentSpell(CURRENT_GENERIC_SPELL))
+            if (spell->m_spellInfo->Id != spellid)
+                InterruptSpell(CURRENT_GENERIC_SPELL,false);
 
         InterruptSpell(CURRENT_AUTOREPEAT_SPELL,false);
 
-        if(m_currentSpells[CURRENT_CHANNELED_SPELL] && m_currentSpells[CURRENT_CHANNELED_SPELL]->m_spellInfo->Id != spellid)
-            InterruptSpell(CURRENT_CHANNELED_SPELL,true);
+        if (Spell* spell = GetCurrentSpell(CURRENT_CHANNELED_SPELL))
+            if (spell->m_spellInfo->Id != spellid)
+                InterruptSpell(CURRENT_CHANNELED_SPELL,true);
     }
 
     uint32 sourcenode = nodes[0];
@@ -19948,12 +19956,10 @@ void Player::RemoveItemDependentAurasAndCasts( Item * pItem )
     }
 
     // currently casted spells can be dependent from item
-    for (uint32 i = 0; i < CURRENT_MAX_SPELL; i++)
-    {
-        if( m_currentSpells[i] && m_currentSpells[i]->getState()!=SPELL_STATE_DELAYED &&
-            !HasItemFitToSpellReqirements(m_currentSpells[i]->m_spellInfo,pItem) )
-            InterruptSpell(i);
-    }
+    for (uint32 i = 0; i < CURRENT_MAX_SPELL; ++i)
+        if (Spell* spell = GetCurrentSpell(CurrentSpellTypes(i)))
+            if (spell->getState()!=SPELL_STATE_DELAYED && !HasItemFitToSpellReqirements(spell->m_spellInfo,pItem) )
+                InterruptSpell(CurrentSpellTypes(i));
 }
 
 uint32 Player::GetResurrectionSpellId()

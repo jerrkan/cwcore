@@ -873,7 +873,7 @@ void Unit::CastStop(uint32 except_spellid)
 {
     for (uint32 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_MAX_SPELL; i++)
         if (m_currentSpells[i] && m_currentSpells[i]->m_spellInfo->Id!=except_spellid)
-            InterruptSpell(i,false);
+            InterruptSpell(CurrentSpellTypes(i),false);
 }
 
 void Unit::CastSpell(Unit* Victim, uint32 spellId, bool triggered, Item *castItem, AuraEffect* triggeredByAura, uint64 originalCaster)
@@ -2904,13 +2904,9 @@ SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool 
             }
         }
         if (isNormal || m_currentSpells[CURRENT_MELEE_SPELL])
-        {
             misschance = 5.0f;
-        }
         else
-        {
             misschance = 24.0f;
-        }
     }
 
     // PvP : PvE melee misschances per leveldif > 2
@@ -3314,9 +3310,11 @@ void Unit::SetCurrentCastedSpell( Spell * pSpell )
     // set new current spell
     m_currentSpells[CSpellType] = pSpell;
     pSpell->SetReferencedFromCurrent(true);
+
+    pSpell->m_selfContainer = &(m_currentSpells[pSpell->GetCurrentContainer()]);
 }
 
-void Unit::InterruptSpell(uint32 spellType, bool withDelayed, bool withInstant)
+void Unit::InterruptSpell(CurrentSpellTypes spellType, bool withDelayed, bool withInstant)
 {
     assert(spellType < CURRENT_MAX_SPELL);
 
@@ -3343,6 +3341,18 @@ void Unit::InterruptSpell(uint32 spellType, bool withDelayed, bool withInstant)
             spell->cancel();
         spell->SetReferencedFromCurrent(false);
     }
+}
+
+void Unit::FinishSpell(CurrentSpellTypes spellType, bool ok /*= true*/)
+{
+    Spell* spell = m_currentSpells[spellType];
+    if (!spell)
+        return;
+
+    if (spellType == CURRENT_CHANNELED_SPELL)
+        spell->SendChannelUpdate(0);
+
+    spell->finish(ok);
 }
 
 bool Unit::IsNonMeleeSpellCasted(bool withDelayed, bool skipChanneled, bool skipAutorepeat, bool isAutoshoot) const
@@ -5680,6 +5690,9 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                 case 47570:
                 case 47569:
                 {
+                    if (!roll_chance_i(triggerAmount))
+                        return false;
+
                     RemoveMovementImpairingAuras();
                     break;
                 }
@@ -8596,6 +8609,19 @@ void Unit::SetMinion(Minion *minion, bool apply)
         }
         //else if(minion->m_Properties && minion->m_Properties->Type == SUMMON_TYPE_MINIPET)      
         //    RemoveUInt64Value(UNIT_FIELD_CRITTER, minion->GetGUID());
+    }
+}
+
+void Unit::RemoveAllMinionsByEntry(uint32 entry)
+{
+    for(Unit::ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end();)
+    {
+        Unit *unit = *itr;
+        ++itr;
+        if(unit->GetEntry() == entry && unit->GetTypeId() == TYPEID_UNIT
+            && ((Creature*)unit)->isSummon()) // minion, actually
+            ((TempSummon*)unit)->UnSummon();
+        // i think this is safe because i have never heard that a despawned minion will trigger a same minion
     }
 }
 
