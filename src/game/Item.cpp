@@ -285,9 +285,8 @@ void Item::UpdateDuration(Player* owner, uint32 diff)
 
     if (GetUInt32Value(ITEM_FIELD_DURATION)<=diff)
     {
-        owner->DestroyItem(GetBagSlot(), GetSlot(), true);
-        if(const ItemPrototype *proto = GetProto())
-            Script->ItemExpire(owner, proto);
+        Script->ItemExpire(owner, GetProto());
+        owner->DestroyItem(GetBagSlot(), GetSlot(), true);           
         return;
     }
 

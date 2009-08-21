@@ -7634,7 +7634,7 @@ void Player::_ApplyAmmoBonuses()
     if( !ammo_proto || ammo_proto->Class!=ITEM_CLASS_PROJECTILE || !CheckAmmoCompatibility(ammo_proto))
         currentAmmoDPS = 0.0f;
     else
-        currentAmmoDPS = ammo_proto->Damage[0].DamageMin;
+        currentAmmoDPS = ( ammo_proto->Damage[0].DamageMin + ammo_proto->Damage[0].DamageMax ) / 2;
 
     if(currentAmmoDPS == GetAmmoDPS())
         return;
@@ -19127,7 +19127,7 @@ void Player::UpdateVisibilityOf(T* target, UpdateData& data, std::set<WorldObjec
             #endif
         }
     }
-    else if(visibleNow.size() < 30 || target->GetTypeId() == TYPEID_UNIT && ((Creature*)target)->isVehicle())
+    else //if(visibleNow.size() < 30 || target->GetTypeId() == TYPEID_UNIT && ((Creature*)target)->isVehicle())
     {
         if(target->isVisibleForInState(this,false))
         {
@@ -20223,6 +20223,13 @@ void Player::SetClientControl(Unit* target, uint8 allowMove)
     GetSession()->SendPacket(&data);
     if(target == this)
         SetMover(this);
+    else if(target->canFly())
+    {
+        WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 12);
+        data.append(target->GetPackGUID());
+        data << uint32(0);
+        SendDirectMessage(&data);
+    }
 }
 
 void Player::UpdateZoneDependentAuras( uint32 newZone )
