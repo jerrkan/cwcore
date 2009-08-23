@@ -2155,26 +2155,25 @@ void Unit::CalcAbsorbResist(Unit *pVictim,SpellSchoolMask schoolMask, DamageEffe
 
     if (*absorb)
     {
-        bool found = false;
-        int32 spell_dmg = 0;
         // Incanter's Absorption
         // TODO: move this code to procflag
-        if (AuraEffect const * aurEff = GetDummyAura(SPELLFAMILY_GENERIC, 2941, 0))
+        if (AuraEffect const * aurEff = pVictim->GetDummyAura(SPELLFAMILY_GENERIC, 2941, 0))
         {
-            int32 total_dmg = 0;
-            // Get total bonus from auras
-            for(AuraMap::const_iterator iter = m_Auras.lower_bound(44413); iter != m_Auras.upper_bound(44413);++iter)
-            {
+            // Get total damage bonus from auras
+            int32 current_dmg = 0;
+            std::pair<AuraMap::const_iterator, AuraMap::const_iterator> range = pVictim->GetAuras().equal_range(44413);
+            for(AuraMap::const_iterator iter = range.first; iter != range.second; ++iter)
                 if (AuraEffect const * bonusEff = iter->second->GetPartAura(0))
-                    total_dmg += bonusEff->GetAmount();
-            }
-            spell_dmg = int32(*absorb * aurEff->GetAmount() / 100);
+                    current_dmg += bonusEff->GetAmount();
+
+            int32 new_dmg = (int32)*absorb * aurEff->GetAmount() / 100;
+            int32 max_dmg = (int32)pVictim->GetMaxHealth() * 5 / 100;
             // Do not apply more auras if more than 5% hp
-            if(total_dmg+spell_dmg <= int32(GetMaxHealth() * 5 / 100))
-                found = true;
+            if(current_dmg + new_dmg > max_dmg)
+                new_dmg = max_dmg - current_dmg;
+            if(new_dmg > 0)
+                pVictim->CastCustomSpell(pVictim, 44413, &new_dmg, NULL, NULL, true);
         }
-        if (found)
-            pVictim->CastCustomSpell(pVictim, 44413, &spell_dmg, NULL, NULL, true);
     }
 }
 
@@ -2791,9 +2790,6 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
     // Apply mod
     modHitChance-=resist_chance;
 
-    // Chance resist debuff
-    modHitChance-=pVictim->GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_DEBUFF_RESISTANCE, int32(spell->Dispel));
-
     int32 HitChance = modHitChance * 100;
     // Increase hit chance from attacker SPELL_AURA_MOD_SPELL_HIT_CHANCE and attacker ratings
     HitChance += int32(m_modSpellHitChance*100.0f);
@@ -2810,8 +2806,30 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
     uint32 rand = urand(0,10000);
 
     if (rand < tmp)
-        return SPELL_MISS_RESIST;
+        return SPELL_MISS_MISS;
 
+    // Chance resist mechanic (select max value from every mechanic spell effect)
+    int32 resist_mech = 0;
+    // Get effects mechanic and chance
+    for(uint8 eff = 0; eff < MAX_SPELL_EFFECTS; ++eff)
+    {
+        int32 effect_mech = GetEffectMechanic(spell, eff);
+        if (effect_mech)
+        {
+            int32 temp = pVictim->GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_MECHANIC_RESISTANCE, effect_mech);
+            if (resist_mech < temp*100)
+                resist_mech = temp*100;
+        }
+    }
+    
+    // Chance resist debuff
+    tmp -= pVictim->GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_DEBUFF_RESISTANCE, int32(spell->Dispel));
+    
+    // Roll chance
+    tmp += resist_mech;
+    if (rand < tmp)
+        return SPELL_MISS_RESIST;
+        
     // cast by caster in front of victim
     if (pVictim->HasInArc(M_PI,this) || pVictim->HasAuraType(SPELL_AURA_IGNORE_HIT_DIRECTION))
     {
@@ -2835,7 +2853,7 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
 SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool CanReflect)
 {
     // Return evade for units in evade mode
-    if (pVictim->GetTypeId()==TYPEID_UNIT && ((Creature*)pVictim)->IsInEvadeMode())
+    if (pVictim->GetTypeId()==TYPEID_UNIT && ((Creature*)pVictim)->IsInEvadeMode() && this != pVictim)
         return SPELL_MISS_EVADE;
 
     // Check for immune
@@ -3427,11 +3445,11 @@ bool Unit::isInBackInMap(Unit const* target, float distance, float arc) const
     return IsWithinDistInMap(target, distance) && !HasInArc( 2 * M_PI - arc, target );
 }
 
-bool Unit::isInLine(Unit const* target, float distance) const
+bool Unit::isInLine(Unit const* target, float distance, float width) const
 {
     if(!HasInArc(M_PI, target) || !IsWithinDistInMap(target, distance)) return false;
-    float width = GetObjectSize() + target->GetObjectSize() * 0.5f;
-    float angle = GetAngle(target) - GetOrientation();
+    width += target->GetObjectSize() * 0.5f;
+    float angle = GetRelativeAngle(target);
     return abs(sin(angle)) * GetExactDistance2d(target->GetPositionX(), target->GetPositionY()) < width;
 }
 
@@ -3845,7 +3863,7 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
         if (is_triggered_by_spell)
             continue;
 
-        if(!spellmgr.IsNoStackSpellDueToSpell(spellId, i_spellId, sameCaster))
+        if(spellmgr.CanAurasStack(spellProto, i_spellProto, sameCaster))
             continue;
 
         //some spells should be not removed by lower rank of them (totem, paladin aura)
@@ -5780,6 +5798,18 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
         {
             switch(dummySpell->Id)
             {
+                // Glyph of Starfire
+                case 54845:
+                {
+                    triggered_spell_id = 54846;
+                    break;
+                }
+                // Glyph of Shred
+                case 54815:
+                {
+                    triggered_spell_id = 63974;
+                    break;
+                }
                 // Glyph of Rake
                 case 54821:
                 {
@@ -5955,6 +5985,12 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
         {
             switch(dummySpell->Id)
             {
+                // Glyph of Backstab
+                case 56800:
+                {
+                    triggered_spell_id = 63975;
+                    break;
+                }
                 // Deadly Throw Interrupt
                 case 32748:
                 {
@@ -10524,6 +10560,9 @@ bool Unit::canAttack(Unit const* target, bool force) const
     if(target->GetVisibility() == VISIBILITY_GROUP_STEALTH && !canDetectStealthOf(target, GetDistance(target)))
         return false;
 
+    if(target == m_Vehicle)
+        return false;
+
     return true;
 }
 
@@ -11243,9 +11282,12 @@ Unit* Creature::SelectVictim()
     // Note: creature not have targeted movement generator but have attacker in this case
     for(AttackerSet::const_iterator itr = m_attackers.begin(); itr != m_attackers.end(); ++itr)
     {
-        if( (*itr)->IsInMap(this) && canAttack(*itr) && (*itr)->isInAccessiblePlaceFor((Creature*)this) && ((*itr)->GetTypeId() != TYPEID_PLAYER && (!((Creature*)(*itr))->HasSummonMask(SUMMON_MASK_CONTROLABLE_GUARDIAN))))
+        if(canCreatureAttack(*itr) && ((*itr)->GetTypeId() != TYPEID_PLAYER && (!((Creature*)(*itr))->HasSummonMask(SUMMON_MASK_CONTROLABLE_GUARDIAN))))
             return NULL;
     }
+
+    if(m_Vehicle)
+        return NULL;
 
     // search nearby enemy before enter evade mode
     if(HasReactState(REACT_AGGRESSIVE))

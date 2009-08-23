@@ -113,7 +113,7 @@ struct TargetDistanceOrder : public std::binary_function<const Unit *, const Uni
     // functor for operator ">"
     bool operator()(const Unit * _Left, const Unit * _Right) const
     {
-        return (me->GetDistanceSq(_Left) < me->GetDistanceSq(_Right));
+        return (me->GetExactDistSq(_Left) < me->GetExactDistSq(_Right));
     }
 };
 
@@ -165,7 +165,16 @@ Unit* UnitAI::SelectTarget(SelectAggroTarget targetType, uint32 position, float 
                 if(targetType == SELECT_TARGET_TOPAGGRO)
                     advance(i, position);
                 else // random
-                    advance(i, position + rand()%(m_threatlist.size() - position));
+                {
+                    //advance(i, position + rand()%(m_threatlist.size() - position));
+                    //if we use "random, 1", usually we want random except current victim
+                    advance(i, rand()%m_threatlist.size());
+                    if(position && (*i)->getTarget() == me->getVictim())
+                    {
+                        m_threatlist.erase(i);
+                        continue;
+                    }
+                }
             }
 
             if(SelectTargetHelper(me, (*i)->getTarget(), playerOnly, dist, aura))

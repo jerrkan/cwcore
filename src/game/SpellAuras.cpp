@@ -780,8 +780,7 @@ void AreaAuraEffect::Update(uint32 diff)
                     bool skip = false;
                     for(Unit::AuraMap::iterator iter = (*tIter)->GetAuras().begin(); iter != (*tIter)->GetAuras().end();++iter)
                     {
-                        bool samecaster = iter->second->GetCasterGUID() == GetCasterGUID();
-                        if(spellmgr.IsNoStackSpellDueToSpell(GetId(), iter->first, samecaster))
+                        if(!spellmgr.CanAurasStack(GetSpellProto(), iter->second->GetSpellProto(), iter->second->GetCasterGUID() == GetCasterGUID()))
                         {
                             skip = true;
                             break;
@@ -1361,9 +1360,10 @@ void AuraEffect::HandleAuraEffectSpecificMods(bool apply, bool Real, bool change
 
                         m_amount += int32(caster->GetTotalAttackPowerValue(BASE_ATTACK) * cp / 100);
                     }
+                    // TODO: i do not know what is this for so i simply disable it
                     // Lifebloom
-                    else if (m_spellProto->SpellFamilyFlags[1] & 0x10 && GetAuraName() == SPELL_AURA_PERIODIC_HEAL)
-                        m_amount = caster->SpellHealingBonus(m_target, GetSpellProto(), m_amount, SPELL_DIRECT_DAMAGE);
+                    //else if (m_spellProto->SpellFamilyFlags[1] & 0x10 && GetAuraName() == SPELL_AURA_PERIODIC_HEAL)
+                    //    m_amount = caster->SpellHealingBonus(m_target, GetSpellProto(), m_amount, SPELL_DIRECT_DAMAGE);
                     // Innervate
                     else if (m_spellProto->Id == 29166 && GetAuraName() == SPELL_AURA_PERIODIC_ENERGIZE)
                         m_amount = m_target->GetCreatePowers(POWER_MANA) * m_amount / (GetTotalTicks() * 100.0f);
@@ -4479,6 +4479,20 @@ void AuraEffect::HandleAuraPeriodicDummy(bool apply, bool Real, bool changeAmoun
     SpellEntry const*spell = GetSpellProto();
     switch( spell->SpellFamilyName)
     {
+        case SPELLFAMILY_GENERIC:
+        {
+            if(spell->Id == 62399) // Overload Circuit
+            {
+                if(m_target->GetMap()->IsDungeon())
+                    if(m_target->GetAuras().count(62399) >= (m_target->GetMap()->IsHeroic() ? 4 : 2))
+                    {
+                        m_target->CastSpell(m_target, 62475, true); // System Shutdown
+                        if(m_target->m_Vehicle)
+                            m_target->m_Vehicle->CastSpell(m_target, 62475, true);
+                    }
+            }
+            break;
+        }
         case SPELLFAMILY_WARLOCK:
         {
             switch (spell->Id)
@@ -6342,6 +6356,10 @@ void AuraEffect::PeriodicDummyTick()
             case 58549: // Tenacity
             case 59911: // Tenacity (vehicle)
                 GetParentAura()->RefreshAura();
+                break;
+            case 62292: // Blaze (Pool of Tar)
+                // should we use custom damage?
+                m_target->CastSpell((Unit*)NULL, m_spellProto->EffectTriggerSpell[m_effIndex], true);
                 break;
             default:
                 break;

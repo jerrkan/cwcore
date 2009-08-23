@@ -28,17 +28,25 @@ const uint32 WintergraspFaction[2] = {1732, 1735};
 
 #define POS_X_CENTER        4700
 
-#define SPELL_RECRUIT       37795
-#define SPELL_CORPORAL      33280
-#define SPELL_LIEUTENANT    55629
+enum WintergraspSpell
+{
+    SPELL_RECRUIT           = 37795,
+    SPELL_CORPORAL          = 33280,
+    SPELL_LIEUTENANT        = 55629,
 
-#define SPELL_TENACITY      58549
-#define SPELL_TENACITY_VEHICLE  59911
+    SPELL_TENACITY          = 58549,
+    SPELL_TENACITY_VEHICLE  = 59911,
+    SPELL_TOWER_CONTROL     = 62064,
 
-#define SPELL_VICTORY_REWARD    56902
-#define SPELL_DEFEAT_REWARD     58494
+    SPELL_VICTORY_REWARD    = 56902,
+    SPELL_DEFEAT_REWARD     = 58494,
+    SPELL_DAMAGED_TOWER     = 59135,
+    SPELL_DESTROYED_TOWER   = 59136,
+    SPELL_DAMAGED_BUILDING  = 59201,
+    SPELL_INTACT_BUILDING   = 59203,
 
-#define SPELL_SHUTDOWN_VEHICLE  21247
+    SPELL_SHUTDOWN_VEHICLE  = 21247,
+};
 
 #define MAX_VEHICLE_PER_WORKSHOP    4
 
@@ -172,6 +180,7 @@ class OPvPWintergrasp : public OutdoorPvP
         uint32 m_timer;
         uint32 m_clock[5];
         uint32 m_workshopCount[2];
+        uint32 m_towerCount;
 
         SiegeWorkshop *GetWorkshop(uint32 lowguid) const;
         SiegeWorkshop *GetWorkshopByEngGuid(uint32 lowguid) const;
@@ -187,8 +196,11 @@ class OPvPWintergrasp : public OutdoorPvP
         bool UpdateCreatureInfo(Creature *creature) const;
         bool UpdateGameObjectInfo(GameObject *go) const;
 
+        bool CanBuildVehicle(SiegeWorkshop *workshop) const;
+
         void RebuildAllBuildings();
 
+        void LieutenantCastSpell(TeamId team, int32 spellId) const;
         void VehicleCastSpell(TeamId team, int32 spellId) const;
 
         void SendInitWorldStatesTo(Player *player = NULL) const;
@@ -199,16 +211,17 @@ class SiegeWorkshop : public OPvPCapturePoint
     public:
         explicit SiegeWorkshop(OPvPWintergrasp *opvp, BuildingState *state);
         void SetTeamByBuildingState();
-        void ChangeState();
-        void DespawnAllVehicles();
+        void ChangeState() {}
+        void ChangeTeam(TeamId oldteam);
+        //void DespawnAllVehicles();
 
-        bool CanBuildVehicle() const { return m_vehicles.size() < MAX_VEHICLE_PER_WORKSHOP && m_buildingState->damageState != DAMAGE_DESTROYED; }
+        //bool CanBuildVehicle() const { return m_vehicles.size() < MAX_VEHICLE_PER_WORKSHOP && m_buildingState->damageState != DAMAGE_DESTROYED; }
 
         uint32 *m_engEntry;
         uint32 m_engGuid;
         Creature *m_engineer;
         uint32 m_workshopGuid;
-        VehicleSet m_vehicles;
+        //VehicleSet m_vehicles;
         BuildingState *m_buildingState;
     protected:
         OPvPWintergrasp *m_wintergrasp;

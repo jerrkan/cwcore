@@ -16,8 +16,8 @@
 
 /* ScriptData
 SDName: Boss_Keristrasza
-SD%Complete: 
-SDComment: 
+SD%Complete:
+SDComment:
 SDCategory: The Nexus, The Nexus
 EndScriptData */
 
@@ -70,7 +70,7 @@ struct TRINITY_DLL_DECL boss_keristraszaAI : public ScriptedAI
     uint32 CheckIntenseColdTimer;
     bool MoreThanTwoIntenseCold; // needed for achievement: Intense Cold(2036)
 
-    void Reset() 
+    void Reset()
     {
         CRYSTALFIRE_BREATH_Timer = 14000;
         CRYSTAL_CHAINS_CRYSTALIZE_Timer = HeroicMode ? 30000 : 11000;
@@ -88,7 +88,7 @@ struct TRINITY_DLL_DECL boss_keristraszaAI : public ScriptedAI
             pInstance->SetData(DATA_KERISTRASZA_EVENT, NOT_STARTED);
     }
 
-    void EnterCombat(Unit* who) 
+    void EnterCombat(Unit* who)
     {
         DoScriptText(SAY_AGGRO, m_creature);
         DoCastAOE(SPELL_INTENSE_COLD);
@@ -97,7 +97,7 @@ struct TRINITY_DLL_DECL boss_keristraszaAI : public ScriptedAI
             pInstance->SetData(DATA_KERISTRASZA_EVENT, IN_PROGRESS);
     }
 
-    void JustDied(Unit* killer)  
+    void JustDied(Unit* killer)
     {
         DoScriptText(SAY_DEATH, m_creature);
 
@@ -127,6 +127,9 @@ struct TRINITY_DLL_DECL boss_keristraszaAI : public ScriptedAI
 
     bool CheckContainmentSpheres(bool remove_prison = false)
     {
+        if(!pInstance)
+            return false;
+
         ContainmentSphereGUIDs[0] = pInstance->GetData64(ANOMALUS_CONTAINMET_SPHERE);
         ContainmentSphereGUIDs[1] = pInstance->GetData64(ORMOROKS_CONTAINMET_SPHERE);
         ContainmentSphereGUIDs[2] = pInstance->GetData64(TELESTRAS_CONTAINMET_SPHERE);
@@ -163,7 +166,7 @@ struct TRINITY_DLL_DECL boss_keristraszaAI : public ScriptedAI
         }
     }
 
-    void UpdateAI(const uint32 diff) 
+    void UpdateAI(const uint32 diff)
     {
         if (!UpdateVictim())
             return;
@@ -217,7 +220,7 @@ struct TRINITY_DLL_DECL boss_keristraszaAI : public ScriptedAI
             CRYSTAL_CHAINS_CRYSTALIZE_Timer = HeroicMode ? 30000 : 11000;
         }else CRYSTAL_CHAINS_CRYSTALIZE_Timer -= diff;
 
-        DoMeleeAttackIfReady();    
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -230,7 +233,7 @@ bool GOHello_containment_sphere(Player *pPlayer, GameObject *pGO)
 {
     ScriptedInstance *pInstance = pGO->GetInstanceData();
 
-    Creature *Keristrasza = Unit::GetCreature(*pGO, pInstance->GetData64(DATA_KERISTRASZA));
+    Creature *Keristrasza = Unit::GetCreature(*pGO, pInstance ? pInstance->GetData64(DATA_KERISTRASZA) : 0);
     if (Keristrasza && Keristrasza->isAlive())
     {
         // maybe these are hacks :(
@@ -250,7 +253,7 @@ void AddSC_boss_keristrasza()
     newscript->Name = "boss_keristrasza";
     newscript->GetAI = &GetAI_boss_keristrasza;
     newscript->RegisterSelf();
-    
+
     newscript = new Script;
     newscript->Name = "containment_sphere";
     newscript->pGOHello = &GOHello_containment_sphere;

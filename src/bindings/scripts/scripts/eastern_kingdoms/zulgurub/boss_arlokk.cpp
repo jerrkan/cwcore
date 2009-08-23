@@ -26,7 +26,7 @@ EndScriptData */
 
 bool GOHello_go_gong_of_bethekk(Player* pPlayer, GameObject* pGo)
 {
-    if (ScriptedInstance* m_pInstance = (ScriptedInstance*)pGo->GetInstanceData())
+    if (ScriptedInstance* m_pInstance = pGo->GetInstanceData())
     {
         if (m_pInstance->GetData(TYPE_ARLOKK) == DONE || m_pInstance->GetData(TYPE_ARLOKK) == IN_PROGRESS)
             return true;
@@ -188,8 +188,7 @@ struct TRINITY_DLL_DECL boss_arlokkAI : public ScriptedAI
             {
                 DoCast(m_creature->getVictim(), SPELL_GOUGE);
 
-                if (m_creature->getThreatManager().getThreat(m_creature->getVictim()))
-                    m_creature->getThreatManager().modifyThreatPercent(m_creature->getVictim(),-80);
+                DoModifyThreatPercent(m_creature->getVictim(),-80);
 
                 m_uiGouge_Timer = 17000+rand()%10000;
             }

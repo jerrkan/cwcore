@@ -60,10 +60,10 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
 {
     boss_netherspiteAI(Creature* c) : ScriptedAI(c)
     {
-        pInstance = ((ScriptedInstance*)c->GetInstanceData());
+        pInstance = c->GetInstanceData();
 
         for(int i=0; i<3; ++i)
-        { 
+        {
             PortalGUID[i] = 0;
             BeamTarget[i] = 0;
             BeamerGUID[i] = 0;
@@ -176,7 +176,7 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
                 if(Map* map = m_creature->GetMap())
                 {
                     Map::PlayerList const& players = map->GetPlayers();
-                
+
                     // get the best suitable target
                     for(Map::PlayerList::const_iterator i = players.begin(); i!=players.end(); ++i)
                     {
@@ -251,7 +251,7 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
 
     void HandleDoors(bool open) // Massive Door switcher
     {
-        if(GameObject *Door = GameObject::GetGameObject((*m_creature),pInstance->GetData64(DATA_GO_MASSIVE_DOOR)))
+        if(GameObject *Door = GameObject::GetGameObject(*m_creature, pInstance ? pInstance->GetData64(DATA_GO_MASSIVE_DOOR) : 0))
             Door->SetGoState(open ? GO_STATE_ACTIVE : GO_STATE_READY);
     }
 
@@ -303,7 +303,7 @@ struct TRINITY_DLL_DECL boss_netherspiteAI : public ScriptedAI
                 m_creature->AddAura(SPELL_NETHERBURN_AURA, m_creature);
                 EmpowermentTimer = 90000;
             }else EmpowermentTimer -= diff;
-            
+
             if(PhaseTimer < diff)
             {
                 if(!m_creature->IsNonMeleeSpellCasted(false))
@@ -345,7 +345,7 @@ CreatureAI* GetAI_boss_netherspite(Creature *_Creature)
 void AddSC_boss_netherspite()
 {
     Script *newscript;
- 
+
     newscript = new Script;
     newscript->Name="boss_netherspite";
     newscript->GetAI = GetAI_boss_netherspite;

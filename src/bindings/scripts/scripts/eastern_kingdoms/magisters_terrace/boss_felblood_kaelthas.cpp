@@ -79,7 +79,8 @@ struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
 {
     boss_felblood_kaelthasAI(Creature* c) : ScriptedAI(c)
     {
-        pInstance = c->GetInstanceData();        Heroic = c->GetMap()->IsHeroic();
+        pInstance = c->GetInstanceData();
+        Heroic = c->GetMap()->IsHeroic();
     }
 
     ScriptedInstance* pInstance;
@@ -142,7 +143,7 @@ struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
 
         if (!pInstance)
             return;
-        
+
         pInstance->HandleGameObject(pInstance->GetData64(DATA_KAEL_DOOR), true);
         // Open the encounter door
     }
@@ -157,7 +158,7 @@ struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
     {
         if (!pInstance)
             return;
-        
+
         pInstance->HandleGameObject(pInstance->GetData64(DATA_KAEL_DOOR), false);
        //Close the encounter door, open it in JustDied/Reset
     }

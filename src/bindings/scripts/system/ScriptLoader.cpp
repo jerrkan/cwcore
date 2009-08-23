@@ -291,7 +291,8 @@ extern void AddSC_boss_flame_leviathan();
 extern void AddSC_boss_ignis();
 extern void AddSC_boss_razorscale();
 extern void AddSC_boss_xt002();
-//extern void AddSC_instance_ulduar();
+extern void AddSC_boss_assembly_of_iron();
+extern void AddSC_instance_ulduar();
 extern void AddSC_boss_keleseth();              //Utgarde Keep
 extern void AddSC_boss_skarvald_dalronn();
 extern void AddSC_boss_ingvar_the_plunderer();
@@ -304,6 +305,7 @@ extern void AddSC_instance_archavon();
 extern void AddSC_borean_tundra();
 extern void AddSC_dragonblight();
 extern void AddSC_grizzly_hills();
+extern void AddSC_howling_fjord();
 extern void AddSC_icecrown();
 extern void AddSC_sholazar_basin();
 extern void AddSC_storm_peaks();
@@ -681,7 +683,8 @@ void AddScripts()
     AddSC_boss_ignis();
     AddSC_boss_razorscale();
     AddSC_boss_xt002();
-    //AddSC_instance_ulduar();
+    AddSC_boss_assembly_of_iron();
+    AddSC_instance_ulduar();
     AddSC_boss_keleseth();              //Utgarde Keep
     AddSC_boss_skarvald_dalronn();
     AddSC_boss_ingvar_the_plunderer();
@@ -694,6 +697,7 @@ void AddScripts()
     AddSC_borean_tundra();
     AddSC_dragonblight();
     AddSC_grizzly_hills();
+    AddSC_howling_fjord();
     AddSC_icecrown();
     AddSC_sholazar_basin();
     AddSC_storm_peaks();

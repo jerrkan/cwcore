@@ -87,7 +87,7 @@ enum
     //Shadron
     //In portal is a disciple, when disciple killed remove Power_of_vesperon, portal open multiple times
     NPC_ACOLYTE_OF_SHADRON                      = 31218,    // Acolyte of Shadron
-    SPELL_POWER_OF_SHADRON                      = 58105,    // Shadron's presence increases Fire damage taken by all enemies by 100%.                     
+    SPELL_POWER_OF_SHADRON                      = 58105,    // Shadron's presence increases Fire damage taken by all enemies by 100%.
     SPELL_GIFT_OF_TWILIGTH_SHA                  = 57835,    // TARGET_SCRIPT shadron
     SPELL_GIFT_OF_TWILIGTH_SAR                  = 58766,    // TARGET_SCRIPT sartharion
 
@@ -191,7 +191,7 @@ struct TRINITY_DLL_DECL boss_sartharionAI : public ScriptedAI
     bool m_bHasCalledShadron;
     bool m_bHasCalledVesperon;
 
-    void Reset() 
+    void Reset()
     {
         m_bIsBerserk = false;
         m_bIsSoftEnraged = false;
@@ -349,15 +349,15 @@ struct TRINITY_DLL_DECL boss_sartharionAI : public ScriptedAI
         }
     }
 
-    void UpdateAI(const uint32 uiDiff) 
+    void UpdateAI(const uint32 uiDiff)
     {
         //Return since we have no target
         if (!UpdateVictim())
             return;
 
-        Unit* pTene = Unit::GetUnit(*m_creature, m_pInstance->GetData64(DATA_TENEBRON));
-        Unit* pShad = Unit::GetUnit(*m_creature, m_pInstance->GetData64(DATA_SHADRON));
-        Unit* pVesp = Unit::GetUnit(*m_creature, m_pInstance->GetData64(DATA_VESPERON));
+        Unit* pTene = Unit::GetUnit(*m_creature, m_pInstance ? m_pInstance->GetData64(DATA_TENEBRON) : 0);
+        Unit* pShad = Unit::GetUnit(*m_creature, m_pInstance ? m_pInstance->GetData64(DATA_SHADRON) : 0);
+        Unit* pVesp = Unit::GetUnit(*m_creature, m_pInstance ? m_pInstance->GetData64(DATA_VESPERON) : 0);
 
         //spell will target dragons, if they are still alive at 35%
         if (!m_bIsBerserk && (m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) <= 35 && (pTene->isAlive() || pShad->isAlive() || pVesp->isAlive()))
@@ -731,7 +731,7 @@ struct TRINITY_DLL_DECL mob_tenebronAI : public dummy_dragonAI
         m_uiHatchEggTimer = 30000;
     }
 
-    void Aggro(Unit* pWho) 
+    void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_TENEBRON_AGGRO, m_creature);
         DoZoneInCombat();
@@ -811,7 +811,7 @@ struct TRINITY_DLL_DECL mob_shadronAI : public dummy_dragonAI
             m_creature->RemoveAurasDueToSpell(SPELL_GIFT_OF_TWILIGTH_SHA);
     }
 
-    void Aggro(Unit* pWho) 
+    void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_SHADRON_AGGRO,m_creature);
         DoZoneInCombat();
@@ -885,7 +885,7 @@ struct TRINITY_DLL_DECL mob_vesperonAI : public dummy_dragonAI
         m_uiAcolyteVesperonTimer = 60000;
     }
 
-    void Aggro(Unit* pWho) 
+    void Aggro(Unit* pWho)
     {
         DoScriptText(SAY_VESPERON_AGGRO,m_creature);
         DoZoneInCombat();

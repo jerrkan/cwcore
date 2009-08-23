@@ -46,7 +46,7 @@ EndContentData */
 
 bool GOHello_go_shadowforge_brazier(Player* pPlayer, GameObject* pGo)
 {
-    if (ScriptedInstance* pInstance = (ScriptedInstance*)pGo->GetInstanceData())
+    if (ScriptedInstance* pInstance = pGo->GetInstanceData())
     {
         if (pInstance->GetData(TYPE_LYCEUM) == IN_PROGRESS)
             pInstance->SetData(TYPE_LYCEUM, DONE);
@@ -91,8 +91,6 @@ uint32 RingBoss[]=
 
 bool AreaTrigger_at_ring_of_law(Player* pPlayer, AreaTriggerEntry *at)
 {
-    ScriptedInstance* pInstance = (pPlayer->GetInstanceData());
-
     if (ScriptedInstance* pInstance = pPlayer->GetInstanceData())
     {
         if (pInstance->GetData(TYPE_RING_OF_LAW) == IN_PROGRESS || pInstance->GetData(TYPE_RING_OF_LAW) == DONE)
@@ -109,6 +107,13 @@ bool AreaTrigger_at_ring_of_law(Player* pPlayer, AreaTriggerEntry *at)
 /*######
 ## npc_grimstone
 ######*/
+
+#define SCRIPT_TEXT1    -1000000
+#define SCRIPT_TEXT2    -1000000
+#define SCRIPT_TEXT3    -1000000
+#define SCRIPT_TEXT4    -1000000
+#define SCRIPT_TEXT5    -1000000
+#define SCRIPT_TEXT6    -1000000
 
 //TODO: implement quest part of event (different end boss)
 struct TRINITY_DLL_DECL npc_grimstoneAI : public npc_escortAI
@@ -177,12 +182,12 @@ struct TRINITY_DLL_DECL npc_grimstoneAI : public npc_escortAI
         switch(i)
         {
         case 0:
-            DoScriptText(-1000000, m_creature);//2
+            DoScriptText(SCRIPT_TEXT1, m_creature);//2
             CanWalk = false;
             Event_Timer = 5000;
             break;
         case 1:
-            DoScriptText(-1000000, m_creature);//4
+            DoScriptText(SCRIPT_TEXT2, m_creature);//4
             CanWalk = false;
             Event_Timer = 5000;
             break;
@@ -190,10 +195,10 @@ struct TRINITY_DLL_DECL npc_grimstoneAI : public npc_escortAI
             CanWalk = false;
             break;
         case 3:
-            DoScriptText(-1000000, m_creature);//5
+            DoScriptText(SCRIPT_TEXT3, m_creature);//5
             break;
         case 4:
-            DoScriptText(-1000000, m_creature);//6
+            DoScriptText(SCRIPT_TEXT4, m_creature);//6
             CanWalk = false;
             Event_Timer = 5000;
             break;
@@ -262,7 +267,7 @@ struct TRINITY_DLL_DECL npc_grimstoneAI : public npc_escortAI
                 switch(EventPhase)
                 {
                 case 0:
-                    DoScriptText(-1000000, m_creature);//1
+                    DoScriptText(SCRIPT_TEXT5, m_creature);//1
                     HandleGameObject(DATA_ARENA4, false);
                     Start(false, false);
                     CanWalk = true;
@@ -297,7 +302,7 @@ struct TRINITY_DLL_DECL npc_grimstoneAI : public npc_escortAI
                 case 7:
                     m_creature->SetVisibility(VISIBILITY_ON);
                     HandleGameObject(DATA_ARENA1, false);
-                    DoScriptText(-1000000, m_creature);//4
+                    DoScriptText(SCRIPT_TEXT6, m_creature);//4
                     CanWalk = true;
                     Event_Timer = 0;
                     break;
@@ -1192,7 +1197,7 @@ CreatureAI* GetAI_npc_rocknot(Creature* pCreature)
 
 bool ChooseReward_npc_rocknot(Player* pPlayer, Creature* pCreature, const Quest *_Quest, uint32 item)
 {
-    ScriptedInstance* pInstance = (pCreature->GetInstanceData());
+    ScriptedInstance* pInstance = pCreature->GetInstanceData();
 
     if (!pInstance)
         return true;
@@ -1283,7 +1288,8 @@ void AddSC_blackrock_depths()
     newscript = new Script;
     newscript->Name="npc_marshal_reginald_windsor";
     newscript->GetAI = &GetAI_npc_marshal_reginald_windsor;
-    newscript->RegisterSelf();*/
+    newscript->RegisterSelf();
+*/
 
      newscript = new Script;
      newscript->Name = "npc_rocknot";

@@ -92,6 +92,7 @@ enum SpellNotifyPushType
     PUSH_IN_FRONT,
     PUSH_IN_BACK,
     PUSH_IN_LINE,
+    PUSH_IN_THIN_LINE,
     PUSH_SRC_CENTER,
     PUSH_DST_CENTER,
     PUSH_CASTER_CENTER, //this is never used in grid search
@@ -137,6 +138,9 @@ class SpellCastTargets
             m_destY = target.m_destY;
             m_destZ = target.m_destZ;
 
+            m_elevation = target.m_elevation;
+            m_speed = target.m_speed;
+
             m_strTarget = target.m_strTarget;
 
             m_targetMask = target.m_targetMask;
@@ -176,11 +180,23 @@ class SpellCastTargets
         bool IsEmpty() const { return m_GOTargetGUID==0 && m_unitTargetGUID==0 && m_itemTarget==0 && m_CorpseTargetGUID==0; }
         bool HasSrc() const { return m_targetMask & TARGET_FLAG_SOURCE_LOCATION; }
         bool HasDst() const { return m_targetMask & TARGET_FLAG_DEST_LOCATION; }
+        bool HasTraj() const { return m_speed != 0; }
+
+        float GetDist2d() const
+        {
+            float dx = m_destX - m_srcX;
+            float dy = m_destY - m_srcY;
+            return sqrt(dx*dx + dy*dy);
+        }
+
+        float GetSpeedXY() const { return m_speed * cos(m_elevation); }
+        float GetSpeedZ() const { return m_speed * sin(m_elevation); }
 
         void Update(Unit* caster);
 
         float m_srcX, m_srcY, m_srcZ;
         float m_destX, m_destY, m_destZ;
+        float m_elevation, m_speed;
         int32 m_mapId;
         std::string m_strTarget;
 
@@ -238,6 +254,7 @@ enum SpellTargets
     SPELL_TARGETS_ENEMY,
     SPELL_TARGETS_ENTRY,
     SPELL_TARGETS_CHAINHEAL,
+    SPELL_TARGETS_ANY,
 };
 
 class Spell
@@ -403,9 +420,10 @@ class Spell
         void DoCreateItem(uint32 i, uint32 itemtype);
         void WriteSpellGoTargets( WorldPacket * data );
         void WriteAmmoToPacket( WorldPacket * data );
-        void FillTargetMap();
 
-        void SetTargetMap(uint32 i, uint32 cur);
+        void SelectSpellTargets();
+        void SelectEffectTargets(uint32 i, uint32 cur);
+        void SelectTrajTargets();
         void FillRaidOrPartyTargets( UnitList &TagUnitMap, Unit* target, float radius, bool raid, bool withPets, bool withcaster );
         void FillRaidOrPartyManaPriorityTargets( UnitList &TagUnitMap, Unit* target, float radius, uint32 count, bool raid, bool withPets, bool withcaster );
         void FillRaidOrPartyHealthPriorityTargets( UnitList &TagUnitMap, Unit* target, float radius, uint32 count, bool raid, bool withPets, bool withcaster );
@@ -660,7 +678,7 @@ namespace Trinity
         std::list<Unit*> *i_data;
         Spell &i_spell;
         SpellNotifyPushType i_push_type;
-        float i_radius, i_radiusSq;
+        float i_radius;
         SpellTargets i_TargetType;
         Unit* i_source;
         uint32 i_entry;
@@ -668,7 +686,7 @@ namespace Trinity
 
         SpellNotifierCreatureAndPlayer(Spell &spell, std::list<Unit*> &data, float radius, SpellNotifyPushType type,
             SpellTargets TargetType = SPELL_TARGETS_ENEMY, uint32 entry = 0, float x = 0, float y = 0, float z = 0)
-            : i_data(&data), i_spell(spell), i_push_type(type), i_radius(radius), i_radiusSq(radius*radius)
+            : i_data(&data), i_spell(spell), i_push_type(type), i_radius(radius)
             , i_TargetType(TargetType), i_entry(entry), i_x(x), i_y(y), i_z(z)
         {
             i_source = spell.GetCaster();
@@ -713,8 +731,9 @@ namespace Trinity
                         if(target->GetEntry()!= i_entry)
                             continue;
                         break;
+                    case SPELL_TARGETS_ANY:
                     default:
-                        continue;
+                        break;
                 }
 
                 switch(i_push_type)
@@ -723,7 +742,7 @@ namespace Trinity
                     case PUSH_DST_CENTER:
                     case PUSH_CHAIN:
                     default:
-                        if((target->GetDistanceSq(i_x, i_y, i_z) < i_radiusSq))
+                        if(target->IsWithinDist3d(i_x, i_y, i_z, i_radius))
                             i_data->push_back(target);
                         break;
                     case PUSH_IN_FRONT:
@@ -735,7 +754,11 @@ namespace Trinity
                             i_data->push_back(target);
                         break;
                     case PUSH_IN_LINE:
-                        if(i_source->isInLine(target, i_radius))
+                        if(i_source->isInLine(target, i_radius, i_source->GetObjectSize()))
+                            i_data->push_back(target);
+                        break;
+                    case PUSH_IN_THIN_LINE:
+                        if(i_source->isInLine(target, i_radius, 0))
                             i_data->push_back(target);
                         break;
                 }

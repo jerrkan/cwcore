@@ -19083,6 +19083,9 @@ void Player::UpdateVisibilityOf(WorldObject* target)
     {
         if(target->isVisibleForInState(this,false))
         {
+            //if(target->isType(TYPEMASK_UNIT) && ((Unit*)target)->m_Vehicle)
+            //    UpdateVisibilityOf(((Unit*)target)->m_Vehicle);
+                
             target->SendUpdateToPlayer(this);
             UpdateVisibilityOf_helper(m_clientGUIDs, target);
 
@@ -19131,6 +19134,9 @@ void Player::UpdateVisibilityOf(T* target, UpdateData& data, std::set<WorldObjec
     {
         if(target->isVisibleForInState(this,false))
         {
+            //if(target->isType(TYPEMASK_UNIT) && ((Unit*)target)->m_Vehicle)
+            //    UpdateVisibilityOf(((Unit*)target)->m_Vehicle, data, visibleNow);
+
             visibleNow.insert(target);
             target->BuildCreateUpdateBlockForPlayer(&data, this);
             UpdateVisibilityOf_helper(m_clientGUIDs,target);
@@ -20223,13 +20229,6 @@ void Player::SetClientControl(Unit* target, uint8 allowMove)
     GetSession()->SendPacket(&data);
     if(target == this)
         SetMover(this);
-    else if(target->canFly())
-    {
-        WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 12);
-        data.append(target->GetPackGUID());
-        data << uint32(0);
-        SendDirectMessage(&data);
-    }
 }
 
 void Player::UpdateZoneDependentAuras( uint32 newZone )
@@ -21853,6 +21852,8 @@ void Player::ActivateSpec(uint32 spec)
         return;
 
     _SaveActions();
+    
+    UnsummonPetTemporaryIfAny();
     
     uint32 const* talentTabIds = GetTalentTabPages(getClass());
     

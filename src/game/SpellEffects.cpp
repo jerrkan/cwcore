@@ -600,7 +600,6 @@ void Spell::SpellDamageSchoolDmg(uint32 effect_idx)
                         {
                             damage += urand(uint32(item->GetProto()->Damage->DamageMin), uint32(item->GetProto()->Damage->DamageMax));
                             damage += ((Player*)m_caster)->GetAmmoDPS()*item->GetProto()->Delay/1000;
-                            damage += ((Player*)m_caster)->GetTotalAttackPowerValue(RANGED_ATTACK)*0.1f;
                         }
                     }
 
@@ -1217,6 +1216,42 @@ void Spell::EffectDummy(uint32 i)
                     m_caster->CastSpell(m_caster,spell_id,true,NULL);
                     return;
                 }
+                case 62324: // Throw Passenger
+                    if(m_targets.HasTraj())
+                    {
+                        if(Vehicle *vehicle = dynamic_cast<Vehicle*>(m_caster))
+                            if(Unit *passenger = vehicle->GetPassenger(damage - 1))
+                            {
+                                std::list<Unit*> unitList;
+                                // use 99 because it is 3d search
+                                SearchAreaTarget(unitList, 99, PUSH_DST_CENTER, SPELL_TARGETS_ENTRY, 33114);
+                                float minDist = 99 * 99;
+                                Vehicle *target = NULL;
+                                for(std::list<Unit*>::iterator itr = unitList.begin(); itr != unitList.end(); ++itr)
+                                {
+                                    if(Vehicle *seat = dynamic_cast<Vehicle*>(*itr))
+                                        if(!seat->GetPassenger(0))
+                                            if(Unit *device = seat->GetPassenger(2))
+                                                if(!device->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
+                                                {
+                                                    float dist = seat->GetExactDistSq(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ);
+                                                    if(dist < minDist)
+                                                    {
+                                                        minDist = dist;
+                                                        target = seat;
+                                                    }
+                                                }
+                                }
+                                if(target && target->IsWithinDist2d(m_targets.m_destX, m_targets.m_destY, GetSpellRadius(m_spellInfo, i, false) * 2)) // now we use *2 because the location of the seat is not correct
+                                    passenger->EnterVehicle(target, 0);
+                                else
+                                {
+                                    passenger->ExitVehicle();
+                                    passenger->GetMotionMaster()->MoveJump(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, m_targets.GetSpeedXY(), m_targets.GetSpeedZ());
+                                }
+                            }
+                    }
+                    return;
             }
 
             //All IconID Check in there
@@ -3356,8 +3391,7 @@ void Spell::EffectSummonType(uint32 i)
                     // this is for wintergrasp, need to find a better way
                     // in the future, we can just use getsummoner
                     //vehicle->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_originalCasterGUID);
-                    //if(m_originalCaster)
-                    //    vehicle->setFaction(m_originalCaster->getFaction());
+                    vehicle->setFaction(m_originalCaster->getFaction());
                     vehicle->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
                     break;
                 }
@@ -3451,7 +3485,7 @@ void Spell::EffectSummonType(uint32 i)
                 return;
 
             //vehicle->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_caster->GetGUID());
-            //vehicle->setFaction(m_caster->getFaction());
+            vehicle->setFaction(m_caster->getFaction());
             vehicle->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
 
             if(damage)
@@ -4649,6 +4683,61 @@ void Spell::EffectScriptEffect(uint32 effIndex)
         {
             switch(m_spellInfo->Id)
             {
+                // Glyph of Starfire
+                case 54846:
+                {
+                    if (AuraEffect const * aurEff = unitTarget->GetAura(SPELL_AURA_PERIODIC_DAMAGE,SPELLFAMILY_DRUID,0x00000002,0,0,m_caster->GetGUID()))
+                    {
+                        uint32 countMin = aurEff->GetParentAura()->GetAuraMaxDuration();
+                        uint32 countMax = 18000;
+                        countMax += m_caster->HasAura(38414) ? 3000 : 0;
+                        countMax += m_caster->HasAura(57865) ? 3000 : 0;
+
+                        if (countMin < countMax)
+                        {
+                            aurEff->GetParentAura()->SetAuraDuration(uint32(aurEff->GetParentAura()->GetAuraDuration()+3000));
+                            aurEff->GetParentAura()->SetAuraMaxDuration(countMin+3000);
+                        }
+                    }
+                    return;
+                }
+                // Glyph of Shred
+                case 63974:
+                {
+                    if (AuraEffect const * aurEff = unitTarget->GetAura(SPELL_AURA_PERIODIC_DAMAGE,SPELLFAMILY_DRUID,0x00800000,0,0,m_caster->GetGUID()))
+                    {
+                        uint32 countMin = aurEff->GetParentAura()->GetAuraMaxDuration();
+                        uint32 countMax = 20000;
+                        countMax += m_caster->HasAura(54818) ? 4000 : 0;
+                        countMax += m_caster->HasAura(60141) ? 4000 : 0;
+
+                        if (countMin < countMax)
+                        {
+                            aurEff->GetParentAura()->SetAuraDuration(uint32(aurEff->GetParentAura()->GetAuraDuration()+3000));
+                            aurEff->GetParentAura()->SetAuraMaxDuration(countMin+2000);
+                        }
+
+                    }
+                    return;
+                }
+                // Glyph of Backstab
+                case 63975:
+                {
+                    if (AuraEffect const * aurEff = unitTarget->GetAura(SPELL_AURA_PERIODIC_DAMAGE,SPELLFAMILY_ROGUE,0x00100000,0,0,m_caster->GetGUID()))
+                    {
+                        uint32 countMin = aurEff->GetParentAura()->GetAuraMaxDuration();
+                        uint32 countMax = 12000;
+                        countMax += m_caster->HasAura(56801) ? 4000 : 0;
+
+                        if (countMin < countMax)
+                        {
+                            aurEff->GetParentAura()->SetAuraDuration(uint32(aurEff->GetParentAura()->GetAuraDuration()+3000));
+                            aurEff->GetParentAura()->SetAuraMaxDuration(countMin+2000);
+                        }
+
+                    }
+                    return;
+                }
                 // Dispelling Analysis
                 case 37028:
                 {
@@ -5166,9 +5255,10 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                     return;
                 }
                 case 62428: // Load into Catapult
-                    if(m_caster->m_Vehicle && m_caster->GetTypeId() == TYPEID_UNIT && ((Creature*)m_caster)->isVehicle())
-                        if(Unit *passenger = ((Vehicle*)m_caster)->GetPassenger(0))
-                            passenger->CastSpell(m_caster->m_Vehicle, damage, true);
+                    if(Vehicle *demolisher = m_caster->m_Vehicle)
+                        if(Vehicle *seat = dynamic_cast<Vehicle*>(m_caster))
+                            if(Unit *passenger = seat->GetPassenger(0))
+                                passenger->CastSpell(demolisher, damage, true);
                     return;
                 case 60123: // Lightwell
                 {
@@ -5198,6 +5288,7 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                     }
                     else
                         ((TempSummon*)m_caster)->UnSummon();
+                    return;
                 }
             }
             break;

@@ -100,7 +100,7 @@ struct TRINITY_DLL_DECL npc_crusade_persuadedAI : public ScriptedAI
         }
     }
 
-    void UpdateAI(const uint32 diff) 
+    void UpdateAI(const uint32 diff)
     {
         if (uiSpeech_counter)
         {
@@ -135,7 +135,7 @@ struct TRINITY_DLL_DECL npc_crusade_persuadedAI : public ScriptedAI
 
             return;
         }
-        
+
         if(!UpdateVictim())
             return;
 
@@ -381,7 +381,7 @@ struct TRINITY_DLL_DECL mob_scarlet_courierAI : public ScriptedAI
             uiStage = 2;
     }
 
-    void UpdateAI(const uint32 diff) 
+    void UpdateAI(const uint32 diff)
     {
         if(uiStage && !me->isInCombat())
         {
@@ -459,7 +459,7 @@ struct TRINITY_DLL_DECL mob_high_inquisitor_valrothAI : public ScriptedAI
         DoCast(who, SPELL_VALROTH_SMITE);
     }
 
-    void UpdateAI(const uint32 diff) 
+    void UpdateAI(const uint32 diff)
     {
         if (uiRenew_timer < diff)
         {
@@ -647,7 +647,7 @@ struct TRINITY_DLL_DECL npc_a_special_surpriseAI : public ScriptedAI
             PlayerGUID = pWho->GetGUID();
     }
 
-    void UpdateAI(const uint32 diff) 
+    void UpdateAI(const uint32 diff)
     {
         if (PlayerGUID && !me->getVictim() && me->isAlive())
         {
@@ -999,3 +999,15 @@ void AddSC_the_scarlet_enclave_c2()
     newscript->GetAI = &GetAI_npc_a_special_surprise;
     newscript->RegisterSelf();
 }
+
+/*
+-- Bloody Breakout
+UPDATE `creature_template` SET `ScriptName`='npc_koltira_deathweaver' WHERE `entry`='28912';
+UPDATE `creature_template` SET `ScriptName`='mob_high_inquisitor_valroth',minmana=6489,maxmana=6489,unit_flags=32768 WHERE `entry`='29001';
+UPDATE `creature_template` SET `ScriptName`='mob_eventai', `AIName`='EventAI',minmana=1020,maxmana=1058,unit_flags=32768 WHERE (`entry`='29007');
+DELETE FROM creature_ai_scripts WHERE id BETWEEN 90030 AND 90033;
+INSERT INTO `creature_ai_scripts` VALUES ('90030', '29007', '0', '0', '100', '1', '1000', '4000', '1000', '4000', '11', '15498', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Crimson Acolyte - Holy Smite');
+INSERT INTO `creature_ai_scripts` VALUES ('90031', '29007', '0', '0', '100', '1', '1000', '10000', '20000', '21000', '11', '34809', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Crimson Acolyte - Holy Fury');
+INSERT INTO `creature_ai_scripts` VALUES ('90032', '29007', '0', '0', '100', '1', '1000', '5000', '1000', '5000', '11', '19725', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Crimson Acolyte - Turn Undead');
+INSERT INTO `creature_ai_scripts` VALUES ('90033', '29007', '4', '0', '100', '0', '0', '0', '0', '0', '11', '15498', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Crimson Acolyte aggro');
+*/

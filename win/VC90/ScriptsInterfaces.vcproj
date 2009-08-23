@@ -67,16 +67,16 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cwcore.lib zlib.lib libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib aced.lib"
-				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWScript.dll"
+				AdditionalDependencies="trinitycore.lib zlib.lib libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib aced.lib"
+				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityScript.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories=";.\cwcore__$(PlatformName)_$(ConfigurationName);.\zlib__$(PlatformName)_$(ConfigurationName);..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
+				AdditionalLibraryDirectories=";.\trinitycore__$(PlatformName)_$(ConfigurationName);.\zlib__$(PlatformName)_$(ConfigurationName);..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)\CWScript.pdb"
+				ProgramDatabaseFile="$(OutDir)\TrinityScript.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)\CWScript.lib"
+				ImportLibrary="$(OutDir)\TrinityScript.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -150,16 +150,16 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cwcore.lib zlib.lib libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib aced.lib"
-				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWScript.dll"
+				AdditionalDependencies="trinitycore.lib zlib.lib libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib aced.lib"
+				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityScript.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories=";.\cwcore__$(PlatformName)_$(ConfigurationName);.\zlib__$(PlatformName)_$(ConfigurationName);..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
+				AdditionalLibraryDirectories=";.\trinitycore__$(PlatformName)_$(ConfigurationName);.\zlib__$(PlatformName)_$(ConfigurationName);..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)\CWScript.pdb"
+				ProgramDatabaseFile="$(OutDir)\TrinityScript.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)\CWScript.lib"
+				ImportLibrary="$(OutDir)\TrinityScript.lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -230,17 +230,17 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cwcore.lib zlib.lib libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib ace.lib"
-				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWScript.dll"
+				AdditionalDependencies="trinitycore.lib zlib.lib libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib ace.lib"
+				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityScript.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories=";.\cwcore__$(PlatformName)_$(ConfigurationName);.\zlib__$(PlatformName)_$(ConfigurationName);..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
+				AdditionalLibraryDirectories=";.\trinitycore__$(PlatformName)_$(ConfigurationName);.\zlib__$(PlatformName)_$(ConfigurationName);..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)/CWScript.lib"
+				ImportLibrary="$(OutDir)/TrinityScript.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -312,17 +312,17 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cwcore.lib zlib.lib libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib ace.lib"
-				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWScript.dll"
+				AdditionalDependencies="trinitycore.lib zlib.lib libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib ace.lib"
+				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityScript.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories=";.\cwcore__$(PlatformName)_$(ConfigurationName);.\zlib__$(PlatformName)_$(ConfigurationName);..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
+				AdditionalLibraryDirectories=";.\trinitycore__$(PlatformName)_$(ConfigurationName);.\zlib__$(PlatformName)_$(ConfigurationName);..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)/CWScript.lib"
+				ImportLibrary="$(OutDir)/TrinityScript.lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -372,7 +372,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\shared;..\..\src\framework;..\..\dep\include;..\..\dep\include;..\..\src\framework;..\..\src\shared;..\..\src\CWRealm;..\..\dep\ACE_wrappers"
+				AdditionalIncludeDirectories="..\..\src\shared;..\..\src\framework;..\..\dep\include;..\..\dep\include;..\..\src\framework;..\..\src\shared;..\..\src\TrinityRealm;..\..\dep\ACE_wrappers"
 				PreprocessorDefinitions="WIN32;_DEBUG;TRINITY_DEBUG;_WINDOWS;_USRDLL;SCRIPT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -395,16 +395,16 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cwcore.lib zlib.lib libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib aced.lib"
-				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWScript.dll"
+				AdditionalDependencies="trinitycore.lib zlib.lib libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib aced.lib"
+				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityScript.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories=";.\cwcore__$(PlatformName)_$(ConfigurationName);.\zlib__$(PlatformName)_$(ConfigurationName);..\..\dep\lib\$(PlatformName)_debug"
+				AdditionalLibraryDirectories=";.\trinitycore__$(PlatformName)_$(ConfigurationName);.\zlib__$(PlatformName)_$(ConfigurationName);..\..\dep\lib\$(PlatformName)_debug"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)\CWScript.pdb"
+				ProgramDatabaseFile="$(OutDir)\TrinityScript.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)\CWScript.lib"
+				ImportLibrary="$(OutDir)\TrinityScript.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -455,7 +455,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\shared;..\..\src\framework;..\..\dep\include;..\..\dep\include;..\..\src\framework;..\..\src\shared;..\..\src\CWRealm;..\..\dep\ACE_wrappers"
+				AdditionalIncludeDirectories="..\..\src\shared;..\..\src\framework;..\..\dep\include;..\..\dep\include;..\..\src\framework;..\..\src\shared;..\..\src\TrinityRealm;..\..\dep\ACE_wrappers"
 				PreprocessorDefinitions="WIN32;_DEBUG;TRINITY_DEBUG;_WINDOWS;_USRDLL;SCRIPT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -478,16 +478,16 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cwcore.lib zlib.lib libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib aced.lib"
-				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWScript.dll"
+				AdditionalDependencies="trinitycore.lib zlib.lib libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib aced.lib"
+				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityScript.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories=";.\cwcore__$(PlatformName)_$(ConfigurationName);.\zlib__$(PlatformName)_$(ConfigurationName);..\..\dep\lib\$(PlatformName)_debug"
+				AdditionalLibraryDirectories=";.\trinitycore__$(PlatformName)_$(ConfigurationName);.\zlib__$(PlatformName)_$(ConfigurationName);..\..\dep\lib\$(PlatformName)_debug"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)\CWScript.pdb"
+				ProgramDatabaseFile="$(OutDir)\TrinityScript.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)\CWScript.lib"
+				ImportLibrary="$(OutDir)\TrinityScript.lib"
 				TargetMachine="17"
 			/>
 			<Tool

@@ -769,7 +769,8 @@ struct TRINITY_DLL_DECL boss_illidan_stormrageAI : public ScriptedAI
                 break;
 
             case EVENT_SHEAR:
-                DoCast(m_creature->getVictim(), SPELL_SHEAR);
+                // no longer exists in 3.0.2
+                //DoCast(m_creature->getVictim(), SPELL_SHEAR);
                 Timer[EVENT_SHEAR] = 25000 + (rand()%16 * 1000);
                 break;
 
@@ -1122,7 +1123,8 @@ struct TRINITY_DLL_DECL npc_akama_illidanAI : public ScriptedAI
 
     void EnterPhase(PhaseAkama NextPhase)
     {
-        if (!pInstance)  return;
+        if (!pInstance)
+            return;
         switch(NextPhase)
         {
         case PHASE_CHANNEL:
@@ -1240,7 +1242,8 @@ struct TRINITY_DLL_DECL npc_akama_illidanAI : public ScriptedAI
             m_creature->InterruptNonMeleeSpells(true);
             Spirit[0]->InterruptNonMeleeSpells(true);
             Spirit[1]->InterruptNonMeleeSpells(true);
-            pInstance->HandleGameObject(GateGUID, true);
+            if(pInstance)
+                pInstance->HandleGameObject(GateGUID, true);
             Timer = 2000;
             break;
         case 4:
@@ -1270,7 +1273,8 @@ struct TRINITY_DLL_DECL npc_akama_illidanAI : public ScriptedAI
         {
         case 6:
             for(uint8 i = 0; i < 2; ++i)
-                pInstance->HandleGameObject(DoorGUID[i], true);
+                if(pInstance)
+                    pInstance->HandleGameObject(DoorGUID[i], true);
             break;
         case 8:
             if (Phase == PHASE_WALK)

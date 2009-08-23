@@ -68,10 +68,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cwcore.lib aced.lib"
+				AdditionalDependencies="trinitycore.lib aced.lib"
 				OutputFile="$(OutDir)/TrinityScript.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\..\win\VC90\cwcore__$(PlatformName)_$(ConfigurationName);..\..\..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
+				AdditionalLibraryDirectories="..\..\..\..\win\VC90\trinitycore__$(PlatformName)_$(ConfigurationName);..\..\..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/TrinityScript.pdb"
 				SubSystem="2"
@@ -152,10 +152,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cwcore.lib aced.lib"
+				AdditionalDependencies="trinitycore.lib aced.lib"
 				OutputFile="$(OutDir)/TrinityScript.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\..\win\VC90\cwcore__$(PlatformName)_$(ConfigurationName);..\..\..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
+				AdditionalLibraryDirectories="..\..\..\..\win\VC90\trinitycore__$(PlatformName)_$(ConfigurationName);..\..\..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/TrinityScript.pdb"
 				SubSystem="2"
@@ -234,10 +234,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cwcore.lib ace.lib"
+				AdditionalDependencies="trinitycore.lib ace.lib"
 				OutputFile="$(OutDir)/TrinityScript.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\..\win\VC90\cwcore__$(PlatformName)_$(ConfigurationName);..\..\..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
+				AdditionalLibraryDirectories="..\..\..\..\win\VC90\trinitycore__$(PlatformName)_$(ConfigurationName);..\..\..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -318,10 +318,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cwcore.lib ace.lib"
+				AdditionalDependencies="trinitycore.lib ace.lib"
 				OutputFile="$(OutDir)/TrinityScript.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\..\win\VC90\cwcore__$(PlatformName)_$(ConfigurationName);..\..\..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
+				AdditionalLibraryDirectories="..\..\..\..\win\VC90\trinitycore__$(PlatformName)_$(ConfigurationName);..\..\..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -2154,6 +2154,10 @@
 					RelativePath="..\scripts\northrend\grizzly_hills.cpp"
 					>
 				</File>
+                <File
+                    RelativePath="..\scripts\northrend\howling_fjord.cpp"
+                    >
+                </File>
 				<File
 					RelativePath="..\scripts\northrend\icecrown.cpp"
 					>
@@ -2162,6 +2166,10 @@
 					RelativePath="..\scripts\northrend\sholazar_basin.cpp"
 					>
 				</File>
+                <File
+                    RelativePath="..\scripts\northrend\storm_peaks.cpp"
+                    >
+                </File>
 				<File
 					RelativePath="..\scripts\northrend\wintergrasp.cpp"
 					>

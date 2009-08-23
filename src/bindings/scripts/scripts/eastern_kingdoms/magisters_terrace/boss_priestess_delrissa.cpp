@@ -372,7 +372,7 @@ struct TRINITY_DLL_DECL boss_priestess_lackey_commonAI : public ScriptedAI
         ResetThreatTimer = 5000 + rand()%15000;
 
         // in case she is not alive and Reset was for some reason called, respawn her (most likely party wipe after killing her)
-        if (Creature* pDelrissa = Unit::GetCreature(*m_creature, pInstance->GetData64(DATA_DELRISSA)))
+        if (Creature* pDelrissa = Unit::GetCreature(*m_creature, pInstance ? pInstance->GetData64(DATA_DELRISSA) : 0))
         {
             if (!pDelrissa->isAlive())
                 pDelrissa->Respawn();
@@ -612,7 +612,7 @@ struct TRINITY_DLL_DECL boss_ellris_duskhallowAI : public boss_priestess_lackey_
     {
         DoCast(m_creature,SPELL_SUMMON_IMP);
     }
- 
+
     void UpdateAI(const uint32 diff)
     {
         if (!UpdateVictim())
@@ -960,7 +960,7 @@ enum
     SPELL_MULTI_SHOT            = 31942,
     SPELL_WING_CLIP             = 44286,
     SPELL_FREEZING_TRAP         = 44136,
- 
+
     NPC_SLIVER                  = 24552
 };
 
@@ -1163,7 +1163,7 @@ CreatureAI* GetAI_apoko(Creature* pCreature)
 {
     return new boss_apokoAI(pCreature);
 }
- 
+
 enum
 {
     SPELL_GOBLIN_DRAGON_GUN     = 44272,

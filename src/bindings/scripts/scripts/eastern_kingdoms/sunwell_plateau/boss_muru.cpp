@@ -231,7 +231,7 @@ struct TRINITY_DLL_DECL boss_muruAI : public Scripted_NoMovementAI
         Timer[TIMER_HUMANOIDES] = 10000;
         Timer[TIMER_PHASE] = 2000;
         Timer[TIMER_SENTINEL] = 31500;
-        
+
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetVisibility(VISIBILITY_ON);
 
@@ -287,6 +287,8 @@ struct TRINITY_DLL_DECL boss_muruAI : public Scripted_NoMovementAI
         {
             if (Timer[TIMER_PHASE] <diff)
             {
+                if(!pInstance)
+                    return;
                 switch(pInstance->GetData(DATA_MURU_EVENT))
                 {
                     case NOT_STARTED:
@@ -394,7 +396,7 @@ struct TRINITY_DLL_DECL npc_muru_portalAI : public Scripted_NoMovementAI
 
     void JustSummoned(Creature* summoned)
     {
-        Player* Target = Unit::GetPlayer(pInstance->GetData64(DATA_PLAYER_GUID));
+        Player* Target = Unit::GetPlayer(pInstance ? pInstance->GetData64(DATA_PLAYER_GUID) : 0);
         if (Target)
             summoned->AI()->AttackStart(Target);
 
@@ -423,7 +425,8 @@ struct TRINITY_DLL_DECL npc_muru_portalAI : public Scripted_NoMovementAI
     {
         if (!SummonSentinel)
         {
-            if (InAction && pInstance->GetData(DATA_MURU_EVENT) == NOT_STARTED)Reset();
+            if (InAction && pInstance && pInstance->GetData(DATA_MURU_EVENT) == NOT_STARTED)
+                Reset();
             return;
         }
         if (SummonTimer < diff)
@@ -442,12 +445,7 @@ CreatureAI* GetAI_npc_muru_portal(Creature* pCreature)
 
 struct TRINITY_DLL_DECL npc_dark_fiendAI : public ScriptedAI
 {
-    npc_dark_fiendAI(Creature *c) : ScriptedAI(c)
-    {
-        pInstance = c->GetInstanceData();
-    }
-
-    ScriptedInstance* pInstance;
+    npc_dark_fiendAI(Creature *c) : ScriptedAI(c) {}
 
     uint32 WaitTimer;
     bool InAction;
@@ -487,7 +485,7 @@ struct TRINITY_DLL_DECL npc_dark_fiendAI : public ScriptedAI
             }
             else
             {
-            
+
                 if (m_creature->IsWithinDist(m_creature->getVictim(), 5))
                 {
                     DoCastAOE(SPELL_DARKFIEND_AOE, false);
@@ -507,12 +505,7 @@ CreatureAI* GetAI_npc_dark_fiend(Creature* pCreature)
 
 struct TRINITY_DLL_DECL npc_void_sentinelAI : public ScriptedAI
 {
-    npc_void_sentinelAI(Creature *c) : ScriptedAI(c)
-    {
-        pInstance = c->GetInstanceData();
-    }
-
-    ScriptedInstance* pInstance;
+    npc_void_sentinelAI(Creature *c) : ScriptedAI(c){}
 
     uint32 PulseTimer;
     uint32 VoidBlastTimer;
@@ -588,7 +581,7 @@ struct TRINITY_DLL_DECL npc_blackholeAI : public ScriptedAI
     {
         if (SpellTimer < diff)
         {
-            Unit* Victim = Unit::GetUnit((*m_creature), pInstance->GetData64(DATA_PLAYER_GUID));
+            Unit* Victim = Unit::GetUnit(*m_creature, pInstance ? pInstance->GetData64(DATA_PLAYER_GUID) : 0);
             switch(NeedForAHack)
             {
                 case 0:

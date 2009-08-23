@@ -314,6 +314,7 @@ UPDATE `creature_template` SET `ScriptName`='npc_surristrasz' WHERE `entry`=2479
 UPDATE `creature_template` SET `ScriptName`='npc_tiare' WHERE `entry`=30051;
 UPDATE `creature_template` SET `ScriptName`='npc_sinkhole_kill_credit' WHERE `entry` IN (26248,26249);
 UPDATE `creature_template` SET `ScriptName`='npc_khunok_the_behemoth' WHERE `entry`=25862;
+UPDATE `creature_template` SET `ScriptName`='npc_keristrasza' WHERE `entry`=26206;
 
 /* BURNING STEPPES */
 UPDATE `creature_template` SET `ScriptName`='npc_ragged_john' WHERE `entry`=9563;
@@ -567,6 +568,9 @@ UPDATE `creature_template` SET `ScriptName`='npc_trollbane' WHERE `entry`=16819;
 /* HINTERLANDS */
 UPDATE `creature_template` SET `ScriptName`='npc_00x09hl' WHERE `entry`=7806;
 UPDATE `creature_template` SET `ScriptName`='npc_rinji' WHERE `entry`=7780;
+
+/* Howling Fjord */
+UPDATE `creature_template` SET `ScriptName` = 'npc_plaguehound_tracker' WHERE `entry` = 24156;
 
 /* ICECROWN */
 UPDATE creature_template SET ScriptName='npc_arete' WHERE entry=29344;
@@ -1051,16 +1055,23 @@ UPDATE `gameobject_template` SET `ScriptName`='go_altar_of_the_keepers' WHERE `e
 UPDATE `gameobject_template` SET `ScriptName`='go_altar_of_archaedas' WHERE `entry`=133234;
 
 /* ULDUAR */
-/* UPDATE `instance_template` SET `script`='instance_ulduar' WHERE `map`=603; */
+UPDATE `instance_template` SET `script`='instance_ulduar' WHERE `map`=603;
 UPDATE `creature_template` SET `ScriptName` = 'boss_auriaya' WHERE `entry` = 33515;
 UPDATE `creature_template` SET `ScriptName` = 'boss_flame_leviathan' WHERE `entry` = 33113;
 UPDATE `creature_template` SET `ScriptName` = 'boss_flame_leviathan_turret' WHERE entry=33139;
 UPDATE `creature_template` SET `ScriptName` = 'boss_flame_leviathan_seat' WHERE entry=33114;
 UPDATE `creature_template` SET `ScriptName` = 'boss_flame_leviathan_defense_turret' WHERE entry=33142;
 UPDATE `creature_template` SET `ScriptName` = 'boss_flame_leviathan_overload_device' WHERE entry=33143;
+UPDATE `creature_template` SET `ScriptName` = 'spell_pool_of_tar' WHERE `entry` = 33090;
 UPDATE `creature_template` SET `ScriptName` = 'boss_ignis' WHERE `entry` = 33118;
 UPDATE `creature_template` SET `ScriptName` = 'boss_razorscale' WHERE `entry` = 33186;
 UPDATE `creature_template` SET `ScriptName` = 'boss_xt002' WHERE `entry` = 33293;
+UPDATE `creature_template` SET `ScriptName` = 'boss_steelbreaker' WHERE `entry` = 32867;
+UPDATE `creature_template` SET `ScriptName` = 'boss_runemaster_molgeim' WHERE `entry` = 32927;
+UPDATE `creature_template` SET `ScriptName` = 'boss_stormcaller_brundir' WHERE `entry` = 32857;
+UPDATE `creature_template` SET `ScriptName` = 'mob_lightning_elemental' WHERE `entry` = 32958;
+UPDATE `creature_template` SET `ScriptName` = 'mob_rune_of_summoning' WHERE `entry` = 33051;
+
 
 /* UN'GORO CRATER */
 UPDATE `creature_template` SET `ScriptName`='npc_ame' WHERE `entry`=9623;

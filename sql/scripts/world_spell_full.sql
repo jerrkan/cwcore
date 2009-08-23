@@ -1531,7 +1531,10 @@ INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `Spell
 ( 50034, 0x00,  15, 0x00000010, 0x00020000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Death Rune Mastery
 ( 63373, 0x00,  11, 0x80000000, 0x00000000, 0x00000000, 0x00010000, 0x00000000,   0,   0,   0), -- Frozen Power (Rank 1)
 ( 63374, 0x00,  11, 0x80000000, 0x00000000, 0x00000000, 0x00010000, 0x00000000,   0,   0,   0), -- Frozen Power (Rank 2)
-( 54821, 0x00,   7, 0x00001000, 0x00000000, 0x00000000, 0x00000010, 0x00000000,   0,   0,   0); -- Glyph of Rake
+( 54821, 0x00,   7, 0x00001000, 0x00000000, 0x00000000, 0x00000010, 0x00000000,   0,   0,   0), -- Glyph of Rake
+( 54815, 0x00,   7, 0x00008000, 0x00000000, 0x00000000, 0x00000010, 0x00000000,   0,   0,   0), -- Glyph of Shred
+( 54845, 0x00,   7, 0x00000004, 0x00000000, 0x00000000, 0x00010000, 0x00000000,   0,   0,   0), -- Glyph of Starfire
+( 56800, 0x00,   8, 0x00800004, 0x00000000, 0x00000000, 0x00000010, 0x00000000,   0,   0,   0); -- Glyph of Backstab
 
 -- --------
 -- ENCHANT PROC
@@ -2110,7 +2113,13 @@ INSERT INTO creature_template (entry, vehicleid) VALUES
 ON DUPLICATE KEY UPDATE
 vehicleid = VALUES(vehicleid);
 
-UPDATE creature_template SET flags_extra = 128 WHERE entry IN (33114);
+UPDATE creature_template SET spell1=62288 WHERE entry = 33090;
+UPDATE creature_template SET speed=1 WHERE entry=33113;
+UPDATE creature_template SET speed=1.25 WHERE entry IN (33060,33109);
+UPDATE creature_template SET speed=2 WHERE entry=33062;
+UPDATE creature_template SET faction_A=1965,faction_H=1965 WHERE entry IN (33090,33113,33139);
+
+UPDATE creature_template SET flags_extra = 0 WHERE entry IN (33114);
 
 INSERT INTO creature_template (entry, spell1, spell2, spell3, spell4, spell5, spell6, vehicleid) VALUES
 (33062, 62974, 62286, 62299, 64660, 0, 0, 335), # Salvaged Chopper
@@ -2127,11 +2136,22 @@ spell5 = VALUES(spell5),
 spell6 = VALUES(spell6),
 vehicleid = VALUES(vehicleid);
 
-DELETE FROM `spell_script_target` WHERE `entry` IN (62374,62399);
+DELETE FROM `spell_script_target` WHERE `entry` IN (62427,62374,62399);
 INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
+(62427, 1, 33109), # Load into Catapult
 (62374, 1, 33060), # Pursued
 (62374, 1, 33109),
 (62399, 1, 33139); # Overload Circuit
+
+DELETE FROM `spell_linked_spell` WHERE `spell_trigger` IN (-62475,62427);
+INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
+(-62475,-62399, 0, 'System Shutdown'),
+(-62475, 62472, 0, 'System Shutdown'), #inform, not correct spell
+( 62427, 62340, 2, 'Load into Catapult - Passenger Loaded');
+
+DELETE FROM `npc_spellclick_spells` WHERE `npc_entry` IN (33143);
+INSERT INTO `npc_spellclick_spells` (`npc_entry`, `spell_id`, `quest_start`, `quest_start_active`, `quest_end`, `cast_flags`) VALUES
+(33143, 62399, 0, 0, 0, 0); # Overide device
 
 
 -- --------
