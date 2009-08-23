@@ -48,7 +48,7 @@
 #include "Path.h"
 #include "CreatureGroups.h"
 #include "PetAI.h"
-#include "NullCreatureAI.h"
+#include "PassiveAI.h"
 #include "Traveller.h"
 #include "TemporarySummon.h"
 #include "Vehicle.h"
@@ -5798,6 +5798,18 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
         {
             switch(dummySpell->Id)
             {
+                // Glyph of Innervate
+                case 54832:
+                {
+                    if (procSpell->SpellIconID != 62)
+                        return false;
+
+                    int32 mana_perc = triggeredByAura->GetSpellProto()->EffectBasePoints[triggeredByAura->GetEffIndex()]+1;
+                    basepoints0 = uint32((GetPower(POWER_MANA) * mana_perc / 100) / 10);
+                    triggered_spell_id = 54833;
+                    target = this;
+                    break;
+                }
                 // Glyph of Starfire
                 case 54845:
                 {
