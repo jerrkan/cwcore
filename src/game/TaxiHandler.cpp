@@ -154,7 +154,6 @@ bool WorldSession::SendLearnNewTaxiNode( Creature* unit )
 
 void WorldSession::HandleActivateTaxiExpressOpcode ( WorldPacket & recv_data )
 {
-    CHECK_PACKET_SIZE(recv_data,8+4);
 
     sLog.outDebug( "WORLD: Received CMSG_ACTIVATETAXIEXPRESS" );
 
@@ -170,7 +169,6 @@ void WorldSession::HandleActivateTaxiExpressOpcode ( WorldPacket & recv_data )
         return;
     }
     // recheck
-    CHECK_PACKET_SIZE(recv_data,8+4+node_count*4);
 
     std::vector<uint32> nodes;
 

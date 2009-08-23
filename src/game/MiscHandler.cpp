@@ -777,7 +777,6 @@ void WorldSession::HandleResurrectResponseOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleAreaTriggerOpcode(WorldPacket & recv_data)
 {
-    CHECK_PACKET_SIZE(recv_data, 4);
 
     sLog.outDebug("WORLD: Received CMSG_AREATRIGGER");
 
@@ -1496,8 +1495,6 @@ void WorldSession::HandleSetDungeonDifficultyOpcode( WorldPacket & recv_data )
 
 void WorldSession::HandleSetRaidDifficultyOpcode( WorldPacket & recv_data )
 {
-    CHECK_PACKET_SIZE(recv_data, 4);
-
     sLog.outDebug("MSG_SET_RAID_DIFFICULTY");
 
     uint32 mode;
