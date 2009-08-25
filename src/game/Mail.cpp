@@ -49,7 +49,7 @@ void MailItem::deleteItem( bool inDB )
             CharacterDatabase.PExecute("DELETE FROM item_instance WHERE guid='%u'", item->GetGUIDLow());
 
         delete item;
-        item = NULL;
+        item=NULL;
     }
 }
 
@@ -435,7 +435,7 @@ void WorldSession::SendReturnToSender(uint8 messageType, uint32 sender_acc, uint
     uint32 deliver_delay = needItemDelay ? sWorld.getConfig(CONFIG_MAIL_DELIVERY_DELAY) : 0;
 
     // will delete item or place to receiver mail list
-    WorldSession::SendMailTo(receiver, MAIL_NORMAL, MAIL_STATIONERY_NORMAL, sender_guid, receiver_guid, subject, itemTextId, mi, money, 0, MAIL_CHECK_MASK_RETURNED, deliver_delay, mailTemplateId);
+    WorldSession::SendMailTo(receiver, MAIL_NORMAL, MAIL_STATIONERY_NORMAL, sender_guid, receiver_guid, subject, itemTextId, mi, money, 0, MAIL_CHECK_MASK_RETURNED,deliver_delay,mailTemplateId);
 }
 
 //called when player takes item attached in mail
@@ -694,8 +694,8 @@ void WorldSession::HandleGetMailList(WorldPacket & recv_data )
 void WorldSession::HandleItemTextQuery(WorldPacket & recv_data )
 {
     uint32 itemTextId;
-    uint32 mailId;                                          // this value can be item id in bag, but it is also mail id
-    uint32 unk;                                             // maybe something like state - 0x70000000
+    uint32 mailId;                                          //this value can be item id in bag, but it is also mail id
+    uint32 unk;                                             //maybe something like state - 0x70000000
 
     recv_data >> itemTextId >> mailId >> unk;
 
@@ -832,12 +832,12 @@ void WorldSession::SendMailTo(Player* receiver, uint8 messageType, uint8 station
 
     time_t deliver_time = time(NULL) + deliver_delay;
 
-    // expire time if COD 3 days, if no COD 30 days, if auction sale pending 1 hour
+    //expire time if COD 3 days, if no COD 30 days, if auction sale pending 1 hour
     uint32 expire_delay;
     if(messageType == MAIL_AUCTION && !mi && !money)        // auction mail without any items and money
         expire_delay = sWorld.getConfig(CONFIG_MAIL_DELIVERY_DELAY);
     else
-        expire_delay = (COD > 0) ? 3 * DAY : 30 * DAY;
+        expire_delay = (COD > 0) ? 3*DAY : 30*DAY;
 
     time_t expire_time = deliver_time + expire_delay;
 

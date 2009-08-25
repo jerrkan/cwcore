@@ -263,7 +263,7 @@ World::AddSession_ (WorldSession* s)
     // Updates the population
     if (pLimit > 0)
     {
-        float popu = GetActiveSessionCount ();              // updated number of users on the server
+        float popu = GetActiveSessionCount ();              //updated number of users on the server
         popu /= pLimit;
         popu *= 2;
         loginDatabase.PExecute ("UPDATE realmlist SET population = '%f' WHERE id = '%d'", popu, realmID);
@@ -1033,6 +1033,13 @@ void World::LoadConfigSettings(bool reload)
 
     m_configs[CONFIG_INSTANT_LOGOUT] = sConfig.GetIntDefault("InstantLogout", SEC_MODERATOR);
 
+    m_configs[CONFIG_GUILD_EVENT_LOG_COUNT] = sConfig.GetIntDefault("Guild.EventLogRecordsCount", GUILD_EVENTLOG_MAX_RECORDS);
+    if (m_configs[CONFIG_GUILD_EVENT_LOG_COUNT] < GUILD_EVENTLOG_MAX_RECORDS)
+        m_configs[CONFIG_GUILD_EVENT_LOG_COUNT] = GUILD_EVENTLOG_MAX_RECORDS;
+    m_configs[CONFIG_GUILD_BANK_EVENT_LOG_COUNT] = sConfig.GetIntDefault("Guild.BankEventLogRecordsCount", GUILD_BANK_MAX_LOGS);
+    if (m_configs[CONFIG_GUILD_BANK_EVENT_LOG_COUNT] < GUILD_BANK_MAX_LOGS)
+        m_configs[CONFIG_GUILD_BANK_EVENT_LOG_COUNT] = GUILD_BANK_MAX_LOGS;
+
     m_VisibleUnitGreyDistance = sConfig.GetFloatDefault("Visibility.Distance.Grey.Unit", 1);
     if(m_VisibleUnitGreyDistance >  MAX_VISIBILITY_DISTANCE)
     {
@@ -1147,6 +1154,7 @@ void World::LoadConfigSettings(bool reload)
     m_configs[CONFIG_SHOW_KICK_IN_WORLD] = sConfig.GetBoolDefault("ShowKickInWorld", false);
     m_configs[CONFIG_INTERVAL_LOG_UPDATE] = sConfig.GetIntDefault("RecordUpdateTimeDiffInterval", 60000);
     m_configs[CONFIG_MIN_LOG_UPDATE] = sConfig.GetIntDefault("MinRecordUpdateTimeDiff", 10);
+    m_configs[CONFIG_CHECK_DB] = sConfig.GetBoolDefault("CheckDB", true);
     m_configs[CONFIG_NUMTHREADS] = sConfig.GetIntDefault("MapUpdate.Threads",1);
 
     std::string forbiddenmaps = sConfig.GetStringDefault("ForbiddenMaps", "");
@@ -1546,7 +1554,20 @@ void World::SetInitialWorldSettings()
     if(!LoadScriptingModule())
         exit(1);
 
-///- Initialize game time and timers
+    /// Check db
+    if(m_configs[CONFIG_CHECK_DB])
+    {
+        sLog.outString( "Checking DB..." );
+        if(!objmgr.CheckDB() || !spellmgr.CheckDB())
+        {
+            sLog.outError("Your world DB is outdated. Please reapply sqls in sql\\FULL folder, or disable CheckDB option in config file (not recommended).");
+            exit(1);
+        }
+    }
+    else
+        sLog.outError("You have disabled DB check. We strongly recommend you to enable it to prevent unpredictable bugs and crashes.");
+
+    ///- Initialize game time and timers
     sLog.outDebug( "DEBUG:: Initialize game time and timers" );
     m_gameTime = time(NULL);
     m_startTime=m_gameTime;
@@ -1562,6 +1583,8 @@ void World::SetInitialWorldSettings()
     loginDatabase.PExecute("INSERT INTO uptime (realmid, starttime, startstring, uptime) VALUES('%u', " UI64FMTD ", '%s', 0)",
         realmID, uint64(m_startTime), isoDate);
 
+    static uint32 abtimer = 0;
+    abtimer = sConfig.GetIntDefault("AutoBroadcast.Timer", 60000);
     m_timers[WUPDATE_OBJECTS].SetInterval(IN_MILISECONDS/2);
     m_timers[WUPDATE_SESSIONS].SetInterval(0);
     m_timers[WUPDATE_WEATHERS].SetInterval(1*IN_MILISECONDS);
@@ -1572,6 +1595,7 @@ void World::SetInitialWorldSettings()
                                                             //erase corpses every 20 minutes
     m_timers[WUPDATE_CLEANDB].SetInterval(m_configs[CONFIG_LOGDB_CLEARINTERVAL]*MINUTE*IN_MILISECONDS);
                                                             // clean logs table every 14 days by default
+    m_timers[WUPDATE_AUTOBROADCAST].SetInterval(abtimer);
 
     //to set mailtimer to return mails every day between 4 and 5 am
     //mailtimer is increased when updating auctions
@@ -1858,6 +1882,17 @@ void World::Update(uint32 diff)
         m_timers[WUPDATE_OBJECTS].Reset();
         MapManager::Instance().DoDelayedMovesAndRemoves();
     }*/
+
+    static uint32 autobroadcaston = 0;
+    autobroadcaston = sConfig.GetIntDefault("AutoBroadcast.On", 0);
+    if(autobroadcaston == 1)
+    {
+       if (m_timers[WUPDATE_AUTOBROADCAST].Passed())
+       {
+          m_timers[WUPDATE_AUTOBROADCAST].Reset();
+          SendRNDBroadcast();
+       }
+    }
 
     sBattleGroundMgr.Update(diff);
     RecordTimeDiff("UpdateBattleGroundMgr");
@@ -2357,41 +2392,41 @@ void World::ProcessCliCommands()
 
 void World::SendRNDBroadcast()
 {
-   std::string msg;
-   QueryResult *result = WorldDatabase.PQuery("SELECT `text` FROM `autobroadcast` ORDER BY RAND() LIMIT 1");
+    if(m_Autobroadcasts.empty())
+        return;
 
-   if(!result)
-      return;
+    std::string msg;
 
-   msg = result->Fetch()[0].GetString();
-   delete result;
+    std::list<std::string>::const_iterator itr = m_Autobroadcasts.begin();
+    std::advance(itr, rand() % m_Autobroadcasts.size());
+    msg = *itr;
 
-   static uint32 abcenter = 0;
+    static uint32 abcenter = 0;
     abcenter = sConfig.GetIntDefault("AutoBroadcast.Center", 0);
     if(abcenter == 0)
     {
-      sWorld.SendWorldText(LANG_AUTO_BROADCAST, msg.c_str());
+        sWorld.SendWorldText(LANG_AUTO_BROADCAST, msg.c_str());
 
-      sLog.outString("AutoBroadcast: '%s'",msg.c_str());
-   }
-   if(abcenter == 1)
-   {
-      WorldPacket data(SMSG_NOTIFICATION, (msg.size()+1));
-      data << msg;
-      sWorld.SendGlobalMessage(&data);
+        sLog.outString("AutoBroadcast: '%s'",msg.c_str());
+    }
+    if(abcenter == 1)
+    {
+        WorldPacket data(SMSG_NOTIFICATION, (msg.size()+1));
+        data << msg;
+        sWorld.SendGlobalMessage(&data);
 
-      sLog.outString("AutoBroadcast: '%s'",msg.c_str());
-   }
-   if(abcenter == 2)
-   {
-      sWorld.SendWorldText(LANG_AUTO_BROADCAST, msg.c_str());
+        sLog.outString("AutoBroadcast: '%s'",msg.c_str());
+    }
+    if(abcenter == 2)
+    {
+        sWorld.SendWorldText(LANG_AUTO_BROADCAST, msg.c_str());
 
-      WorldPacket data(SMSG_NOTIFICATION, (msg.size()+1));
-      data << msg;
-      sWorld.SendGlobalMessage(&data);
+        WorldPacket data(SMSG_NOTIFICATION, (msg.size()+1));
+        data << msg;
+        sWorld.SendGlobalMessage(&data);
 
-      sLog.outString("AutoBroadcast: '%s'",msg.c_str());
-   }
+        sLog.outString("AutoBroadcast: '%s'",msg.c_str());
+    }
 }
 
 void World::InitResultQueue()

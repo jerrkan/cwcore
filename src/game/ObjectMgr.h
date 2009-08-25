@@ -872,6 +872,7 @@ class ObjectMgr
         GmTicketList m_GMTicketList;
         uint64 GenerateGMTicketId();
 
+        bool CheckDB() const;
     protected:
 
         // first free id for selected id type

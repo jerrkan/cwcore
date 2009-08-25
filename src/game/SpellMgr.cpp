@@ -469,21 +469,45 @@ SpellSpecific GetSpellSpecific(uint32 spellId)
     {
         case SPELLFAMILY_GENERIC:
         {
-            //food/drink
-            if (spellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_SEATED)
+            // Food / Drinks (mostly)
+            if(spellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_SEATED)
             {
-                for(int i = 0; i < 3; i++)
-                    if( spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_POWER_REGEN
-                        || spellInfo->EffectApplyAuraName[i] == SPELL_AURA_OBS_MOD_ENERGY)
-                        return SPELL_DRINK;
-                    else if ( spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_REGEN
-                        || spellInfo->EffectApplyAuraName[i] == SPELL_AURA_OBS_MOD_HEALTH)
-                        return SPELL_FOOD;
+                bool food = false;
+                bool drink = false;
+                for(int i = 0; i < 3; ++i)
+                {
+                    switch(spellInfo->EffectApplyAuraName[i])
+                    {
+                        // Food
+                        case SPELL_AURA_MOD_REGEN:
+                        case SPELL_AURA_OBS_MOD_HEALTH:
+                            food = true;
+                            break;
+                        // Drink
+                        case SPELL_AURA_MOD_POWER_REGEN:
+                        case SPELL_AURA_OBS_MOD_POWER:
+                            drink = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                if(food && drink)
+                    return SPELL_FOOD_AND_DRINK;
+                else if(food)
+                    return SPELL_FOOD;
+                else if(drink)
+                    return SPELL_DRINK;
             }
-            // this may be a hack
-            else if((spellInfo->AttributesEx2 & SPELL_ATTR_EX2_FOOD)
-                && !spellInfo->Category)
+            // Well Fed buffs (must be exclusive with Food / Drink replenishment effects, or else Well Fed will cause them to be removed)
+            // SpellIcon 2560 is Spell 46687, does not have this flag
+            else if ((spellInfo->AttributesEx2 & SPELL_ATTR_EX2_FOOD_BUFF) || spellInfo->SpellIconID == 2560)
                 return SPELL_WELL_FED;
+            // this may be a hack
+            //else if((spellInfo->AttributesEx2 & SPELL_ATTR_EX2_FOOD_BUFF)
+            //    && !spellInfo->Category)
+            //    return SPELL_WELL_FED;
             // scrolls effects
             else
             {
@@ -519,14 +543,6 @@ SpellSpecific GetSpellSpecific(uint32 spellId)
 
             break;
         }
-        case SPELLFAMILY_PRIEST:
-        {
-            // Divine Spirit and Prayer of Spirit
-            if (spellInfo->SpellFamilyFlags[0] & 0x20)
-                return SPELL_PRIEST_DIVINE_SPIRIT;
-
-            break;
-        }
         case SPELLFAMILY_WARRIOR:
         {
             if (spellInfo->SpellFamilyFlags[1] & 0x000080 || spellInfo->SpellFamilyFlags[0] & 0x10000)
@@ -549,6 +565,20 @@ SpellSpecific GetSpellSpecific(uint32 spellId)
             //seed of corruption and corruption
             if (spellInfo->SpellFamilyFlags[1] & 0x10 || spellInfo->SpellFamilyFlags[0] & 0x2)
                 return SPELL_WARLOCK_CORRUPTION;
+            break;
+        }
+        case SPELLFAMILY_PRIEST:
+        {
+            // "Well Fed" buff from Blessed Sunfruit, Blessed Sunfruit Juice, Alterac Spring Water
+            if ((spellInfo->Attributes & SPELL_ATTR_CASTABLE_WHILE_SITTING) &&
+                (spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_AUTOATTACK) &&
+                (spellInfo->SpellIconID == 52 || spellInfo->SpellIconID == 79))
+                return SPELL_WELL_FED;
+
+            // Divine Spirit and Prayer of Spirit
+            if (spellInfo->SpellFamilyFlags[0] & 0x20)
+                return SPELL_PRIEST_DIVINE_SPIRIT;
+
             break;
         }
         case SPELLFAMILY_HUNTER:
@@ -629,7 +659,8 @@ SpellSpecific GetSpellSpecific(uint32 spellId)
     return SPELL_NORMAL;
 }
 
-bool IsSingleFromSpellSpecificPerCaster(uint32 spellSpec1,uint32 spellSpec2)
+// target not allow have more one spell specific from same caster
+bool IsSingleFromSpellSpecificPerCaster(SpellSpecific spellSpec1,SpellSpecific spellSpec2)
 {
     switch(spellSpec1)
     {
@@ -649,7 +680,7 @@ bool IsSingleFromSpellSpecificPerCaster(uint32 spellSpec1,uint32 spellSpec2)
     }
 }
 
-bool IsSingleFromSpellSpecificPerTarget(uint32 spellSpec1,uint32 spellSpec2)
+bool IsSingleFromSpellSpecificPerTarget(SpellSpecific spellSpec1, SpellSpecific spellSpec2)
 {
     switch(spellSpec1)
     {
@@ -661,14 +692,22 @@ bool IsSingleFromSpellSpecificPerTarget(uint32 spellSpec1,uint32 spellSpec2)
         case SPELL_MAGE_POLYMORPH:
         case SPELL_PRESENCE:
         case SPELL_WELL_FED:
-        case SPELL_DRINK:
-        case SPELL_FOOD:
         case SPELL_CHARM:
         case SPELL_SCROLL:
         case SPELL_WARRIOR_ENRAGE:
         case SPELL_MAGE_ARCANE_BRILLANCE:
         case SPELL_PRIEST_DIVINE_SPIRIT:
             return spellSpec1==spellSpec2;
+        case SPELL_FOOD:
+            return spellSpec2==SPELL_FOOD
+                || spellSpec2==SPELL_FOOD_AND_DRINK;
+        case SPELL_DRINK:
+            return spellSpec2==SPELL_DRINK
+                || spellSpec2==SPELL_FOOD_AND_DRINK;
+        case SPELL_FOOD_AND_DRINK:
+            return spellSpec2==SPELL_FOOD
+                || spellSpec2==SPELL_DRINK
+                || spellSpec2==SPELL_FOOD_AND_DRINK;
         case SPELL_BATTLE_ELIXIR:
             return spellSpec2==SPELL_BATTLE_ELIXIR
                 || spellSpec2==SPELL_FLASK_ELIXIR;
@@ -3017,7 +3056,7 @@ bool SpellMgr::CanAurasStack(SpellEntry const *spellInfo_1, SpellEntry const *sp
 
     if(!sameCaster)
     {
-        if(spellInfo_1->AttributesEx & SPELL_ATTR_EX3_STACK_FOR_DIFF_CASTERS
+        if(spellInfo_1->AttributesEx & SPELL_ATTR_EX_STACK_FOR_DIFF_CASTERS
             || spellInfo_1->AttributesEx3 & SPELL_ATTR_EX3_STACK_FOR_DIFF_CASTERS)
             return true;
             
@@ -3044,7 +3083,7 @@ bool SpellMgr::CanAurasStack(SpellEntry const *spellInfo_1, SpellEntry const *sp
                 case SPELL_AURA_PERIODIC_MANA_LEECH:
                 case SPELL_AURA_PERIODIC_LEECH:
                 case SPELL_AURA_POWER_BURN_MANA:
-                case SPELL_AURA_OBS_MOD_ENERGY:
+                case SPELL_AURA_OBS_MOD_POWER:
                 case SPELL_AURA_OBS_MOD_HEALTH:
                 case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
                     return true;
@@ -3894,4 +3933,14 @@ void SpellMgr::LoadSpellLinked()
 
     sLog.outString();
     sLog.outString( ">> Loaded %u linked spells", count );
+}
+
+bool SpellMgr::CheckDB() const
+{
+    SpellScriptTarget::const_iterator lower = GetBeginSpellScriptTarget(30531);
+    SpellScriptTarget::const_iterator upper = GetEndSpellScriptTarget(30531);
+    if(lower == upper || lower->second.targetEntry != 17256)
+        return false;
+
+    return true;
 }

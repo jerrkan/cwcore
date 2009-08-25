@@ -36,7 +36,6 @@
 #include "DBCStructure.h"
 #include <list>
 
-class Vehicle;
 
 #define WORLD_TRIGGER   12999
 
@@ -80,7 +79,7 @@ enum SpellAuraInterruptFlags
     AURA_INTERRUPT_FLAG_TRANSFORM           = 0x00008000,   // 15   removed by transform?
     AURA_INTERRUPT_FLAG_UNK16               = 0x00010000,   // 16
     AURA_INTERRUPT_FLAG_MOUNT               = 0x00020000,   // 17   misdirect, aspect, swim speed
-    AURA_INTERRUPT_FLAG_NOT_SEATED          = 0x00040000,   // 18   removed by standing up
+    AURA_INTERRUPT_FLAG_NOT_SEATED          = 0x00040000,   // 18   removed by standing up (used by food and drink mostly and sleep/Fake Death like)
     AURA_INTERRUPT_FLAG_CHANGE_MAP          = 0x00080000,   // 19   leaving map/getting teleported
     AURA_INTERRUPT_FLAG_IMMUNE_OR_LOST_SELECTION    = 0x00100000,   // 20   removed by auras that make you invulnerable, or make other to loose selection on you
     AURA_INTERRUPT_FLAG_UNK21               = 0x00200000,   // 21
@@ -326,6 +325,7 @@ class Minion;
 class Guardian;
 class UnitAI;
 class Transport;
+class Vehicle;
 
 struct SpellImmune
 {
@@ -713,7 +713,7 @@ enum MonsterMovementFlags
 struct MovementInfo
 {
     // common
-	uint64 guid;
+	uint64  guid;
     uint32  flags;
     uint16  unk1;
     uint32  time;
@@ -744,6 +744,21 @@ struct MovementInfo
     uint32 GetMovementFlags() { return flags; }
     void AddMovementFlag(uint32 flag) { flags |= flag; }
     bool HasMovementFlag(uint32 flag) const { return flags & flag; }
+};
+
+enum UnitTypeMask
+{
+    UNIT_MASK_NONE                  = 0x00000000,
+    UNIT_MASK_SUMMON                = 0x00000001,
+    UNIT_MASK_MINION                = 0x00000002,
+    UNIT_MASK_GUARDIAN              = 0x00000004,
+    UNIT_MASK_TOTEM                 = 0x00000008,
+    UNIT_MASK_PET                   = 0x00000010,
+    UNIT_MASK_VEHICLE               = 0x00000020,
+    UNIT_MASK_PUPPET                = 0x00000040,
+    UNIT_MASK_HUNTER_PET            = 0x00000080,
+    UNIT_MASK_CONTROLABLE_GUARDIAN  = 0x00000100,
+    UNIT_MASK_ACCESSORY             = 0x00000200,
 };
 
 enum DiminishingLevels
@@ -945,6 +960,13 @@ enum ActionBarIndex
     ACTION_BAR_INDEX_END = 10,
 };
 
+enum Rotation
+{
+    CREATURE_ROTATE_NONE = 0,
+    CREATURE_ROTATE_LEFT = 1,
+    CREATURE_ROTATE_RIGHT = 2
+};
+
 #define MAX_UNIT_ACTION_BAR_INDEX (ACTION_BAR_INDEX_END-ACTION_BAR_INDEX_START)
 
 struct CharmInfo
@@ -1069,6 +1091,9 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         void GetRandomContactPoint( const Unit* target, float &x, float &y, float &z, float distance2dMin, float distance2dMax ) const;
         uint32 m_extraAttacks;
         bool m_canDualWield;
+        void StartAutoRotate(uint8 type, uint32 fulltime);
+        void AutoRotate(uint32 time);
+        bool IsUnitRotating() {return IsRotating;}
 
         void _addAttacker(Unit *pAttacker)                  // must be called only from Unit::Attack(Unit*)
         {
@@ -1094,7 +1119,13 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         void RemoveAllAttackers();
         AttackerSet const& getAttackers() const { return m_attackers; }
         bool isAttackingPlayer() const;
-        Unit* getVictim() const { return m_attacking; }
+        Unit* getVictim() const 
+        { 
+            if(IsRotating)return NULL;
+            return m_attacking; 
+        }
+
+
         void CombatStop(bool includingCast = false);
         void CombatStopWithPets(bool includingCast = false);
         Unit* SelectNearbyTarget(float dist = NOMINAL_MELEE_RANGE) const;
@@ -1110,6 +1141,15 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
             return !hasUnitState(UNIT_STAT_CONFUSED | UNIT_STAT_FLEEING | UNIT_STAT_IN_FLIGHT |
                 UNIT_STAT_ROOT | UNIT_STAT_STUNNED | UNIT_STAT_DISTRACTED ) && GetOwnerGUID()==0;
         }
+
+        uint32 HasUnitTypeMask(uint32 mask) const { return mask & m_unitTypeMask; }
+        void AddUnitTypeMask(uint32 mask) { m_unitTypeMask |= mask; }
+        bool isSummon() const   { return m_unitTypeMask & UNIT_MASK_SUMMON; }
+        bool isGuardian() const { return m_unitTypeMask & UNIT_MASK_GUARDIAN; }
+        bool isPet() const      { return m_unitTypeMask & UNIT_MASK_PET; }
+        bool isHunterPet() const{ return m_unitTypeMask & UNIT_MASK_HUNTER_PET; }
+        bool isTotem() const    { return m_unitTypeMask & UNIT_MASK_TOTEM; }
+        bool IsVehicle() const  { return m_unitTypeMask & UNIT_MASK_VEHICLE; }
 
         uint32 getLevel() const { return GetUInt32Value(UNIT_FIELD_LEVEL); }
         virtual uint32 getLevelForTarget(Unit const* /*target*/) const { return getLevel(); }
@@ -1325,7 +1365,7 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         void AddAura(uint32 spellId, Unit *target);
         void SetAuraStack(uint32 spellId, Unit *target, uint32 stack);
         void HandleAuraEffect(AuraEffect * aureff, bool apply);
-        Aura *AddAuraEffect(const SpellEntry * spellInfo, uint8 effIndex, Unit* caster, int32 * basePoints=NULL, Unit * source=NULL);
+        Aura *AddAuraEffect(const SpellEntry *spellInfo, uint8 effIndex, WorldObject *source, Unit *caster, int32 *basePoints = NULL);
 
         bool IsDamageToThreatSpell(SpellEntry const * spellInfo) const;
 
@@ -1349,7 +1389,7 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         void SendMonsterMove(float NewPosX, float NewPosY, float NewPosZ, uint32 MoveFlags, uint32 time, float speedZ, Player *player = NULL);
         //void SendMonsterMove(float NewPosX, float NewPosY, float NewPosZ, uint8 type, uint32 MovementFlags, uint32 Time, Player* player = NULL);
         void SendMonsterMoveByPath(Path const& path, uint32 start, uint32 end);
-        void SendMonsterMoveTransport(Vehicle *vehicle);
+        void SendMonsterMoveTransport(Unit *vehicleOwner);
         void SendMonsterMoveWithSpeed(float x, float y, float z, uint32 transitTime = 0, Player* player = NULL);
         void SendMonsterMoveWithSpeedToCurrentDestination(Player* player = NULL);
         void SendMovementFlagUpdate();
@@ -1797,7 +1837,12 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
 
         bool IsAIEnabled, NeedChangeAI;
         MovementInfo m_movementInfo;
-        Vehicle *m_Vehicle;
+        bool CreateVehicleKit(uint32 id);
+        Vehicle *GetVehicleKit()const { return m_vehicleKit; }
+        Vehicle *GetVehicle()   const { return m_vehicle; }
+        bool IsOnVehicle(const Unit *unit) const { return m_vehicle && m_vehicle == unit->GetVehicleKit(); }
+        Unit *GetVehicleBase()  const;
+        Creature *GetVehicleCreatureBase() const;
         float GetTransOffsetX() const { return m_movementInfo.t_x; }
         float GetTransOffsetY() const { return m_movementInfo.t_y; }
         float GetTransOffsetZ() const { return m_movementInfo.t_z; }
@@ -1807,6 +1852,7 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
 
         bool m_ControlledByPlayer;
 
+        void EnterVehicle(Unit *base, int8 seatId = -1) { EnterVehicle(base->GetVehicleKit(), seatId); }
         void EnterVehicle(Vehicle *vehicle, int8 seatId = -1);
         void ExitVehicle();
         void ChangeSeat(int8 seatId, bool next = true);
@@ -1889,17 +1935,23 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         //uint32 m_unit_movement_flags;
 
         uint32 m_reactiveTimer[MAX_REACTIVE];
-        uint32 m_regenTimer;
+        int32 m_regenTimer;
 
         ThreatManager m_ThreatManager;
+
+        Vehicle *m_vehicle;
+        Vehicle *m_vehicleKit;
+
+        uint32 m_unitTypeMask;
 
     private:
         bool IsTriggeredAtSpellProcEvent(Unit *pVictim, Aura* aura, SpellEntry const * procSpell, uint32 procFlag, uint32 procExtra, WeaponAttackType attType, bool isVictim, bool active, SpellProcEventEntry const *& spellProcEvent );
         bool HandleDummyAuraProc(   Unit *pVictim, uint32 damage, AuraEffect* triggeredByAura, SpellEntry const *procSpell, uint32 procFlag, uint32 procEx, uint32 cooldown);
+        bool HandleHasteAuraProc(   Unit *pVictim, uint32 damage, AuraEffect* triggeredByAura, SpellEntry const *procSpell, uint32 procFlag, uint32 procEx, uint32 cooldown);
+        bool HandleSpellCritChanceAuraProc(   Unit *pVictim, uint32 damage, AuraEffect* triggredByAura, SpellEntry const *procSpell, uint32 procFlag, uint32 procEx, uint32 cooldown);
         bool HandleObsModEnergyAuraProc(   Unit *pVictim, uint32 damage, AuraEffect* triggeredByAura, SpellEntry const *procSpell, uint32 procFlag, uint32 procEx, uint32 cooldown);
         bool HandleModDamagePctTakenAuraProc(Unit *pVictim, uint32 damage, AuraEffect* triggeredByAura, SpellEntry const *procSpell, uint32 procFlag, uint32 procEx, uint32 cooldown);
         bool HandleAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAura, SpellEntry const * procSpell, uint32 procFlag, uint32 procEx, uint32 cooldown, bool * handled);
-        bool HandleHasteAuraProc(   Unit *pVictim, uint32 damage, AuraEffect* triggeredByAura, SpellEntry const *procSpell, uint32 procFlag, uint32 procEx, uint32 cooldown);
         bool HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* triggeredByAura, SpellEntry const *procSpell, uint32 procFlag, uint32 procEx, uint32 cooldown);
         bool HandleOverrideClassScriptAuraProc(Unit *pVictim, uint32 damage, AuraEffect* triggeredByAura, SpellEntry const *procSpell, uint32 cooldown);
         bool HandleAuraRaidProcFromChargeWithValue(AuraEffect* triggeredByAura);
@@ -1930,6 +1982,12 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
 
         uint32 m_reducedThreatPercent;
         uint64 m_misdirectionTargetGUID;
+
+        uint8 IsRotating;//0none 1left 2right
+        uint32 RotateTimer;
+        uint32 RotateTimerFull;
+        double RotateAngle;
+        uint64 LastTargetGUID;
 };
 
 namespace Trinity

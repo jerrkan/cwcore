@@ -176,7 +176,7 @@ void WorldSession::HandleMoveTeleportAck(WorldPacket& recv_data)
     sLog.outDebug("MSG_MOVE_TELEPORT_ACK");
     uint64 guid;
 
-    if(!recv_data.readPackGUID(guid))
+	if(!recv_data.readPackGUID(guid))
         return;
 
     uint32 flags, time;
@@ -224,9 +224,10 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 {
     uint32 opcode = recv_data.GetOpcode();
     //sLog.outDebug("WORLD: Recvd %s (%u, 0x%X) opcode", LookupOpcodeName(opcode), opcode, opcode);
+	recv_data.hexlike();
 
     Unit *mover = _player->m_mover;
-    Player *plMover = mover->GetTypeId() == TYPEID_PLAYER ? (Player*)mover : NULL;
+    Player *plMover = mover->GetTypeId()==TYPEID_PLAYER ? (Player*)mover : NULL;
 
     // ignore, waiting processing in WorldSession::HandleMoveWorldportAckOpcode and WorldSession::HandleMoveTeleportAck
     if(plMover && plMover->IsBeingTeleported())
@@ -236,13 +237,12 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
     }
 
     /* extract packet */
-    uint64 guid;
+	uint64 guid;
 
     if(!recv_data.readPackGUID(guid))
         return;
-
     MovementInfo movementInfo;
-    movementInfo.guid = guid;
+	movementInfo.guid = guid;
     ReadMovementInfo(recv_data, &movementInfo);
     /*----------------*/
 
@@ -250,11 +250,15 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
     {
         sLog.outError("MovementHandler: player %s (guid %d, account %u) sent a packet (opcode %u) that is " SIZEFMTD " bytes larger than it should be. Kicked as cheater.", _player->GetName(), _player->GetGUIDLow(), _player->GetSession()->GetAccountId(), opcode, recv_data.size() - recv_data.rpos());
         KickPlayer();
+        recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
         return;
     }
 
-    if (!Trinity::IsValidMapCoord(movementInfo.x, movementInfo.y, movementInfo.z, movementInfo.o))
+    if (!MaNGOS::IsValidMapCoord(movementInfo.x, movementInfo.y, movementInfo.z, movementInfo.o))
+    {
+        recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
         return;
+    }
 
     /* handle special cases */
     if (movementInfo.flags & MOVEMENTFLAG_ONTRANSPORT)
@@ -262,11 +266,17 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
         // transports size limited
         // (also received at zeppelin leave by some reason with t_* as absolute in continent coordinates, can be safely skipped)
         if( movementInfo.t_x > 50 || movementInfo.t_y > 50 || movementInfo.t_z > 50 )
+        {
+            recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
             return;
+        }
 
         if( !MaNGOS::IsValidMapCoord(movementInfo.x+movementInfo.t_x, movementInfo.y + movementInfo.t_y,
             movementInfo.z + movementInfo.t_z, movementInfo.o + movementInfo.t_o) )
+        {
+            recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
             return;
+        }
 
         // if we boarded a transport, add us to it
         if (plMover && !plMover->m_transport)
@@ -283,7 +293,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
             }
         }
 
-        if(!mover->GetTransport() && !mover->m_Vehicle)
+        if(!mover->GetTransport() && !mover->GetVehicle())
             movementInfo.flags &= ~MOVEMENTFLAG_ONTRANSPORT;
     }
     else if (plMover && plMover->m_transport)               // if we were on a transport, leave
@@ -319,7 +329,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
     mover->m_movementInfo = movementInfo;
 
-    if(mover->m_Vehicle)
+    if(mover->GetVehicle())
     {
         mover->SetOrientation(movementInfo.o);
         return;
@@ -379,7 +389,9 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
 void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recv_data)
 {
-    uint32 opcode = recv_data.GetOpcode();
+    //sLog.outDebug("WORLD: Recvd %s (%u, 0x%X) opcode", LookupOpcodeName(recv_data.GetOpcode()), recv_data.GetOpcode(), recv_data.GetOpcode());
+
+	uint32 opcode = recv_data.GetOpcode();
     sLog.outDebug("WORLD: Recvd %s (%u, 0x%X) opcode", LookupOpcodeName(opcode), opcode, opcode);
 
     /* extract packet */
@@ -392,7 +404,10 @@ void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recv_data)
 
     // now can skip not our packet
     if(_player->GetGUID() != guid)
+    {
+        recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
         return;
+    }
 
     // continue parse packet
 
@@ -402,16 +417,8 @@ void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recv_data)
 	movementInfo.guid = guid;
     ReadMovementInfo(recv_data, &movementInfo);
 
-    // recheck
     recv_data >> newspeed;
     /*----------------*/
-
-    if(recv_data.size() != recv_data.rpos())
-    {
-        sLog.outError("MovementHandler: player %s (guid %d, account %u) sent a packet (opcode %u) that is " SIZEFMTD " bytes larger than it should be. Kicked as cheater.", _player->GetName(), _player->GetGUIDLow(), _player->GetSession()->GetAccountId(), opcode, recv_data.size() - recv_data.rpos());
-        KickPlayer();
-        return;
-    }
 
     // client ACK send one packet for mounted/run case and need skip all except last from its
     // in other cases anti-cheat check can be fail in false case
@@ -496,25 +503,18 @@ void WorldSession::HandleMoveNotActiveMover(WorldPacket &recv_data)
 
     uint64 old_mover_guid;
 
-    if(!recv_data.readPackGUID(old_mover_guid))
+	if(!recv_data.readPackGUID(old_mover_guid))
         return;
 
     /*if(_player->m_mover->GetGUID() == old_mover_guid)
     {
         sLog.outError("HandleMoveNotActiveMover: incorrect mover guid: mover is " I64FMT " and should be " I64FMT " instead of " I64FMT, _player->m_mover->GetGUID(), _player->GetGUID(), old_mover_guid);
+        recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
         return;
     }*/
 
 	//mi.guid = old_mover_guid;
     ReadMovementInfo(recv_data, &_player->m_mover->m_movementInfo);
-
-	if(recv_data.size() != recv_data.rpos())
-    {
-        sLog.outError("MovementHandler: player %s (guid %d, account %u) sent a packet (opcode %u) that is " SIZEFMTD " bytes larger than it should be. Kicked as cheater.", _player->GetName(), _player->GetGUIDLow(), _player->GetSession()->GetAccountId(), recv_data.GetOpcode(), recv_data.size() - recv_data.rpos());
-        KickPlayer();
-        recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
-        return;
-    }
 }
 
 void WorldSession::HandleDismissControlledVehicle(WorldPacket &recv_data)
@@ -527,21 +527,16 @@ void WorldSession::HandleDismissControlledVehicle(WorldPacket &recv_data)
     if(!vehicleGUID)                                        // something wrong here...
     {
         recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
-        return;
-    }
+		return;
 
-	uint64 guid;
-    if(!recv_data.readPackGUID(guid))
-        return;
+		uint64 guid;
+		
+		if(!recv_data.readPackGUID(guid))
+			return;
+    }
 
 	//mi.guid = guid;
     ReadMovementInfo(recv_data, &_player->m_mover->m_movementInfo);
-	if(recv_data.size() != recv_data.rpos())
-    {
-        sLog.outError("MovementHandler: player %s (guid %d, account %u) sent a packet (opcode %u) that is " SIZEFMTD " bytes larger than it should be. Kicked as cheater.", _player->GetName(), _player->GetGUIDLow(), _player->GetSession()->GetAccountId(), recv_data.GetOpcode(), recv_data.size() - recv_data.rpos());
-        KickPlayer();
-        return;
-    }
     _player->ExitVehicle();
 }
 
@@ -550,7 +545,7 @@ void WorldSession::HandleChangeSeatsOnControlledVehicle(WorldPacket &recv_data)
     sLog.outDebug("WORLD: Recvd CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE");
     recv_data.hexlike();
 
-    if(!GetPlayer()->m_Vehicle)
+    if(!GetPlayer()->GetVehicle())
         return;
 
     if(recv_data.GetOpcode() == CMSG_REQUEST_VEHICLE_PREV_SEAT)
@@ -564,7 +559,7 @@ void WorldSession::HandleChangeSeatsOnControlledVehicle(WorldPacket &recv_data)
         return;
     }
     else if(recv_data.GetOpcode() == CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE)
-        ReadMovementInfo(recv_data, &GetPlayer()->m_Vehicle->m_movementInfo);
+        ReadMovementInfo(recv_data, &GetPlayer()->GetVehicleBase()->m_movementInfo);
 
     uint64 guid;
     if(!recv_data.readPackGUID(guid))
@@ -575,11 +570,10 @@ void WorldSession::HandleChangeSeatsOnControlledVehicle(WorldPacket &recv_data)
 
     if(!guid)
         GetPlayer()->ChangeSeat(-1, seatId > 0); // prev/next
-    else if(Vehicle *vehicle = ObjectAccessor::GetVehicle(guid))
-    {
-        if(vehicle->HasEmptySeat(seatId))
-            GetPlayer()->EnterVehicle(vehicle, seatId);
-    }
+    else if(Unit *vehUnit = ObjectAccessor::GetUnit(*GetPlayer(), guid))
+        if(Vehicle *vehicle = vehUnit->GetVehicleKit())
+            if(vehicle->HasEmptySeat(seatId))
+                GetPlayer()->EnterVehicle(vehicle, seatId);
 }
 
 void WorldSession::HandleRequestVehicleExit(WorldPacket &recv_data)
@@ -601,7 +595,6 @@ void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& /*recvdata*/)
 
 void WorldSession::HandleMoveKnockBackAck( WorldPacket & /*recv_data*/ )
 {
-    // CHECK_PACKET_SIZE(recv_data,?);
     sLog.outDebug("CMSG_MOVE_KNOCK_BACK_ACK");
     // Currently not used but maybe use later for recheck final player position
     // (must be at call same as into "recv_data >> x >> y >> z >> orientation;"
@@ -641,7 +634,6 @@ void WorldSession::HandleMoveWaterWalkAck(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleSummonResponseOpcode(WorldPacket& recv_data)
 {
-
     if(!_player->isAlive() || _player->isInCombat() )
         return;
 

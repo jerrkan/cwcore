@@ -316,7 +316,7 @@ enum SpellCategory
 #define SPELL_ATTR_EX2_UNK28                      0x10000000            // 28 no breaks stealth if it fails??
 #define SPELL_ATTR_EX2_CANT_CRIT                  0x20000000            // 29 Spell can't crit
 #define SPELL_ATTR_EX2_TRIGGERED_CAN_TRIGGER      0x40000000            // 30 spell can trigger even if triggered
-#define SPELL_ATTR_EX2_FOOD                       0x80000000            // 31 food, well-fed, and a few others
+#define SPELL_ATTR_EX2_FOOD_BUFF                  0x80000000            // 31 Food or Drink Buff (like Well Fed)
 
 #define SPELL_ATTR_EX3_UNK0                       0x00000001            // 0
 #define SPELL_ATTR_EX3_UNK1                       0x00000002            // 1
@@ -2418,9 +2418,11 @@ enum PetDiet
 // Max values for Guild & Guild Bank
 #define GUILD_BANK_MAX_TABS         6
 #define GUILD_BANK_MAX_SLOTS        98
-#define GUILD_BANK_MAX_LOGS         24
-#define GUILD_EVENTLOG_MAX_ENTRIES  100
-#define GUILD_MAX_RANKS             10
+#define GUILD_BANK_MAX_LOGS         25
+#define GUILD_BANK_MONEY_LOGS_TAB   100
+#define GUILD_EVENTLOG_MAX_RECORDS  100
+#define GUILD_RANKS_MIN_COUNT       5
+#define GUILD_RANKS_MAX_COUNT       10
 
 enum AiReaction
 {

@@ -116,16 +116,17 @@ enum SpellSpecific
     SPELL_FLASK_ELIXIR      = 16,
     SPELL_WARLOCK_CORRUPTION= 17,
     SPELL_WELL_FED          = 18,
-    SPELL_DRINK             = 19,
-    SPELL_FOOD              = 20,
-    SPELL_PRESENCE          = 21,
-    SPELL_CHARM             = 22,
-    SPELL_SCROLL            = 23,
-    SPELL_MAGE_ARCANE_BRILLANCE = 24,
-    SPELL_WARRIOR_ENRAGE    = 25,
-    SPELL_PRIEST_DIVINE_SPIRIT = 26,
-    SPELL_HAND              = 27,
-    SPELL_PHASE             = 28,
+    SPELL_FOOD              = 19,
+    SPELL_DRINK             = 20,
+    SPELL_FOOD_AND_DRINK    = 21,
+    SPELL_PRESENCE          = 22,
+    SPELL_CHARM             = 23,
+    SPELL_SCROLL            = 24,
+    SPELL_MAGE_ARCANE_BRILLANCE = 25,
+    SPELL_WARRIOR_ENRAGE    = 26,
+    SPELL_PRIEST_DIVINE_SPIRIT = 27,
+    SPELL_HAND              = 28,
+    SPELL_PHASE             = 29,
 };
 
 #define SPELL_LINKED_MAX_SPELLS  200000
@@ -251,8 +252,8 @@ inline bool IsLootCraftingSpell(SpellEntry const *spellInfo)
 }
 
 bool IsHigherHankOfSpell(uint32 spellId_1,uint32 spellId_2);
-bool IsSingleFromSpellSpecificPerCaster(uint32 spellSpec1, uint32 spellSpec2);
-bool IsSingleFromSpellSpecificPerTarget(uint32 spellSpec1, uint32 spellSpec2);
+bool IsSingleFromSpellSpecificPerCaster(SpellSpecific spellSpec1, SpellSpecific spellSpec2);
+bool IsSingleFromSpellSpecificPerTarget(SpellSpecific spellSpec1, SpellSpecific spellSpec2);
 bool IsPassiveSpell(uint32 spellId);
 bool IsAutocastableSpell(uint32 spellId);
 
@@ -582,11 +583,12 @@ struct SpellEnchantProcEntry
 typedef UNORDERED_MAP<uint32, SpellEnchantProcEntry> SpellEnchantProcEventMap;
 typedef UNORDERED_MAP<uint32, SpellBonusEntry>     SpellBonusMap;
 
-#define ELIXIR_BATTLE_MASK    0x1
-#define ELIXIR_GUARDIAN_MASK  0x2
+#define ELIXIR_BATTLE_MASK    0x01
+#define ELIXIR_GUARDIAN_MASK  0x02
 #define ELIXIR_FLASK_MASK     (ELIXIR_BATTLE_MASK|ELIXIR_GUARDIAN_MASK)
-#define ELIXIR_UNSTABLE_MASK  0x4
-#define ELIXIR_SHATTRATH_MASK 0x8
+#define ELIXIR_UNSTABLE_MASK  0x04
+#define ELIXIR_SHATTRATH_MASK 0x08
+#define ELIXIR_WELL_FED       0x10                          // Some foods have SPELLFAMILY_POTION
 
 typedef std::map<uint32, uint8> SpellElixirMap;
 typedef std::map<uint32, uint16> SpellThreatMap;
@@ -823,6 +825,8 @@ class SpellMgr
                 return SPELL_BATTLE_ELIXIR;
             else if(mask & ELIXIR_GUARDIAN_MASK)
                 return SPELL_GUARDIAN_ELIXIR;
+            else if(mask & ELIXIR_WELL_FED)
+                return SPELL_WELL_FED;
             else
                 return SPELL_NORMAL;
         }
@@ -1168,6 +1172,8 @@ class SpellMgr
         void LoadPetLevelupSpellMap();
         void LoadPetDefaultSpells();
         void LoadSpellAreas();
+
+        bool CheckDB() const;
 
     private:
         bool _isPositiveSpell(uint32 spellId, bool deep) const;

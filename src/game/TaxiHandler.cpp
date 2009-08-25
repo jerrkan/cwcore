@@ -154,7 +154,6 @@ bool WorldSession::SendLearnNewTaxiNode( Creature* unit )
 
 void WorldSession::HandleActivateTaxiExpressOpcode ( WorldPacket & recv_data )
 {
-
     sLog.outDebug( "WORLD: Received CMSG_ACTIVATETAXIEXPRESS" );
 
     uint64 guid;
@@ -168,8 +167,6 @@ void WorldSession::HandleActivateTaxiExpressOpcode ( WorldPacket & recv_data )
         sLog.outDebug( "WORLD: HandleActivateTaxiExpressOpcode - Unit (GUID: %u) not found or you can't interact with it.", uint32(GUID_LOPART(guid)) );
         return;
     }
-    // recheck
-
     std::vector<uint32> nodes;
 
     for(uint32 i = 0; i < node_count; ++i)

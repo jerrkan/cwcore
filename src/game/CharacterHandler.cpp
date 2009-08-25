@@ -64,7 +64,7 @@ bool LoginQueryHolder::Initialize()
 
     // NOTE: all fields in `characters` must be read to prevent lost character data at next save in case wrong DB structure.
     // !!! NOTE: including unused `zone`,`online`
-    res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADFROM,            "SELECT guid, account, data, name, race, class, gender, level, xp, money, playerBytes, playerBytes2, playerFlags, position_x, position_y, position_z, map, orientation, taximask, cinematic, totaltime, leveltime, rest_bonus, logout_time, is_logout_resting, resettalents_cost, resettalents_time, trans_x, trans_y, trans_z, trans_o, transguid, extra_flags, stable_slots, at_login, zone, online, death_expire_time, taxi_path, dungeon_difficulty, arena_pending_points,instance_id,speccount,activespec FROM characters WHERE guid = '%u'", GUID_LOPART(m_guid));
+    res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADFROM,            "SELECT guid, account, data, name, race, class, gender, level, xp, money, playerBytes, playerBytes2, playerFlags, position_x, position_y, position_z, map, orientation, taximask, cinematic, totaltime, leveltime, rest_bonus, logout_time, is_logout_resting, resettalents_cost, resettalents_time, trans_x, trans_y, trans_z, trans_o, transguid, extra_flags, stable_slots, at_login, zone, online, death_expire_time, taxi_path, dungeon_difficulty, arena_pending_points, instance_id, speccount, activespec FROM characters WHERE guid = '%u'", GUID_LOPART(m_guid));
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADGROUP,           "SELECT leaderGuid FROM group_member WHERE memberGuid ='%u'", GUID_LOPART(m_guid));
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADBOUNDINSTANCES,  "SELECT id, permanent, map, difficulty, resettime FROM character_instance LEFT JOIN instance ON instance = id WHERE guid = '%u'", GUID_LOPART(m_guid));
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADAURAS,           "SELECT caster_guid,spell,effect_mask,stackcount,amount0, amount1, amount2 ,maxduration,remaintime,remaincharges FROM character_aura WHERE guid = '%u'", GUID_LOPART(m_guid));
@@ -87,6 +87,7 @@ bool LoginQueryHolder::Initialize()
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADACHIEVEMENTS,    "SELECT achievement, date FROM character_achievement WHERE guid = '%u'", GUID_LOPART(m_guid));
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADCRITERIAPROGRESS,"SELECT criteria, counter, date FROM character_achievement_progress WHERE guid = '%u'", GUID_LOPART(m_guid));
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS,   "SELECT setguid, setindex, name, iconname, item0, item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, item11, item12, item13, item14, item15, item16, item17, item18 FROM character_equipmentsets WHERE guid = '%u' ORDER BY setindex", GUID_LOPART(m_guid));
+    res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADBGDATA,          "SELECT instance_id, team, join_x, join_y, join_z, join_o, join_map, taxi_start, taxi_end, mount_spell FROM character_battleground_data WHERE guid = '%u'", GUID_LOPART(m_guid));
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADGLYPHS,          "SELECT spec, glyph1, glyph2, glyph3, glyph4, glyph5, glyph6 FROM character_glyphs WHERE guid='%u'", GUID_LOPART(m_guid));
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADTALENTS,         "SELECT spell, spec FROM character_talent WHERE guid='%u'", GUID_LOPART(m_guid));
 
@@ -138,7 +139,7 @@ void WorldSession::HandleCharEnum(QueryResult * result)
         do
         {
             uint32 guidlow = (*result)[0].GetUInt32();
-            sLog.outDetail("Loading char guid %u from account %u.",guidlow,GetAccountId());
+            sLog.outDetail("Loading char guid %u from account %u.", guidlow, GetAccountId());
             if(Player::BuildEnumData(result, &data))
                 ++num;
         }
@@ -203,8 +204,8 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
             uint32 team = Player::TeamForRace(race_);
             switch(team)
             {
-                case ALLIANCE: disabled = mask & (1<<0); break;
-                case HORDE:    disabled = mask & (1<<1); break;
+                case ALLIANCE: disabled = mask & (1 << 0); break;
+                case HORDE:    disabled = mask & (1 << 1); break;
             }
 
             if(disabled)
@@ -231,7 +232,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
     if (raceEntry->expansion > Expansion())
     {
         data << (uint8)CHAR_CREATE_EXPANSION;
-        sLog.outError("Expansion %u account:[%d] tried to Create character with expansion %u race (%u)",Expansion(),GetAccountId(),raceEntry->expansion,race_);
+        sLog.outError("Expansion %u account:[%d] tried to Create character with expansion %u race (%u)", Expansion(), GetAccountId(), raceEntry->expansion, race_);
         SendPacket( &data );
         return;
     }
@@ -240,7 +241,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
     if (classEntry->expansion > Expansion())
     {
         data << (uint8)CHAR_CREATE_EXPANSION_CLASS;
-        sLog.outError("Expansion %u account:[%d] tried to Create character with expansion %u class (%u)",Expansion(),GetAccountId(),classEntry->expansion,class_);
+        sLog.outError("Expansion %u account:[%d] tried to Create character with expansion %u class (%u)", Expansion(), GetAccountId(), classEntry->expansion, class_);
         SendPacket( &data );
         return;
     }
@@ -250,12 +251,12 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
     {
         data << (uint8)CHAR_NAME_NO_NAME;
         SendPacket( &data );
-        sLog.outError("Account:[%d] but tried to Create character with empty [name] ",GetAccountId());
+        sLog.outError("Account:[%d] but tried to Create character with empty [name]", GetAccountId());
         return;
     }
 
     // check name limitations
-    uint8 res = ObjectMgr::CheckPlayerName(name,true);
+    uint8 res = ObjectMgr::CheckPlayerName(name, true);
     if (res != CHAR_NAME_SUCCESS)
     {
         data << uint8(res);
@@ -296,7 +297,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
     uint8 charcount = 0;
     if ( result )
     {
-        Field *fields=result->Fetch();
+        Field *fields = result->Fetch();
         charcount = fields[0].GetUInt8();
         delete result;
 
@@ -310,7 +311,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 
     // speedup check for heroic class disabled case
     uint32 heroic_free_slots = sWorld.getConfig(CONFIG_HEROIC_CHARACTERS_PER_REALM);
-    if(heroic_free_slots==0 && GetSecurity()==SEC_PLAYER && class_ == CLASS_DEATH_KNIGHT)
+    if(heroic_free_slots == 0 && GetSecurity() == SEC_PLAYER && class_ == CLASS_DEATH_KNIGHT)
     {
         data << (uint8)CHAR_CREATE_UNIQUE_CLASS_LIMIT;
         SendPacket( &data );
@@ -319,7 +320,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 
     // speedup check for heroic class disabled case
     uint32 req_level_for_heroic = sWorld.getConfig(CONFIG_MIN_LEVEL_FOR_HEROIC_CHARACTER_CREATING);
-    if(GetSecurity()==SEC_PLAYER && class_ == CLASS_DEATH_KNIGHT && req_level_for_heroic > sWorld.getConfig(CONFIG_MAX_PLAYER_LEVEL))
+    if(GetSecurity() == SEC_PLAYER && class_ == CLASS_DEATH_KNIGHT && req_level_for_heroic > sWorld.getConfig(CONFIG_MAX_PLAYER_LEVEL))
     {
         data << (uint8)CHAR_CREATE_LEVEL_REQUIREMENT;
         SendPacket( &data );
@@ -345,7 +346,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
             Field* field = result2->Fetch();
             uint8 acc_race  = field[1].GetUInt32();
 
-            if(GetSecurity()==SEC_PLAYER && class_ == CLASS_DEATH_KNIGHT)
+            if(GetSecurity() == SEC_PLAYER && class_ == CLASS_DEATH_KNIGHT)
             {
                 uint8 acc_class = field[2].GetUInt32();
                 if(acc_class == CLASS_DEATH_KNIGHT)
@@ -353,7 +354,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
                     if(heroic_free_slots > 0)
                         --heroic_free_slots;
 
-                    if(heroic_free_slots==0)
+                    if(heroic_free_slots == 0)
                     {
                         data << (uint8)CHAR_CREATE_UNIQUE_CLASS_LIMIT;
                         SendPacket( &data );
@@ -373,7 +374,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
             // TODO: what to if account already has characters of both races?
             if (!AllowTwoSideAccounts)
             {
-                uint32 acc_team=0;
+                uint32 acc_team = 0;
                 if(acc_race > 0)
                     acc_team = Player::TeamForRace(acc_race);
 
@@ -399,7 +400,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
                 if(!have_same_race)
                     have_same_race = race_ == acc_race;
 
-                if(GetSecurity()==SEC_PLAYER && class_ == CLASS_DEATH_KNIGHT)
+                if(GetSecurity() == SEC_PLAYER && class_ == CLASS_DEATH_KNIGHT)
                 {
                     uint8 acc_class = field[2].GetUInt32();
                     if(acc_class == CLASS_DEATH_KNIGHT)
@@ -407,7 +408,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
                         if(heroic_free_slots > 0)
                             --heroic_free_slots;
 
-                        if(heroic_free_slots==0)
+                        if(heroic_free_slots == 0)
                         {
                             data << (uint8)CHAR_CREATE_UNIQUE_CLASS_LIMIT;
                             SendPacket( &data );
@@ -427,7 +428,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
         }
     }
 
-    if(GetSecurity()==SEC_PLAYER && class_ == CLASS_DEATH_KNIGHT && !have_req_level_for_heroic)
+    if(GetSecurity() == SEC_PLAYER && class_ == CLASS_DEATH_KNIGHT && !have_req_level_for_heroic)
     {
         data << (uint8)CHAR_CREATE_LEVEL_REQUIREMENT;
         SendPacket( &data );
@@ -436,10 +437,22 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 
     // extract other data required for player creating
     uint8 gender, skin, face, hairStyle, hairColor, facialHair, outfitId;
-    recv_data >> gender >> skin >> face;
-    recv_data >> hairStyle >> hairColor >> facialHair >> outfitId;
+    recv_data >> gender;
+    recv_data >> skin;
+    recv_data >> face;
+    recv_data >> hairStyle;
+    recv_data >> hairColor;
+    recv_data >> facialHair;
+    recv_data >> outfitId;
+    
+    if(recv_data.rpos() < recv_data.wpos())
+    {
+        uint8 unk;
+        recv_data >> unk;
+        sLog.outDebug("Character creation %s (account %u) has unhandled tail data: [%u]", name.c_str(), GetAccountId(), unk);
+    }
 
-    Player * pNewChar = new Player(this);
+    Player *pNewChar = new Player(this);
     if(!pNewChar->Create( objmgr.GenerateLowGuid(HIGHGUID_PLAYER), name, race_, class_, gender, skin, face, hairStyle, hairColor, facialHair, outfitId ))
     {
         // Player not create (race/class problem?)
@@ -456,7 +469,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 
     // Player created, save it now
     pNewChar->SaveToDB();
-    charcount+=1;
+    charcount += 1;
 
     loginDatabase.PExecute("DELETE FROM realmcharacters WHERE acctid= '%d' AND realmid = '%d'", GetAccountId(), realmID);
     loginDatabase.PExecute("INSERT INTO realmcharacters (numchars, acctid, realmid) VALUES (%u, %u, %u)",  charcount, GetAccountId(), realmID);
@@ -615,13 +628,13 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
         {
             if (nextpos != pos)
             {
-                data << str_motd.substr(pos,nextpos-pos);
+                data << str_motd.substr(pos, nextpos-pos);
                 ++linecount;
             }
-            pos = nextpos+1;
+            pos = nextpos + 1;
         }
 
-        if (pos<str_motd.length())
+        if (pos < str_motd.length())
         {
             data << str_motd.substr(pos);
             ++linecount;
@@ -798,7 +811,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
 
     std::string IP_str = GetRemoteAddress();
     sLog.outChar("Account: %d (IP: %s) Login Character:[%s] (guid:%u)",
-        GetAccountId(),IP_str.c_str(),pCurrChar->GetName() ,pCurrChar->GetGUIDLow());
+        GetAccountId(), IP_str.c_str(), pCurrChar->GetName(), pCurrChar->GetGUIDLow());
 
     if(!pCurrChar->IsStandState() && !pCurrChar->hasUnitState(UNIT_STAT_STUNNED))
         pCurrChar->SetStandState(UNIT_STAND_STATE_STAND);
@@ -817,7 +830,7 @@ void WorldSession::HandleSetFactionAtWar( WorldPacket & recv_data )
     recv_data >> repListID;
     recv_data >> flag;
 
-    GetPlayer()->GetReputationMgr().SetAtWar(repListID,flag);
+    GetPlayer()->GetReputationMgr().SetAtWar(repListID, flag);
 }
 
 //I think this function is never used :/ I dunno, but i guess this opcode not exists

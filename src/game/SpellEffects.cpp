@@ -862,10 +862,6 @@ void Spell::EffectDummy(uint32 i)
 
                     creatureTarget->ForcedDespawn();
 
-                    WorldPacket data(SMSG_GAMEOBJECT_SPAWN_ANIM_OBSOLETE, 8);
-                    data << uint64(Crystal_Prison->GetGUID());
-                    m_caster->SendMessageToSet(&data, true);
-
                     return;
                 }
                 case 23074:                                 // Arcanite Dragonling
@@ -1219,7 +1215,7 @@ void Spell::EffectDummy(uint32 i)
                 case 62324: // Throw Passenger
                     if(m_targets.HasTraj())
                     {
-                        if(Vehicle *vehicle = dynamic_cast<Vehicle*>(m_caster))
+                        if(Vehicle *vehicle = m_caster->GetVehicleKit())
                             if(Unit *passenger = vehicle->GetPassenger(damage - 1))
                             {
                                 std::list<Unit*> unitList;
@@ -1229,12 +1225,12 @@ void Spell::EffectDummy(uint32 i)
                                 Vehicle *target = NULL;
                                 for(std::list<Unit*>::iterator itr = unitList.begin(); itr != unitList.end(); ++itr)
                                 {
-                                    if(Vehicle *seat = dynamic_cast<Vehicle*>(*itr))
+                                    if(Vehicle *seat = (*itr)->GetVehicleKit())
                                         if(!seat->GetPassenger(0))
                                             if(Unit *device = seat->GetPassenger(2))
                                                 if(!device->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
                                                 {
-                                                    float dist = seat->GetExactDistSq(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ);
+                                                    float dist = (*itr)->GetExactDistSq(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ);
                                                     if(dist < minDist)
                                                     {
                                                         minDist = dist;
@@ -1242,7 +1238,7 @@ void Spell::EffectDummy(uint32 i)
                                                     }
                                                 }
                                 }
-                                if(target && target->IsWithinDist2d(m_targets.m_destX, m_targets.m_destY, GetSpellRadius(m_spellInfo, i, false) * 2)) // now we use *2 because the location of the seat is not correct
+                                if(target && target->GetBase()->IsWithinDist2d(m_targets.m_destX, m_targets.m_destY, GetSpellRadius(m_spellInfo, i, false) * 2)) // now we use *2 because the location of the seat is not correct
                                     passenger->EnterVehicle(target, 0);
                                 else
                                 {
@@ -1888,8 +1884,8 @@ void Spell::EffectDummy(uint32 i)
             // Death Grip
             if(m_spellInfo->Id == 49560)
             {
-                if (unitTarget->m_Vehicle)
-                    unitTarget->m_Vehicle->CastSpell(m_caster, damage, true);
+                if (Unit *unit = unitTarget->GetVehicleBase()) // what is this for?
+                    unit->CastSpell(m_caster, damage, true);
                 else
                     unitTarget->CastSpell(m_caster, damage, true);
                 return;
@@ -2055,10 +2051,11 @@ void Spell::EffectForceCast(uint32 i)
         {
             switch(m_spellInfo->Id)
             {
+                // 52463 also use custom damage and the summon veh spell use that damamge and cast mount aura?
                 case 52588: unitTarget->RemoveAura(damage); break;
             }
         }
-        else
+        else // this was for 52463, need further study
         {
             unitTarget->CastCustomSpell(unitTarget, spellInfo->Id, &damage, NULL, NULL, true, NULL, NULL, m_originalCasterGUID);
             return;
@@ -2759,6 +2756,26 @@ void Spell::DoCreateItem(uint32 i, uint32 itemtype)
         return;
     }
 
+    // bg reward have some special in code work
+    uint32 bgType = 0;
+    switch(m_spellInfo->Id)
+    {
+        case SPELL_AV_MARK_WINNER:
+        case SPELL_AV_MARK_LOSER:
+            bgType = BATTLEGROUND_AV;
+            break;
+        case SPELL_WS_MARK_WINNER:
+        case SPELL_WS_MARK_LOSER:
+            bgType = BATTLEGROUND_WS;
+            break;
+        case SPELL_AB_MARK_WINNER:
+        case SPELL_AB_MARK_LOSER:
+            bgType = BATTLEGROUND_AB;
+            break;
+        default:
+            break;
+    }
+
     uint32 num_to_add;
 
     // TODO: maybe all this can be replaced by using correct calculated `damage` value
@@ -2841,11 +2858,21 @@ void Spell::DoCreateItem(uint32 i, uint32 itemtype)
 
         // send info to the client
         if(pItem)
-            player->SendNewItem(pItem, num_to_add, true, true);
+            player->SendNewItem(pItem, num_to_add, true, bgType == 0);
 
         // we succeeded in creating at least one item, so a levelup is possible
-        player->UpdateCraftSkill(m_spellInfo->Id);
+        if(bgType == 0)
+            player->UpdateCraftSkill(m_spellInfo->Id);
     }
+
+/*
+    // for battleground marks send by mail if not add all expected
+    if(no_space > 0 && bgType)
+    {
+        if(BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(BattleGroundTypeId(bgType)))
+            bg->SendRewardMarkByMail(player, newitemid, no_space);
+    }
+*/    
 }
 
 void Spell::EffectCreateItem(uint32 i)
@@ -3380,24 +3407,12 @@ void Spell::EffectSummonType(uint32 i)
                     break;
                 case SUMMON_TYPE_VEHICLE:
                 case SUMMON_TYPE_VEHICLE2:
-                {
-                    if(!m_originalCaster)
-                        return;
-
-                    Vehicle *vehicle = m_originalCaster->SummonVehicle(entry, x, y, z, m_caster->GetOrientation());
-                    if(!vehicle)
-                        return;
-
-                    // this is for wintergrasp, need to find a better way
-                    // in the future, we can just use getsummoner
-                    //vehicle->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_originalCasterGUID);
-                    vehicle->setFaction(m_originalCaster->getFaction());
-                    vehicle->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
+                    if(m_originalCaster)
+                        summon = m_caster->GetMap()->SummonCreature(entry, x, y, z, m_caster->GetOrientation(), 0, properties, duration, m_originalCaster);
                     break;
-                }
                 case SUMMON_TYPE_TOTEM:
                 {
-                    summon = m_caster->GetMap()->SummonCreature(entry, x, y, z, m_caster->GetOrientation(), properties, duration, m_originalCaster);
+                    summon = m_caster->GetMap()->SummonCreature(entry, x, y, z, m_caster->GetOrientation(), 0, properties, duration, m_originalCaster);
                     if(!summon || !summon->isTotem())
                         return;
 
@@ -3425,8 +3440,8 @@ void Spell::EffectSummonType(uint32 i)
                 }
                 case SUMMON_TYPE_MINIPET:
                 {
-                    summon = m_caster->GetMap()->SummonCreature(entry, x, y, z, m_caster->GetOrientation(), properties, duration, m_originalCaster);
-                    if(!summon || !summon->HasSummonMask(SUMMON_MASK_MINION))
+                    summon = m_caster->GetMap()->SummonCreature(entry, x, y, z, m_caster->GetOrientation(), 0, properties, duration, m_originalCaster);
+                    if(!summon || !summon->HasUnitTypeMask(UNIT_MASK_MINION))
                         return;
 
                     //summon->InitPetCreateSpells();                         // e.g. disgusting oozeling has a create spell as summon...
@@ -3474,23 +3489,19 @@ void Spell::EffectSummonType(uint32 i)
             SummonGuardian(entry, properties);
             break;
         case SUMMON_CATEGORY_PUPPET:
-            summon = m_caster->GetMap()->SummonCreature(entry, x, y, z, m_caster->GetOrientation(), properties, duration, m_originalCaster);
+            summon = m_caster->GetMap()->SummonCreature(entry, x, y, z, m_caster->GetOrientation(), 0, properties, duration, m_originalCaster);
             break;
         case SUMMON_CATEGORY_VEHICLE:
         {
             float x, y, z;
             m_caster->GetClosePoint(x, y, z, DEFAULT_WORLD_OBJECT_SIZE);
-            Vehicle *vehicle = m_caster->SummonVehicle(entry, x, y, z, m_caster->GetOrientation());
-            if(!vehicle)
+            summon = m_caster->GetMap()->SummonCreature(entry, x, y, z, m_caster->GetOrientation(), 0, properties, duration, m_caster);
+            if(!summon || !summon->IsVehicle())
                 return;
 
-            //vehicle->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_caster->GetGUID());
-            vehicle->setFaction(m_caster->getFaction());
-            vehicle->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
-
             if(damage)
-                m_caster->CastSpell(vehicle, damage, true);
-            m_caster->EnterVehicle(vehicle);
+                m_caster->CastSpell(summon, damage, true);
+            m_caster->EnterVehicle(summon->GetVehicleKit());
             break;
         }
     }
@@ -3710,7 +3721,7 @@ void Spell::EffectAddFarsight(uint32 i)
 
     // Need to update visibility of object for client to accept farsight guid
     ((Player*)m_caster)->SetViewpoint(dynObj, true);
-    ((Player*)m_caster)->UpdateVisibilityOf(dynObj);
+    //((Player*)m_caster)->UpdateVisibilityOf(dynObj);
 }
 
 void Spell::EffectTeleUnitsFaceCaster(uint32 i)
@@ -5209,7 +5220,7 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                         }
                     }
                     return;
-                case 58983:
+                case 58983: // Big Blizzard Bear
                 {
                     if(!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
                         return;
@@ -5255,8 +5266,8 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                     return;
                 }
                 case 62428: // Load into Catapult
-                    if(Vehicle *demolisher = m_caster->m_Vehicle)
-                        if(Vehicle *seat = dynamic_cast<Vehicle*>(m_caster))
+                    if(Unit *demolisher = m_caster->GetVehicleBase())
+                        if(Vehicle *seat = m_caster->GetVehicleKit())
                             if(Unit *passenger = seat->GetPassenger(0))
                                 passenger->CastSpell(demolisher, damage, true);
                     return;
@@ -6596,10 +6607,15 @@ void Spell::EffectTransmitted(uint32 effIndex)
     }
 
     Map *cMap = m_caster->GetMap();
-
     if(goinfo->type==GAMEOBJECT_TYPE_FISHINGNODE)
     {
-        if ( !cMap->IsInWater(fx, fy, fz-0.5f, 0.5f))             // Hack to prevent fishing bobber from failing to land on fishing hole
+        //dirty way to hack serpent shrine pool
+        if(cMap->GetId() == 548 && m_caster->GetDistance(36.69, -416.38, -19.9645) <= 16)//center of strange pool
+        {
+            fx = 36.69+irand(-8,8);//random place for the bobber
+            fy = -416.38+irand(-8,8);
+            fz = -19.9645;//serpentshrine water level        
+        }else if ( !cMap->IsInWater(fx, fy, fz-0.5f, 0.5f))             // Hack to prevent fishing bobber from failing to land on fishing hole
         { // but this is not proper, we really need to ignore not materialized objects
             SendCastResult(SPELL_FAILED_NOT_HERE);
             SendChannelUpdate(0);
@@ -6607,7 +6623,8 @@ void Spell::EffectTransmitted(uint32 effIndex)
         }
 
         // replace by water level in this case
-        fz = cMap->GetWaterLevel(fx, fy);
+        if(cMap->GetId() != 548)//if map is not serpentshrine caverns
+            fz = cMap->GetWaterLevel(fx, fy);
     }
     // if gameobject is summoning object, it should be spawned right on caster's position
     else if(goinfo->type==GAMEOBJECT_TYPE_SUMMONING_RITUAL)
@@ -6949,14 +6966,14 @@ void Spell::SummonGuardian(uint32 entry, SummonPropertiesEntry const *properties
         float px, py, pz;
         GetSummonPosition(0, px, py, pz, radius, count);
 
-        TempSummon *summon = map->SummonCreature(entry, px, py, pz, m_caster->GetOrientation(), properties, duration, caster);
+        TempSummon *summon = map->SummonCreature(entry, px, py, pz, m_caster->GetOrientation(), 0, properties, duration, caster);
         if(!summon)
             return;
-        if(summon->HasSummonMask(SUMMON_MASK_GUARDIAN))
+        if(summon->HasUnitTypeMask(UNIT_MASK_GUARDIAN))
             ((Guardian*)summon)->InitStatsForLevel(level);
 
         summon->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
-        if(summon->HasSummonMask(SUMMON_MASK_MINION) && m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
+        if(summon->HasUnitTypeMask(UNIT_MASK_MINION) && m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
             ((Minion*)summon)->SetFollowAngle(m_caster->GetAngle(summon));
 
         summon->AI()->EnterEvadeMode();
@@ -7043,3 +7060,4 @@ void Spell::EffectActivateSpec(uint32 /*eff_idx*/)
 
     ((Player*)unitTarget)->ActivateSpec(damage-1);  // damage is 1 or 2, spec is 0 or 1
 }
+

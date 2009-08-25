@@ -1362,22 +1362,23 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask, bool 
             }
         }
 
-        Unit * caster = m_originalCaster ? m_originalCaster : m_caster;
-        Aura * Aur = new Aura(aurSpellInfo, aura_effmask, basePoints, unit, m_caster, caster, m_CastItem);
+        if(m_originalCaster)
+        {
+            Aura *Aur = new Aura(aurSpellInfo, aura_effmask, unit, m_caster, m_originalCaster, basePoints, m_CastItem);
 
         if (!Aur->IsAreaAura())
         {
             // Now Reduce spell duration using data received at spell hit
             int32 duration = Aur->GetAuraMaxDuration();
             int32 limitduration = GetDiminishingReturnsLimitDuration(m_diminishGroup,aurSpellInfo);
-            unitTarget->ApplyDiminishingToDuration(m_diminishGroup, duration, caster, m_diminishLevel,limitduration);
+            unitTarget->ApplyDiminishingToDuration(m_diminishGroup, duration, m_originalCaster, m_diminishLevel,limitduration);
             Aur->setDiminishGroup(m_diminishGroup);
 
-            duration = caster->ModSpellDuration(aurSpellInfo, unit, duration, Aur->IsPositive());
+            duration = m_originalCaster->ModSpellDuration(aurSpellInfo, unit, duration, Aur->IsPositive());
 
             //mod duration of channeled aura by spell haste
             if (IsChanneledSpell(m_spellInfo))
-                caster->ModSpellCastTime(aurSpellInfo, duration, this);
+                m_originalCaster->ModSpellCastTime(aurSpellInfo, duration, this);
 
             if(duration != Aur->GetAuraMaxDuration())
             {
@@ -1395,6 +1396,8 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask, bool 
         // Set aura only when successfully applied
         if (unit->AddAura(Aur, false))
             m_spellAura = Aur;
+
+        }
     }
 
     for(uint32 effectNumber = 0; effectNumber < 3; ++effectNumber)
@@ -1860,12 +1863,12 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                     pushType = PUSH_CASTER_CENTER;
                     break;
                 case TARGET_UNIT_VEHICLE:
-                    if(Vehicle *vehicle = m_caster->m_Vehicle)
+                    if(Unit *vehicle = m_caster->GetVehicleBase())
                         AddUnitTarget(vehicle, i);
                     break;
                 case TARGET_UNIT_PASSENGER:
-                    if(m_caster->GetTypeId() == TYPEID_UNIT && ((Creature*)m_caster)->isVehicle())
-                        if(Unit *unit = ((Vehicle*)m_caster)->GetPassenger(1)) // maybe not right
+                    if(m_caster->GetTypeId() == TYPEID_UNIT && ((Creature*)m_caster)->IsVehicle())
+                        if(Unit *unit = m_caster->GetVehicleKit()->GetPassenger(1)) // maybe not right
                             AddUnitTarget(unit, i);
                     break;
             }
@@ -2363,7 +2366,8 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                     else if (i_spellST->second.type == SPELL_TARGET_TYPE_CONTROLLED)
                     {
                         for(Unit::ControlList::iterator itr = m_caster->m_Controlled.begin(); itr != m_caster->m_Controlled.end(); ++itr)
-                            if ((*itr)->GetEntry() == i_spellST->second.targetEntry && (*itr)->IsWithinDistInMap(m_caster, radius))
+                            if ((*itr)->GetEntry() == i_spellST->second.targetEntry && 
+                                /*(*itr)->IsWithinDistInMap(m_caster, radius)*/ (*itr)->IsInMap(m_caster)) // For 60243 and 52173 need skip radius check or use range (no radius entry for effect)
                                 unitList.push_back(*itr);
                     }
                 }
@@ -3274,7 +3278,7 @@ void Spell::update(uint32 difftime)
                         for(std::list<TargetInfo>::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
                         {
                             TargetInfo* target = &*ihit;
-                            if(!IS_CREATURE_GUID(target->targetGUID))
+                            if(!IS_CRE_OR_VEH_GUID(target->targetGUID))
                                 continue;
 
                             Unit* unit = m_caster->GetGUID() == target->targetGUID ? m_caster : ObjectAccessor::GetUnit(*m_caster, target->targetGUID);
@@ -3326,7 +3330,7 @@ void Spell::finish(bool ok)
     {
         if(Unit *charm = m_caster->GetCharm())
             if(charm->GetTypeId() == TYPEID_UNIT
-                && ((Creature*)charm)->HasSummonMask(SUMMON_MASK_PUPPET)
+                && ((Creature*)charm)->HasUnitTypeMask(UNIT_MASK_PUPPET)
                 && charm->GetUInt32Value(UNIT_CREATED_BY_SPELL) == m_spellInfo->Id)
                 ((Puppet*)charm)->UnSummon();
     }
@@ -4463,19 +4467,34 @@ SpellCastResult Spell::CheckCast(bool strict)
                 return SPELL_FAILED_LINE_OF_SIGHT;
 
         }
-        else if (m_caster->GetTypeId() == TYPEID_PLAYER)    // Target - is player caster
+        else if (m_caster == target)
         {
-            // Additional check for some spells
-            // If 0 spell effect empty - client not send target data (need use selection)
-            // TODO: check it on next client version
-            if (m_targets.m_targetMask == TARGET_FLAG_SELF &&
-                m_spellInfo->EffectImplicitTargetA[1] == TARGET_UNIT_TARGET_ENEMY)
+
+            if (m_caster->GetTypeId() == TYPEID_PLAYER) // Target - is player caster
             {
-                if (target = m_caster->GetUnit(*m_caster, ((Player *)m_caster)->GetSelection()))
-                    m_targets.setUnitTarget(target);
-                else
-                    return SPELL_FAILED_BAD_TARGETS;
+                // Additional check for some spells
+                // If 0 spell effect empty - client not send target data (need use selection)
+                // TODO: check it on next client version
+                if (m_targets.m_targetMask == TARGET_FLAG_SELF &&
+                    m_spellInfo->EffectImplicitTargetA[1] == TARGET_UNIT_TARGET_ENEMY)
+                {
+                    if (target = m_caster->GetUnit(*m_caster, ((Player *)m_caster)->GetSelection()))
+                        m_targets.setUnitTarget(target);
+                    else
+                        return SPELL_FAILED_BAD_TARGETS;
+                }
             }
+
+            // Some special spells with non-caster only mode
+
+            // Fire Shield
+            if (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK &&
+                m_spellInfo->SpellIconID == 16)
+                return SPELL_FAILED_BAD_TARGETS;
+
+            // Focus Magic (main spell)
+            if (m_spellInfo->Id == 54646)
+                return SPELL_FAILED_BAD_TARGETS;
         }
 
         // check pet presents
@@ -5127,7 +5146,7 @@ SpellCastResult Spell::CheckCast(bool strict)
 
                 if(Unit *target = m_targets.getUnitTarget())
                 {
-                    if(target->GetTypeId() == TYPEID_UNIT && ((Creature*)target)->isVehicle())
+                    if(target->GetTypeId() == TYPEID_UNIT && ((Creature*)target)->IsVehicle())
                         return SPELL_FAILED_BAD_IMPLICIT_TARGETS;
 
                     if(target->GetCharmerGUID())
@@ -6132,7 +6151,7 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
         case SPELL_AURA_MOD_CHARM:
         case SPELL_AURA_MOD_POSSESS_PET:
         case SPELL_AURA_AOE_CHARM:
-            if(target->GetTypeId() == TYPEID_UNIT && ((Creature*)target)->isVehicle())
+            if(target->GetTypeId() == TYPEID_UNIT && ((Creature*)target)->IsVehicle())
                 return false;
             if(target->GetCharmerGUID())
                 return false;
@@ -6572,12 +6591,27 @@ void Spell::SetSpellValue(SpellValueMod mod, int32 value)
     }
 }
 
+float tangent(float x)
+{
+    x = tan(x);
+    //if(x < std::numeric_limits<float>::max() && x > -std::numeric_limits<float>::max()) return x;
+    //if(x >= std::numeric_limits<float>::max()) return std::numeric_limits<float>::max();
+    //if(x <= -std::numeric_limits<float>::max()) return -std::numeric_limits<float>::max();
+    if(x < 100000.0f && x > -100000.0f) return x;
+    if(x >= 100000.0f) return 100000.0f;
+    if(x <= 100000.0f) return -100000.0f;
+    return 0.0f;
+} 
+
 void Spell::SelectTrajTargets()
 {
     if(!m_targets.HasTraj())
         return;
 
     float dist2d = m_targets.GetDist2d();
+    if(!dist2d)
+        return;
+
     float dz = m_targets.m_destZ - m_targets.m_srcZ;
 
     UnitList unitList;
@@ -6587,31 +6621,49 @@ void Spell::SelectTrajTargets()
 
     unitList.sort(TargetDistanceOrder(m_caster));
 
-    float sinE = sin(m_targets.m_elevation);
-    float dcosE = 2 * cos(m_targets.m_elevation);
-    float divisor = dist2d * (dist2d - dcosE);
-    if(abs(divisor) < 0.0001f) divisor = 0.0001f;
-    float a = (dz - dist2d * sinE) / divisor;
-    float b = sinE - dcosE * a;
-    if(a > -0.0001f) a = -0.0001f;
+    float b = tangent(m_targets.m_elevation);
+    float a = (dz - dist2d * b) / (dist2d * dist2d);
+    if(a > -0.0001f) a = 0;
+    //sLog.outError("Spell::SelectTrajTargets: a %f b %f", a, b);
 
     float bestDist;
     UnitList::const_iterator itr = unitList.begin();
     for(; itr != unitList.end(); ++itr)
     {
-        if(m_caster == *itr || m_caster == (*itr)->m_Vehicle || m_caster->m_Vehicle == *itr)
+        if(m_caster == *itr || m_caster->IsOnVehicle(*itr) || (*itr)->IsOnVehicle(m_caster))
             continue;
 
-        const float size = (*itr)->GetObjectSize() * 0.6f; // 1/sqrt(3)
+        const float size = std::max((*itr)->GetObjectSize() * 0.7f, 1.0f); // 1/sqrt(3)
         const float objDist2d = m_caster->GetExactDistance2d((*itr)->GetPositionX(), (*itr)->GetPositionY()) * cos(m_caster->GetRelativeAngle(*itr));
         const float dz = (*itr)->GetPositionZ() - m_caster->GetPositionZ();
 
+        //sLog.outError("Spell::SelectTrajTargets: check %u, dist between %f %f, height between %f %f.", (*itr)->GetEntry(), objDist2d - size, objDist2d + size, dz - size, dz + size);
+
         float dist = objDist2d - size;
         float height = dist * (a * dist + b);
+        //sLog.outError("Spell::SelectTrajTargets: dist %f, height %f.", dist, height);
         if(height < dz + size && height > dz - size)
         {
             bestDist = dist > 0 ? dist : 0;
             break;
+        }
+
+#define CHECK_DIST {\
+    if(dist < objDist2d + size && dist > objDist2d - size)\
+        { bestDist = dist; break; }\
+        }
+
+        if(!a)
+        {
+            height = dz - size;
+            dist = height / b;
+            CHECK_DIST;
+
+            height = dz + size;
+            dist = height / b;
+            CHECK_DIST;
+
+            continue;
         }
 
         height = dz - size;
@@ -6620,11 +6672,7 @@ void Spell::SelectTrajTargets()
         {
             sqrt1 = sqrt(sqrt1);
             dist = (sqrt1 - b) / (2 * a);
-            if(dist < objDist2d + size && dist > objDist2d - size)
-            {
-                bestDist = dist;
-                break;
-            }
+            CHECK_DIST;
         }
 
         height = dz + size;
@@ -6633,28 +6681,16 @@ void Spell::SelectTrajTargets()
         {
             sqrt2 = sqrt(sqrt2);
             dist = (sqrt2 - b) / (2 * a);
-            if(dist < objDist2d + size && dist > objDist2d - size)
-            {
-                bestDist = dist;
-                break;
-            }
+            CHECK_DIST;
 
             dist = (-sqrt2 - b) / (2 * a);
-            if(dist < objDist2d + size && dist > objDist2d - size)
-            {
-                bestDist = dist;
-                break;
-            }
+            CHECK_DIST;
         }
 
         if(sqrt1 > 0)
         {
             dist = (-sqrt1 - b) / (2 * a);
-            if(dist < objDist2d + size && dist > objDist2d - size)
-            {
-                bestDist = dist;
-                break;
-            }
+            CHECK_DIST;
         }
     }
 

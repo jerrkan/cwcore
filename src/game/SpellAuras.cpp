@@ -74,7 +74,7 @@ pAuraHandler AuraHandler[TOTAL_AURAS]=
     &Aura::HandleInvisibility,                              // 18 SPELL_AURA_MOD_INVISIBILITY
     &Aura::HandleInvisibilityDetect,                        // 19 SPELL_AURA_MOD_INVISIBILITY_DETECTION
     &Aura::HandleAuraModTotalHealthPercentRegen,            // 20 SPELL_AURA_OBS_MOD_HEALTH
-    &Aura::HandleAuraModTotalEnergyPercentRegen,            // 21 SPELL_AURA_OBS_MOD_ENERGY
+    &Aura::HandleAuraModTotalEnergyPercentRegen,            // 21 SPELL_AURA_OBS_MOD_POWER
     &Aura::HandleAuraModResistance,                         // 22 SPELL_AURA_MOD_RESISTANCE
     &Aura::HandlePeriodicTriggerSpell,                      // 23 SPELL_AURA_PERIODIC_TRIGGER_SPELL
     &Aura::HandlePeriodicEnergize,                          // 24 SPELL_AURA_PERIODIC_ENERGIZE
@@ -314,9 +314,8 @@ pAuraHandler AuraHandler[TOTAL_AURAS]=
     &Aura::HandleNULL,                                      //258 SPELL_AURA_MOD_SPELL_VISUAL
     &Aura::HandleNoImmediateEffect,                         //259 SPELL_AURA_MOD_HOT_PCT implemented in Unit::SpellHealingBonus
     &Aura::HandleNoImmediateEffect,                         //260 SPELL_AURA_SCREEN_EFFECT (miscvalue = id in ScreenEffect.dbc) not required any code
-    &Aura::HandlePhase,                                     //261 SPELL_AURA_PHASE undetactable invisibility?     implemented in Unit::isVisibleForOrDetect
-    &Aura::HandleNoImmediateEffect,                         //262 SPELL_AURA_ABILITY_IGNORE_AURASTATE implemented in spell::cancast
-    &Aura::HandleAuraAllowOnlyAbility,                      //263 SPELL_AURA_ALLOW_ONLY_ABILITY player can use only abilities set in SpellClassMask
+	&Aura::HandlePhase,                                     //261 SPELL_AURA_PHASE undetectable invisibility?     implemented in Unit::isVisibleForOrDetect
+    &Aura::HandleNULL,                                      //262 ignore combat/aura state?    &Aura::HandleAuraAllowOnlyAbility,                      //263 SPELL_AURA_ALLOW_ONLY_ABILITY player can use only abilities set in SpellClassMask
     &Aura::HandleUnused,                                    //264 unused (3.0.8a)
     &Aura::HandleUnused,                                    //265 unused (3.0.8a)
     &Aura::HandleUnused,                                    //266 unused (3.0.8a)
@@ -326,8 +325,7 @@ pAuraHandler AuraHandler[TOTAL_AURAS]=
     &Aura::HandleNoImmediateEffect,                         //270 SPELL_AURA_MOD_ABILITY_IGNORE_TARGET_RESIST implemented in Unit::CalcAbsorbResist and CalcArmorReducedDamage
     &Aura::HandleNoImmediateEffect,                         //271 SPELL_AURA_MOD_DAMAGE_FROM_CASTER    implemented in Unit::SpellDamageBonus
     &Aura::HandleNULL,                                      //272 unknown
-    &Aura::HandleUnused,                                    //273 clientside
-    &Aura::HandleNoImmediateEffect,                         //274 SPELL_AURA_CONSUME_NO_AMMO implemented in spell::CalculateDamageDoneForAllTargets
+	&Aura::HandleNULL,                                      //273 x-ray effect    &Aura::HandleNoImmediateEffect,                         //274 SPELL_AURA_CONSUME_NO_AMMO implemented in spell::CalculateDamageDoneForAllTargets
     &Aura::HandleNoImmediateEffect,                         //275 SPELL_AURA_MOD_IGNORE_SHAPESHIFT Use SpellClassMask for spell select
     &Aura::HandleNULL,                                      //276 mod damage % mechanic?
     &Aura::HandleNoImmediateEffect,                         //277 SPELL_AURA_MOD_ABILITY_AFFECTED_TARGETS implemented in spell::settargetmap
@@ -337,32 +335,41 @@ pAuraHandler AuraHandler[TOTAL_AURAS]=
     &Aura::HandleNoImmediateEffect,                         //281 SPELL_AURA_MOD_HONOR_GAIN_PCT implemented in Player::RewardHonor
     &Aura::HandleAuraIncreaseBaseHealthPercent,             //282 SPELL_AURA_INCREASE_BASE_HEALTH_PERCENT
     &Aura::HandleNoImmediateEffect,                         //283 SPELL_AURA_MOD_HEALING_RECEIVED       implemented in Unit::SpellHealingBonus
-    &Aura::HandleAuraLinked,                                //284 SPELL_AURA_LINKED
-    &Aura::HandleAuraModAttackPowerOfArmor,                 //285 SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR  implemented in Player::UpdateAttackPowerAndDamage
+	&Aura::HandleUnused,                                    //284 51 spells    &Aura::HandleAuraModAttackPowerOfArmor,                 //285 SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR  implemented in Player::UpdateAttackPowerAndDamage
     &Aura::HandleNoImmediateEffect,                         //286 SPELL_AURA_ABILITY_PERIODIC_CRIT implemented in AuraEffect::PeriodicTick
     &Aura::HandleNoImmediateEffect,                         //287 SPELL_AURA_DEFLECT_SPELLS             implemented in Unit::MagicSpellHitResult and Unit::MeleeSpellHitResult
-    &Aura::HandleNoImmediateEffect,                         //288 SPELL_AURA_IGNORE_HIT_DIRECTION  implemented in Unit::MagicSpellHitResult and Unit::MeleeSpellHitResult Unit::RollMeleeOutcomeAgainst
-    &Aura::HandleNULL,                                      //289 unused
-    &Aura::HandleAuraModCritPct,                            //290 SPELL_AURA_MOD_CRIT_PCT
-    &Aura::HandleNoImmediateEffect,                         //291 SPELL_AURA_MOD_XP_QUEST_PCT  implemented in Player::RewardQuest
-    &Aura::HandleNULL,                                      //292 call stabled pet
-    &Aura::HandleNULL,                                      //293 2 test spells
-    &Aura::HandleNoImmediateEffect                          //294 SPELL_AURA_PREVENT_REGENERATE_POWER implemented in Player::Regenerate(Powers power)
+	&Aura::HandleUnused,                                    //288 increase parry/deflect, prevent attack    &Aura::HandleNULL,                                      //289 unused
+	&Aura::HandleUnused,                                    //290 3 spells
+    &Aura::HandleUnused,                                    //291 1 spell (+pct experience bonus)    
+	&Aura::HandleNULL,                                      //292 call stabled pet
+    &Aura::HandleNULL,                                      //293 3 spells
+    &Aura::HandleNULL,                                      //294 2 spells, possible prevent mana regen
+    &Aura::HandleNULL,                                      //295 unused
+    &Aura::HandleNULL,                                      //296 2 spells
+    &Aura::HandleNULL,                                      //297 1 spell (counter spell school?)
+    &Aura::HandleNULL,                                      //298 unused
+    &Aura::HandleNULL,                                      //299 unused
+    &Aura::HandleNULL,                                      //300 3 spells (share damage?)
+    &Aura::HandleNULL,                                      //301 5 spells
+    &Aura::HandleNULL,                                      //302 unused
+    &Aura::HandleNULL,                                      //303 17 spells
+    &Aura::HandleNULL,                                      //304 2 spells (alcohol effect?)
+    &Aura::HandleNULL,                                      //305 2 spells
+    &Aura::HandleNULL                                       //306 1 spell
 };
 #undef Aura
 
-Aura::Aura(SpellEntry const* spellproto, uint32 effMask, int32 *currentBasePoints, Unit *target, WorldObject *source, Unit *caster, Item* castItem) :
-m_caster_guid(0), m_castItemGuid(castItem?castItem->GetGUID():0), m_target(target),
-m_timeCla(0), m_removeMode(AURA_REMOVE_BY_DEFAULT), m_AuraDRGroup(DIMINISHING_NONE),
-m_auraSlot(MAX_AURAS), m_auraLevel(1), m_procCharges(0), m_stackAmount(1), m_isRemoved(false)
+Aura::Aura(SpellEntry const* spellproto, uint32 effMask, Unit *target, WorldObject *source, Unit *caster, int32 *currentBasePoints, Item* castItem) :
+    m_spellProto(spellproto),
+    m_target(target), m_sourceGuid(source->GetGUID()), m_casterGuid(caster->GetGUID()), m_castItemGuid(castItem ? castItem->GetGUID() : 0),
+    m_applyTime(time(NULL)),
+    m_timeCla(0), m_removeMode(AURA_REMOVE_BY_DEFAULT), m_AuraDRGroup(DIMINISHING_NONE),
+    m_auraSlot(MAX_AURAS), m_auraLevel(1), m_procCharges(0), m_stackAmount(1), m_isRemoved(false)
 {
     assert(target);
-
     assert(spellproto && spellproto == sSpellStore.LookupEntry( spellproto->Id ) && "`info` must be pointer to sSpellStore element");
 
     m_auraFlags = effMask;
-
-    m_spellProto = spellproto;
 
     if(m_spellProto->manaPerSecond || m_spellProto->manaPerSecondPerLevel)
         m_timeCla = 1000;
@@ -371,28 +378,15 @@ m_auraSlot(MAX_AURAS), m_auraLevel(1), m_procCharges(0), m_stackAmount(1), m_isR
 
     m_isSingleTargetAura = IsSingleTargetSpell(m_spellProto);
 
-    m_applyTime = time(NULL);
-
-    if(!caster)
-    {
-        m_caster_guid = target->GetGUID();
-        //damage = m_currentBasePoints+1;                     // stored value-1
-        m_maxduration = target->CalcSpellDuration(m_spellProto);
-    }
-    else
-    {
-        m_caster_guid = caster->GetGUID();
-
-        //damage        = caster->CalculateSpellDamage(m_spellProto,m_effIndex,m_currentBasePoints,target);
-        m_maxduration = caster->CalcSpellDuration(m_spellProto);
-    }
+    //damage        = caster->CalculateSpellDamage(m_spellProto,m_effIndex,m_currentBasePoints,target);
+    m_maxduration = caster->CalcSpellDuration(m_spellProto);
 
     if(m_maxduration == -1 || m_isPassive && m_spellProto->DurationIndex == 0)
         m_permanent = true;
     else
         m_permanent = false;
 
-    Player* modOwner = caster ? caster->GetSpellModOwner() : NULL;
+    Player* modOwner = caster->GetSpellModOwner();
 
     if(!m_permanent && modOwner)
     {
@@ -410,7 +404,7 @@ m_auraSlot(MAX_AURAS), m_auraLevel(1), m_procCharges(0), m_stackAmount(1), m_isR
     if(modOwner)
         modOwner->ApplySpellMod(GetId(), SPELLMOD_CHARGES, m_procCharges);
 
-    m_isRemovedOnShapeLost = (m_caster_guid==m_target->GetGUID() &&
+    m_isRemovedOnShapeLost = (caster == target &&
                               m_spellProto->Stances &&
                             !(m_spellProto->AttributesEx2 & SPELL_ATTR_EX2_NOT_NEED_SHAPESHIFT) &&
                             !(m_spellProto->Attributes & SPELL_ATTR_NOT_SHAPESHIFT));
@@ -419,39 +413,33 @@ m_auraSlot(MAX_AURAS), m_auraLevel(1), m_procCharges(0), m_stackAmount(1), m_isR
     {
         if (m_auraFlags & (uint8(1) << i))
         {
-            if (currentBasePoints)
-                m_partAuras[i] = CreateAuraEffect(this, i, currentBasePoints + i, caster, NULL, source);
-            else
-                m_partAuras[i] = CreateAuraEffect(this, i, NULL, caster, NULL, source);
-            // correct flags if aura couldn't be created
-            if (!m_partAuras[i])
-                m_auraFlags &= uint8(~(1<< i));
+            if(!(m_partAuras[i] = CreateAuraEffect(this, i, currentBasePoints ? currentBasePoints + i : NULL)))
+                m_auraFlags &= uint8(~(1<< i)); // correct flags if aura couldn't be created
         }
         else
         {
-            m_partAuras[i]=NULL;
+            m_partAuras[i] = NULL;
         }
     }
 
     // Aura is positive when it is casted by friend and at least one aura is positive
-    // or when it is casted by enemy and  at least one aura is negative
-    bool swap=false;
-    if (!caster || caster==target) // caster == target - 1 negative effect is enough for aura to be negative
+    // or when it is casted by enemy and at least one aura is negative
+    bool swap = false;
+    if (caster == target) // caster == target - 1 negative effect is enough for aura to be negative
         m_positive = false;
     else
         m_positive = !caster->IsHostileTo(m_target);
-    for (uint8 i=0;i<MAX_SPELL_EFFECTS;++i)
+
+    for(uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (!(1<<i & GetEffectMask()))
-            continue;
-        if (m_positive == IsPositiveEffect(GetId(), i))
+        if((1<<i & GetEffectMask()) && m_positive == IsPositiveEffect(GetId(), i))
         {
             swap = true;
             break;
         }
     }
     if (!swap)
-        m_positive=!m_positive;
+        m_positive = !m_positive;
 }
 
 Aura::~Aura()
@@ -462,7 +450,7 @@ Aura::~Aura()
             delete m_partAuras[i];
 }
 
-AuraEffect::AuraEffect(Aura * parentAura, uint8 effIndex, int32 * currentBasePoints , Unit *caster, Item* castItem, WorldObject *source) :
+AuraEffect::AuraEffect(Aura *parentAura, uint8 effIndex, int32 *currentBasePoints) :
 m_parentAura(parentAura), m_spellmod(NULL), m_periodicTimer(0), m_isPeriodic(false), m_isAreaAura(false), m_isPersistent(false),
 m_target(parentAura->GetTarget()), m_tickNumber(0)
 , m_spellProto(parentAura->GetSpellProto()), m_effIndex(effIndex), m_auraName(AuraType(m_spellProto->EffectApplyAuraName[m_effIndex]))
@@ -474,6 +462,7 @@ m_target(parentAura->GetTarget()), m_tickNumber(0)
     else
         m_currentBasePoints = m_spellProto->EffectBasePoints[m_effIndex];
 
+    Unit *caster = GetParentAura()->GetCaster();
     if(caster)
         m_amount = caster->CalculateSpellDamage(m_spellProto, m_effIndex, m_currentBasePoints, m_target);
     else
@@ -482,7 +471,11 @@ m_target(parentAura->GetTarget()), m_tickNumber(0)
     if (int32 amount = CalculateCrowdControlAuraAmount(caster))
         m_amount = amount;
 
-    if (!m_amount && castItem && castItem->GetItemSuffixFactor())
+    if(!m_amount && caster)
+        if(uint64 itemGUID = GetParentAura()->GetCastItemGUID())
+            if(Player *playerCaster = dynamic_cast<Player*>(caster))
+                if(Item *castItem = playerCaster->GetItemByGuid(itemGUID))
+    if (castItem->GetItemSuffixFactor())
     {
         ItemRandomSuffixEntry const *item_rand_suffix = sItemRandomSuffixStore.LookupEntry(abs(castItem->GetItemRandomPropertyId()));
         if(item_rand_suffix)
@@ -507,7 +500,6 @@ m_target(parentAura->GetTarget()), m_tickNumber(0)
     }
 
     Player* modOwner = caster ? caster->GetSpellModOwner() : NULL;
-    m_sourceGUID = source ? source->GetGUID() : (caster ? caster->GetGUID() : 0);
     m_amplitude = m_spellProto->EffectAmplitude[m_effIndex];
 
     //apply casting time mods for channeled spells
@@ -525,20 +517,20 @@ m_target(parentAura->GetTarget()), m_tickNumber(0)
     m_isApplied = false;
 }
 
-AreaAuraEffect::AreaAuraEffect(Aura * parentAura, uint32 effIndex, int32 * currentBasePoints, Unit * caster, Item * castItem, Unit * source)
-: AuraEffect(parentAura, effIndex, currentBasePoints, caster, castItem, source)
+AreaAuraEffect::AreaAuraEffect(Aura * parentAura, uint32 effIndex, int32 *currentBasePoints)
+: AuraEffect(parentAura, effIndex, currentBasePoints)
 {
     m_removeTime = FRIENDLY_AA_REMOVE_TIME;
     m_isAreaAura = true;
-
-    Unit* caster_ptr = caster ? caster : source ? source : m_target;
 
     if (m_spellProto->Effect[effIndex] == SPELL_EFFECT_APPLY_AREA_AURA_ENEMY)
         m_radius = GetSpellRadiusForHostile(sSpellRadiusStore.LookupEntry(GetSpellProto()->EffectRadiusIndex[m_effIndex]));
     else
         m_radius = GetSpellRadiusForFriend(sSpellRadiusStore.LookupEntry(GetSpellProto()->EffectRadiusIndex[m_effIndex]));
 
-    if(Player* modOwner = caster_ptr->GetSpellModOwner())
+    Unit *source = GetSource();
+    assert(source);
+    if(Player* modOwner = source->GetSpellModOwner()) // source or caster? should be the same
         modOwner->ApplySpellMod(GetId(), SPELLMOD_RADIUS, m_radius);
 
     switch(m_spellProto->Effect[effIndex])
@@ -558,7 +550,7 @@ AreaAuraEffect::AreaAuraEffect(Aura * parentAura, uint32 effIndex, int32 * curre
             break;
         case SPELL_EFFECT_APPLY_AREA_AURA_ENEMY:
             m_areaAuraType = AREA_AURA_ENEMY;
-            if(m_target == caster_ptr)
+            if(m_target == source)
                 *const_cast<AuraType*>(&m_auraName) = SPELL_AURA_NONE;    // Do not do any effect on self
             break;
         case SPELL_EFFECT_APPLY_AREA_AURA_PET:
@@ -566,7 +558,7 @@ AreaAuraEffect::AreaAuraEffect(Aura * parentAura, uint32 effIndex, int32 * curre
             break;
         case SPELL_EFFECT_APPLY_AREA_AURA_OWNER:
             m_areaAuraType = AREA_AURA_OWNER;
-            if(m_target == caster_ptr)
+            if(m_target == source)
                 *const_cast<AuraType*>(&m_auraName) = SPELL_AURA_NONE;
             break;
         default:
@@ -576,60 +568,60 @@ AreaAuraEffect::AreaAuraEffect(Aura * parentAura, uint32 effIndex, int32 * curre
     }
 }
 
-AreaAuraEffect::~AreaAuraEffect()
-{
-}
-
-PersistentAreaAuraEffect::PersistentAreaAuraEffect(Aura * parentAura, uint32 effIndex, int32 * currentBasePoints, Unit * caster,Item * castItem, DynamicObject *source)
-: AuraEffect(parentAura, effIndex, currentBasePoints, caster, castItem, source)
+PersistentAreaAuraEffect::PersistentAreaAuraEffect(Aura * parentAura, uint32 effIndex, int32 *currentBasePoints)
+: AuraEffect(parentAura, effIndex, currentBasePoints)
 {
     m_isPersistent = true;
 }
 
-PersistentAreaAuraEffect::~PersistentAreaAuraEffect()
+DynamicObject *PersistentAreaAuraEffect::GetSource() const
 {
+    uint64 guid = GetParentAura()->GetSourceGUID();
+    if(IS_DYNAMICOBJECT_GUID(guid))
+        return ObjectAccessor::GetObjectInWorld(guid, (DynamicObject*)NULL);
+    return NULL;
 }
 
-AuraEffect* CreateAuraEffect(Aura * parentAura, uint32 effIndex, int32 *currentBasePoints, Unit * caster, Item * castItem, WorldObject* source)
+AuraEffect* CreateAuraEffect(Aura * parentAura, uint32 effIndex, int32 *currentBasePoints)
 {
     // TODO: source should belong to aura, but not areaeffect. multiple areaaura/persistent aura should use one source
     assert(parentAura);
+    uint64 sourceGuid = parentAura->GetSourceGUID();
+    //assert(source);
     if (IsAreaAuraEffect(parentAura->GetSpellProto()->Effect[effIndex]))
     {
-        if(!source)
-            source = caster;
-        //TODO: determine source here
-        if(source && source->isType(TYPEMASK_UNIT))
-            return new AreaAuraEffect(parentAura, effIndex, currentBasePoints, caster, castItem, (Unit*)source);
+        //assert(source->isType(TYPEMASK_UNIT));
+        assert(IS_UNIT_GUID(sourceGuid));
+        return new AreaAuraEffect(parentAura, effIndex, currentBasePoints);
     }
     else if (parentAura->GetSpellProto()->Effect[effIndex] == SPELL_EFFECT_APPLY_AURA)
-        return new AuraEffect(parentAura, effIndex, currentBasePoints, caster, castItem, source);
+        return new AuraEffect(parentAura, effIndex, currentBasePoints);
     else if (parentAura->GetSpellProto()->Effect[effIndex] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
-        return new PersistentAreaAuraEffect(parentAura, effIndex, currentBasePoints, caster, castItem);
+    /*{
+        //assert(source->isType(TYPEMASK_DYNAMICOBJECT));
+        // TODO: creature addon or save? may add persistent AA without correct source
+        if(IS_DYNAMICOBJECT_GUID(sourceGuid));
+        return new PersistentAreaAuraEffect(parentAura, effIndex, currentBasePoints);
+    }*/
     return NULL;
 }
 
 Unit* Aura::GetCaster() const
 {
-    if(m_caster_guid==m_target->GetGUID())
+    if(m_casterGuid == m_target->GetGUID())
         return m_target;
 
-    //return ObjectAccessor::GetUnit(*m_target,m_caster_guid);
+    //return ObjectAccessor::GetUnit(*m_target,m_casterGuid);
     //must return caster even if it's in another grid/map
-    Unit *unit = ObjectAccessor::GetObjectInWorld(m_caster_guid, (Unit*)NULL);
-    return unit && unit->IsInWorld() ? unit : NULL;
+    return ObjectAccessor::GetObjectInWorld(m_casterGuid, (Unit*)NULL);
 }
 
-Unit* AuraEffect::GetSource() const
+Unit* Aura::GetUnitSource() const
 {
-    if(m_sourceGUID == m_target->GetGUID())
+    if(m_sourceGuid == m_target->GetGUID())
         return m_target;
 
-    //return ObjectAccessor::GetUnit(*m_target,m_caster_guid);
-    //must return caster even if it's in another grid/map
-    Unit *unit = ObjectAccessor::GetObjectInWorld(m_sourceGUID, (Unit*)NULL);
-    //only player can be not in world while in objectaccessor
-    return unit && unit->IsInWorld() ? unit : NULL;
+    return ObjectAccessor::GetObjectInWorld(m_casterGuid, (Unit*)NULL);
 }
 
 void Aura::Update(uint32 diff)
@@ -721,10 +713,16 @@ void AuraEffect::Update(uint32 diff)
 
 void AreaAuraEffect::Update(uint32 diff)
 {
-    // update for the caster of the aura
-    if(m_sourceGUID == m_target->GetGUID())
+    Unit *source = GetSource();
+    if(!source) // this should never happen
     {
-        Unit *source = m_target;
+        m_target->RemoveAura(GetParentAura());
+        return;
+    }
+
+    // update for the source of the aura
+    if(source == m_target)
+    {
         Unit *caster = GetCaster();
         if (!caster)
         {
@@ -797,7 +795,7 @@ void AreaAuraEffect::Update(uint32 diff)
                     // Check if basepoints can be safely reduced
                     if (newBp == m_spellProto->EffectBasePoints[m_effIndex])
                         newBp = actualSpellInfo->EffectBasePoints[m_effIndex];
-                    (*tIter)->AddAuraEffect(actualSpellInfo, GetEffIndex(), caster, &newBp, source);
+                    (*tIter)->AddAuraEffect(actualSpellInfo, GetEffIndex(), source, caster, &newBp);
 
                     if(m_areaAuraType == AREA_AURA_ENEMY)
                         caster->CombatStart(*tIter);
@@ -1497,8 +1495,8 @@ bool Aura::IsVisible() const
         {
             if(m_partAuras[i]->IsAreaAura())
             {
-                if(WorldObject *source = m_partAuras[i]->GetSource())
-                    if(source->GetTypeId() == TYPEID_UNIT && ((Creature*)source)->isTotem())
+                if(Unit *source = ((AreaAuraEffect*)m_partAuras[i])->GetSource())
+                    if(source->isTotem())
                         return true;
 
                 if(m_partAuras[i]->GetAuraName() != SPELL_AURA_NONE)
@@ -1842,13 +1840,13 @@ bool Aura::IsAuraType(AuraType type) const
 
 void Aura::SetLoadedState(uint64 caster_guid,int32 maxduration,int32 duration,int32 charges, uint8 stackamount, int32 * amount)
 {
-    m_caster_guid = caster_guid;
+    *const_cast<uint64*>(&m_casterGuid) = caster_guid;
     m_maxduration = maxduration;
     m_duration = duration;
     m_procCharges = charges;
     m_stackAmount = stackamount;
-    for (uint8 i=0; i<MAX_SPELL_EFFECTS;++i)
-        if (m_partAuras[i])
+    for(uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        if(m_partAuras[i])
             m_partAuras[i]->SetAmount(amount[i]);
 }
 
@@ -4487,8 +4485,8 @@ void AuraEffect::HandleAuraPeriodicDummy(bool apply, bool Real, bool changeAmoun
                     if(m_target->GetAuras().count(62399) >= (m_target->GetMap()->IsHeroic() ? 4 : 2))
                     {
                         m_target->CastSpell(m_target, 62475, true); // System Shutdown
-                        if(m_target->m_Vehicle)
-                            m_target->m_Vehicle->CastSpell(m_target, 62475, true);
+                        if(Unit *veh = m_target->GetVehicleBase())
+                            veh->CastSpell(m_target, 62475, true);
                     }
             }
             break;
@@ -6081,7 +6079,7 @@ void AuraEffect::PeriodicTick()
             }
             break;
         }
-        case SPELL_AURA_OBS_MOD_ENERGY:
+        case SPELL_AURA_OBS_MOD_POWER:
         {
             if(GetMiscValue() < 0)
                 return;
@@ -6619,27 +6617,25 @@ void AuraEffect::HandleAuraControlVehicle(bool apply, bool Real, bool /*changeAm
     if(!Real)
         return;
 
-    if(m_target->GetTypeId() != TYPEID_UNIT || !((Creature*)m_target)->isVehicle())
+    if(!m_target->IsVehicle())
         return;
 
-    Unit *caster = GetSource();
+    Unit *caster = GetParentAura()->GetUnitSource();
     if(!caster || caster == m_target)
         return;
-
-    Vehicle * const vehicle = dynamic_cast<Vehicle * const>(m_target);
 
     if (apply)
     {
         //if(caster->GetTypeId() == TYPEID_PLAYER)
         //    if(Pet *pet = ((Player*)caster)->GetPet())
         //        pet->Remove(PET_SAVE_AS_CURRENT);
-        caster->EnterVehicle(vehicle, m_amount - 1);
+        caster->EnterVehicle(m_target->GetVehicleKit(), m_amount - 1);
     }
     else
     {
         if(GetId() == 53111) // Devour Humanoid
         {
-            vehicle->Kill(caster);
+            m_target->Kill(caster);
             if(caster->GetTypeId() == TYPEID_UNIT)
                 ((Creature*)caster)->RemoveCorpse();
         }

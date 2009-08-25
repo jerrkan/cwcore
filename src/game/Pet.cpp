@@ -46,13 +46,13 @@ m_petType(type), m_removed(false), m_happinessTimer(7500), m_duration(0),
 m_resetTalentsCost(0), m_resetTalentsTime(0), m_usedTalentCount(0), m_auraRaidUpdateMask(0), m_loading(false),
 m_declinedname(NULL), m_owner(owner)
 {
-    m_summonMask |= SUMMON_MASK_PET;
+    m_unitTypeMask |= UNIT_MASK_PET;
     if(type == HUNTER_PET)
-        m_summonMask |= SUMMON_MASK_HUNTER_PET;
+        m_unitTypeMask |= UNIT_MASK_HUNTER_PET;
 
-    if (!(m_summonMask & SUMMON_MASK_CONTROLABLE_GUARDIAN))
+    if (!(m_unitTypeMask & UNIT_MASK_CONTROLABLE_GUARDIAN))
     {
-        m_summonMask |= SUMMON_MASK_CONTROLABLE_GUARDIAN;
+        m_unitTypeMask |= UNIT_MASK_CONTROLABLE_GUARDIAN;
         InitCharmInfo();
     }
 
@@ -227,7 +227,9 @@ bool Pet::LoadPetFromDB( Player* owner, uint32 petentry, uint32 petnumber, bool 
             setPowerType(POWER_FOCUS);
             break;
         default:
-            sLog.outError("Pet have incorrect type (%u) for pet loading.", getPetType());
+            if(!IsPetGhoul())
+                sLog.outError("Pet have incorrect type (%u) for pet loading.", getPetType());
+            break;
     }
 
     SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, time(NULL));
@@ -527,21 +529,31 @@ void Pet::Update(uint32 diff)
             }
 
             //regenerate focus for hunter pets or energy for deathknight's ghoul
-            if(m_regenTimer <= diff)
+            if(m_regenTimer)
             {
-                switch (getPowerType())
+                if(m_regenTimer > diff)
+                    m_regenTimer -= diff;
+                else
                 {
-                    case POWER_FOCUS:
-                    case POWER_ENERGY:
-                        Regenerate(getPowerType());
-                        break;
-                    default:
-                        break;
-                }
-                m_regenTimer = 4000;
+                    switch (getPowerType())
+                    {
+                        case POWER_FOCUS:
+                            Regenerate(POWER_FOCUS);
+                            m_regenTimer += 4000 - diff;
+                            if(!m_regenTimer) ++m_regenTimer;
+                            break;
+                        // in creature::update
+                        //case POWER_ENERGY:
+                        //    Regenerate(POWER_ENERGY);
+                        //    m_regenTimer += 2000 - diff;
+                        //    if(!m_regenTimer) ++m_regenTimer;
+                        //    break;
+                        default:
+                            m_regenTimer = 0;
+                            break;
+                    }
+                }                   
             }
-            else
-                m_regenTimer -= diff;
 
             if(getPetType() != HUNTER_PET)
                 break;
@@ -562,7 +574,7 @@ void Pet::Update(uint32 diff)
     Creature::Update(diff);
 }
 
-void Pet::Regenerate(Powers power)
+void Creature::Regenerate(Powers power)
 {
     uint32 curValue = GetPower(power);
     uint32 maxValue = GetMaxPower(power);
@@ -780,14 +792,14 @@ bool Guardian::InitStatsForLevel(uint32 petlevel)
 
     //Determine pet type
     PetType petType = MAX_PET_TYPE;
-    if(HasSummonMask(SUMMON_MASK_PET) && m_owner->GetTypeId() == TYPEID_PLAYER)
+    if(HasUnitTypeMask(UNIT_MASK_PET) && m_owner->GetTypeId() == TYPEID_PLAYER)
     {
         if(m_owner->getClass() == CLASS_WARLOCK)
             petType = SUMMON_PET;
         else if(m_owner->getClass() == CLASS_HUNTER)
         {
             petType = HUNTER_PET;
-            m_summonMask |= SUMMON_MASK_HUNTER_PET;
+            m_unitTypeMask |= UNIT_MASK_HUNTER_PET;
         }
         else
             sLog.outError("Unknown type pet %u is summoned by player class %u", GetEntry(), m_owner->getClass());
@@ -1177,7 +1189,7 @@ void Pet::_LoadAuras(uint32 timediff)
             else
                 remaincharges = 0;
 
-            Aura* aura = new Aura(spellproto, effmask, NULL, this, NULL, NULL);
+            Aura* aura = new Aura(spellproto, effmask, this, this, this);
             aura->SetLoadedState(caster_guid,maxduration,remaintime,remaincharges, stackcount, &damage[0]);
             if(!aura->CanBeSaved())
             {

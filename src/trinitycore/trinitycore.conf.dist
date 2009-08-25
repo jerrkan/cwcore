@@ -49,9 +49,9 @@ ConfVersion=2009082013
 RealmID = 1
 DataDir = "Data"
 LogsDir = "Logs"
-LoginDatabaseInfo     = "127.0.0.1;3306;root;mangos;realmd"
-WorldDatabaseInfo     = "127.0.0.1;3306;root;mangos;world"
-CharacterDatabaseInfo = "127.0.0.1;3306;root;mangos;characters"
+LoginDatabaseInfo     = "127.0.0.1;3306;root;trinity;realmd"
+WorldDatabaseInfo     = "127.0.0.1;3306;root;trinity;world"
+CharacterDatabaseInfo = "127.0.0.1;3306;root;trinity;characters"
 MaxPingTime = 30
 WorldServerPort = 8085
 BindIP = "0.0.0.0"
@@ -425,8 +425,8 @@ CharLogFile = "characters.log"
 CharLogTimestamp = 1
 CharLogDump = 1
 GmLogFile = "gm_commands.log"
-GmLogTimestamp = 0
-GmLogPerAccount = 0
+GmLogTimestamp = 1
+GmLogPerAccount = 1
 RaLogFile = "ra_commands.log"
 ArenaLogFile = ""
 LogColors = "13 11 9 5"
@@ -685,6 +685,18 @@ ChatLogTimestamp = 0
 #        Default: 7
 #                -1 (show all available quests marks)
 #
+#    Guild.EventLogRecordsCount
+#        Count of guild event log records stored in guild_eventlog table
+#        Increase to store more guild events in table, minimum is 100
+#        You can set it to very high value to prevent oldest guild events to be rewritten by latest guild events - but it can slow down performance
+#        Default: 100
+#
+#    Guild.BankEventLogRecordsCount
+#        Count of guild_bank event log records stored in guild_bank_eventlog table
+#        Increase to store more guild_bank events in table - minimum is 25 (GUILD_BANK_MAX_LOGS) for each guild_bank tab
+#        Useful when you don't want old log events to be overwritten by new, but increasing can slow down performance
+#        Default: 25
+#
 #    MaxPrimaryTradeSkill
 #        Max count that player can learn the primary trade skill.
 #        Default: 2
@@ -779,6 +791,8 @@ Instance.ResetTimeHour = 4
 Instance.UnloadDelay = 1800000
 Quests.LowLevelHideDiff = 4
 Quests.HighLevelHideDiff = 7
+Guild.EventLogRecordsCount = 100
+Guild.BankEventLogRecordsCount = 25
 MaxPrimaryTradeSkill = 2
 MinPetitionSigns = 9
 MaxGroupXPDistance = 74
@@ -932,8 +946,8 @@ TalentsInspecting = 1
 #
 ###################################################################################################################
 
-ThreatRadius = 20
-Rate.Creature.Aggro = 1
+ThreatRadius = 60
+Rate.Creature.Aggro = 0.6
 CreatureFamilyFleeAssistanceRadius = 30
 CreatureFamilyAssistanceRadius = 10
 CreatureFamilyAssistanceDelay = 1500
@@ -1908,4 +1922,3 @@ ShowKickInWorld = 0
 RecordUpdateTimeDiffInterval = 60000
 MinRecordUpdateTimeDiff = 10
 PlayerStart.String = ""
-CheckDB = 0

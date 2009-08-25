@@ -93,7 +93,7 @@ void WorldSession::HandleGossipSelectOptionOpcode( WorldPacket & recv_data )
 
     Creature *unit = NULL;
     GameObject *go = NULL;
-    if(IS_CREATURE_GUID(guid))
+    if(IS_CRE_OR_VEH_GUID(guid))
     {
         unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE);
         if (!unit)
@@ -777,28 +777,27 @@ void WorldSession::HandleResurrectResponseOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleAreaTriggerOpcode(WorldPacket & recv_data)
 {
-
     sLog.outDebug("WORLD: Received CMSG_AREATRIGGER");
 
     uint32 Trigger_ID;
 
     recv_data >> Trigger_ID;
-    sLog.outDebug("Trigger ID: %u", Trigger_ID);
+    sLog.outDebug("Trigger ID:%u",Trigger_ID);
 
     if(GetPlayer()->isInFlight())
     {
-        sLog.outDebug("Player '%s' (GUID: %u) in flight, ignore Area Trigger ID: %u", GetPlayer()->GetName(), GetPlayer()->GetGUIDLow(), Trigger_ID);
+        sLog.outDebug("Player '%s' (GUID: %u) in flight, ignore Area Trigger ID:%u",GetPlayer()->GetName(),GetPlayer()->GetGUIDLow(), Trigger_ID);
         return;
     }
 
     AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(Trigger_ID);
     if(!atEntry)
     {
-        sLog.outDebug("Player '%s' (GUID: %u) send unknown (by DBC) Area Trigger ID: %u", GetPlayer()->GetName(), GetPlayer()->GetGUIDLow(), Trigger_ID);
+        sLog.outDebug("Player '%s' (GUID: %u) send unknown (by DBC) Area Trigger ID:%u",GetPlayer()->GetName(),GetPlayer()->GetGUIDLow(), Trigger_ID);
         return;
     }
 
-    if (GetPlayer()->GetMapId() != atEntry->mapid)
+    if (GetPlayer()->GetMapId()!=atEntry->mapid)
     {
         sLog.outDebug("Player '%s' (GUID: %u) too far (trigger map: %u player map: %u), ignore Area Trigger ID: %u", GetPlayer()->GetName(), atEntry->mapid, GetPlayer()->GetMapId(), GetPlayer()->GetGUIDLow(), Trigger_ID);
         return;
@@ -1175,15 +1174,14 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
     if(!plr)                                                // wrong player
         return;
 
-    uint32 talent_points = 0x3D;
+    uint32 talent_points = 0x47;
     uint32 guid_size = plr->GetPackGUID().wpos(); 
-    WorldPacket data(SMSG_INSPECT_TALENT, guid_size+4+talent_points);
+    WorldPacket data(SMSG_INSPECT_TALENT, guid_size+4+talent_points); 
     data.append(plr->GetPackGUID());
 
     if(sWorld.getConfig(CONFIG_TALENTS_INSPECTING) || _player->isGameMaster())
     {
         plr->BuildPlayerTalentsInfoData(&data);
-        plr->BuildEnchantmentsInfoData(&data);
     }
     else
     {
@@ -1193,6 +1191,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         data << uint32(0);                                  // slotUsedMask
     }
 
+    plr->BuildEnchantmentsInfoData(&data);
     SendPacket(&data);
 }
 
@@ -1495,6 +1494,7 @@ void WorldSession::HandleSetDungeonDifficultyOpcode( WorldPacket & recv_data )
 
 void WorldSession::HandleSetRaidDifficultyOpcode( WorldPacket & recv_data )
 {
+
     sLog.outDebug("MSG_SET_RAID_DIFFICULTY");
 
     uint32 mode;
