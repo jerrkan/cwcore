@@ -216,7 +216,7 @@ TargetPosRecalculateRange = 1.5
 UpdateUptimeInterval = 10
 LogDB.Opt.ClearInterval = 10
 LogDB.Opt.ClearTime = 1209600
-MaxCoreStuckTime = 0
+MaxCoreStuckTime = 10
 AddonChannel = 1
 MapUpdate.Threads = 1
 
@@ -757,9 +757,9 @@ RealmZone = 9
 Expansion = 2
 DBC.Locale = 255
 DeclinedNames = 0
-StrictPlayerNames = 0
-StrictCharterNames = 0
-StrictPetNames = 0
+StrictPlayerNames = 1
+StrictCharterNames = 1
+StrictPetNames = 1
 MaxWhoListReturns = 49
 MinPlayerName = 2
 MinCharterName = 2
@@ -1099,7 +1099,7 @@ Channel.SilentlyGMJoin = 0
 ###################################################################################################################
 
 GM.LoginState            = 2
-GM.Visible               = 2
+GM.Visible               = 1
 GM.AcceptTickets         = 2
 GM.Chat                  = 2
 GM.WhisperingTo          = 2
@@ -1377,7 +1377,7 @@ Death.CorpseReclaimDelay.PvP = 1
 Death.CorpseReclaimDelay.PvE = 0
 Death.Bones.World = 1
 Death.Bones.BattlegroundOrArena = 1
-Die.Command.Mode = 1
+Die.Command.Mode = 0
 
 ###################################################################################################################
 # AUTO BROADCAST

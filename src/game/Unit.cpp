@@ -539,6 +539,7 @@ void Unit::AutoRotate(uint32 time)
         SetUInt64Value(UNIT_FIELD_TARGET, LastTargetGUID);
     }else RotateTimer -= time;
 }
+
 void Unit::RemoveMovementImpairingAuras()
 {
     for(AuraMap::iterator iter = m_Auras.begin(); iter != m_Auras.end();)
@@ -5757,7 +5758,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                     if( procSpell->SpellFamilyFlags[0] & 0x8000 )
                         triggered_spell_id = 40441;
                     // Renew
-                    else if( procSpell->SpellFamilyFlags[0] & 0x10 )
+                    else if( procSpell->SpellFamilyFlags[0] & 0x40 )
                         triggered_spell_id = 40440;
                     else
                         return false;
@@ -11168,13 +11169,13 @@ void Unit::setDeathState(DeathState s)
     }
     else if(s == JUST_ALIVED)
     {
-        if(m_vehicleKit) m_vehicleKit->Reset();
         RemoveFlag (UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE); // clear skinnable for creature and player (at battleground)
     }
 
     if (m_deathState != ALIVE && s == ALIVE)
     {
         //_ApplyAllAuraMods();
+        if(m_vehicleKit) m_vehicleKit->Reset();
         // Reset display id on resurection - needed by corpse explosion to cleanup after display change
         SetDisplayId(GetNativeDisplayId());
     }
@@ -14789,6 +14790,20 @@ void Unit::ChangeSeat(int8 seatId, bool next)
 
 void Unit::ExitVehicle()
 {
+    if(!m_vehicle)
+        return;
+
+    Unit *vehicleBase = m_vehicle->GetBase();
+    const AuraEffectList &modAuras = vehicleBase->GetAurasByType(SPELL_AURA_CONTROL_VEHICLE);
+    for(AuraEffectList::const_iterator itr = modAuras.begin(); itr != modAuras.end(); ++itr)
+    {
+        if((*itr)->GetParentAura()->GetSourceGUID() == GetGUID())
+        {
+            vehicleBase->RemoveAura((*itr)->GetParentAura());
+            break; // there should be no case that a vehicle has two auras for one source
+        }
+    }
+
     if(!m_vehicle)
         return;
 
