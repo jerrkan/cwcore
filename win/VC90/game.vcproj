@@ -1531,14 +1531,6 @@
 			Name="AI"
 			>
 			<File
-				RelativePath="..\..\src\game\AggressorAI.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\game\AggressorAI.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\game\CreatureAI.cpp"
 				>
 			</File>
@@ -1592,14 +1584,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\game\GuardAI.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\game\NullCreatureAI.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\game\NullCreatureAI.h"
 				>
 			</File>
 			<File
