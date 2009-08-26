@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="game"
 	ProjectGUID="{1DC6C4DA-A028-41F3-877D-D5400C594F88}"
 	RootNamespace="game"
@@ -867,6 +867,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\game\pchdef.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\game\PetHandler.cpp"
 				>
 			</File>
@@ -1346,18 +1350,6 @@
 				RelativePath="..\..\src\game\ZoneScript.h"
 				>
 			</File>
-			<Filter
-				Name="AuctionHouseBot"
-				>
-				<File
-					RelativePath="..\..\src\game\AuctionHouseBot.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\game\AuctionHouseBot.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Server"
@@ -1531,6 +1523,14 @@
 			Name="AI"
 			>
 			<File
+				RelativePath="..\..\src\game\CombatAI.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\CombatAI.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\game\CreatureAI.cpp"
 				>
 			</File>
@@ -1587,6 +1587,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\game\PassiveAI.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\PassiveAI.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\game\PetAI.cpp"
 				>
 			</File>
@@ -1618,6 +1626,18 @@
 				RelativePath="..\..\src\game\UnitAI.h"
 				>
 			</File>
+			<Filter
+				Name="AuctionHouseBot"
+				>
+				<File
+					RelativePath="..\..\src\game\AuctionHouseBot.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\game\AuctionHouseBot.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="OutdoorPvP"
@@ -1738,10 +1758,6 @@
 					PrecompiledHeaderThrough="pchdef.h"
 				/>
 			</FileConfiguration>
-		</File>
-		<File
-			RelativePath="..\..\src\game\pchdef.h"
-			>
 		</File>
 	</Files>
 	<Globals>
