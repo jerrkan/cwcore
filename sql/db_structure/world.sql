@@ -2705,23 +2705,6 @@ CREATE TABLE `skinning_loot_template` (
 SET character_set_client = @saved_cs_client;
 
 --
--- Table structure for table `spell_affect`
---
-
-DROP TABLE IF EXISTS `spell_affect`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `spell_affect` (
-  `entry` smallint(5) unsigned NOT NULL default '0',
-  `effectId` tinyint(3) unsigned NOT NULL default '0',
-  `SpellClassMask0` int(5) unsigned NOT NULL default '0',
-  `SpellClassMask1` int(5) unsigned NOT NULL default '0',
-  `SpellClassMask2` int(5) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`entry`,`effectId`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
-
---
 -- Table structure for table `spell_area`
 --
 
@@ -2756,6 +2739,109 @@ CREATE TABLE `spell_bonus_data` (
   `comments` varchar(255) default NULL,
   PRIMARY KEY  (`entry`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `spell_dbc`
+--
+DROP TABLE IF EXISTS `spell_dbc`;
+CREATE TABLE `spell_dbc` (
+	`Id` INT UNSIGNED NOT NULL,
+	`Dispel` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`Mechanic` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`Attributes` INT UNSIGNED NOT NULL DEFAULT 0,
+	`AttributesEx` INT UNSIGNED NOT NULL DEFAULT 0,
+	`AttributesEx2` INT UNSIGNED NOT NULL DEFAULT 0,
+	`AttributesEx3` INT UNSIGNED NOT NULL DEFAULT 0,
+	`AttributesEx4` INT UNSIGNED NOT NULL DEFAULT 0,
+	`AttributesEx5` INT UNSIGNED NOT NULL DEFAULT 0,
+	`Targets` INT UNSIGNED NOT NULL DEFAULT 0,
+	`CastingTimeIndex` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+	`AuraInterruptFlags` INT UNSIGNED NOT NULL DEFAULT 0,
+	`ProcFlags` INT UNSIGNED NOT NULL DEFAULT 0,
+	`ProcChance` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`ProcCharges` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`MaxLevel` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`BaseLevel` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`SpellLevel` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`DurationIndex` SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+	`RangeIndex` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+	`StackAmount` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EquippedItemClass` INT NOT NULL DEFAULT -1,
+	`EquippedItemSubClassMask` INT NOT NULL DEFAULT 0 DEFAULT 0,
+	`EquippedItemInventoryTypeMask` INT NOT NULL DEFAULT 0 DEFAULT 0,
+	`Effect1` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`Effect2` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`Effect3` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectDieSides1` INT NOT NULL DEFAULT 0,
+	`EffectDieSides2` INT NOT NULL DEFAULT 0,
+	`EffectDieSides3` INT NOT NULL DEFAULT 0,
+	`EffectBaseDice1` INT NOT NULL DEFAULT 0,
+	`EffectBaseDice2` INT NOT NULL DEFAULT 0,
+	`EffectBaseDice3` INT NOT NULL DEFAULT 0,
+	`EffectDicePerLevel1` FLOAT NOT NULL DEFAULT 0,
+	`EffectDicePerLevel2` FLOAT NOT NULL DEFAULT 0,
+	`EffectDicePerLevel3` FLOAT NOT NULL DEFAULT 0,
+	`EffectRealPointsPerLevel1` FLOAT NOT NULL DEFAULT 0,
+	`EffectRealPointsPerLevel2` FLOAT NOT NULL DEFAULT 0,
+	`EffectRealPointsPerLevel3` FLOAT NOT NULL DEFAULT 0,
+	`EffectBasePoints1` INT NOT NULL DEFAULT 0,
+	`EffectBasePoints2` INT NOT NULL DEFAULT 0,
+	`EffectBasePoints3` INT NOT NULL DEFAULT 0,
+	`EffectMechanic1` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectMechanic2` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectMechanic3` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectImplicitTargetA1` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectImplicitTargetA2` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectImplicitTargetA3` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectImplicitTargetB1` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectImplicitTargetB2` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectImplicitTargetB3` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectRadiusIndex1` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectRadiusIndex2` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectRadiusIndex3` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectApplyAuraName1` SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectApplyAuraName2` SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectApplyAuraName3` SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectAmplitude1` INT NOT NULL DEFAULT 0,
+	`EffectAmplitude2` INT NOT NULL DEFAULT 0,
+	`EffectAmplitude3` INT NOT NULL DEFAULT 0,
+	`EffectMultipleValue1` FLOAT NOT NULL DEFAULT 0,
+	`EffectMultipleValue2` FLOAT NOT NULL DEFAULT 0,
+	`EffectMultipleValue3` FLOAT NOT NULL DEFAULT 0,
+	`EffectMiscValue1` INT NOT NULL DEFAULT 0,
+	`EffectMiscValue2` INT NOT NULL DEFAULT 0,
+	`EffectMiscValue3` INT NOT NULL DEFAULT 0,
+	`EffectMiscValueB1` INT NOT NULL DEFAULT 0,
+	`EffectMiscValueB2` INT NOT NULL DEFAULT 0,
+	`EffectMiscValueB3` INT NOT NULL DEFAULT 0,
+	`EffectTriggerSpell1` INT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectTriggerSpell2` INT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectTriggerSpell3` INT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectSpellClassMaskA1` INT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectSpellClassMaskA2` INT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectSpellClassMaskA3` INT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectSpellClassMaskB1` INT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectSpellClassMaskB2` INT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectSpellClassMaskB3` INT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectSpellClassMaskC1` INT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectSpellClassMaskC2` INT UNSIGNED NOT NULL DEFAULT 0,
+	`EffectSpellClassMaskC3` INT UNSIGNED NOT NULL DEFAULT 0,
+	`MaxTargetLevel` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`SpellFamilyName` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`SpellFamilyFlags1` INT UNSIGNED NOT NULL DEFAULT 0,
+	`SpellFamilyFlags2` INT UNSIGNED NOT NULL DEFAULT 0,
+	`SpellFamilyFlags3` INT UNSIGNED NOT NULL DEFAULT 0,
+	`MaxAffectedTargets` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`DmgClass` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`PreventionType` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`DmgMultiplier1` FLOAT NOT NULL DEFAULT 0,
+	`DmgMultiplier2` FLOAT NOT NULL DEFAULT 0,
+	`DmgMultiplier3` FLOAT NOT NULL DEFAULT 0,
+	`AreaGroupId` INT NOT NULL DEFAULT 0,
+	`SchoolMask` INT UNSIGNED NOT NULL DEFAULT 0,
+	`Comment` TEXT NOT NULL,
+	PRIMARY KEY (`Id`)
+)ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='Custom spell.dbc entries';
 
 --
 -- Table structure for table `spell_disabled`

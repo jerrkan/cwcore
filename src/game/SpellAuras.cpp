@@ -1014,13 +1014,58 @@ void Aura::HandleAuraSpecificMods(bool apply)
                 }
             }
         }
-        // Sprint (skip non player casted spells by category)
         else if (GetSpellProto()->SpellFamilyName == SPELLFAMILY_ROGUE)
         {
+            // Sprint (skip non player casted spells by category)
             if(GetSpellProto()->SpellFamilyFlags[0] & 0x40 && GetSpellProto()->Category == 44)
                 // in official maybe there is only one icon?
                 if(m_target->HasAura(58039)) // Glyph of Blurred Speed
                     m_target->CastSpell(m_target, 61922, true); // Sprint (waterwalk)
+        }
+        else if (GetSpellProto()->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT)
+        {
+            // Frost Fever and Blood Plague
+            if(GetSpellProto()->SpellFamilyFlags[2] & 0x2)
+            {
+                // Can't proc on self
+                if (GetCasterGUID() == m_target->GetGUID())
+                    return;
+                Unit * caster = GetCaster();
+                if (!caster)
+                    return;
+
+                AuraEffect * aurEff = NULL;
+                // Ebon Plaguebringer / Crypt Fever
+                Unit::AuraEffectList const& TalentAuras = caster->GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
+                for(Unit::AuraEffectList::const_iterator itr = TalentAuras.begin(); itr != TalentAuras.end(); ++itr)
+                {
+                    if ((*itr)->GetMiscValue() == 7282)
+                    {
+                        aurEff = *itr;
+                        // Ebon Plaguebringer - end search if found
+                        if ((*itr)->GetSpellProto()->SpellIconID == 1766)
+                            break;
+                    }
+                }
+                if (aurEff)
+                {
+                    uint32 spellId = 0;
+                    switch (aurEff->GetId())
+                    {
+                        // Ebon Plague
+                        case 51161: spellId = 51735; break;
+                        case 51160: spellId = 51734; break;
+                        case 51099: spellId = 51726; break;
+                        // Crypt Fever
+                        case 49632: spellId = 50510; break;
+                        case 49631: spellId = 50509; break;
+                        case 49032: spellId = 50508; break;
+                        default:
+                            sLog.outError("Unknown rank of Crypt Fever/Ebon Plague %d", aurEff->GetId());
+                    }
+                    caster->CastSpell(m_target, spellId, true, 0, GetPartAura(0));
+                }
+            }
         }
         else
         {
@@ -1817,21 +1862,20 @@ bool Aura::CanBeSaved() const
 
 bool Aura::IsPersistent() const
 {
+    return IS_DYNAMICOBJECT_GUID(m_sourceGuid);
+    /*
     for(uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
         if(m_partAuras[i] && m_partAuras[i]->IsPersistent())
             return true;
-    }
     return false;
+    */
 }
 
 bool Aura::IsAreaAura() const
 {
     for(uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
         if(m_partAuras[i] && m_partAuras[i]->IsAreaAura())
             return true;
-    }
     return false;
 }
 
@@ -1900,8 +1944,6 @@ void AuraEffect::HandleShapeshiftBoosts(bool apply)
             break;
         case FORM_MOONKIN:
             spellId = 24905;
-            // aura from effect trigger spell
-            spellId2 = 24907;
             break;
         case FORM_FLIGHT:
             spellId = 33948;
@@ -4476,9 +4518,6 @@ void AuraEffect::HandleAuraPeriodicDummy(bool apply, bool Real, bool changeAmoun
     if(!Real && !changeAmount)
         return;
 
-    // For prevent double apply bonuses
-    bool loading = (m_target->GetTypeId() == TYPEID_PLAYER && ((Player*)m_target)->GetSession()->PlayerLoading());
-
     Unit* caster = GetCaster();
 
     SpellEntry const*spell = GetSpellProto();
@@ -4504,17 +4543,14 @@ void AuraEffect::HandleAuraPeriodicDummy(bool apply, bool Real, bool changeAmoun
             {
                 // Demonic Circle
                 case 48018:
-                    if (apply)
-                        // set to false at initial cast to enable button at next enable in periodic handler
-                        m_target->SendAuraVisualForSelf(false,62388);
-                    else
+                    if (!apply)
                     {
                         // Do not remove GO when aura is removed by stack
                         // to prevent remove GO added by new spell
                         // old one is already removed
                         if (GetParentAura()->GetRemoveMode()!=AURA_REMOVE_BY_STACK)
                             m_target->RemoveGameObject(spell->Id,true);
-                        m_target->SendAuraVisualForSelf(false,62388);
+                        m_target->RemoveAura(62388);
                     }
                 break;
             }
@@ -6388,8 +6424,15 @@ void AuraEffect::PeriodicDummyTick()
                 // Demonic Circle
                 case 48018:
                     if(GameObject* obj = m_target->GetGameObject(spell->Id))
-                        // We must take a range of teleport spell, not summon.
-                        m_target->SendAuraVisualForSelf(m_target->IsWithinDist(obj, GetSpellMaxRange(48020, true)), 62388, 1);
+                    {
+                        if (m_target->IsWithinDist(obj, GetSpellMaxRange(48020, true)))
+                        {
+                            if (!m_target->HasAura(62388))
+                                m_target->CastSpell(m_target, 62388, true);
+                        }
+                        else
+                            m_target->RemoveAura(62388);
+                    }
                     return;
             }
             break;
@@ -6732,6 +6775,7 @@ void AuraEffect::HandleModPossess(bool apply, bool Real, bool /*changeAmount*/)
         m_target->RemoveCharmedBy(caster);
 }
 
+// only one spell has this aura
 void AuraEffect::HandleModPossessPet(bool apply, bool Real, bool /*changeAmount*/)
 {
     if(!Real)
@@ -6741,10 +6785,15 @@ void AuraEffect::HandleModPossessPet(bool apply, bool Real, bool /*changeAmount*
     if(!caster || caster->GetTypeId() != TYPEID_PLAYER)
         return;
 
+    //seems it may happen that when removing it is no longer owner's pet
+    //if(((Player*)caster)->GetPet() != m_target)
+    //    return;
+
     if(apply)
     {
-        if(caster->GetGuardianPet() != m_target)
+        if(((Player*)caster)->GetPet() != m_target)
             return;
+
         m_target->SetCharmedBy(caster, CHARM_TYPE_POSSESS);
     }
     else
@@ -6756,7 +6805,8 @@ void AuraEffect::HandleModPossessPet(bool apply, bool Real, bool /*changeAmount*
         if(!m_target->getVictim())
         {
             m_target->GetMotionMaster()->MoveFollow(caster, PET_FOLLOW_DIST, m_target->GetFollowAngle());
-            m_target->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
+            //if(m_target->GetCharmInfo())
+            //    m_target->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
         }
     }
 }

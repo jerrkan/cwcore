@@ -93,7 +93,7 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectUnused,                                   // 26 SPELL_EFFECT_DEFENSE                  one spell: Defense
     &Spell::EffectPersistentAA,                             // 27 SPELL_EFFECT_PERSISTENT_AREA_AURA
     &Spell::EffectSummonType,                               // 28 SPELL_EFFECT_SUMMON
-    &Spell::EffectMomentMove,                               // 29 SPELL_EFFECT_LEAP
+    &Spell::EffectLeapForward,                              // 29 SPELL_EFFECT_LEAP
     &Spell::EffectEnergize,                                 // 30 SPELL_EFFECT_ENERGIZE
     &Spell::EffectWeaponDmg,                                // 31 SPELL_EFFECT_WEAPON_PERCENT_DAMAGE
     &Spell::EffectTriggerMissileSpell,                      // 32 SPELL_EFFECT_TRIGGER_MISSILE
@@ -202,7 +202,7 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectNULL,                                     //135 SPELL_EFFECT_CALL_PET
     &Spell::EffectHealPct,                                  //136 SPELL_EFFECT_HEAL_PCT
     &Spell::EffectEnergizePct,                              //137 SPELL_EFFECT_ENERGIZE_PCT
-    &Spell::EffectJump2,                                    //138 SPELL_EFFECT_138                      Leap
+    &Spell::EffectJump2,                                    //138 SPELL_EFFECT_LEAP_BACK                Leap back
     &Spell::EffectUnused,                                   //139 SPELL_EFFECT_CLEAR_QUEST              (misc - is quest ID)
     &Spell::EffectForceCast,                                //140 SPELL_EFFECT_FORCE_CAST
     &Spell::EffectNULL,                                     //141 SPELL_EFFECT_141                      damage and reduce speed?
@@ -521,6 +521,14 @@ void Spell::SpellDamageSchoolDmg(uint32 effect_idx)
                     damage += int32(energy * multiple);
                     damage += int32(((Player*)m_caster)->GetComboPoints() * ap * 7 / 100);
                 }
+                // Wrath
+                else if (m_spellInfo->SpellFamilyFlags[0] & 0x00000001)
+                {
+                    // Improved Insect Swarm
+                    if (AuraEffect const * aurEff = m_caster->GetDummyAura(SPELLFAMILY_DRUID, 1771, 0))
+                        if (unitTarget->GetAura(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_DRUID, 0x00200000))
+                            damage = int32(damage*(100.0f+aurEff->GetAmount())/100.0f);
+                }
                 break;
             }
             case SPELLFAMILY_ROGUE:
@@ -588,7 +596,7 @@ void Spell::SpellDamageSchoolDmg(uint32 effect_idx)
                         }
                     }
 
-                    //TODO: should this be put on taken but not done?
+                    // TODO: should this be put on taken but not done?
                     if(found)
                         damage += m_spellInfo->EffectBasePoints[1];
                         
@@ -598,7 +606,12 @@ void Spell::SpellDamageSchoolDmg(uint32 effect_idx)
                         Item *item = ((Player*)m_caster)->GetWeaponForAttack(RANGED_ATTACK);
                         if(item)
                         {
-                            damage += urand(uint32(item->GetProto()->Damage->DamageMin), uint32(item->GetProto()->Damage->DamageMax));
+                            float dmg_min = item->GetProto()->Damage->DamageMin;
+                            float dmg_max = item->GetProto()->Damage->DamageMax;
+                            if(dmg_max == 0.0f && dmg_min > dmg_max)
+                                damage += uint32(dmg_min);
+                            else
+                                damage += urand(uint32(dmg_min), uint32(dmg_max));
                             damage += ((Player*)m_caster)->GetAmmoDPS()*item->GetProto()->Delay/1000;
                         }
                     }
@@ -2917,6 +2930,13 @@ void Spell::EffectCreateRandomItem(uint32 i)
 
 void Spell::EffectPersistentAA(uint32 i)
 {
+    if(m_spellDynObj)
+    {
+        assert(ObjectAccessor::GetObjectInWorld(m_spellDynObj->GetGUID(), (DynamicObject*)NULL) == m_spellDynObj);
+        m_spellDynObj->AddEffect(i);
+        return;
+    }
+
     float radius = GetSpellRadiusForFriend(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
     if(Player* modOwner = m_originalCaster->GetSpellModOwner())
         modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RADIUS, radius);
@@ -2924,7 +2944,7 @@ void Spell::EffectPersistentAA(uint32 i)
     Unit *caster = m_caster->GetEntry() == WORLD_TRIGGER ? m_originalCaster : m_caster;
     int32 duration = GetSpellDuration(m_spellInfo);
     DynamicObject* dynObj = new DynamicObject;
-    if(!dynObj->Create(objmgr.GenerateLowGuid(HIGHGUID_DYNAMICOBJECT), caster, m_spellInfo->Id, i, m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, duration, radius))
+    if(!dynObj->Create(objmgr.GenerateLowGuid(HIGHGUID_DYNAMICOBJECT), caster, m_spellInfo->Id, 1<<i, m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, duration, radius, false))
     {
         delete dynObj;
         return;
@@ -2932,6 +2952,7 @@ void Spell::EffectPersistentAA(uint32 i)
     dynObj->SetUInt32Value(DYNAMICOBJECT_BYTES, 0x01eeeeee);
     caster->AddDynObject(dynObj);
     dynObj->GetMap()->Add(dynObj);
+    m_spellDynObj = dynObj;
 }
 
 void Spell::EffectEnergize(uint32 i)
@@ -3479,6 +3500,7 @@ void Spell::EffectSummonType(uint32 i)
                         {
                             summon->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_originalCaster->GetGUID());
                             summon->setFaction(m_originalCaster->getFaction());
+                            summon->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
                         }
                     }
                     break;
@@ -3708,7 +3730,7 @@ void Spell::EffectAddFarsight(uint32 i)
     float radius = GetSpellRadiusForFriend(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
     int32 duration = GetSpellDuration(m_spellInfo);
     DynamicObject* dynObj = new DynamicObject;
-    if(!dynObj->Create(objmgr.GenerateLowGuid(HIGHGUID_DYNAMICOBJECT), m_caster, m_spellInfo->Id, 4, m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, duration, radius))
+    if(!dynObj->Create(objmgr.GenerateLowGuid(HIGHGUID_DYNAMICOBJECT), m_caster, m_spellInfo->Id, 0, m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, duration, radius, true))
     {
         delete dynObj;
         return;
@@ -4121,14 +4143,17 @@ void Spell::EffectSummonPet(uint32 i)
             if( OldSummon->isDead() )
                 return;
 
-            OldSummon->GetMap()->Remove((Creature*)OldSummon,false);
+            assert(OldSummon->GetMap() == owner->GetMap());
+
+            //OldSummon->GetMap()->Remove((Creature*)OldSummon,false);
 
             float px, py, pz;
             owner->GetClosePoint(px, py, pz, OldSummon->GetObjectSize());
 
-            OldSummon->Relocate(px, py, pz, OldSummon->GetOrientation());
-            OldSummon->SetMap(owner->GetMap());
-            owner->GetMap()->Add((Creature*)OldSummon);
+            OldSummon->NearTeleportTo(px, py, pz, OldSummon->GetOrientation());
+            //OldSummon->Relocate(px, py, pz, OldSummon->GetOrientation());
+            //OldSummon->SetMap(owner->GetMap());
+            //owner->GetMap()->Add((Creature*)OldSummon);
 
             if(owner->GetTypeId() == TYPEID_PLAYER && OldSummon->isControlled() )
             {
@@ -6167,7 +6192,7 @@ void Spell::EffectBlock(uint32 /*i*/)
         ((Player*)unitTarget)->SetCanBlock(true);
 }
 
-void Spell::EffectMomentMove(uint32 i)
+void Spell::EffectLeapForward(uint32 i)
 {
     if(unitTarget->isInFlight())
         return;
@@ -6423,26 +6448,10 @@ void Spell::EffectSendTaxi(uint32 i)
 
 void Spell::EffectPlayerPull(uint32 i)
 {
-    if(!unitTarget || !m_caster)
+    if(!unitTarget)
         return;
 
-    // Effect only works on players
-    if(unitTarget->GetTypeId()!=TYPEID_PLAYER)
-        return;
-
-    float vsin = sin(unitTarget->GetAngle(m_caster));
-    float vcos = cos(unitTarget->GetAngle(m_caster));
-
-    WorldPacket data(SMSG_MOVE_KNOCK_BACK, 8+4+4+4+4+4);
-    data.append(unitTarget->GetPackGUID());
-    data << uint32(0);                                      // Sequence
-    data << float(vcos);                                    // x direction
-    data << float(vsin);                                    // y direction
-                                                            // Horizontal speed
-    data << float(damage ? damage : unitTarget->GetDistance2d(m_caster));
-    data << float(m_spellInfo->EffectMiscValue[i])/-10;     // Z Movement speed
-
-    ((Player*)unitTarget)->GetSession()->SendPacket(&data);
+    unitTarget->KnockbackFrom(m_caster->GetPositionX(), m_caster->GetPositionY(), float(damage ? damage : unitTarget->GetDistance2d(m_caster)), float(m_spellInfo->EffectMiscValue[i])/10);
 }
 
 void Spell::EffectDispelMechanic(uint32 i)

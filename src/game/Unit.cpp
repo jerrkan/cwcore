@@ -542,6 +542,9 @@ void Unit::AutoRotate(uint32 time)
 
 void Unit::RemoveMovementImpairingAuras()
 {
+    RemoveAurasWithMechanic((1<<MECHANIC_SNARE)|(1<<MECHANIC_ROOT));
+    return;
+
     for(AuraMap::iterator iter = m_Auras.begin(); iter != m_Auras.end();)
     {
         if(spellmgr.GetSpellCustomAttr(iter->second->GetId()) & SPELL_ATTR_CU_MOVEMENT_IMPAIR)
@@ -1875,6 +1878,12 @@ void Unit::CalcAbsorbResist(Unit *pVictim,SpellSchoolMask schoolMask, DamageEffe
                         RemainingDamage -= RemainingDamage * currentAbsorb / 100;
                     continue;
                 }
+                // Savage Defense (amount store original percent of attack power applied)
+                if (spellProto->SpellIconID == 50)    // only spell with this aura fit
+                {
+                    RemainingDamage -= int32(currentAbsorb * pVictim->GetTotalAttackPowerValue(BASE_ATTACK) / 100);
+                    continue;
+                }
                 break;
             }
             case SPELLFAMILY_ROGUE:
@@ -1951,56 +1960,50 @@ void Unit::CalcAbsorbResist(Unit *pVictim,SpellSchoolMask schoolMask, DamageEffe
             }
             case SPELLFAMILY_DEATHKNIGHT:
             {
-                // Unbreakable Armor
-                if (spellProto->Id == 51271)
+                switch(spellProto->Id)
                 {
-                    Unit* caster = (*i)->GetCaster();
-                    if (!caster)
+                    case 51271: // Unbreakable Armor
+                        if(Unit *caster = (*i)->GetCaster())
+                        {
+                            uint32 absorbed = uint32( currentAbsorb * caster->GetArmor() * 0.01f );
+
+                            // Glyph of Unbreakable Armor
+                            if (AuraEffect *aurEff = caster->GetAuraEffect(58635, 0))
+                                absorbed += uint32( absorbed * aurEff->GetAmount() / 100 );
+
+                            RemainingDamage -= absorbed;
+                        }
                         continue;
-
-                    uint32 absorbed = uint32( currentAbsorb * caster->GetArmor() * 0.01f );
-
-                    // Glyph of Unbreakable Armor
-                    if (AuraEffect *aurEff = caster->GetAuraEffect(58635, 0))
-                        absorbed += uint32( absorbed * aurEff->GetAmount() / 100 );
-
-                    RemainingDamage -= absorbed;
-                    continue;
-                }
-                // Anti-Magic Shell (on self)
-                if (spellProto->Id == 48707)
-                {
-                    // damage absorbed by Anti-Magic Shell energizes the DK with additional runic power.
-                    // This, if I'm not mistaken, shows that we get back ~2% of the absorbed damage as runic power.
-                    int32 absorbed = RemainingDamage * currentAbsorb / 100;
-                    int32 regen = absorbed * 2 / 10;
-                    pVictim->CastCustomSpell(pVictim, 49088, &regen, 0, 0, true, 0, (*i));
-                    RemainingDamage -= absorbed;
-                    continue;
-                }
-                // Anti-Magic Shell (on single party/raid member)
-                if (spellProto->Id == 50462)
-                {
-                    RemainingDamage -= RemainingDamage * currentAbsorb / 100;
-                    continue;
-                }
-                // Anti-Magic Zone
-                if (spellProto->Id == 50461)
-                {
-                    Unit* caster = (*i)->GetCaster();
-                    if (!caster)
+                    case 48707: // Anti-Magic Shell (on self)
+                    {
+                        // damage absorbed by Anti-Magic Shell energizes the DK with additional runic power.
+                        // This, if I'm not mistaken, shows that we get back ~2% of the absorbed damage as runic power.
+                        int32 absorbed = RemainingDamage * currentAbsorb / 100;
+                        int32 regen = absorbed * 2 / 10;
+                        pVictim->CastCustomSpell(pVictim, 49088, &regen, 0, 0, true, 0, (*i));
+                        RemainingDamage -= absorbed;
                         continue;
-                    int32 absorbed = RemainingDamage * currentAbsorb / 100;
-                    int32 canabsorb = caster->GetHealth();
-                    if (canabsorb < absorbed)
-                        absorbed = canabsorb;
+                    }
+                    case 50462: // Anti-Magic Shell (on single party/raid member)
+                        RemainingDamage -= RemainingDamage * currentAbsorb / 100;
+                        continue;
+                    case 50461: // Anti-Magic Zone
+                        if(Unit *caster = (*i)->GetCaster())
+                        {
+                            int32 absorbed = RemainingDamage * currentAbsorb / 100;
+                            int32 canabsorb = caster->GetHealth();
+                            if (canabsorb < absorbed)
+                                absorbed = canabsorb;
 
-                    RemainingDamage -= absorbed;
+                            RemainingDamage -= absorbed;
 
-                    uint32 ab_damage = absorbed;
-                    DealDamageMods(caster,ab_damage,NULL);
-                    DealDamage(caster, ab_damage, NULL, damagetype, schoolMask, 0, false);
-                    continue;
+                            uint32 ab_damage = absorbed;
+                            DealDamageMods(caster,ab_damage,NULL);
+                            DealDamage(caster, ab_damage, NULL, damagetype, schoolMask, 0, false);
+                        }
+                        continue;
+                    default:
+                        break;
                 }
                 break;
             }
@@ -3663,25 +3666,6 @@ int32 Unit::GetMaxNegativeAuraModifierByMiscValue(AuraType auratype, int32 misc_
     return modifier;
 }
 
-void Unit::SendAuraVisualForSelf(bool apply, uint32 id, uint8 effmask)
-{
-    WorldPacket data(SMSG_AURA_UPDATE);
-    data.append(GetPackGUID());
-    // use always free 64+ slots
-    data << uint8(MAX_AURAS);
-    if (!apply)
-    {
-        data << uint32(0);
-        SendMessageToSet(&data, true);
-        return;
-    }
-    data << uint32(id);
-    data << uint8(AFLAG_CASTER | AFLAG_POSITIVE | effmask);
-    data << uint8(getLevel());
-    data << uint8(1);
-    SendMessageToSet(&data, true);
-}
-
 bool Unit::AddAura(Aura *Aur, bool handleEffects)
 {
     // aura doesn't apply effects-return
@@ -4125,6 +4109,10 @@ void Unit::RemoveAura(AuraMap::iterator &i, AuraRemoveMode mode)
 
     ++m_removedAurasCount;
 
+    if(Aur->IsPersistent())
+        if(DynamicObject *dynObj = ObjectAccessor::GetObjectInWorld(Aur->GetSourceGUID(), (DynamicObject*)NULL))
+            dynObj->RemoveAffected(this);
+
     Aur->UnregisterSingleCastAura();
 
     if(Aur->GetSpellProto()->AuraInterruptFlags)
@@ -4271,9 +4259,6 @@ bool Unit::HasAura(uint32 spellId, uint64 caster) const
     //Special case for non existing spell
     if (spellId==61988)
         return HasAura(61987, caster) || HasAura(25771, caster);
-    // Demonic Circle - special aura for client
-    else if (spellId==62388)
-        return HasAura(48018, caster);
 
     if (Aura * aur = GetAura(spellId, caster))
         return true;
@@ -4445,24 +4430,6 @@ void Unit::RemoveAllDynObjects()
             dynObj->Delete();
         m_dynObjGUIDs.erase(m_dynObjGUIDs.begin());
     }
-}
-
-DynamicObject * Unit::GetDynObject(uint32 spellId, uint32 effIndex)
-{
-    for (DynObjectGUIDs::iterator i = m_dynObjGUIDs.begin(); i != m_dynObjGUIDs.end();)
-    {
-        DynamicObject* dynObj = GetMap()->GetDynamicObject(*i);
-        if(!dynObj)
-        {
-            i = m_dynObjGUIDs.erase(i);
-            continue;
-        }
-
-        if (dynObj->GetSpellId() == spellId && dynObj->GetEffIndex() == effIndex)
-            return dynObj;
-        ++i;
-    }
-    return NULL;
 }
 
 DynamicObject * Unit::GetDynObject(uint32 spellId)
@@ -5921,10 +5888,10 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                 {
                     if (procSpell->SpellVisual[0] == 750 && procSpell->EffectApplyAuraName[1] == 3)
                     {
-                        if (target->GetTypeId() == TYPEID_UNIT)  
+                        if (target->GetTypeId() == TYPEID_UNIT)
                         {
                             triggered_spell_id = 54820;
-                            break;                    
+                            break;
                         }
                     }
                     return false;
@@ -8586,7 +8553,7 @@ Guardian* Unit::GetGuardianPet() const
             if(pet->HasUnitTypeMask(UNIT_MASK_GUARDIAN))
                 return (Guardian*)pet;
 
-        sLog.outError("Unit::GetGuardianPet: Guardian %u not exist.",GUID_LOPART(pet_guid));
+        sLog.outCrash("Unit::GetGuardianPet: Guardian " I64FMT " not exist.", pet_guid);
         const_cast<Unit*>(this)->SetPetGUID(0);
     }
 
@@ -8628,7 +8595,7 @@ void Unit::SetMinion(Minion *minion, bool apply)
         }
 
         // Can only have one pet. If a new one is summoned, dismiss the old one.
-        if(minion->isPet() || minion->m_Properties && minion->m_Properties->Category == SUMMON_CATEGORY_PET)
+        if(minion->IsGuardianPet())
         {
             if(Guardian* oldPet = GetGuardianPet())
             {
@@ -8650,7 +8617,7 @@ void Unit::SetMinion(Minion *minion, bool apply)
             }
         }
 
-        if(minion->HasUnitTypeMask(UNIT_MASK_GUARDIAN))
+        if(minion->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN))
         {
             if(AddUInt64Value(UNIT_FIELD_SUMMON, minion->GetGUID()))
             {
@@ -8663,7 +8630,7 @@ void Unit::SetMinion(Minion *minion, bool apply)
         minion->SetByteValue(UNIT_FIELD_BYTES_2, 1, GetByteValue(UNIT_FIELD_BYTES_2, 1));
 
         // FIXME: hack, speed must be set only at follow
-        if(GetTypeId() == TYPEID_PLAYER && minion->HasUnitTypeMask(UNIT_MASK_PET))
+        if(GetTypeId() == TYPEID_PLAYER && minion->isPet())
             for(uint8 i = 0; i < MAX_MOVE_TYPE; ++i)
                 minion->SetSpeed(UnitMoveType(i), m_speed_rate[i], true);
 
@@ -8693,11 +8660,9 @@ void Unit::SetMinion(Minion *minion, bool apply)
 
         m_Controlled.erase(minion);
 
-        if(minion->isPet() || minion->m_Properties && minion->m_Properties->Category == SUMMON_CATEGORY_PET)
-        {
+        if(minion->IsGuardianPet())
             if(GetPetGUID() == minion->GetGUID())
                 SetPetGUID(0);
-        }
 
         if (GetTypeId() == TYPEID_PLAYER)
         {
@@ -8730,15 +8695,15 @@ void Unit::SetMinion(Minion *minion, bool apply)
                     }
                     assert((*itr)->GetTypeId() == TYPEID_UNIT);
 
-                    if(!((Creature*)(*itr))->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN))
+                    if(!(*itr)->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN))
                         continue;
 
                     if(AddUInt64Value(UNIT_FIELD_SUMMON, (*itr)->GetGUID()))
                     {
                         //show another pet bar if there is no charm bar
-                        if(GetTypeId() == TYPEID_PLAYER && !GetCharmGUID() && ((Creature*)(*itr))->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN))
+                        if(GetTypeId() == TYPEID_PLAYER && !GetCharmGUID())
                         {
-                            if(((Creature*)(*itr))->isPet())
+                            if((*itr)->isPet())
                                 ((Player*)this)->PetSpellInitialize();
                             else
                                 ((Player*)this)->CharmSpellInitialize();
@@ -8927,9 +8892,7 @@ void Unit::RemoveAllControlled()
         {
             target->RemoveCharmAuras();
         }
-        else if(target->GetOwnerGUID() == GetGUID()
-            && target->GetTypeId() == TYPEID_UNIT
-            && ((Creature*)target)->HasUnitTypeMask(UNIT_MASK_SUMMON))
+        else if(target->GetOwnerGUID() == GetGUID() && target->isSummon())
         {
             ((TempSummon*)target)->UnSummon();
         }
@@ -9605,10 +9568,22 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                 // Custom crit by class
                 switch(spellProto->SpellFamilyName)
                 {
+                    case SPELLFAMILY_DRUID:
+                        // Starfire
+                        if (spellProto->SpellFamilyFlags[0] & 0x4 && spellProto->SpellIconID == 1485)
+                        {
+                            // Improved Insect Swarm
+                            if (AuraEffect const * aurEff = GetDummyAura(SPELLFAMILY_DRUID, 1771, 0))
+                                if (pVictim->GetAura(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_DRUID, 0x00000002))
+                                    crit_chance+=aurEff->GetAmount();
+                           break;
+                        }
+                    break;
                     case SPELLFAMILY_PALADIN:
-                        // Sacred Shield
+                        // Flash of light
                         if (spellProto->SpellFamilyFlags[0] & 0x40000000)
                         {
+                            // Sacred Shield
                             AuraEffect const* aura = pVictim->GetAuraEffect(58597,1);
                             if (aura && aura->GetCasterGUID() == GetGUID())
                                 crit_chance+=aura->GetAmount();
@@ -9636,7 +9611,6 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                             break;
                         }
                     break;
-
                 }
             }
             break;
@@ -11600,7 +11574,7 @@ void Unit::ModSpellCastTime(SpellEntry const* spellProto, int32 & castTime, Spel
     if(Player* modOwner = GetSpellModOwner())
         modOwner->ApplySpellMod(spellProto->Id, SPELLMOD_CASTING_TIME, castTime, spell);
 
-    if( !(spellProto->Attributes & (SPELL_ATTR_UNK4|SPELL_ATTR_UNK5)) && spellProto->DmgClass == SPELL_DAMAGE_CLASS_MAGIC && spellProto->SpellFamilyName)
+    if( !(spellProto->Attributes & (SPELL_ATTR_UNK4|SPELL_ATTR_TRADESPELL)) && spellProto->DmgClass == SPELL_DAMAGE_CLASS_MAGIC && spellProto->SpellFamilyName)
         castTime = int32( float(castTime) * GetFloatValue(UNIT_MOD_CAST_SPEED));
     else
     {
@@ -12220,6 +12194,15 @@ void Unit::RemoveFromWorld()
         {
             sLog.outCrash("Unit %u has charmer guid when removed from world", GetEntry());
             assert(false);
+        }
+
+        if(Unit *owner = GetOwner())
+        {
+            if(owner->m_Controlled.find(this) != owner->m_Controlled.end())
+            {
+                sLog.outCrash("Unit %u is in controlled list of %u when removed from world", GetEntry(), owner->GetEntry());
+                assert(false);
+            }
         }
 
         WorldObject::RemoveFromWorld();
@@ -14076,22 +14059,31 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type)
         return false;
 
     assert(type != CHARM_TYPE_POSSESS || charmer->GetTypeId() == TYPEID_PLAYER);
-    assert(type != CHARM_TYPE_VEHICLE || GetTypeId() == TYPEID_UNIT && IsVehicle());
+    assert((type == CHARM_TYPE_VEHICLE) == IsVehicle());
 
     sLog.outDebug("SetCharmedBy: charmer %u, charmed %u, type %u.", charmer->GetEntry(), GetEntry(), (uint32)type);
 
     if(this == charmer)
+    {
+        sLog.outCrash("Unit::SetCharmedBy: Unit %u is trying to charm itself!", GetEntry());
         return false;
+    }
 
     //if(hasUnitState(UNIT_STAT_UNATTACKABLE))
     //    return false;
 
     if(GetTypeId() == TYPEID_PLAYER && ((Player*)this)->GetTransport())
+    {
+        sLog.outCrash("Unit::SetCharmedBy: Player on transport is trying to charm %u", GetEntry());
         return false;
+    }
 
     // Already charmed
     if(GetCharmerGUID())
+    {
+        sLog.outCrash("Unit::SetCharmedBy: %u has already been charmed but %u is trying to charm it!", GetEntry(), charmer->GetEntry());
         return false;
+    }
 
     CastStop();
     CombatStop(); //TODO: CombatStop(true) may cause crash (interrupt spells)
@@ -14113,7 +14105,10 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type)
 
     // StopCastingCharm may remove a possessed pet?
     if(!IsInWorld())
+    {
+        sLog.outCrash("Unit::SetCharmedBy: %u is not in world but %u is trying to charm it!", GetEntry(), charmer->GetEntry());
         return false;
+    }
 
     // Set charmed
     setFaction(charmer->getFaction());
@@ -14491,17 +14486,12 @@ void Unit::HandleAuraEffect(AuraEffect * aureff, bool apply)
     {
         if (!aureff->IsApplied())
             return;
+
         aureff->SetApplied(false);
         // remove from list before mods removing (prevent cyclic calls, mods added before including to aura list - use reverse order)
         m_modAuras[aureff->GetAuraName()].remove(aureff);
         aureff->ApplyModifier(false, true);
-        Unit * caster = aureff->GetParentAura()->GetCaster();
-        if(caster && aureff->IsPersistent())
-        {
-            DynamicObject *dynObj = caster->GetDynObject(aureff->GetId(), aureff->GetEffIndex());
-            if (dynObj)
-                dynObj->RemoveAffected(this);
-        }
+
         // Remove all triggered by aura spells vs unlimited duration
         aureff->CleanupTriggeredSpells();
     }
@@ -14520,11 +14510,16 @@ void Unit::AddAura(uint32 spellId, Unit *target)
         return;
 
     uint8 eff_mask=0;
+    Unit * source = this;
 
     for(uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if(spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA || IsAreaAuraEffect(spellInfo->Effect[i]))
         {
+            // Area auras applied as linked should have target as source (otherwise they'll be removed after first aura update)
+            if (spellInfo->Effect[i] != SPELL_EFFECT_APPLY_AURA)
+                source = target;
+
             if(target->IsImmunedToSpellEffect(spellInfo, i))
                 continue;
             eff_mask|=1<<i;
@@ -14535,7 +14530,7 @@ void Unit::AddAura(uint32 spellId, Unit *target)
         return;
 
     // Because source is not give, use caster as source
-    Aura *Aur = new Aura(spellInfo, eff_mask, target, this, this);
+    Aura *Aur = new Aura(spellInfo, eff_mask, target, source, this);
     target->AddAura(Aur);
 }
 
@@ -14551,6 +14546,8 @@ void Unit::SetAuraStack(uint32 spellId, Unit *target, uint32 stack)
         aur->SetStackAmount(stack);
 }
 
+// This function is only used for area aura and creature addon
+// it should be removed in the future
 Aura * Unit::AddAuraEffect(const SpellEntry * spellInfo, uint8 effIndex, WorldObject *source, Unit* caster, int32 * basePoints)
 {
     // can't do that for passive auras - they stack from same caster so there is no way to get exact aura which should get effect
@@ -14559,8 +14556,14 @@ Aura * Unit::AddAuraEffect(const SpellEntry * spellInfo, uint8 effIndex, WorldOb
     sLog.outDebug("AddAuraEffect: spell id: %u, effect index: %u", spellInfo->Id, (uint32)effIndex);
 
     Aura *aur = GetAura(spellInfo->Id, caster->GetGUID());
+    // without this it may crash when shaman refresh totem? source is NULL
+    if(aur && aur->GetSourceGUID() != source->GetGUID())
+    {
+        RemoveAura(aur);
+        aur = NULL;
+    }
 
-    if (aur)
+    if(aur)
     {
         if(AuraEffect *aurEffect = CreateAuraEffect(aur, effIndex, basePoints))
             if(!aur->SetPartAura(aurEffect, effIndex))
@@ -14838,8 +14841,9 @@ void Unit::ExitVehicle()
     BuildHeartBeatMsg(&data);
     SendMessageToSet(&data, false);
 
-    if(vehicle->GetBase()->GetOwnerGUID() == GetGUID())
-        vehicle->Dismiss();
+    if(vehicle->GetBase()->HasUnitTypeMask(UNIT_MASK_MINION))
+        if(((Minion*)vehicle->GetBase())->GetOwner() == this)
+            vehicle->Dismiss();
 }
 
 void Unit::BuildMovementPacket(ByteBuffer *data) const
@@ -15063,22 +15067,38 @@ void Unit::RewardRage( uint32 damage, uint32 weaponSpeedHitFactor, bool attacker
     ModifyPower(POWER_RAGE, uint32(addRage*10));
 }
 
-void Unit::OutDebugInfo()
+void Unit::OutDebugInfo() const
 {
     sLog.outError("Unit::OutDebugInfo");
     sLog.outString("GUID "UI64FMTD", entry %u, type %u, name %s", GetGUID(), GetEntry(), (uint32)GetTypeId(), GetName());
     sLog.outString("OwnerGUID "UI64FMTD", MinionGUID "UI64FMTD", CharmerGUID "UI64FMTD", CharmedGUID "UI64FMTD, GetOwnerGUID(), GetMinionGUID(), GetCharmerGUID(), GetCharmGUID());
+    sLog.outString("In world %u, unit type mask %u", (uint32)(IsInWorld() ? 1 : 0), m_unitTypeMask);
+
     sLog.outStringInLine("Summon Slot: ");
     for(uint32 i = 0; i < MAX_SUMMON_SLOT; ++i)
         sLog.outStringInLine(UI64FMTD", ", m_SummonSlot[i]);
     sLog.outString();
+
     sLog.outStringInLine("Controlled List: ");
     for(ControlList::const_iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
         sLog.outStringInLine(UI64FMTD", ", (*itr)->GetGUID());
     sLog.outString();
+
     sLog.outStringInLine("Aura List: ");
     for(AuraMap::const_iterator itr = m_Auras.begin(); itr != m_Auras.end(); ++itr)
         sLog.outStringInLine("%u, ", itr->first);
     sLog.outString();
+
+    if(IsVehicle())
+    {
+        sLog.outStringInLine("Passenger List: ");
+        for(SeatMap::iterator itr = GetVehicleKit()->m_Seats.begin(); itr != GetVehicleKit()->m_Seats.end(); ++itr)
+            if(Unit *passenger = itr->second.passenger)
+                sLog.outStringInLine(UI64FMTD", ", passenger->GetGUID());
+        sLog.outString();
+    }
+
+    if(GetVehicle())
+        sLog.outString("On vehicle %u.", GetVehicleBase()->GetEntry());
 }
 

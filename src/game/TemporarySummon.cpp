@@ -216,8 +216,9 @@ void TempSummon::InitSummon()
     {
         if(owner->GetTypeId()==TYPEID_UNIT && ((Creature*)owner)->IsAIEnabled)
             ((Creature*)owner)->AI()->JustSummoned(this);
+        if(IsAIEnabled)
+            AI()->IsSummonedBy(owner);
     }
-    AI()->IsSummonedBy(owner);
 }
 
 void TempSummon::SetTempSummonType(TempSummonType type)
@@ -296,6 +297,11 @@ void Minion::RemoveFromWorld()
 
     m_owner->SetMinion(this, false);
     TempSummon::RemoveFromWorld();
+}
+
+bool Minion::IsGuardianPet() const
+{
+    return isPet() || m_Properties && m_Properties->Category == SUMMON_CATEGORY_PET;
 }
 
 Guardian::Guardian(SummonPropertiesEntry const *properties, Unit *owner) : Minion(properties, owner)

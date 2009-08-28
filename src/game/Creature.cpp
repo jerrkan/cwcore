@@ -204,7 +204,8 @@ void Creature::DisappearAndDie()
     //DestroyForNearbyPlayers();
     SetVisibility(VISIBILITY_OFF);
     ObjectAccessor::UpdateObjectVisibility(this);
-    setDeathState(JUST_DIED);
+    if(isAlive())
+        setDeathState(JUST_DIED);
 }
 
 void Creature::SearchFormationAndPath()
@@ -420,6 +421,9 @@ bool Creature::UpdateEntry(uint32 Entry, uint32 team, const CreatureData *data )
         ApplySpellImmune(0, IMMUNITY_EFFECT,SPELL_EFFECT_ATTACK_ME, true);
     }
 
+    if(GetCreatureInfo()->InhabitType & INHABIT_AIR)
+        AddUnitMovementFlag(MOVEMENTFLAG_FLY_MODE + MOVEMENTFLAG_FLYING);
+
     return true;
 }
 
@@ -558,10 +562,8 @@ void Creature::Update(uint32 diff)
             break;
         }
         case DEAD_FALLING:
-        {
-            if (!FallGround())
-                setDeathState(JUST_DIED);
-        }
+            GetMotionMaster()->UpdateMotion(diff);
+            break;
         default:
             break;
     }
@@ -1704,8 +1706,16 @@ bool Creature::canStartAttack(Unit const* who, bool force) const
         // TODO: should switch to range attack
         return false;
 
-    if(!force && (IsNeutralToAll() || !IsWithinDistInMap(who, GetAttackDistance(who) + m_CombatDistance)))
-        return false;
+    if(!force)
+    {
+        if(who->isInCombat())
+            if(Unit *victim = who->getAttackerForHelper())
+                if(IsWithinDistInMap(victim, sWorld.getConfig(CONFIG_CREATURE_FAMILY_ASSISTANCE_RADIUS)))
+                    force = true;
+
+        if(!force && (IsNeutralToAll() || !IsWithinDistInMap(who, GetAttackDistance(who) + m_CombatDistance)))
+            return false;
+    }
 
     if(!canCreatureAttack(who, force))
         return false;
@@ -1760,9 +1770,6 @@ void Creature::setDeathState(DeathState s)
         // always save boss respawn time at death to prevent crash cheating
         if(sWorld.getConfig(CONFIG_SAVE_RESPAWN_TIME_IMMEDIATELY) || isWorldBoss())
             SaveRespawnTime();
-
-        if (canFly() && FallGround())
-            return;
     }
     Unit::setDeathState(s);
 
@@ -1777,17 +1784,18 @@ void Creature::setDeathState(DeathState s)
             if ( LootTemplates_Skinning.HaveLootFor(GetCreatureInfo()->SkinLootId) )
                 SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
 
-        if (canFly() && FallGround())
-            return;
-
         SetNoSearchAssistance(false);
-        Unit::setDeathState(CORPSE);
     
         //Dismiss group if is leader
         if(m_formation && m_formation->getLeader() == this)
             m_formation->FormationReset(true);
+
+        if (canFly() && FallGround())
+            return;
+
+        Unit::setDeathState(CORPSE);
     }
-    if(s == JUST_ALIVED)
+    else if(s == JUST_ALIVED)
     {
         //if(isPet())
         //    setActive(true);
@@ -1819,9 +1827,9 @@ bool Creature::FallGround()
     if (fabs(ground_Z - z) < 0.1f)
         return false;
 
+    RemoveUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
+    GetMotionMaster()->MovePoint(EVENT_FALL_GROUND, x, y, ground_Z);
     Unit::setDeathState(DEAD_FALLING);
-    GetMotionMaster()->MovePoint(0, x, y, ground_Z);
-    Relocate(x, y, ground_Z);
     return true;
 }
 
@@ -2182,6 +2190,9 @@ bool Creature::canCreatureAttack(Unit const *pVictim, bool force) const
     if(!pVictim->isInAccessiblePlaceFor(this))
         return false;
 
+    if(!AI()->CanAIAttack(pVictim))
+        return false;
+
     if(sMapStore.LookupEntry(GetMapId())->IsDungeon())
         return true;
 
@@ -2250,9 +2261,6 @@ bool Creature::LoadCreaturesAddon(bool reload)
 
     if (cainfo->move_flags != 0)
         SetUnitMovementFlags(cainfo->move_flags);
-
-    if(GetCreatureInfo()->InhabitType & INHABIT_AIR)
-        AddUnitMovementFlag(MOVEMENTFLAG_FLY_MODE + MOVEMENTFLAG_FLYING);
 
     if(cainfo->auras)
     {

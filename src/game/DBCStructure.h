@@ -44,7 +44,7 @@ struct AchievementEntry
     uint32    factionFlag;                                  // 1 -1=all, 0=horde, 1=alliance
     uint32    mapID;                                        // 2 -1=none
     //uint32 parentAchievement;                             // 3 its Achievement parent (can`t start while parent uncomplete, use its Criteria if don`t have own, use its progress on begin)
-    //char *name[16];                                       // 4-19
+    char *name[16];                                         // 4-19
     //uint32 name_flags;                                    // 20
     //char *description[16];                                // 21-36
     //uint32 desc_flags;                                    // 37
@@ -1346,7 +1346,7 @@ struct SpellEntry
     uint32    Category;                                     // 1        m_category
     uint32    Dispel;                                       // 2        m_dispelType
     uint32    Mechanic;                                     // 3        m_mechanic
-    uint32    Attributes;                                   // 4        m_attribute
+    uint32    Attributes;                                   // 4        m_attributes
     uint32    AttributesEx;                                 // 5        m_attributesEx
     uint32    AttributesEx2;                                // 6        m_attributesExB
     uint32    AttributesEx3;                                // 7        m_attributesExC

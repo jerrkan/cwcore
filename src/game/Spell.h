@@ -27,6 +27,7 @@
 class Unit;
 class Player;
 class GameObject;
+class DynamicObject;
 class Aura;
 
 enum SpellCastTargetFlags
@@ -327,7 +328,7 @@ class Spell
         void EffectResurrect(uint32 i);
         void EffectParry(uint32 i);
         void EffectBlock(uint32 i);
-        void EffectMomentMove(uint32 i);
+        void EffectLeapForward(uint32 i);
         void EffectTransmitted(uint32 i);
         void EffectDisEnchant(uint32 i);
         void EffectInebriate(uint32 i);
@@ -555,6 +556,7 @@ class Spell
         GameObject* gameObjTarget;
         int32 damage;
         Aura * m_spellAura; // only used in DoAllEffectOnTarget
+        DynamicObject *m_spellDynObj; // only used in DoAllEffectOnTarget
 
         // this is set in Spell Hit, but used in Apply Aura handler
         DiminishingLevels m_diminishLevel;

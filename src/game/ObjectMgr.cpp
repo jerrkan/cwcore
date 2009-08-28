@@ -1033,8 +1033,9 @@ uint32 ObjectMgr::ChooseDisplayId(uint32 team, const CreatureInfo *cinfo, const 
             case 28511: // Eye of Acherus
             case 33114: // Flame Leviathan Seat (model 24914 chair)
             case 33167: // Salvaged Demolisher Mechanic Seat
-            case 33218: // Pyrite Safety Container
                 return cinfo->DisplayID_A[0];
+            case 33218: // Pyrite Safety Container
+                return cinfo->DisplayID_A[1];
             case 33143: // Overload Control Device
                 return cinfo->DisplayID_H[0];
             default:
@@ -2370,10 +2371,8 @@ void ObjectMgr::LoadItemRequiredTarget()
                 if (pItemProto->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_USE ||
                     pItemProto->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_NO_DELAY_USE)
                 {
-                    SpellScriptTarget::const_iterator lower = spellmgr.GetBeginSpellScriptTarget(pSpellInfo->Id);
-                    SpellScriptTarget::const_iterator upper = spellmgr.GetEndSpellScriptTarget(pSpellInfo->Id);
-
-                    if (lower != upper)
+                    SpellScriptTargetBounds bounds = spellmgr.GetSpellScriptTargetBounds(pSpellInfo->Id);
+                    if (bounds.first != bounds.second)
                         break;
 
                     for (int j = 0; j < 3; ++j)

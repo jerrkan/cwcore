@@ -1103,7 +1103,7 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         {
             m_attackers.erase(pAttacker);
         }
-        Unit * getAttackerForHelper()                       // If someone wants to help, who to give them
+        Unit * getAttackerForHelper() const                 // If someone wants to help, who to give them
         {
             if (getVictim() != NULL)
                 return getVictim();
@@ -1644,7 +1644,6 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         }
         void SetVisibleAura(uint8 slot, Aura * aur){ m_visibleAuras[slot]=aur; }
         void RemoveVisibleAura(uint8 slot){ m_visibleAuras.erase(slot); }
-        void SendAuraVisualForSelf(bool apply, uint32 id, uint8 effmask = 0);
 
         AuraMap      & GetAuras()       { return m_Auras; }
         AuraMap const& GetAuras() const { return m_Auras; }
@@ -1691,7 +1690,6 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         void setTransForm(uint32 spellid) { m_transform = spellid;}
         uint32 getTransForm() const { return m_transform;}
 
-        DynamicObject* GetDynObject(uint32 spellId, uint32 effIndex);
         DynamicObject* GetDynObject(uint32 spellId);
         void AddDynObject(DynamicObject* dynObj);
         void RemoveDynObject(uint32 spellid);
@@ -1872,7 +1870,7 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
 
         virtual float GetFollowAngle() const { return M_PI/2; }
 
-        void OutDebugInfo();
+        void OutDebugInfo() const;
         virtual bool isBeingLoaded() const { return false;}
     protected:
         explicit Unit ();

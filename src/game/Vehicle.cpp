@@ -44,6 +44,8 @@ Vehicle::Vehicle(Unit *unit, VehicleEntry const *vehInfo) : me(unit), m_vehicleI
 
 Vehicle::~Vehicle()
 {
+    for(SeatMap::const_iterator itr = m_Seats.begin(); itr != m_Seats.end(); ++itr)
+        assert(!itr->second.passenger);
 }
 
 void Vehicle::Install()
@@ -198,7 +200,7 @@ void Vehicle::InstallAccessory(uint32 entry, int8 seatId)
         passenger->ExitVehicle(); // this should not happen
     }
 
-    Creature *accessory = me->SummonCreature(entry, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, 0);
+    Creature *accessory = me->SummonCreature(entry, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 30000);
     if(!accessory)
         return;
     accessory->AddUnitTypeMask(UNIT_MASK_ACCESSORY);
@@ -273,7 +275,7 @@ bool Vehicle::AddPassenger(Unit *unit, int8 seatId)
         }
 
         if(((Creature*)me)->IsAIEnabled)
-            ((Creature*)me)->AI()->PassengerBoarded(unit, seat->first);
+            ((Creature*)me)->AI()->PassengerBoarded(unit, seat->first, true);
     }
 
     //if(unit->GetTypeId() == TYPEID_PLAYER)
@@ -314,7 +316,7 @@ void Vehicle::RemovePassenger(Unit *unit)
         me->RemoveCharmedBy(unit);
 
     if(me->GetTypeId() == TYPEID_UNIT && ((Creature*)me)->IsAIEnabled)
-        ((Creature*)me)->AI()->PassengerLeft(unit, seat->first);
+        ((Creature*)me)->AI()->PassengerBoarded(unit, seat->first, false);
 
     // only for flyable vehicles?
     //CastSpell(this, 45472, true);                           // Parachute

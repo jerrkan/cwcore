@@ -18,3 +18,78 @@
 
 #include "precompiled.h"
 #include "def_ulduar.h"
+#include "Vehicle.h"
+
+#define SPELL_ARM_DEAD_DAMAGE   HEROIC(63629,63979)
+#define SPELL_TWO_ARM_SMASH     HEROIC(63356,64003)
+#define SPELL_ONE_ARM_SMASH     HEROIC(63573,64006)
+#define SPELL_STONE_SHOUT       HEROIC(63716,64005)
+#define SPELL_PETRIFY_BREATH    HEROIC(62030,63980)
+
+#define SPELL_STONE_GRIP        HEROIC(62166,63981)
+#define SPELL_ARM_SWEEP         HEROIC(63766,63983)
+
+struct TRINITY_DLL_DECL boss_kologarnAI : public BossAI
+{
+    boss_kologarnAI(Creature *c) : BossAI(c, BOSS_KOLOGARN), vehicle(me->GetVehicleKit()),
+        leftArm(NULL), rightArm(NULL)
+    {
+        assert(vehicle);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
+    }
+
+    void Reset()
+    {
+        _Reset();
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
+    }
+
+    Vehicle *vehicle;
+    Creature *leftArm, *rightArm;
+
+    void AttackStart(Unit *who)
+    {
+        me->Attack(who, false);
+    }
+
+    void PassengerBoarded(Unit *who, int8 seatId, bool apply)
+    {
+        if(who->GetEntry() == 32933)
+            leftArm = apply ? CAST_CRE(who) : NULL;
+        else if(who->GetEntry() == 32934)
+            rightArm = apply ? CAST_CRE(who) : NULL;
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if(!UpdateVictim())
+            return;
+
+        if (me->isAttackReady())
+        {
+            //If we are within range melee the target
+            if (me->IsWithinMeleeRange(me->getVictim()))
+            {
+                Unit *attacker = me;
+                if(leftArm) attacker = leftArm;
+                if(rightArm && rand()%2) attacker = rightArm;
+                attacker->AttackerStateUpdate(me->getVictim());
+                me->resetAttackTimer();
+            }
+        }
+    }
+};
+
+CreatureAI* GetAI_boss_kologarn(Creature* pCreature)
+{
+    return new boss_kologarnAI (pCreature);
+}
+
+void AddSC_boss_kologarn()
+{
+    Script *newscript;
+    newscript = new Script;
+    newscript->Name="boss_kologarn";
+    newscript->GetAI = &GetAI_boss_kologarn;
+    newscript->RegisterSelf();
+}
