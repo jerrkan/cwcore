@@ -830,7 +830,7 @@ bool ChatHandler::HandleNamegoCommand(const char* args)
             Map* cMap = target->GetMap();
             if (cMap->Instanceable() && cMap->GetInstanceId() != pMap->GetInstanceId())
             {
-                target->UnbindInstance(pMap->GetInstanceId(), target->GetDifficulty(), true);
+                target->UnbindInstance(pMap->GetInstanceId(), target->GetDungeonDifficulty(), true);
                 // cannot summon from instance to instance
                 //PSendSysMessage(LANG_CANNOT_SUMMON_TO_INST,nameLink.c_str());
                 //SetSentErrorMessage(true);
