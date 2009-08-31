@@ -47,6 +47,7 @@ class LoginQueryHolder;
 class CharacterHandler;
 
 #define NUM_ACCOUNT_DATA_TYPES 8
+#define GLOBAL_CACHE_MASK           0x15
 
 struct AccountData
 {
@@ -188,6 +189,7 @@ class TRINITY_DLL_SPEC WorldSession
         // Account Data
         AccountData *GetAccountData(uint32 type) { return &m_accountData[type]; }
         void SetAccountData(uint32 type, time_t time_, std::string data);
+		void SendAccountDataTimes(uint32 mask);
         void LoadAccountData();
         void LoadTutorialsData();
         void SendTutorialsData();
@@ -560,6 +562,7 @@ class TRINITY_DLL_SPEC WorldSession
 
         void HandleReclaimCorpseOpcode( WorldPacket& recvPacket );
         void HandleCorpseQueryOpcode( WorldPacket& recvPacket );
+        void HandleCorpseMapPositionQuery( WorldPacket& recvPacket );
         void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
         void HandleSummonResponseOpcode(WorldPacket& recv_data);
 

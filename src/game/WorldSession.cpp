@@ -601,6 +601,18 @@ void WorldSession::SetAccountData(uint32 type, time_t time_, std::string data)
     CharacterDatabase.CommitTransaction ();
 }
 
+void WorldSession::SendAccountDataTimes(uint32 mask)
+{
+    WorldPacket data( SMSG_ACCOUNT_DATA_TIMES, 4+1+4+8*4 ); // changed in WotLK
+    data << uint32(time(NULL));                             // unix time of something
+    data << uint8(1);
+    data << uint32(mask);                                   // type mask
+    for(uint32 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
+        if(mask & (1 << i))
+            data << uint32(GetAccountData(AccountDataType(i))->Time);// also unix time
+    SendPacket(&data);
+}
+
 void WorldSession::LoadTutorialsData()
 {
     for ( int aX = 0 ; aX < 8 ; ++aX )
