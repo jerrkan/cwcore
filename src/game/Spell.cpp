@@ -349,7 +349,6 @@ void SpellCastTargets::write ( WorldPacket * data )
         else
             *data << uint8(0);
 
-        *data << m_srcX << m_srcY << m_srcZ;
     }
 
     if( m_targetMask & TARGET_FLAG_DEST_LOCATION )
