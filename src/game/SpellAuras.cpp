@@ -592,6 +592,12 @@ AuraEffect* CreateAuraEffect(Aura * parentAura, uint32 effIndex, int32 *currentB
     {
         //assert(source->isType(TYPEMASK_UNIT));
         assert(IS_UNIT_GUID(sourceGuid));
+        if(!parentAura->GetUnitSource())
+        {
+            // TODO: there is a crash here when a new aura is added by source aura update, confirmed
+            sLog.outCrash("CreateAuraEffect: cannot find source " I64FMT " in world for spell %u", sourceGuid, parentAura->GetId());
+            return NULL;
+        }
         return new AreaAuraEffect(parentAura, effIndex, currentBasePoints);
     }
     else if (parentAura->GetSpellProto()->Effect[effIndex] == SPELL_EFFECT_APPLY_AURA)
@@ -673,23 +679,18 @@ void Aura::Update(uint32 diff)
 
     // Apply charged spellmods for channeled auras
     // used for example when triggered spell of spell:10 is modded
-    Spell * modSpell = NULL;
-    Unit* caster = NULL;
-    if (IS_PLAYER_GUID(GetCasterGUID()))
-    {
-        caster = GetCaster();
-        if (caster)
-        {
-            modSpell = ((Player*)caster)->FindCurrentSpellBySpellId(GetId());
-            ((Player*)caster)->SetSpellModTakingSpell(modSpell, true);
-        }
-    }
+    Spell *modSpell = NULL;
+    Player *modOwner = NULL;
+    if(IS_PLAYER_GUID(GetCasterGUID()) && (modOwner = (Player*)GetCaster())
+        && (modSpell = modOwner->FindCurrentSpellBySpellId(GetId())))
+        modOwner->SetSpellModTakingSpell(modSpell, true);
+
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         if (m_partAuras[i])
             m_partAuras[i]->Update(diff);
 
-    if (caster)
-        ((Player*)caster)->SetSpellModTakingSpell(modSpell, false);
+    if (modOwner)
+        modOwner->SetSpellModTakingSpell(modSpell, false);
 }
 
 void AuraEffect::Update(uint32 diff)

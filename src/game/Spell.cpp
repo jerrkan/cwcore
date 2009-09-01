@@ -2824,6 +2824,7 @@ void Spell::cast(bool skipCheck)
     if (m_caster->GetTypeId()==TYPEID_PLAYER)
     {
         // Set spell which will drop charges for triggered cast spells
+        // if not successfully casted, will be remove in finish(false)
         ((Player*)m_caster)->SetSpellModTakingSpell(this, true);
     }
 
@@ -2835,6 +2836,14 @@ void Spell::cast(bool skipCheck)
         {
             SendCastResult(castResult);
             SendInterrupted(0);
+            //restore spell mods
+            if (m_caster->GetTypeId() == TYPEID_PLAYER)
+            {
+                ((Player*)m_caster)->RestoreSpellMods(this);
+                // cleanup after mod system
+                // triggered spell pointer can be not removed in some cases
+                ((Player*)m_caster)->SetSpellModTakingSpell(this, false);
+            }
             finish(false);
             SetExecutedCurrently(false);
             return;
@@ -2847,6 +2856,15 @@ void Spell::cast(bool skipCheck)
     if(m_spellState == SPELL_STATE_FINISHED)
     {
         SendInterrupted(0);
+        //restore spell mods
+        if (m_caster->GetTypeId() == TYPEID_PLAYER)
+        {
+            ((Player*)m_caster)->RestoreSpellMods(this);
+            // cleanup after mod system
+            // triggered spell pointer can be not removed in some cases
+            ((Player*)m_caster)->SetSpellModTakingSpell(this, false);
+        }
+        finish(false);
         SetExecutedCurrently(false);
         return;
     }
@@ -3056,6 +3074,9 @@ uint64 Spell::handle_delayed(uint64 t_offset)
         }
     }
 
+    if (m_caster->GetTypeId()==TYPEID_PLAYER)
+        ((Player*)m_caster)->SetSpellModTakingSpell(this, false);
+
     // All targets passed - need finish phase
     if (next_time == 0)
     {
@@ -3069,9 +3090,6 @@ uint64 Spell::handle_delayed(uint64 t_offset)
     }
     else
     {
-        if (m_caster->GetTypeId()==TYPEID_PLAYER)
-            ((Player*)m_caster)->SetSpellModTakingSpell(this, false);
-
         // spell is unfinished, return next execution time
         return next_time;
     }
@@ -3325,17 +3343,7 @@ void Spell::finish(bool ok)
     }
 
     if(!ok)
-    {
-        //restore spell mods
-        if (m_caster->GetTypeId() == TYPEID_PLAYER)
-        {
-            ((Player*)m_caster)->RestoreSpellMods(this);
-            // cleanup after mod system
-            // triggered spell pointer can be not removed in some cases
-            ((Player*)m_caster)->SetSpellModTakingSpell(this, false);
-        }
         return;
-    }
 
     if (m_caster->GetTypeId()==TYPEID_UNIT && ((Creature*)m_caster)->isSummon())
     {

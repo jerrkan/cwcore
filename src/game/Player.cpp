@@ -2434,6 +2434,13 @@ void Player::GiveXP(uint32 xp, Unit* victim)
 
     uint32 level = getLevel();
 
+    // Favored experience increase START
+    uint32 zone = GetZoneId();
+    float favored_exp_mult = 0;
+    if( (HasAura(32096) || HasAura(32098)) && (zone == 3483 || zone == 3562 || zone == 3836 || zone == 3713 || zone == 3714) ) favored_exp_mult = 0.05; // Thrallmar's Favor and Honor Hold's Favor
+    xp *= (1 + favored_exp_mult);
+    // Favored experience increase END
+
     // XP to money conversion processed in Player::RewardQuest
     if(level >= sWorld.getConfig(CONFIG_MAX_PLAYER_LEVEL))
         return;
@@ -3763,7 +3770,7 @@ bool Player::resetTalents(bool no_cost)
             continue;
         
         // Re-use pre-dual talent way of resetting talents, to ensure talents aren't being stored in spell storage.
-        for(uint8 rank = 0; rank < MAX_TALENT_RANK; rank++)
+        for(uint8 rank = 0; rank < MAX_TALENT_RANK; ++rank)
         {
             for(PlayerSpellMap::iterator itr = GetSpellMap().begin(); itr != GetSpellMap().end();)
             {
@@ -6127,10 +6134,21 @@ void Player::RewardReputation(Unit *pVictim, float rate)
         }
     }
 
-    if(Rep->repfaction1 && (!Rep->team_dependent || GetTeam()==ALLIANCE))
+    // Favored reputation increase START
+    uint32 zone = GetZoneId();
+    uint32 team = GetTeam();
+    float favored_rep_mult = 0;
+
+    if( (HasAura(32096) || HasAura(32098)) && (zone == 3483 || zone == 3562 || zone == 3836 || zone == 3713 || zone == 3714) ) favored_rep_mult = 0.25; // Thrallmar's Favor and Honor Hold's Favor
+    else if( HasAura(30754) && (Rep->repfaction1 == 609 || Rep->repfaction2 == 609) && !ChampioningFaction )                   favored_rep_mult = 0.25; // Cenarion Favor
+
+    if(favored_rep_mult > 0) favored_rep_mult *= 2; // Multiplied by 2 because the reputation is divided by 2 for some reason (See "donerep1 / 2" and "donerep2 / 2") -- if you know why this is done, please update/explain :)
+    // Favored reputation increase END
+
+    if(Rep->repfaction1 && (!Rep->team_dependent || team == ALLIANCE))
     {
         int32 donerep1 = CalculateReputationGain(pVictim->getLevel(), Rep->repvalue1, ChampioningFaction ? ChampioningFaction : Rep->repfaction1, false);
-        donerep1 = int32(donerep1*rate);
+        donerep1 = int32(donerep1*(rate + favored_rep_mult));
         FactionEntry const *factionEntry1 = sFactionStore.LookupEntry(ChampioningFaction ? ChampioningFaction : Rep->repfaction1);
         uint32 current_reputation_rank1 = GetReputationMgr().GetRank(factionEntry1);
         if (factionEntry1 && current_reputation_rank1 <= Rep->reputation_max_cap1)
@@ -6145,10 +6163,10 @@ void Player::RewardReputation(Unit *pVictim, float rate)
         }
     }
 
-    if(Rep->repfaction2 && (!Rep->team_dependent || GetTeam()==HORDE))
+    if(Rep->repfaction2 && (!Rep->team_dependent || team == HORDE))
     {
         int32 donerep2 = CalculateReputationGain(pVictim->getLevel(), Rep->repvalue2, ChampioningFaction ? ChampioningFaction : Rep->repfaction2, false);
-        donerep2 = int32(donerep2*rate);
+        donerep2 = int32(donerep2*(rate + favored_rep_mult));
         FactionEntry const *factionEntry2 = sFactionStore.LookupEntry(ChampioningFaction ? ChampioningFaction : Rep->repfaction2);
         uint32 current_reputation_rank2 = GetReputationMgr().GetRank(factionEntry2);
         if (factionEntry2 && current_reputation_rank2 <= Rep->reputation_max_cap2)
@@ -14789,7 +14807,7 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
     SetDungeonDifficulty(fields[39].GetUInt32());                  // may be changed in _LoadGroup
     std::string taxi_nodes = fields[38].GetCppString();
 
-#define RelocateToHomebind() mapId = m_homebindMapId; instanceId = 0; Relocate(m_homebindX, m_homebindY, m_homebindZ)
+#define RelocateToHomebind(){ mapId = m_homebindMapId; instanceId = 0; Relocate(m_homebindX, m_homebindY, m_homebindZ); }
 
     _LoadGroup(holder->GetResult(PLAYER_LOGIN_QUERY_LOADGROUP));
 
@@ -14821,9 +14839,9 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
     _LoadBGData(holder->GetResult(PLAYER_LOGIN_QUERY_LOADBGDATA));
 
     MapEntry const * mapEntry = sMapStore.LookupEntry(mapId);
-    if(!IsPositionValid())
+    if(!mapEntry || !IsPositionValid())
     {
-        sLog.outError("Player (guidlow %d) have invalid coordinates (X: %f Y: %f Z: %f O: %f). Teleport to default race/class locations.",guid,GetPositionX(),GetPositionY(),GetPositionZ(),GetOrientation());
+        sLog.outError("Player (guidlow %d) have invalid coordinates (MapId: %u X: %f Y: %f Z: %f O: %f). Teleport to default race/class locations.",guid,mapId,GetPositionX(),GetPositionY(),GetPositionZ(),GetOrientation());
         RelocateToHomebind();
     }
     // Player was saved in Arena or Bg
@@ -14852,7 +14870,14 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
             // Do not look for instance if bg not found
             const WorldLocation& _loc = GetBattleGroundEntryPoint();
             mapId = _loc.GetMapId(); instanceId = 0;
-            Relocate(&_loc);
+
+            if(mapId == MAPID_INVALID) // Battleground Entry Point not found (???)
+            {
+                sLog.outError("Player (guidlow %d) was in BG in database, but BG was not found, and entry point was invalid! Teleport to default race/class locations.",guid);
+                RelocateToHomebind();
+            } else {
+                Relocate(&_loc);
+            }
 
             // We are not in BG anymore
             m_bgData.bgInstanceID = 0;
@@ -14949,7 +14974,7 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
     // Map could be changed before
     mapEntry = sMapStore.LookupEntry(mapId);
     // client without expansion support
-    if(GetSession()->Expansion() < mapEntry->Expansion())
+    if(mapEntry && GetSession()->Expansion() < mapEntry->Expansion())
     {
         sLog.outDebug("Player %s using client without required expansion tried login at non accessible map %u", GetName(), mapId);
         RelocateToHomebind();
@@ -17601,10 +17626,7 @@ void Player::SetSpellModTakingSpell(Spell * spell, bool apply)
     if (apply && spell->getState() == SPELL_STATE_FINISHED)
         return;
 
-    if (apply)
-        m_spellModTakingSpell = spell;
-    else
-        m_spellModTakingSpell = NULL;
+    m_spellModTakingSpell = apply ? spell : NULL;
 }
 
 // send Proficiency
@@ -21151,9 +21173,9 @@ void Player::LearnTalent(uint32 talentId, uint32 talentRank)
     if( (getClassMask() & talentTabInfo->ClassMask) == 0 )
         return;
 
-    // find current max talent rank
-    uint8 curtalent_maxrank = 0;
-    for(uint8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
+    // find current max talent rank (0~5)
+    uint8 curtalent_maxrank = 0; // 0 = not learned any rank
+    for(int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
     {
         if(talentInfo->RankID[rank] && HasSpell(talentInfo->RankID[rank]))
         {
@@ -21202,13 +21224,13 @@ void Player::LearnTalent(uint32 talentId, uint32 talentRank)
             {
                 if (tmpTalent->TalentTab == tTab)
                 {
-                    for (int j = 0; j < MAX_TALENT_RANK; j++)
+                    for (uint8 rank = 0; rank < MAX_TALENT_RANK; rank++)
                     {
-                        if (tmpTalent->RankID[j] != 0)
+                        if (tmpTalent->RankID[rank] != 0)
                         {
-                            if (HasSpell(tmpTalent->RankID[j]))
+                            if (HasSpell(tmpTalent->RankID[rank]))
                             {
-                                spentPoints += j + 1;
+                                spentPoints += (rank + 1);
                             }
                         }
                     }
@@ -21288,9 +21310,9 @@ void Player::LearnPetTalent(uint64 petGuid, uint32 talentId, uint32 talentRank)
     if(!((1 << pet_family->petTalentType) & talentTabInfo->petTalentMask))
         return;
 
-    // find current max talent rank
-    uint8 curtalent_maxrank = 0;
-    for(uint8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
+    // find current max talent rank (0~5)
+    uint8 curtalent_maxrank = 0; // 0 = not learned any rank
+    for(int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
     {
         if(talentInfo->RankID[rank] && pet->HasSpell(talentInfo->RankID[rank]))
         {
@@ -21477,9 +21499,9 @@ void Player::BuildPlayerTalentsInfoData(WorldPacket *data)
                     if(talentInfo->TalentTab != talentTabId)
                         continue;
 
-                    // find max talent rank
-                    uint8 curtalent_maxrank = 0;
-                    for(uint8 rank = MAX_TALENT_RANK-1; rank > 0; --rank)
+                    // find max talent rank (0~4)
+                    int8 curtalent_maxrank = -1;
+                    for(int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
                     {
                         if(talentInfo->RankID[rank] && HasTalent(talentInfo->RankID[rank], specIdx))
                         {
@@ -21489,7 +21511,7 @@ void Player::BuildPlayerTalentsInfoData(WorldPacket *data)
                     }
 
                     // not learned talent
-                    if(!curtalent_maxrank)
+                    if(curtalent_maxrank < 0)
                         continue;
 
                     *data << uint32(talentInfo->TalentID);  // Talent.dbc
@@ -21554,9 +21576,9 @@ void Player::BuildPetTalentsInfoData(WorldPacket *data)
             if(talentInfo->TalentTab != talentTabId)
                 continue;
 
-            // find max talent rank
-            uint8 curtalent_maxrank = 0;
-            for(uint8 rank = MAX_TALENT_RANK-1; rank > 0; --rank)
+            // find max talent rank (0~4)
+            int8 curtalent_maxrank = -1;
+            for(int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
             {
                 if(talentInfo->RankID[rank] && pet->HasSpell(talentInfo->RankID[rank]))
                 {
@@ -21566,7 +21588,7 @@ void Player::BuildPetTalentsInfoData(WorldPacket *data)
             }
 
             // not learned talent
-            if(!curtalent_maxrank)
+            if(curtalent_maxrank < 0)
                 continue;
 
             *data << uint32(talentInfo->TalentID);          // Talent.dbc
@@ -21943,7 +21965,7 @@ void Player::ActivateSpec(uint8 spec)
                 continue;
 
             // remove all talent ranks, starting at highest rank
-            for(uint8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
+            for(int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
             {
                 if(talentInfo->RankID[rank] != 0 && HasTalent(talentInfo->RankID[rank], m_activeSpec))
                 {
@@ -21984,7 +22006,7 @@ void Player::ActivateSpec(uint8 spec)
                 continue;
 
             // learn highest talent rank that exists in newly activated spec
-            for(uint8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
+            for(int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
             {
                 if(talentInfo->RankID[rank] && HasTalent(talentInfo->RankID[rank], m_activeSpec))
                 {
