@@ -163,6 +163,12 @@ struct TRINITY_DLL_DECL boss_the_lurker_belowAI : public Scripted_NoMovementAI
         }
     }
 
+    void MovementInform(uint32 type, uint32 id)
+    {
+        if(type == ROTATE_MOTION_TYPE)
+            me->SetReactState(REACT_AGGRESSIVE);
+    }
+
     void UpdateAI(const uint32 diff)
     {
         if(!CanStartEvent)//boss is invisible, don't attack
@@ -216,10 +222,8 @@ struct TRINITY_DLL_DECL boss_the_lurker_belowAI : public Scripted_NoMovementAI
             if (SpoutTimer < diff)
             {
                 m_creature->MonsterTextEmote(EMOTE_SPOUT,0,true);
-                if(rand()%2)
-                    m_creature->StartAutoRotate(CREATURE_ROTATE_LEFT,20000);
-                else
-                    m_creature->StartAutoRotate(CREATURE_ROTATE_RIGHT,20000);
+                me->SetReactState(REACT_PASSIVE);
+                me->GetMotionMaster()->MoveRotate(20000, rand()%2 ? ROTATE_DIRECTION_LEFT : ROTATE_DIRECTION_RIGHT);
                 SpoutTimer = 45000;
                 WhirlTimer = 20000;//whirl directly after spout
                 RotTimer = 20000;
@@ -298,7 +302,7 @@ struct TRINITY_DLL_DECL boss_the_lurker_belowAI : public Scripted_NoMovementAI
                 }else WaterboltTimer -= diff;
             }
 
-            if (!UpdateVictim())
+            if (!UpdateCombatState())
                 return;
 
             DoMeleeAttackIfReady();
@@ -407,7 +411,7 @@ struct TRINITY_DLL_DECL mob_coilfang_ambusherAI : public Scripted_NoMovementAI
             if (m_creature->getVictim())
                 DoCast(m_creature->getVictim(), SPELL_SPREAD_SHOT, true);
 
-            MultiShotTimer = 10000;
+            MultiShotTimer = 10000+rand()%10000;
             ShootBowTimer += 1500;//add global cooldown
         }else MultiShotTimer -= diff;
 
@@ -418,7 +422,7 @@ struct TRINITY_DLL_DECL mob_coilfang_ambusherAI : public Scripted_NoMovementAI
             int bp0 = 1100;
             if (target)
                 m_creature->CastCustomSpell(target,SPELL_SHOOT,&bp0,NULL,NULL,true);
-            ShootBowTimer = 4000;
+            ShootBowTimer = 4000+rand()%5000;
             MultiShotTimer += 1500;//add global cooldown
         }else ShootBowTimer -= diff;
     }
