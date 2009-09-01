@@ -300,6 +300,7 @@ Player::Player (WorldSession *session): Unit(), m_achievementMgr(this), m_reputa
     m_ExtraFlags = 0;
 
     m_spellModTakingSpell = NULL;
+    m_pad = 0;
 
     // players always accept
     if(GetSession()->GetSecurity() == SEC_PLAYER)
@@ -471,6 +472,7 @@ Player::Player (WorldSession *session): Unit(), m_achievementMgr(this), m_reputa
     //m_unit_movement_flags = 0;
 
     m_mover = this;
+    m_movedPlayer = this;
     m_seer = this;
 
     m_contestedPvPTimer = 0;
@@ -1122,6 +1124,14 @@ void Player::Update( uint32 p_time )
     if(!IsInWorld())
         return;
 
+    if(GetHealth() && (isDead() || HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)))
+    {
+        sLog.outError("Player %s(GUID: %u) was dead and had health > 0. This _might_ be an exploit attempt. They have been kicked.", GetName(), GetGUIDLow());
+        SetHealth(0);
+        GetSession()->KickPlayer();
+        return;
+    }
+
     // undelivered mail
     if(m_nextMailDelivereTime && m_nextMailDelivereTime <= time(NULL))
     {
@@ -1134,7 +1144,15 @@ void Player::Update( uint32 p_time )
 
     // If this is set during update SetSpellModTakingSpell call is missing somewhere in the code
     // Having this would prevent more aura charges to be dropped, so let's crash
-    assert (!m_spellModTakingSpell);
+    //assert (!m_spellModTakingSpell);
+    if(m_pad || m_spellModTakingSpell)
+    {
+        sLog.outCrash("Player has m_pad %u during update!", m_pad);
+        if(m_spellModTakingSpell)
+            sLog.outCrash("Player has m_spellModTakingSpell %u during update!", m_spellModTakingSpell->m_spellInfo->Id);
+        assert(false);
+        m_spellModTakingSpell = NULL;
+    }
 
     //used to implement delayed far teleports
     SetCanDelayTeleport(true);
@@ -19185,12 +19203,33 @@ void Player::InitPrimaryProfessions()
     SetFreePrimaryProfessions(sWorld.getConfig(CONFIG_MAX_PRIMARY_TRADE_SKILL));
 }
 
+Unit * Player::GetSelectedUnit() const
+{
+    if(m_curSelection)
+        return ObjectAccessor::GetUnit(*this, m_curSelection);
+    return NULL;
+}
+
+Player * Player::GetSelectedPlayer() const
+{
+    if(m_curSelection)
+        return ObjectAccessor::GetPlayer(*this, m_curSelection);
+    return NULL;
+}
+
 void Player::SendComboPoints()
 {
     Unit *combotarget = ObjectAccessor::GetUnit(*this, m_comboTarget);
     if (combotarget)
     {
-        WorldPacket data(SMSG_UPDATE_COMBO_POINTS, combotarget->GetPackGUID().size()+1);
+        WorldPacket data;
+        if(m_mover != this)
+        {
+            data.Initialize(SMSG_PET_UPDATE_COMBO_POINTS, m_mover->GetPackGUID().size()+combotarget->GetPackGUID().size()+1);
+            data.append(m_mover->GetPackGUID());
+        }
+        else
+            data.Initialize(SMSG_UPDATE_COMBO_POINTS, combotarget->GetPackGUID().size()+1);
         data.append(combotarget->GetPackGUID());
         data << uint8(m_comboPoints);
         GetSession()->SendPacket(&data);
@@ -21129,7 +21168,7 @@ void Player::HandleFall(MovementInfo const& movementInfo)
                 EnvironmentalDamage(DAMAGE_FALL, damage);
 
                 // recheck alive, might have died of EnvironmentalDamage
-                if (isAlive())
+                if (damage < GetHealth())
                     GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, uint32(z_diff*100));
             }
 

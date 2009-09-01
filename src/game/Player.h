@@ -1394,6 +1394,8 @@ class MANGOS_DLL_SPEC Player : public Unit
         QuestStatusMap& getQuestStatusMap() { return mQuestStatus; };
 
         const uint64& GetSelection( ) const { return m_curSelection; }
+        Unit *GetSelectedUnit() const;
+        Player *GetSelectedPlayer() const;
         void SetSelection(const uint64 &guid) { m_curSelection = guid; SetUInt64Value(UNIT_FIELD_TARGET, guid); }
 
         uint8 GetComboPoints() { return m_comboPoints; }
@@ -2076,7 +2078,12 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         void SetClientControl(Unit* target, uint8 allowMove);
 
-        void SetMover(Unit* target) { m_mover = target; }
+        void SetMover(Unit* target)
+        {
+            m_mover->m_movedPlayer = NULL;
+            m_mover = target;
+            m_mover->m_movedPlayer = this;
+        }
         void SetSeer(WorldObject *target) { m_seer = target; }
         void SetViewpoint(WorldObject *target, bool apply);
         WorldObject* GetViewpoint() const;
@@ -2225,6 +2232,7 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         uint32 GetChampioningFaction() const { return m_ChampioningFaction; }
         void SetChampioningFaction(uint32 faction) { m_ChampioningFaction = faction; }
+Spell * m_spellModTakingSpell;
     protected:
 
         uint32 m_contestedPvPTimer;
@@ -2362,7 +2370,8 @@ class MANGOS_DLL_SPEC Player : public Unit
         uint16 m_baseManaRegen;
 
         SpellModList m_spellMods[MAX_SPELLMOD];
-        Spell * m_spellModTakingSpell;  // Spell for which charges are dropped in spell::finish
+        uint32 m_pad;
+//        Spell * m_spellModTakingSpell;  // Spell for which charges are dropped in spell::finish
 
         EnchantDurationList m_enchantDuration;
         ItemDurationList m_itemDuration;

@@ -493,6 +493,8 @@ Spell::Spell( Unit* Caster, SpellEntry const *info, bool triggered, uint64 origi
 
 Spell::~Spell()
 {
+    if(m_caster && m_caster->GetTypeId() == TYPEID_PLAYER)
+        assert(((Player*)m_caster)->m_spellModTakingSpell != this);
     delete m_spellValue;
 }
 
@@ -2683,7 +2685,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect* triggeredByAura
     prepareDataForTriggerSystem(triggeredByAura);
 
     // Set combo point requirement
-    if (m_IsTriggeredSpell || m_CastItem || m_caster->GetTypeId()!=TYPEID_PLAYER)
+    if (m_IsTriggeredSpell || m_CastItem || !m_caster->m_movedPlayer)
         m_needComboPoints = false;
 
     // calculate cast time (calculated after first CheckCast check to prevent charge counting for first CheckCast fail)
@@ -2693,11 +2695,11 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect* triggeredByAura
     // set timer base at cast time
     ReSetTimer();
 
-    sLog.outDebug("Spell::prepare: spell id %u source %u caster %d triggered %u", m_spellInfo->Id, m_caster->GetEntry(), m_originalCaster ? m_originalCaster->GetEntry() : -1, m_IsTriggeredSpell ? 1 : 0);
+    sLog.outDebug("Spell::prepare: spell id %u source %u caster %d triggered %u mask %u", m_spellInfo->Id, m_caster->GetEntry(), m_originalCaster ? m_originalCaster->GetEntry() : -1, m_IsTriggeredSpell ? 1 : 0, m_targets.m_targetMask);
     //if(m_targets.getUnitTarget())
     //    sLog.outError("Spell::prepare: unit target %u", m_targets.getUnitTarget()->GetEntry());
     //if(m_targets.HasDst())
-    //    sLog.outError("Spell::prepare: pos target %f %f %f", m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ);
+    //    sLog.outError("Spell::prepare: pos target %f %f %f", m_targets.m_dstPos.m_positionX, m_targets.m_dstPos.m_positionY, m_targets.m_dstPos.m_positionZ);
 
     //Containers for channeled spells have to be set
     //TODO:Apply this to all casted spells if needed
@@ -3181,13 +3183,16 @@ void Spell::_handle_immediate_phase()
 
 void Spell::_handle_finish_phase()
 {
-    // Take for real after all targets are processed
-    if (m_needComboPoints)
-        ((Player*)m_caster)->ClearComboPoints();
+    if(m_caster->m_movedPlayer)
+    {
+        // Take for real after all targets are processed
+        if (m_needComboPoints)
+            m_caster->m_movedPlayer->ClearComboPoints();
 
-    // Real add combo points from effects
-    if (m_caster->GetTypeId()==TYPEID_PLAYER)
-        ((Player*)m_caster)->GainSpellComboPoints(m_comboPointGain);
+        // Real add combo points from effects
+        if (m_comboPointGain)
+            m_caster->m_movedPlayer->GainSpellComboPoints(m_comboPointGain);
+    }
 
     // spell log
     if(m_needSpellLog)
@@ -4523,6 +4528,9 @@ SpellCastResult Spell::CheckCast(bool strict)
             }
         }
 
+        // who can give me an example to show what is the use of this
+        // even if we need check, check by effect rather than whole spell, otherwise 57108,57143 are broken
+        /*
         // TODO: this check can be applied and for player to prevent cheating when IsPositiveSpell will return always correct result.
         // check target for pet/charmed casts (not self targeted), self targeted cast used for area effects and etc
         if(non_caster_target && m_caster->GetTypeId() == TYPEID_UNIT && m_caster->GetCharmerOrOwnerGUID())
@@ -4540,6 +4548,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                     return SPELL_FAILED_BAD_TARGETS;
             }
         }
+        */
 
         if(IsPositiveSpell(m_spellInfo->Id))
             if(target->IsImmunedToSpell(m_spellInfo))
