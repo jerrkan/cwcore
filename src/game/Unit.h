@@ -1599,12 +1599,10 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         bool isInFrontInMap(Unit const* target,float distance, float arc = M_PI) const;
         void SetInFront(Unit const* target);
         bool isInBackInMap(Unit const* target, float distance, float arc = M_PI) const;
-        bool isInLine(Unit const* target, float distance, float width) const;
 
         // Visibility system
         UnitVisibility GetVisibility() const { return m_Visibility; }
         void SetVisibility(UnitVisibility x);
-        void DestroyForNearbyPlayers();
 
         // common function for visibility checks for player/creatures with detection code
         virtual bool canSeeOrDetect(Unit const* u, bool detect, bool inVisibleList = false, bool is3dDistance = true) const = 0;

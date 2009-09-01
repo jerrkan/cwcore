@@ -1769,10 +1769,10 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         if(!GetSession()->PlayerLogout())
         {
             Position oldPos;
-            GetPosition(oldPos);
+            GetPosition(&oldPos);
             Relocate(x, y, z, orientation);
             SendTeleportAckMsg();
-            Relocate(oldPos);
+            Relocate(&oldPos);
         }
     }
     else
@@ -14852,8 +14852,8 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
         {
             // Do not look for instance if bg not found
             const WorldLocation& _loc = GetBattleGroundEntryPoint();
-            mapId = _loc.mapid; instanceId = 0;
-            Relocate(_loc.coord_x, _loc.coord_y, _loc.coord_z, _loc.orientation);
+            mapId = _loc.GetMapId(); instanceId = 0;
+            Relocate(&_loc);
 
             // We are not in BG anymore
             m_bgData.bgInstanceID = 0;
@@ -21740,8 +21740,8 @@ void Player::_SaveBGData()
     {
         /* guid, bgInstanceID, bgTeam, x, y, z, o, map, taxi[0], taxi[1], mountSpell */
         CharacterDatabase.PExecute("INSERT INTO character_battleground_data VALUES ('%u', '%u', '%u', '%f', '%f', '%f', '%f', '%u', '%u', '%u', '%u')",
-            GetGUIDLow(), m_bgData.bgInstanceID, m_bgData.bgTeam, m_bgData.joinPos.coord_x, m_bgData.joinPos.coord_y, m_bgData.joinPos.coord_z,
-            m_bgData.joinPos.orientation, m_bgData.joinPos.mapid, m_bgData.taxiPath[0], m_bgData.taxiPath[1], m_bgData.mountSpell);
+            GetGUIDLow(), m_bgData.bgInstanceID, m_bgData.bgTeam, m_bgData.joinPos.GetPositionX(), m_bgData.joinPos.GetPositionY(), m_bgData.joinPos.GetPositionZ(),
+            m_bgData.joinPos.GetOrientation(), m_bgData.joinPos.GetMapId(), m_bgData.taxiPath[0], m_bgData.taxiPath[1], m_bgData.mountSpell);
     }
 }
 

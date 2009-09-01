@@ -3479,14 +3479,6 @@ bool Unit::isInBackInMap(Unit const* target, float distance, float arc) const
     return IsWithinDistInMap(target, distance) && !HasInArc( 2 * M_PI - arc, target );
 }
 
-bool Unit::isInLine(Unit const* target, float distance, float width) const
-{
-    if(!HasInArc(M_PI, target) || !IsWithinDistInMap(target, distance)) return false;
-    width += target->GetObjectSize();
-    float angle = GetRelativeAngle(target);
-    return abs(sin(angle)) * GetExactDistance2d(target->GetPositionX(), target->GetPositionY()) < width;
-}
-
 bool Unit::isInAccessiblePlaceFor(Creature const* c) const
 {
     if(IsInWater())
@@ -8847,7 +8839,10 @@ Unit* Unit::SelectMagnetTarget(Unit *victim, SpellEntry const *spellInfo)
         for(Unit::AuraEffectList::const_iterator itr = magnetAuras.begin(); itr != magnetAuras.end(); ++itr)
             if(Unit* magnet = (*itr)->GetParentAura()->GetUnitSource())
                 if(magnet->isAlive())
+                {
+                    (*itr)->GetParentAura()->DropAuraCharge();
                     return magnet;
+                }
     }
     // Melee && ranged case
     else
@@ -9841,13 +9836,13 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
     else // scripted bonus
     {
         // Gift of the Naaru
-        if (spellProto->Id==59547)
+        if (spellProto->SpellFamilyFlags[2] & 0x80000000 && spellProto->SpellIconID == 329)
         {
             scripted = true;
-            uint32 apBonus = GetTotalAttackPowerValue(BASE_ATTACK);
+            int32 apBonus = std::max(GetTotalAttackPowerValue(BASE_ATTACK), GetTotalAttackPowerValue(RANGED_ATTACK));
             if (apBonus > DoneAdvertisedBenefit)
             {
-                DoneTotal+=apBonus * stack;
+                DoneTotal += apBonus * stack;
                 coeff = 0.0f;
             }
             else
@@ -10840,25 +10835,6 @@ bool Unit::canDetectStealthOf(Unit const* target, float distance) const
     visibleDistance = visibleDistance > MAX_PLAYER_STEALTH_DETECT_RANGE ? MAX_PLAYER_STEALTH_DETECT_RANGE : visibleDistance;
 
     return distance < visibleDistance;
-}
-
-void Unit::DestroyForNearbyPlayers()
-{
-    if(!IsInWorld())
-        return;
-
-    std::list<Unit*> targets;
-    Trinity::AnyUnitInObjectRangeCheck check(this, World::GetMaxVisibleDistance());
-    Trinity::UnitListSearcher<Trinity::AnyUnitInObjectRangeCheck> searcher(this, targets, check);
-    VisitNearbyWorldObject(World::GetMaxVisibleDistance(), searcher);
-    for(std::list<Unit*>::const_iterator iter = targets.begin(); iter != targets.end(); ++iter)
-        if(*iter != this && (*iter)->GetTypeId() == TYPEID_PLAYER
-            && ((Player*)(*iter))->HaveAtClient(this)
-            && GetCharmerGUID() != (*iter)->GetGUID()) // TODO: this is for puppet
-        {
-            DestroyForPlayer((Player*)(*iter));
-            ((Player*)(*iter))->m_clientGUIDs.erase(GetGUID());
-        }
 }
 
 void Unit::SetVisibility(UnitVisibility x)
@@ -14698,7 +14674,7 @@ void Unit::JumpTo(WorldObject *obj, float speedZ)
 {
     float x, y, z;
     obj->GetContactPoint(this, x, y, z);
-    float speedXY = GetExactDistance2d(x, y) * 10.0f / speedZ;
+    float speedXY = GetExactDist2d(x, y) * 10.0f / speedZ;
     GetMotionMaster()->MoveJump(x, y, z, speedXY, speedZ);
 }
 
