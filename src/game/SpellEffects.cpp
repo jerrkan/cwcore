@@ -6207,6 +6207,9 @@ void Spell::EffectLeapForward(uint32 i)
 
     uint32 mapid = m_caster->GetMapId();
     float dist = m_caster->GetSpellRadiusForTarget(unitTarget, sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
+    if(Player* modOwner = m_originalCaster->GetSpellModOwner())
+        modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RADIUS, dist);
+
     float x,y,z;
     float destx,desty,destz,ground,floor;
     float orientation = unitTarget->GetOrientation(), step = dist/10.0f;
@@ -6409,7 +6412,7 @@ void Spell::EffectKnockBack(uint32 i)
         return;
 
     float x, y;
-    if(m_targets.HasDst())
+    if(m_targets.HasDst() && !m_targets.HasTraj())
         m_targets.m_dstPos.GetPosition(x, y);
     else
         m_caster->GetPosition(x, y);

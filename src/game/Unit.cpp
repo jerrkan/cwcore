@@ -10616,7 +10616,7 @@ bool Unit::isAttackableByAOE() const
         return false;
 
     if(HasFlag(UNIT_FIELD_FLAGS,
-        UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2))
+        UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_OOC_NOT_ATTACKABLE))
         return false;
 
     if(GetTypeId()==TYPEID_PLAYER && ((Player *)this)->isGameMaster())
@@ -12639,8 +12639,12 @@ void Unit::ProcDamageAndSpellFor( bool isVictim, Unit * pTarget, uint32 procFlag
         if (procAura && procAura->Id == itr->first)
             continue;
         ProcTriggeredData triggerData(itr->second);
-        if(!IsTriggeredAtSpellProcEvent(pTarget, triggerData.aura, procSpell, procFlag, procExtra, attType, isVictim, (damage > 0), triggerData.spellProcEvent))
+
+        // Defensive procs are active on absorbs (so absorption effects are not a hindrance)
+        bool active = (damage > 0) || ((procExtra & PROC_EX_ABSORB) && isVictim);
+        if(!IsTriggeredAtSpellProcEvent(pTarget, triggerData.aura, procSpell, procFlag, procExtra, attType, isVictim, active, triggerData.spellProcEvent))
             continue;
+
         for (uint8 i=0; i<MAX_SPELL_EFFECTS;++i)
         {
             if (AuraEffect * aurEff = itr->second->GetPartAura(i))
@@ -14053,14 +14057,14 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type)
         switch(type)
         {
             case CHARM_TYPE_VEHICLE:
-                SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_24);
+                SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
                 ((Player*)charmer)->SetClientControl(this, 1);
                 ((Player*)charmer)->SetViewpoint(this, true);
                 ((Player*)charmer)->VehicleSpellInitialize();
                 break;
             case CHARM_TYPE_POSSESS:
                 addUnitState(UNIT_STAT_POSSESSED);
-                SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_24);
+                SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
                 charmer->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
                 ((Player*)charmer)->SetClientControl(this, 1);
                 ((Player*)charmer)->SetViewpoint(this, true);
@@ -14126,7 +14130,7 @@ void Unit::RemoveCharmedBy(Unit *charmer)
     if(type == CHARM_TYPE_POSSESS)
     {
         clearUnitState(UNIT_STAT_POSSESSED);
-        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_24);
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
     }
 
     if(GetTypeId() == TYPEID_UNIT)

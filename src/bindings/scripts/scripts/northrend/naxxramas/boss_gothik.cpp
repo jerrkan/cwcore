@@ -106,14 +106,14 @@ struct TRINITY_DLL_DECL boss_gothikAI : public BossAI
     boss_gothikAI(Creature *c) : BossAI(c, BOSS_GOTHIK) {}
 
     uint32 waveCount;
-    std::vector<Creature*> liveTrigger;
-    std::vector<Creature*> deadTrigger;
+    typedef std::vector<Creature*> TriggerVct;
+    TriggerVct liveTrigger, deadTrigger;
 
     void Reset()
     {
         liveTrigger.clear();
         deadTrigger.clear();
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
         me->SetReactState(REACT_PASSIVE);
         _Reset();
     }
@@ -135,7 +135,7 @@ struct TRINITY_DLL_DECL boss_gothikAI : public BossAI
         }
 
         _EnterCombat();
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
         waveCount = 0;
         events.ScheduleEvent(EVENT_SUMMON, 30000);
         DoTeleportTo(PosPlatform);
@@ -156,6 +156,20 @@ struct TRINITY_DLL_DECL boss_gothikAI : public BossAI
         summons.Summon(summon);
     }
 
+    void SummonedCreatureDespawn(Creature *summon)
+    {
+        if (summon->GetEntry() == WORLD_TRIGGER)
+        {
+            //for(TriggerVct::iterator itr = liveTrigger.begin(); itr != liveTrigger.end(); ++itr)
+            //    if(*itr == summon)
+            error_log("boss_gothikAI: trigger is despawned!");
+            EnterEvadeMode();
+            return;
+        }
+
+        summons.Despawn(summon);
+    }
+
     void KilledUnit(Unit* victim)
     {
         if (!(rand()%5))
@@ -164,6 +178,8 @@ struct TRINITY_DLL_DECL boss_gothikAI : public BossAI
 
     void JustDied(Unit* Killer)
     {
+        liveTrigger.clear();
+        deadTrigger.clear();
         _JustDied();
         DoScriptText(SAY_DEATH, me);
     }
@@ -225,7 +241,7 @@ struct TRINITY_DLL_DECL boss_gothikAI : public BossAI
                         DoScriptText(SAY_TELEPORT, me);
                         DoTeleportTo(PosGround);
                         me->SetReactState(REACT_AGGRESSIVE);
-                        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
                         if (instance)
                             instance->SetData(DATA_GOTHIK_GATE, 0);
                         summons.DoAction(0, 0);
