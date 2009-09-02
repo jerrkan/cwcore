@@ -201,9 +201,10 @@ class TRINITY_DLL_SPEC WorldSession
 
         // Account Data
         AccountData *GetAccountData(uint32 type) { return &m_accountData[type]; }
-        void SetAccountData(uint32 type, time_t time_, std::string data);
+        void SetAccountData(AccountDataType type, time_t time_, std::string data);
 		void SendAccountDataTimes(uint32 mask);
-        void LoadAccountData();
+		void LoadGlobalAccountData();
+        void LoadAccountData(QueryResult* result, uint32 mask);
         void LoadTutorialsData();
         void SendTutorialsData();
         void SaveTutorialsData();
