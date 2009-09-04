@@ -23,8 +23,6 @@
 
 #include "Common.h"
 #include <vector>
-#include "SharedDefines.h"
-#include "Object.h"
 
 class MovementGenerator;
 class Unit;
@@ -50,8 +48,7 @@ enum MovementGeneratorType
     ASSISTANCE_MOTION_TYPE= 11,                             // PointMovementGenerator.h (first part of flee for assistance)
     ASSISTANCE_DISTRACT_MOTION_TYPE = 12,                   // IdleMovementGenerator.h (second part of flee for assistance)
     TIMED_FLEEING_MOTION_TYPE = 13,                         // FleeingMovementGenerator.h (alt.second part of flee for assistance)
-    ROTATE_MOTION_TYPE    = 14,
-    NULL_MOTION_TYPE      = 15,
+    NULL_MOTION_TYPE      = 14,
 };
 
 enum MovementSlot
@@ -67,12 +64,6 @@ enum MMCleanFlag
     MMCF_NONE   = 0,
     MMCF_UPDATE = 1, // Clear or Expire called from update
     MMCF_RESET  = 2  // Flag if need top()->Reset()
-};
-
-enum RotateDirection
-{
-    ROTATE_DIRECTION_LEFT,
-    ROTATE_DIRECTION_RIGHT,
 };
 
 // assume it is 25 yard per 0.6 second
@@ -151,11 +142,8 @@ class TRINITY_DLL_SPEC MotionMaster //: private std::stack<MovementGenerator *>
         void MoveChase(Unit* target, float dist = 0.0f, float angle = 0.0f);
         void MoveConfused();
         void MoveFleeing(Unit* enemy, uint32 time = 0);
-        void MovePoint(uint32 id, const Position &pos)
-            { MovePoint(id, pos.m_positionX, pos.m_positionY, pos.m_positionZ); }
         void MovePoint(uint32 id, float x,float y,float z);
-        void MoveCharge(float x, float y, float z, float speed = SPEED_CHARGE, uint32 id = EVENT_CHARGE);
-        void MoveFall(float z, uint32 id = 0);
+        void MoveCharge(float x, float y, float z, float speed = SPEED_CHARGE);
         void MoveKnockbackFrom(float srcX, float srcY, float speedXY, float speedZ);
         void MoveJumpTo(float angle, float speedXY, float speedZ);
         void MoveJump(float x, float y, float z, float speedXY, float speedZ);
@@ -164,7 +152,6 @@ class TRINITY_DLL_SPEC MotionMaster //: private std::stack<MovementGenerator *>
         void MoveTaxiFlight(uint32 path, uint32 pathnode);
         void MoveDistract(uint32 time);
         void MovePath(uint32 path_id, bool repeatable);
-        void MoveRotate(uint32 time, RotateDirection direction);
 
         MovementGeneratorType GetCurrentMovementGeneratorType() const;
         MovementGeneratorType GetMotionSlotType(int slot) const;

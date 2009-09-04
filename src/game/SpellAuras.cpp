@@ -592,12 +592,6 @@ AuraEffect* CreateAuraEffect(Aura * parentAura, uint32 effIndex, int32 *currentB
     {
         //assert(source->isType(TYPEMASK_UNIT));
         assert(IS_UNIT_GUID(sourceGuid));
-        if(!parentAura->GetUnitSource())
-        {
-            // TODO: there is a crash here when a new aura is added by source aura update, confirmed
-            sLog.outCrash("CreateAuraEffect: cannot find source " I64FMT " in world for spell %u", sourceGuid, parentAura->GetId());
-            return NULL;
-        }
         return new AreaAuraEffect(parentAura, effIndex, currentBasePoints);
     }
     else if (parentAura->GetSpellProto()->Effect[effIndex] == SPELL_EFFECT_APPLY_AURA)
@@ -679,18 +673,23 @@ void Aura::Update(uint32 diff)
 
     // Apply charged spellmods for channeled auras
     // used for example when triggered spell of spell:10 is modded
-    Spell *modSpell = NULL;
-    Player *modOwner = NULL;
-    if(IS_PLAYER_GUID(GetCasterGUID()) && (modOwner = (Player*)GetCaster())
-        && (modSpell = modOwner->FindCurrentSpellBySpellId(GetId())))
-        modOwner->SetSpellModTakingSpell(modSpell, true);
-
+    Spell * modSpell = NULL;
+    Unit* caster = NULL;
+    if (IS_PLAYER_GUID(GetCasterGUID()))
+    {
+        caster = GetCaster();
+        if (caster)
+        {
+            modSpell = ((Player*)caster)->FindCurrentSpellBySpellId(GetId());
+            ((Player*)caster)->SetSpellModTakingSpell(modSpell, true);
+        }
+    }
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         if (m_partAuras[i])
             m_partAuras[i]->Update(diff);
 
-    if (modOwner)
-        modOwner->SetSpellModTakingSpell(modSpell, false);
+    if (caster)
+        ((Player*)caster)->SetSpellModTakingSpell(modSpell, false);
 }
 
 void AuraEffect::Update(uint32 diff)
@@ -1012,23 +1011,6 @@ void Aura::HandleAuraSpecificMods(bool apply)
                         caster->CastSpell(m_target,61635,true);
                     else
                         caster->CastSpell(m_target,61634,true);
-                }
-            }
-        }
-        else if (GetSpellProto()->SpellFamilyName == SPELLFAMILY_PRIEST)
-        {
-            // Devouring Plague
-            if (GetSpellProto()->SpellFamilyFlags[0] & 0x02000000 && GetPartAura(0))
-            {
-                Unit * caster = GetCaster();
-                if (!caster)
-                    return;
-
-                // Improved Devouring Plague
-                if (AuraEffect const * aurEff = caster->GetDummyAura(SPELLFAMILY_PRIEST, 3790, 1))
-                {
-                    int32 basepoints0 = aurEff->GetAmount() * GetPartAura(0)->GetTotalTicks() * GetPartAura(0)->GetAmount() / 100;
-                    caster->CastCustomSpell(m_target, 63675, &basepoints0, NULL, NULL, true, NULL, GetPartAura(0));
                 }
             }
         }
@@ -1432,10 +1414,6 @@ void AuraEffect::HandleAuraEffectSpecificMods(bool apply, bool Real, bool change
                     // Innervate
                     else if (m_spellProto->Id == 29166 && GetAuraName() == SPELL_AURA_PERIODIC_ENERGIZE)
                         m_amount = m_target->GetCreatePowers(POWER_MANA) * m_amount / (GetTotalTicks() * 100.0f);
-                    // Thorns
-                    else if (m_spellProto->SpellFamilyFlags[0] & 0x100 && GetAuraName() == SPELL_AURA_DAMAGE_SHIELD)
-                        // 3.3% from sp bonus
-                        DoneActualBenefit = caster->SpellBaseDamageBonus(GetSpellSchoolMask(m_spellProto)) * 0.033f;
                     break;
                 }
                 case SPELLFAMILY_ROGUE:
@@ -1804,7 +1782,6 @@ void Aura::SetStackAmount(uint8 stackAmount, bool applied)
         SendAuraUpdate();
 }
 
-// TODO: lifebloom should bloom when each stack is dispelled
 bool Aura::modStackAmount(int32 num)
 {
     // Can`t mod
@@ -3108,9 +3085,7 @@ void AuraEffect::HandleAuraDummy(bool apply, bool Real, bool changeAmount)
                         return;
 
                     // final heal
-                    //if(m_target->IsInWorld())
-                    // This may be a hack, but we need a way to count healing bonus three times
-                    for(uint8 i = 0; i < GetParentAura()->GetStackAmount(); ++i)
+                    if(m_target->IsInWorld())
                         m_target->CastCustomSpell(m_target,33778,&m_amount,NULL,NULL,true,NULL,this,GetCasterGUID());
 
                     // restore mana
@@ -5535,7 +5510,7 @@ void AuraEffect::HandleAuraAllowFlight(bool apply, bool Real, bool /*changeAmoun
     if(m_target->GetTypeId() == TYPEID_UNIT)
         m_target->SetFlying(apply);
     
-    if(Player *plr = m_target->m_movedPlayer)
+    if(Player *plr = m_target->GetMoverSource())
     {
     // allow fly
     WorldPacket data;
@@ -5791,9 +5766,20 @@ void AuraEffect::PeriodicTick()
             else
                 pdamage = uint32(m_target->GetMaxHealth()*pdamage/100);
 
-            bool crit = IsPeriodicTickCrit(pCaster);
-            if (crit)
-                pdamage = pCaster->SpellCriticalDamageBonus(m_spellProto, pdamage, m_target);
+            bool crit = false;
+            Unit::AuraEffectList const& mPeriodicCritAuras= pCaster->GetAurasByType(SPELL_AURA_ABILITY_PERIODIC_CRIT);
+            for(Unit::AuraEffectList::const_iterator itr = mPeriodicCritAuras.begin(); itr != mPeriodicCritAuras.end(); ++itr)
+            {
+                if (!(*itr)->isAffectedOnSpell(m_spellProto))
+                    continue;
+
+                if (pCaster->isSpellCrit(m_target, m_spellProto, GetSpellSchoolMask(m_spellProto)))
+                {
+                    crit = true;
+                    pdamage = pCaster->SpellCriticalDamageBonus(m_spellProto, pdamage, m_target);
+                }
+                break;
+            }
 
             //As of 2.2 resilience reduces damage from DoT ticks as much as the chance to not be critically hit
             // Reduce dot damage from resilience for players
@@ -5850,10 +5836,6 @@ void AuraEffect::PeriodicTick()
             uint32 pdamage = GetAmount() > 0 ? GetAmount() : 0;
             pdamage = pCaster->SpellDamageBonus(m_target, GetSpellProto(), pdamage, DOT, GetParentAura()->GetStackAmount());
 
-            bool crit = IsPeriodicTickCrit(pCaster);
-            if (crit)
-                pdamage = pCaster->SpellCriticalDamageBonus(m_spellProto, pdamage, m_target);
-
             //Calculate armor mitigation if it is a physical spell
             if (GetSpellSchoolMask(GetSpellProto()) & SPELL_SCHOOL_MASK_NORMAL)
             {
@@ -5875,7 +5857,7 @@ void AuraEffect::PeriodicTick()
             sLog.outDetail("PeriodicTick: %u (TypeId: %u) health leech of %u (TypeId: %u) for %u dmg inflicted by %u abs is %u",
                 GUID_LOPART(GetCasterGUID()), GuidHigh2TypeId(GUID_HIPART(GetCasterGUID())), m_target->GetGUIDLow(), m_target->GetTypeId(), pdamage, GetId(),absorb);
 
-            pCaster->SendSpellNonMeleeDamageLog(m_target, GetId(), pdamage, GetSpellSchoolMask(GetSpellProto()), absorb, resist, false, 0, crit);
+            pCaster->SendSpellNonMeleeDamageLog(m_target, GetId(), pdamage, GetSpellSchoolMask(GetSpellProto()), absorb, resist, false, 0);
 
             Unit* target = m_target;                        // aura can be deleted in DealDamage
             SpellEntry const* spellProto = GetSpellProto();
@@ -5964,9 +5946,20 @@ void AuraEffect::PeriodicTick()
                 pdamage = pCaster->SpellHealingBonus(m_target, GetSpellProto(), pdamage, DOT, GetParentAura()->GetStackAmount());
             }
 
-            bool crit = IsPeriodicTickCrit(pCaster);
-            if (crit)
-                pdamage = pCaster->SpellCriticalHealingBonus(m_spellProto, pdamage, m_target);
+            bool crit = false;
+            Unit::AuraEffectList const& mPeriodicCritAuras= pCaster->GetAurasByType(SPELL_AURA_ABILITY_PERIODIC_CRIT);
+            for(Unit::AuraEffectList::const_iterator itr = mPeriodicCritAuras.begin(); itr != mPeriodicCritAuras.end(); ++itr)
+            {
+                if (!(*itr)->isAffectedOnSpell(m_spellProto))
+                    continue;
+
+                if (pCaster->isSpellCrit(m_target, m_spellProto, GetSpellSchoolMask(m_spellProto)))
+                {
+                    crit = true;
+                    pdamage = pCaster->SpellCriticalHealingBonus(m_spellProto, pdamage, m_target);
+                }
+                break;
+            }
 
             sLog.outDetail("PeriodicTick: %u (TypeId: %u) heal of %u (TypeId: %u) for %u health inflicted by %u",
                 GUID_LOPART(GetCasterGUID()), GuidHigh2TypeId(GUID_HIPART(GetCasterGUID())), m_target->GetGUIDLow(), m_target->GetTypeId(), pdamage, GetId());
@@ -7002,16 +6995,5 @@ int32 AuraEffect::CalculateCrowdControlAuraAmount(Unit * caster)
         }
     }
     return damageCap;
-}
-
-bool AuraEffect::IsPeriodicTickCrit(Unit const * pCaster) const
-{
-    Unit::AuraEffectList const& mPeriodicCritAuras= pCaster->GetAurasByType(SPELL_AURA_ABILITY_PERIODIC_CRIT);
-    for(Unit::AuraEffectList::const_iterator itr = mPeriodicCritAuras.begin(); itr != mPeriodicCritAuras.end(); ++itr)
-    {
-        if ((*itr)->isAffectedOnSpell(m_spellProto) && pCaster->isSpellCrit(m_target, m_spellProto, GetSpellSchoolMask(m_spellProto)))
-            return true;
-    }
-    return false;
 }
 

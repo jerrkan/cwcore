@@ -77,8 +77,7 @@ enum SpellCastFlags
     CAST_FLAG_UNKNOWN10          = 0x00040000,
     CAST_FLAG_UNKNOWN5           = 0x00080000,              // wotlk
     CAST_FLAG_UNKNOWN20          = 0x00100000,
-    CAST_FLAG_UNKNOWN7           = 0x00200000,              // wotlk, rune cooldown list
-    CAST_FLAG_UNKNOWN21          = 0x04000000
+    CAST_FLAG_UNKNOWN7           = 0x00200000               // wotlk, rune cooldown list
 };
 
 enum SpellRangeFlag
@@ -132,8 +131,13 @@ class SpellCastTargets
 
             m_itemTargetEntry  = target.m_itemTargetEntry;
 
-            m_srcPos = target.m_srcPos;
-            m_dstPos.Relocate(target.m_dstPos);
+            m_srcX = target.m_srcX;
+            m_srcY = target.m_srcY;
+            m_srcZ = target.m_srcZ;
+
+            m_destX = target.m_destX;
+            m_destY = target.m_destY;
+            m_destZ = target.m_destZ;
 
             m_elevation = target.m_elevation;
             m_speed = target.m_speed;
@@ -142,6 +146,8 @@ class SpellCastTargets
 
             m_targetMask = target.m_targetMask;
 
+            m_mapId = -1;
+
             return *this;
         }
 
@@ -149,9 +155,9 @@ class SpellCastTargets
         Unit *getUnitTarget() const { return m_unitTarget; }
         void setUnitTarget(Unit *target);
         void setSrc(float x, float y, float z);
-        void setSrc(Position *pos);
-        void setDst(float x, float y, float z, uint32 mapId = MAPID_INVALID);
-        void setDst(Position *pos);
+        void setSrc(WorldObject *target);
+        void setDestination(float x, float y, float z, int32 mapId = -1);
+        void setDestination(WorldObject *target);
 
         uint64 getGOTargetGUID() const { return m_GOTargetGUID; }
         GameObject *getGOTarget() const { return m_GOTarget; }
@@ -177,15 +183,22 @@ class SpellCastTargets
         bool HasDst() const { return m_targetMask & TARGET_FLAG_DEST_LOCATION; }
         bool HasTraj() const { return m_speed != 0; }
 
-        float GetDist2d() const { return m_srcPos.GetExactDist2d(&m_dstPos); }
+        float GetDist2d() const
+        {
+            float dx = m_destX - m_srcX;
+            float dy = m_destY - m_srcY;
+            return sqrt(dx*dx + dy*dy);
+        }
+
         float GetSpeedXY() const { return m_speed * cos(m_elevation); }
         float GetSpeedZ() const { return m_speed * sin(m_elevation); }
 
         void Update(Unit* caster);
 
-        Position m_srcPos;
-        WorldLocation m_dstPos;
+        float m_srcX, m_srcY, m_srcZ;
+        float m_destX, m_destY, m_destZ;
         float m_elevation, m_speed;
+        int32 m_mapId;
         std::string m_strTarget;
 
         uint32 m_targetMask;
@@ -421,7 +434,7 @@ class Spell
         bool CheckTarget( Unit* target, uint32 eff );
         bool CanAutoCast(Unit* target);
         void CheckSrc() { if(!m_targets.HasSrc()) m_targets.setSrc(m_caster); }
-        void CheckDst() { if(!m_targets.HasDst()) m_targets.setDst(m_caster); }
+        void CheckDst() { if(!m_targets.HasDst()) m_targets.setDestination(m_caster); }
 
         static void MANGOS_DLL_SPEC SendCastResult(Player* caster, SpellEntry const* spellInfo, uint8 cast_count, SpellCastResult result);
         void SendCastResult(SpellCastResult result);
@@ -624,8 +637,8 @@ class Spell
         void SpellDamageWeaponDmg(uint32 i);
         void SpellDamageHeal(uint32 i);
 
-        void GetSummonPosition(uint32 i, Position &pos, float radius = 0.0f, uint32 count = 0);
-        void SummonGuardian(uint32 i, uint32 entry, SummonPropertiesEntry const *properties);
+        void GetSummonPosition(uint32 i, float &x, float &y, float &z, float radius = 0.0f, uint32 count = 0);
+        void SummonGuardian (uint32 entry, SummonPropertiesEntry const *properties);
 
         SpellCastResult CanOpenLock(uint32 effIndex, uint32 lockid, SkillType& skillid, int32& reqSkillValue, int32& skillValue);
         // -------------------------------------------
@@ -665,18 +678,20 @@ namespace Trinity
     struct TRINITY_DLL_DECL SpellNotifierCreatureAndPlayer
     {
         std::list<Unit*> *i_data;
+        Spell &i_spell;
         SpellNotifyPushType i_push_type;
         float i_radius;
         SpellTargets i_TargetType;
-        const Unit * const i_source;
+        Unit* i_source;
         uint32 i_entry;
-        const Position * const i_pos;
+        float i_x, i_y, i_z;
 
-        SpellNotifierCreatureAndPlayer(Unit *source, std::list<Unit*> &data, float radius, SpellNotifyPushType type,
-            SpellTargets TargetType = SPELL_TARGETS_ENEMY, const Position *pos = NULL, uint32 entry = 0)
-            : i_source(source), i_data(&data), i_radius(radius), i_push_type(type)
-            , i_TargetType(TargetType), i_pos(pos), i_entry(entry)
+        SpellNotifierCreatureAndPlayer(Spell &spell, std::list<Unit*> &data, float radius, SpellNotifyPushType type,
+            SpellTargets TargetType = SPELL_TARGETS_ENEMY, uint32 entry = 0, float x = 0, float y = 0, float z = 0)
+            : i_data(&data), i_spell(spell), i_push_type(type), i_radius(radius)
+            , i_TargetType(TargetType), i_entry(entry), i_x(x), i_y(y), i_z(z)
         {
+            i_source = spell.GetCaster();
             assert(i_source);
         }
 
@@ -686,13 +701,14 @@ namespace Trinity
             {
                 Unit *target = (Unit*)itr->getSource();
 
-                if(!target->InSamePhase(i_source))
+                // mostly phase check
+                if(!itr->getSource()->IsInMap(i_source))
                     continue;
 
                 switch (i_TargetType)
                 {
                     case SPELL_TARGETS_ENEMY:
-                        if(target->isTotem())
+                        if(target->GetTypeId() == TYPEID_UNIT && ((Creature*)target)->isTotem())
                             continue;
                         if(!target->isAttackableByAOE())
                             continue;
@@ -708,7 +724,7 @@ namespace Trinity
                         }
                         break;
                     case SPELL_TARGETS_ALLY:
-                        if(target->isTotem())
+                        if(target->GetTypeId() == TYPEID_UNIT && ((Creature*)target)->isTotem())
                             continue;
                         if(!target->isAttackableByAOE() || !i_source->IsFriendlyTo(target))
                             continue;
@@ -728,7 +744,7 @@ namespace Trinity
                     case PUSH_DST_CENTER:
                     case PUSH_CHAIN:
                     default:
-                        if(target->IsWithinDist3d(i_pos, i_radius))
+                        if(target->IsWithinDist3d(i_x, i_y, i_z, i_radius))
                             i_data->push_back(target);
                         break;
                     case PUSH_IN_FRONT:
@@ -740,11 +756,11 @@ namespace Trinity
                             i_data->push_back(target);
                         break;
                     case PUSH_IN_LINE:
-                        if(i_source->HasInLine(target, i_radius, i_source->GetObjectSize()))
+                        if(i_source->isInLine(target, i_radius, i_source->GetObjectSize()))
                             i_data->push_back(target);
                         break;
-                    case PUSH_IN_THIN_LINE: // only traj
-                        if(i_pos->HasInLine(target, i_radius, 0))
+                    case PUSH_IN_THIN_LINE:
+                        if(i_source->isInLine(target, i_radius, 0))
                             i_data->push_back(target);
                         break;
                 }

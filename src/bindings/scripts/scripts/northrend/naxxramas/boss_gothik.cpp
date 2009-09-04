@@ -82,14 +82,14 @@ enum Events
 #define POS_LIVE 3
 #define POS_DEAD 5
 
-const Position PosSummonLive[POS_LIVE] =
+const float PosSummonLive[POS_LIVE][4] =
 {
     {2669.7, -3430.9, 268.56, 1.6},
     {2692.0, -3430.9, 268.56, 1.6},
     {2714.1, -3430.9, 268.56, 1.6},
 };
 
-const Position PosSummonDead[POS_DEAD] =
+const float PosSummonDead[POS_DEAD][4] =
 {
     {2725.1, -3310.0, 268.85, 3.4},
     {2699.3, -3322.8, 268.60, 3.3},
@@ -106,14 +106,14 @@ struct TRINITY_DLL_DECL boss_gothikAI : public BossAI
     boss_gothikAI(Creature *c) : BossAI(c, BOSS_GOTHIK) {}
 
     uint32 waveCount;
-    typedef std::vector<Creature*> TriggerVct;
-    TriggerVct liveTrigger, deadTrigger;
+    std::vector<Creature*> liveTrigger;
+    std::vector<Creature*> deadTrigger;
 
     void Reset()
     {
         liveTrigger.clear();
         deadTrigger.clear();
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         me->SetReactState(REACT_PASSIVE);
         _Reset();
     }
@@ -135,7 +135,7 @@ struct TRINITY_DLL_DECL boss_gothikAI : public BossAI
         }
 
         _EnterCombat();
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         waveCount = 0;
         events.ScheduleEvent(EVENT_SUMMON, 30000);
         DoTeleportTo(PosPlatform);
@@ -156,20 +156,6 @@ struct TRINITY_DLL_DECL boss_gothikAI : public BossAI
         summons.Summon(summon);
     }
 
-    void SummonedCreatureDespawn(Creature *summon)
-    {
-        if (summon->GetEntry() == WORLD_TRIGGER)
-        {
-            //for(TriggerVct::iterator itr = liveTrigger.begin(); itr != liveTrigger.end(); ++itr)
-            //    if(*itr == summon)
-            error_log("boss_gothikAI: trigger is despawned!");
-            EnterEvadeMode();
-            return;
-        }
-
-        summons.Despawn(summon);
-    }
-
     void KilledUnit(Unit* victim)
     {
         if (!(rand()%5))
@@ -178,8 +164,6 @@ struct TRINITY_DLL_DECL boss_gothikAI : public BossAI
 
     void JustDied(Unit* Killer)
     {
-        liveTrigger.clear();
-        deadTrigger.clear();
         _JustDied();
         DoScriptText(SAY_DEATH, me);
     }
@@ -241,7 +225,7 @@ struct TRINITY_DLL_DECL boss_gothikAI : public BossAI
                         DoScriptText(SAY_TELEPORT, me);
                         DoTeleportTo(PosGround);
                         me->SetReactState(REACT_AGGRESSIVE);
-                        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+                        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                         if (instance)
                             instance->SetData(DATA_GOTHIK_GATE, 0);
                         summons.DoAction(0, 0);

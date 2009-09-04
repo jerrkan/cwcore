@@ -125,12 +125,81 @@ void CreatureAI::SelectNearestTarget(Unit *who)
     }
 }
 
+void CreatureAI::SetGazeOn(Unit *target)
+{
+    if(me->canAttack(target))
+    {
+        AttackStart(target);
+        me->SetReactState(REACT_PASSIVE);
+    }
+}
+
+bool CreatureAI::UpdateVictimWithGaze()
+{
+    if(!me->isInCombat())
+        return false;
+
+    if(me->HasReactState(REACT_PASSIVE))
+    {
+        if(me->getVictim())
+            return true;
+        else
+            me->SetReactState(REACT_AGGRESSIVE);
+    }
+
+    if(Unit *victim = me->SelectVictim())
+        AttackStart(victim);
+    return me->getVictim();
+}
+
+bool CreatureAI::UpdateVictim()
+{
+    if(!me->isInCombat())
+        return false;
+    if(Unit *victim = me->SelectVictim())
+        AttackStart(victim);
+    return me->getVictim();
+}
+
+bool CreatureAI::UpdateCombatState()
+{
+    if(!me->isInCombat())
+        return false;
+
+    if(!me->HasReactState(REACT_PASSIVE))
+    {
+        if(Unit *victim = me->SelectVictim())
+            AttackStart(victim);
+        return me->getVictim();
+    }
+    else if(me->getThreatManager().isThreatListEmpty())
+    {
+        EnterEvadeMode();
+        return false;
+    }
+
+    return true;
+}
+
+bool CreatureAI::_EnterEvadeMode()
+{
+    if(me->IsInEvadeMode() || !me->isAlive())
+        return false;
+
+    me->RemoveAllAuras();
+    me->DeleteThreatList();
+    me->CombatStop(true);
+    me->LoadCreaturesAddon();
+    me->SetLootRecipient(NULL);
+    me->ResetPlayerDamageReq();
+
+    return true;
+}
+
 void CreatureAI::EnterEvadeMode()
 {
     if(!_EnterEvadeMode())
         return;
-
-    sLog.outDebug("Creature %u enters evade mode.", me->GetEntry());
 
     if(!me->GetVehicle()) // otherwise me will be in evade mode forever
     {
@@ -143,10 +212,10 @@ void CreatureAI::EnterEvadeMode()
             me->GetMotionMaster()->MoveTargetedHome();
     }
 
-    Reset();
+    if(me->IsVehicle())
+        me->GetVehicleKit()->InstallAllAccessories();
 
-    if(me->IsVehicle()) // use the same sequence of addtoworld, aireset may remove all summons!
-        me->GetVehicleKit()->Reset();
+    Reset();
 }
 
 /*void CreatureAI::AttackedBy( Unit* attacker )

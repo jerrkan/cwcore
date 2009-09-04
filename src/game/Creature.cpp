@@ -46,7 +46,6 @@
 #include "OutdoorPvPMgr.h"
 #include "GameEventMgr.h"
 #include "CreatureGroups.h"
-#include "Vehicle.h"
 // apply implementation of the singletons
 #include "Policies/SingletonImp.h"
 
@@ -170,7 +169,7 @@ Creature::~Creature()
     }
 
     //if(m_uint32Values)
-    //    sLog.outError("Deconstruct Creature Entry = %u", GetEntry());
+    //    sLog.outDetail("Deconstruct Creature Entry = %u", GetEntry());
 }
 
 void Creature::AddToWorld()
@@ -184,8 +183,6 @@ void Creature::AddToWorld()
         Unit::AddToWorld();
         SearchFormationAndPath();
         AIM_Initialize();
-        if(IsVehicle())
-            GetVehicleKit()->Install();
     }
 }
 
@@ -204,12 +201,11 @@ void Creature::RemoveFromWorld()
 
 void Creature::DisappearAndDie()
 {
-    DestroyForNearbyPlayers();
-    //SetVisibility(VISIBILITY_OFF);
-    //ObjectAccessor::UpdateObjectVisibility(this);
+    //DestroyForNearbyPlayers();
+    SetVisibility(VISIBILITY_OFF);
+    ObjectAccessor::UpdateObjectVisibility(this);
     if(isAlive())
         setDeathState(JUST_DIED);
-    RemoveCorpse();
 }
 
 void Creature::SearchFormationAndPath()
@@ -556,10 +552,7 @@ void Creature::Update(uint32 diff)
                     RegenerateHealth();
 
                 if(getPowerType() == POWER_ENERGY)
-                {
-                    if(!IsVehicle() || GetVehicleKit()->GetVehicleInfo()->m_powerType != POWER_PYRITE)
-                        Regenerate(POWER_ENERGY);
-                }
+                    Regenerate(POWER_ENERGY);
                 else
                     RegenerateMana();
 
@@ -1811,8 +1804,6 @@ void Creature::setDeathState(DeathState s)
         ResetPlayerDamageReq();
         CreatureInfo const *cinfo = GetCreatureInfo();
         AddUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
-        if(GetCreatureInfo()->InhabitType & INHABIT_AIR)
-            AddUnitMovementFlag(MOVEMENTFLAG_FLY_MODE + MOVEMENTFLAG_FLYING);
         SetUInt32Value(UNIT_NPC_FLAGS, cinfo->npcflag);
         clearUnitState(UNIT_STAT_ALL_STATE);
         SetMeleeDamageSchool(SpellSchools(cinfo->dmgschool));
@@ -1820,7 +1811,6 @@ void Creature::setDeathState(DeathState s)
         Motion_Initialize();
         if(GetCreatureData() && GetPhaseMask() != GetCreatureData()->phaseMask)
             SetPhaseMask(GetCreatureData()->phaseMask, false);
-        if(m_vehicleKit) m_vehicleKit->Reset();
         Unit::setDeathState(ALIVE);
     }
 }
@@ -1837,7 +1827,8 @@ bool Creature::FallGround()
     if (fabs(ground_Z - z) < 0.1f)
         return false;
 
-    GetMotionMaster()->MoveFall(ground_Z, EVENT_FALL_GROUND);
+    RemoveUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
+    GetMotionMaster()->MovePoint(EVENT_FALL_GROUND, x, y, ground_Z);
     Unit::setDeathState(DEAD_FALLING);
     return true;
 }
@@ -2211,7 +2202,7 @@ bool Creature::canCreatureAttack(Unit const *pVictim, bool force) const
     if(Unit *unit = GetCharmerOrOwner())
         return pVictim->IsWithinDist(unit, dist);
     else
-        return pVictim->IsInDist(&m_homePosition, dist);
+        return pVictim->IsWithinDist3d(mHome_X, mHome_Y, mHome_Z, dist);
 }
 
 CreatureDataAddon const* Creature::GetCreatureAddon() const

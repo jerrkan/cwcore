@@ -46,21 +46,7 @@ class QueryResult;
 class LoginQueryHolder;
 class CharacterHandler;
 
-enum AccountDataType
-{
-    GLOBAL_CONFIG_CACHE             = 0,                    // 0x01 g
-    PER_CHARACTER_CONFIG_CACHE      = 1,                    // 0x02 p
-    GLOBAL_BINDINGS_CACHE           = 2,                    // 0x04 g
-    PER_CHARACTER_BINDINGS_CACHE    = 3,                    // 0x08 p
-    GLOBAL_MACROS_CACHE             = 4,                    // 0x10 g
-    PER_CHARACTER_MACROS_CACHE      = 5,                    // 0x20 p
-    PER_CHARACTER_LAYOUT_CACHE      = 6,                    // 0x40 p
-    PER_CHARACTER_CHAT_CACHE        = 7,                    // 0x80 p
-    NUM_ACCOUNT_DATA_TYPES          = 8
-};
-
 #define NUM_ACCOUNT_DATA_TYPES 8
-#define GLOBAL_CACHE_MASK           0x15
 
 struct AccountData
 {
@@ -142,7 +128,7 @@ class TRINITY_DLL_SPEC WorldSession
         char const* GetPlayerName() const;
         void SetSecurity(AccountTypes security) { _security = security; }
         std::string const& GetRemoteAddress() { return m_Address; }
-        void SetPlayer(Player *plr);
+        void SetPlayer(Player *plr) { _player = plr; }
         uint8 Expansion() const { return m_expansion; }
 
         /// Session in auth.queue currently
@@ -201,10 +187,8 @@ class TRINITY_DLL_SPEC WorldSession
 
         // Account Data
         AccountData *GetAccountData(uint32 type) { return &m_accountData[type]; }
-        void SetAccountData(AccountDataType type, time_t time_, std::string data);
-		void SendAccountDataTimes(uint32 mask);
-		void LoadGlobalAccountData();
-        void LoadAccountData(QueryResult* result, uint32 mask);
+        void SetAccountData(uint32 type, time_t time_, std::string data);
+        void LoadAccountData();
         void LoadTutorialsData();
         void SendTutorialsData();
         void SaveTutorialsData();
@@ -576,7 +560,6 @@ class TRINITY_DLL_SPEC WorldSession
 
         void HandleReclaimCorpseOpcode( WorldPacket& recvPacket );
         void HandleCorpseQueryOpcode( WorldPacket& recvPacket );
-        void HandleCorpseMapPositionQuery( WorldPacket& recvPacket );
         void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
         void HandleSummonResponseOpcode(WorldPacket& recv_data);
 
@@ -748,7 +731,6 @@ class TRINITY_DLL_SPEC WorldSession
         void LogUnexpectedOpcode(WorldPacket *packet, const char * reason);
         void LogUnprocessedTail(WorldPacket *packet);
 
-        uint32 m_GUIDLow;                                   // set loggined or recently logout player (while m_playerRecentlyLogout set)
         Player *_player;
         WorldSocket *m_Socket;
         std::string m_Address;

@@ -638,10 +638,13 @@ bool ChatHandler::HandleGameObjectTurnCommand(const char* args)
         o = chr->GetOrientation();
     }
 
+    Map* map = obj->GetMap();
+    map->Remove(obj,false);
+
     obj->Relocate(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), o);
     obj->UpdateRotationFields();
-    obj->DestroyForNearbyPlayers();
-    ObjectAccessor::UpdateObjectVisibility(obj);
+
+    map->Add(obj);
 
     obj->SaveToDB();
     obj->Refresh();
@@ -683,9 +686,13 @@ bool ChatHandler::HandleGameObjectMoveCommand(const char* args)
     if (!px)
     {
         Player *chr = m_session->GetPlayer();
+
+        Map* map = obj->GetMap();
+        map->Remove(obj,false);
+
         obj->Relocate(chr->GetPositionX(), chr->GetPositionY(), chr->GetPositionZ(), obj->GetOrientation());
-        obj->DestroyForNearbyPlayers();
-        ObjectAccessor::UpdateObjectVisibility(obj);
+
+        map->Add(obj);
     }
     else
     {
@@ -703,9 +710,12 @@ bool ChatHandler::HandleGameObjectMoveCommand(const char* args)
             return false;
         }
 
+        Map* map = obj->GetMap();
+        map->Remove(obj,false);
+
         obj->Relocate(x, y, z, obj->GetOrientation());
-        obj->DestroyForNearbyPlayers();
-        ObjectAccessor::UpdateObjectVisibility(obj);
+
+        map->Add(obj);
     }
 
     obj->SaveToDB();
@@ -4138,11 +4148,14 @@ bool ChatHandler::HandleTempAddSpwCommand(const char* args)
 
     Player *chr = m_session->GetPlayer();
 
-    uint32 id = atoi(charID);
-    if(!id)
-        return false;
+    float x = chr->GetPositionX();
+    float y = chr->GetPositionY();
+    float z = chr->GetPositionZ();
+    float ang = chr->GetOrientation();
 
-    chr->SummonCreature(id, *chr, TEMPSUMMON_CORPSE_DESPAWN, 120);
+    uint32 id = atoi(charID);
+
+    chr->SummonCreature(id,x,y,z,ang,0,TEMPSUMMON_CORPSE_DESPAWN,120);
 
     return true;
 }

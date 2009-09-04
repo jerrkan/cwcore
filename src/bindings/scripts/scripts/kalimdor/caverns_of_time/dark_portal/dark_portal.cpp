@@ -286,15 +286,20 @@ struct TRINITY_DLL_DECL npc_time_riftAI : public ScriptedAI
             return;
         }
 
-        Position pos;
-        m_creature->GetRandomNearPosition(pos, 10.0f);
+        float x,y,z;
+        m_creature->GetRandomPoint(m_creature->GetPositionX(),m_creature->GetPositionY(),m_creature->GetPositionZ(),10.0f,x,y,z);
 
         //normalize Z-level if we can, if rift is not at ground level.
-        pos.m_positionZ = std::max(m_creature->GetMap()->GetHeight(pos.m_positionX, pos.m_positionY, MAX_HEIGHT), m_creature->GetMap()->GetWaterLevel(pos.m_positionX, pos.m_positionY));
+        z = std::max(m_creature->GetMap()->GetHeight(x, y, MAX_HEIGHT), m_creature->GetMap()->GetWaterLevel(x, y));
 
-        if(Unit *Summon = DoSummon(creature_entry, pos, 30000, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT))
+        Unit *Summon = m_creature->SummonCreature(creature_entry,x,y,z,m_creature->GetOrientation(),
+            TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,30000);
+
+        if (Summon)
+        {
             if (Unit *temp = Unit::GetUnit(*m_creature, pInstance ? pInstance->GetData64(DATA_MEDIVH) : 0))
                 Summon->AddThreat(temp,0.0f);
+        }
     }
 
     void DoSelectSummon()

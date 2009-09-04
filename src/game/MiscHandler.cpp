@@ -690,8 +690,10 @@ void WorldSession::HandleSetContactNotesOpcode( WorldPacket & recv_data )
 
 void WorldSession::HandleBugOpcode( WorldPacket & recv_data )
 {
-    uint32 suggestion, contentlen, typelen;
-    std::string content, type;
+    uint32 suggestion, contentlen;
+    std::string content;
+    uint32 typelen;
+    std::string type;
 
     recv_data >> suggestion >> contentlen >> content;
 
@@ -917,7 +919,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket &recv_data)
 
     if(decompressedSize == 0)                               // erase
     {
-        SetAccountData(AccountDataType(type), 0, "");
+        SetAccountData(type, 0, "");
 
         WorldPacket data(SMSG_UPDATE_ACCOUNT_DATA_COMPLETE, 4+4);
         data << uint32(type);
@@ -940,7 +942,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket &recv_data)
     uLongf realSize = decompressedSize;
     if(uncompress(const_cast<uint8*>(dest.contents()), &realSize, const_cast<uint8*>(recv_data.contents() + recv_data.rpos()), recv_data.size() - recv_data.rpos()) != Z_OK)
     {
-        recv_data.rpos(recv_data.wpos());                   // unneded warning spam in this case
+        recv_data.rpos(recv_data.wpos());                   // unnneded warning spam in this case
         sLog.outError("UAD: Failed to decompress account data");
         return;
     }
@@ -950,7 +952,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket &recv_data)
     std::string adata;
     dest >> adata;
 
-    SetAccountData(AccountDataType(type), timestamp, adata);
+    SetAccountData(type, timestamp, adata);
 
     WorldPacket data(SMSG_UPDATE_ACCOUNT_DATA_COMPLETE, 4+4);
     data << uint32(type);
@@ -970,7 +972,7 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
     if(type > NUM_ACCOUNT_DATA_TYPES)
         return;
 
-    AccountData *adata = GetAccountData(AccountDataType(type));
+    AccountData *adata = GetAccountData(type);
 
     uint32 size = adata->Data.size();
 
@@ -1052,12 +1054,7 @@ void WorldSession::HandleMoveTimeSkippedOpcode( WorldPacket & recv_data )
     /*  WorldSession::Update( getMSTime() );*/
     DEBUG_LOG( "WORLD: Time Lag/Synchronization Resent/Update" );
 
-    uint64 guid;
-    if(!recv_data.readPackGUID(guid))
-    {
-        recv_data.rpos(recv_data.wpos());
-        return;
-    }
+    recv_data.read_skip<uint64>();
     recv_data.read_skip<uint32>();
     /*
         uint64 guid;

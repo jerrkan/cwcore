@@ -131,7 +131,6 @@ class TRINITY_DLL_SPEC Database
         // sets the result queue of the current thread, be careful what thread you call this from
         void SetResultQueue(SqlResultQueue * queue);
 
-        bool CheckRequiredField(char const* table_name, char const* required_name);
     private:
         bool m_logSQL;
         std::string m_logsDir;

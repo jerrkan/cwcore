@@ -586,7 +586,7 @@ struct TRINITY_DLL_DECL boss_croneAI : public ScriptedAI
         case 1: DoScriptText(SAY_CRONE_AGGRO2, m_creature); break;
         }
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
     }
 
     void JustDied(Unit* killer)
@@ -654,9 +654,11 @@ struct TRINITY_DLL_DECL mob_cycloneAI : public ScriptedAI
 
         if (MoveTimer < diff)
         {
-            Position pos;
-            m_creature->GetRandomNearPosition(pos, 10);
-            m_creature->GetMotionMaster()->MovePoint(0, pos);
+            float x,y,z;
+            m_creature->GetPosition(x,y,z);
+            float PosX, PosY, PosZ;
+            m_creature->GetRandomPoint(x,y,z,10, PosX, PosY, PosZ);
+            m_creature->GetMotionMaster()->MovePoint(0, PosX, PosY, PosZ);
             MoveTimer = 5000 + rand()%3000;
         }else MoveTimer -= diff;
     }

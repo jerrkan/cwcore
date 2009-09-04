@@ -1079,16 +1079,9 @@ bool Object::PrintIndexError(uint32 index, bool set) const
     return false;
 }
 
-bool Position::HasInLine(const Unit * const target, float distance, float width) const
-{
-    if(!HasInArc(M_PI, target) || !target->IsWithinDist3d(m_positionX, m_positionY, m_positionZ, distance)) return false;
-    width += target->GetObjectSize();
-    float angle = GetRelativeAngle(target);
-    return abs(sin(angle)) * GetExactDist2d(target->GetPositionX(), target->GetPositionY()) < width;
-}
-
 WorldObject::WorldObject()
-    : WorldLocation(), m_InstanceId(0), m_phaseMask(PHASEMASK_NORMAL), m_currMap(NULL)
+    : m_mapId(0), m_InstanceId(0), m_phaseMask(PHASEMASK_NORMAL),
+    m_positionX(0.0f), m_positionY(0.0f), m_positionZ(0.0f), m_orientation(0.0f), m_currMap(NULL)
     , m_zoneScript(NULL)
     , m_isActive(false), m_isWorldObject(false)
     , m_name("")
@@ -1166,6 +1159,74 @@ InstanceData* WorldObject::GetInstanceData()
     Map *map = GetMap();
     return map->IsDungeon() ? ((InstanceMap*)map)->GetInstanceData() : NULL;
 }
+                                                            //slow
+float WorldObject::GetDistance(const WorldObject* obj) const
+{
+    float dx = GetPositionX() - obj->GetPositionX();
+    float dy = GetPositionY() - obj->GetPositionY();
+    float dz = GetPositionZ() - obj->GetPositionZ();
+    float sizefactor = GetObjectSize() + obj->GetObjectSize();
+    float dist = sqrt((dx*dx) + (dy*dy) + (dz*dz)) - sizefactor;
+    return ( dist > 0 ? dist : 0);
+}
+
+float WorldObject::GetDistance2d(float x, float y) const
+{
+    float dx = GetPositionX() - x;
+    float dy = GetPositionY() - y;
+    float sizefactor = GetObjectSize();
+    float dist = sqrt((dx*dx) + (dy*dy)) - sizefactor;
+    return ( dist > 0 ? dist : 0);
+}
+
+float WorldObject::GetExactDistance2d(const float x, const float y) const
+{
+    float dx = GetPositionX() - x;
+    float dy = GetPositionY() - y;
+    return sqrt((dx*dx) + (dy*dy));
+}
+
+float WorldObject::GetDistance(float x, float y, float z) const
+{
+    float dx = GetPositionX() - x;
+    float dy = GetPositionY() - y;
+    float dz = GetPositionZ() - z;
+    float sizefactor = GetObjectSize();
+    float dist = sqrt((dx*dx) + (dy*dy) + (dz*dz)) - sizefactor;
+    return ( dist > 0 ? dist : 0);
+}
+
+float WorldObject::GetExactDistSq(float x, float y, float z) const
+{
+    float dx = GetPositionX() - x;
+    float dy = GetPositionY() - y;
+    float dz = GetPositionZ() - z;
+    return dx*dx + dy*dy + dz*dz;
+}
+
+float WorldObject::GetDistance2dSq(float x, float y) const
+{
+    float dx = GetPositionX() - x;
+    float dy = GetPositionY() - y;
+    return dx*dx + dy*dy;
+}
+
+float WorldObject::GetExactDistSq(const WorldObject *obj) const
+{
+    float dx = GetPositionX() - obj->GetPositionX();
+    float dy = GetPositionY() - obj->GetPositionY();
+    float dz = GetPositionZ() - obj->GetPositionZ();
+    return dx*dx + dy*dy + dz*dz;
+}
+
+float WorldObject::GetDistance2d(const WorldObject* obj) const
+{
+    float dx = GetPositionX() - obj->GetPositionX();
+    float dy = GetPositionY() - obj->GetPositionY();
+    float sizefactor = GetObjectSize() + obj->GetObjectSize();
+    float dist = sqrt((dx*dx) + (dy*dy)) - sizefactor;
+    return ( dist > 0 ? dist : 0);
+}
 
 float WorldObject::GetDistanceZ(const WorldObject* obj) const
 {
@@ -1173,6 +1234,29 @@ float WorldObject::GetDistanceZ(const WorldObject* obj) const
     float sizefactor = GetObjectSize() + obj->GetObjectSize();
     float dist = dz - sizefactor;
     return ( dist > 0 ? dist : 0);
+}
+
+bool WorldObject::IsWithinDist3d(float x, float y, float z, float dist2compare) const
+{
+    float dx = GetPositionX() - x;
+    float dy = GetPositionY() - y;
+    float dz = GetPositionZ() - z;
+    float distsq = dx*dx + dy*dy + dz*dz;
+
+    float maxdist = dist2compare + GetObjectSize();
+
+    return distsq < maxdist * maxdist;
+}
+
+bool WorldObject::IsWithinDist2d(float x, float y, float dist2compare) const
+{
+    float dx = GetPositionX() - x;
+    float dy = GetPositionY() - y;
+    float distsq = dx*dx + dy*dy;
+
+    float maxdist = dist2compare + GetObjectSize();
+
+    return distsq < maxdist * maxdist;
 }
 
 bool WorldObject::_IsWithinDist(WorldObject const* obj, float dist2compare, bool is3D) const
@@ -1296,14 +1380,14 @@ bool WorldObject::IsInRange3d(float x, float y, float z, float minRange, float m
     return distsq < maxdist * maxdist;
 }
 
-float Position::GetAngle(const Position *obj) const
+float WorldObject::GetAngle(const WorldObject* obj) const
 {
     if(!obj) return 0;
     return GetAngle( obj->GetPositionX(), obj->GetPositionY() );
 }
 
 // Return angle in range 0..2*pi
-float Position::GetAngle( const float x, const float y ) const
+float WorldObject::GetAngle( const float x, const float y ) const
 {
     float dx = x - GetPositionX();
     float dy = y - GetPositionY();
@@ -1313,7 +1397,7 @@ float Position::GetAngle( const float x, const float y ) const
     return ang;
 }
 
-void Position::GetSinCos(const float x, const float y, float &vsin, float &vcos) const
+void WorldObject::GetSinCos(const float x, const float y, float &vsin, float &vcos)
 {
     float dx = GetPositionX() - x;
     float dy = GetPositionY() - y;
@@ -1332,11 +1416,13 @@ void Position::GetSinCos(const float x, const float y, float &vsin, float &vcos)
     }
 }
 
-bool Position::HasInArc(float arc, const Position *obj) const
+bool WorldObject::HasInArc(const float arcangle, const WorldObject* obj) const
 {
     // always have self in arc
     if(obj == this)
         return true;
+
+    float arc = arcangle;
 
     // move arc to range 0.. 2*pi
     while( arc >= 2.0f * M_PI )
@@ -1379,14 +1465,16 @@ bool WorldObject::IsInBetween(const WorldObject *obj1, const WorldObject *obj2, 
         size = GetObjectSize() / 2;
 
     float angle = obj1->GetAngle(this) - obj1->GetAngle(obj2);
-    return abs(sin(angle)) * GetExactDist2d(obj1->GetPositionX(), obj1->GetPositionY()) < size;
+    return abs(sin(angle)) * GetExactDistance2d(obj1->GetPositionX(), obj1->GetPositionY()) < size;
 }
 
-void WorldObject::GetRandomPoint(const Position &pos, float distance, float &rand_x, float &rand_y, float &rand_z) const
+void WorldObject::GetRandomPoint( float x, float y, float z, float distance, float &rand_x, float &rand_y, float &rand_z) const
 {
-    if(!distance)
+    if(distance == 0)
     {
-        pos.GetPosition(rand_x, rand_y, rand_z);
+        rand_x = x;
+        rand_y = y;
+        rand_z = z;
         return;
     }
 
@@ -1394,9 +1482,9 @@ void WorldObject::GetRandomPoint(const Position &pos, float distance, float &ran
     float angle = rand_norm()*2*M_PI;
     float new_dist = rand_norm()*distance;
 
-    rand_x = pos.m_positionX + new_dist * cos(angle);
-    rand_y = pos.m_positionY + new_dist * sin(angle);
-    rand_z = pos.m_positionZ;
+    rand_x = x + new_dist * cos(angle);
+    rand_y = y + new_dist * sin(angle);
+    rand_z = z;
 
     Trinity::NormalizeMapCoord(rand_x);
     Trinity::NormalizeMapCoord(rand_y);
@@ -1410,7 +1498,7 @@ void WorldObject::UpdateGroundPositionZ(float x, float y, float &z) const
         z = new_z+ 0.05f;                                   // just to be sure that we are not a few pixel under the surface
 }
 
-bool Position::IsPositionValid() const
+bool WorldObject::IsPositionValid() const
 {
     return Trinity::IsValidMapCoord(m_positionX,m_positionY,m_positionZ,m_orientation);
 }
@@ -1666,7 +1754,7 @@ void WorldObject::AddObjectToRemoveList()
     map->AddObjectToRemoveList(this);
 }
 
-TempSummon *Map::SummonCreature(uint32 entry, const Position &pos, SummonPropertiesEntry const *properties, uint32 duration, Unit *summoner, uint32 vehId)
+TempSummon *Map::SummonCreature(uint32 entry, float x, float y, float z, float angle, uint32 vehId, SummonPropertiesEntry const *properties, uint32 duration, Unit *summoner)
 {
     uint32 mask = UNIT_MASK_SUMMON;
     if(properties)
@@ -1717,13 +1805,13 @@ TempSummon *Map::SummonCreature(uint32 entry, const Position &pos, SummonPropert
         default:    return NULL;
     }
 
-    if(!summon->Create(objmgr.GenerateLowGuid(HIGHGUID_UNIT), this, phase, entry, vehId, team, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation()))
+    if(!summon->Create(objmgr.GenerateLowGuid(HIGHGUID_UNIT), this, phase, entry, vehId, team, x, y, z, angle))
     {
         delete summon;
         return NULL;
     }
 
-    summon->SetHomePosition(pos);
+    summon->SetHomePosition(x, y, z, angle);
 
     summon->InitStats(duration);
     Add((Creature*)summon);
@@ -1745,18 +1833,22 @@ void WorldObject::SetZoneScript()
     }
 }
 
-TempSummon* WorldObject::SummonCreature(uint32 entry, const Position &pos, TempSummonType spwtype, uint32 duration, uint32 vehId) const
+TempSummon* WorldObject::SummonCreature(uint32 entry, float x, float y, float z, float ang, uint32 vehId, TempSummonType spwtype, uint32 duration)
 {
-    if(Map *map = FindMap())
-    {
-        if(TempSummon *summon = map->SummonCreature(entry, pos, NULL, duration, isType(TYPEMASK_UNIT) ? (Unit*)this : NULL))
-        {
-            summon->SetTempSummonType(spwtype);
-            return summon;
-        }
-    }
+    Map *map = FindMap();
+    if(!map)
+        return NULL;
 
-    return NULL;
+    if (x == 0.0f && y == 0.0f && z == 0.0f)
+        GetClosePoint(x, y, z, GetObjectSize());
+
+    TempSummon *pCreature = map->SummonCreature(entry, x, y, z, ang, vehId, NULL, duration, isType(TYPEMASK_UNIT) ? (Unit*)this : NULL);
+    if(!pCreature)
+        return NULL;
+
+    pCreature->SetTempSummonType(spwtype);
+
+    return pCreature;
 }
 
 Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetType petType, uint32 duration)
@@ -2173,15 +2265,14 @@ void WorldObject::GetNearPoint(WorldObject const* searcher, float &x, float &y, 
     */
 }
 
-void WorldObject::MovePosition(Position &pos, float dist, float angle)
+void WorldObject::GetGroundPoint(float &x, float &y, float &z, float dist, float angle)
 {
-    angle += m_orientation;
-    pos.m_positionX += dist * cos(angle);
-    pos.m_positionY += dist * sin(angle);
-    Trinity::NormalizeMapCoord(pos.m_positionX);
-    Trinity::NormalizeMapCoord(pos.m_positionY);
-    UpdateGroundPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
-    pos.m_orientation = m_orientation;
+    angle += GetOrientation();
+    x += dist * cos(angle);
+    y += dist * sin(angle);
+    Trinity::NormalizeMapCoord(x);
+    Trinity::NormalizeMapCoord(y);
+    UpdateGroundPositionZ(x, y, z);
 }
 
 void WorldObject::SetPhaseMask(uint32 newPhaseMask, bool update)
@@ -2211,33 +2302,4 @@ void WorldObject::PlayDirectSound( uint32 sound_id, Player* target /*= NULL*/ )
         target->SendDirectMessage( &data );
     else
         SendMessageToSet( &data, true );
-}
-
-void WorldObject::DestroyForNearbyPlayers()
-{
-    if(!IsInWorld())
-        return;
-
-    std::list<Unit*> targets;
-    Trinity::AnyUnitInObjectRangeCheck check(this, World::GetMaxVisibleDistance());
-    Trinity::UnitListSearcher<Trinity::AnyUnitInObjectRangeCheck> searcher(this, targets, check);
-    VisitNearbyWorldObject(World::GetMaxVisibleDistance(), searcher);
-    for(std::list<Unit*>::const_iterator iter = targets.begin(); iter != targets.end(); ++iter)
-    {
-        Player *plr = dynamic_cast<Player*>(*iter);
-        if(!plr)
-            continue;
-
-        if(plr == this)
-            continue;
-
-        if(!plr->HaveAtClient(this))
-            continue;
-
-        if(isType(TYPEMASK_UNIT) && ((Unit*)this)->GetCharmerGUID() == plr->GetGUID()) // TODO: this is for puppet
-            continue;
-         
-        DestroyForPlayer(plr);            
-        plr->m_clientGUIDs.erase(GetGUID());       
-    }
 }

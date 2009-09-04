@@ -1526,7 +1526,7 @@ class BattleGroundAV : public BattleGround
 
         void EndBattleGround(uint32 winner);
 
-        virtual WorldSafeLocsEntry const* GetClosestGraveYard(Player* player);
+        virtual WorldSafeLocsEntry const* GetClosestGraveYard(float x, float y, float z, uint32 team);
 
     private:
         /* Nodes occupying */

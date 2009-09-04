@@ -70,10 +70,12 @@ void DynamicObject::RemoveFromWorld()
     }
 }
 
-bool DynamicObject::Create(uint32 guidlow, Unit *caster, uint32 spellId, uint32 effMask, const Position &pos, int32 duration, float radius, bool active)
+bool DynamicObject::Create(uint32 guidlow, Unit *caster, uint32 spellId, uint32 effMask, float x, float y, float z, int32 duration, float radius, bool active)
 {
     SetMap(caster->GetMap());
-    Relocate(pos);
+
+    Relocate(x, y, z, 0);
+
     if(!IsPositionValid())
     {
         sLog.outError("DynamicObject (spell %u eff %u) not created. Suggested coordinates isn't valid (X: %f Y: %f)",spellId,effMask,GetPositionX(),GetPositionY());

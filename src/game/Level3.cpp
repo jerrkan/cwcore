@@ -2416,25 +2416,26 @@ bool ChatHandler::HandleLearnAllMyTalentsCommand(const char* /*args*/)
             continue;
 
         // search highest talent rank
-        uint32 spellId = 0;
-        for(int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
+        uint32 spellid = 0;
+
+        for(uint8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
         {
-            if(talentInfo->RankID[rank] != 0)
+            if(talentInfo->RankID[rank]!=0)
             {
-                spellId = talentInfo->RankID[rank];
+                spellid = talentInfo->RankID[rank];
                 break;
             }
         }
 
-        if(!spellId)                                        // ??? none spells in talent
+        if(!spellid)                                        // ??? none spells in talent
             continue;
 
-        SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellId);
+        SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellid);
         if(!spellInfo || !SpellMgr::IsSpellValid(spellInfo,m_session->GetPlayer(),false))
             continue;
 
         // learn highest rank of talent and learn all non-talent spell ranks (recursive by tree)
-        player->learnSpellHighRank(spellId);
+        player->learnSpellHighRank(spellid);
     }
 
     SendSysMessage(LANG_COMMAND_LEARN_CLASS_TALENTS);
@@ -2493,7 +2494,7 @@ bool ChatHandler::HandleLearnAllMyPetTalentsCommand(const char* /*args*/)
         // search highest talent rank
         uint32 spellid = 0;
 
-        for(int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
+        for(uint8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
         {
             if(talentInfo->RankID[rank]!=0)
             {
@@ -5259,10 +5260,10 @@ bool ChatHandler::HandleResetSpellsCommand(const char * args)
 
     if(target)
     {
-        target->resetSpells(/* bool myClassOnly */);
+        target->resetSpells();
 
         ChatHandler(target).SendSysMessage(LANG_RESET_SPELLS);
-        if(!m_session || m_session->GetPlayer() != target)
+        if(!m_session || m_session->GetPlayer()!=target)
             PSendSysMessage(LANG_RESET_SPELLS_ONLINE,GetNameLink(target).c_str());
     }
     else

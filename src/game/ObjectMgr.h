@@ -873,9 +873,6 @@ class ObjectMgr
         uint64 GenerateGMTicketId();
 
         bool CheckDB() const;
-
-        // for wintergrasp only
-        GraveYardMap        mGraveYardMap;
     protected:
 
         // first free id for selected id type
@@ -934,7 +931,7 @@ class ObjectMgr
         std::set<uint32>    m_DisabledCreatureSpells;
         std::set<uint32>    m_DisabledPetSpells;
 
-//        GraveYardMap        mGraveYardMap;
+        GraveYardMap        mGraveYardMap;
 
         GameTeleMap         m_GameTeleMap;
 
