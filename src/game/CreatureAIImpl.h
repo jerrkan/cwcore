@@ -89,7 +89,6 @@ const T& RAND(const T& v1, const T& v2, const T& v3, const T& v4, const T& v5, c
         case 5: return v6;
     }
 }
-*/
 
 class EventMap : private std::map<uint32, uint32>
 {
@@ -288,6 +287,47 @@ inline bool CreatureAI::UpdateVictimWithGaze()
     return me->getVictim();
 }
 
+inline bool CreatureAI::UpdateCombatState()
+{
+    if(!me->isInCombat())
+        return false;
+
+    if(!me->HasReactState(REACT_PASSIVE))
+    {
+        if(Unit *victim = me->SelectVictim())
+            AttackStart(victim);
+        return me->getVictim();
+    }
+    else if(me->getThreatManager().isThreatListEmpty())
+    {
+        EnterEvadeMode();
+        return false;
+    }
+
+    return true;
+}
+
+inline bool CreatureAI::UpdateVictim()
+{
+    if(!me->isInCombat())
+        return false;
+
+    if(!me->HasReactState(REACT_PASSIVE))
+    {
+        if(Unit *victim = me->SelectVictim())
+            AttackStart(victim);
+        return me->getVictim();
+    }
+    else if(me->getThreatManager().isThreatListEmpty())
+    {
+        EnterEvadeMode();
+        return false;
+    }
+
+    return true;
+}
+
+/*
 inline bool CreatureAI::UpdateVictim()
 {
     if(!me->isInCombat())
@@ -296,15 +336,21 @@ inline bool CreatureAI::UpdateVictim()
         AttackStart(victim);
     return me->getVictim();
 }
+*/
 
 inline bool CreatureAI::_EnterEvadeMode()
 {
-    if(me->IsInEvadeMode() || !me->isAlive())
+    if(!me->isAlive())
+        return false;
+
+    // sometimes bosses stuck in combat?
+    me->DeleteThreatList();
+    me->CombatStop(true);
+
+    if(me->IsInEvadeMode())
         return false;
 
     me->RemoveAllAuras();
-    me->DeleteThreatList();
-    me->CombatStop(true);
     me->LoadCreaturesAddon();
     me->SetLootRecipient(NULL);
     me->ResetPlayerDamageReq();
@@ -320,6 +366,11 @@ inline void UnitAI::DoCast(Unit* victim, uint32 spellId, bool triggered)
     me->CastSpell(victim, spellId, triggered);
 }
 
+inline void UnitAI::DoCastVictim(uint32 spellId, bool triggered)
+{
+    me->CastSpell(me->getVictim(), spellId, triggered);
+}
+
 inline void UnitAI::DoCastAOE(uint32 spellId, bool triggered)
 {
     if(!triggered && me->hasUnitState(UNIT_STAT_CASTING))
@@ -333,18 +384,19 @@ inline Creature *CreatureAI::DoSummon(uint32 uiEntry, const Position &pos, uint3
     return me->SummonCreature(uiEntry, pos, uiType, uiDespawntime);
 }
 
-inline Creature *CreatureAI::DoSummon(uint32 uiEntry, WorldObject* pGo, float fRadius, uint32 uiDespawntime, TempSummonType uiType)
+inline Creature *CreatureAI::DoSummon(uint32 uiEntry, WorldObject* obj, float fRadius, uint32 uiDespawntime, TempSummonType uiType)
 {
-    float fX, fY, fZ;
-    pGo->GetGroundPointAroundUnit(fX, fY, fZ, fRadius * rand_norm(), rand_norm()*2*M_PI);
-    return me->SummonCreature(uiEntry, fX, fY, fZ, me->GetOrientation(), uiType, uiDespawntime);
+    Position pos;
+    obj->GetRandomNearPosition(pos, fRadius);
+    return me->SummonCreature(uiEntry, pos, uiType, uiDespawntime);
 }
 
 inline Creature *CreatureAI::DoSummonFlyer(uint32 uiEntry, WorldObject *obj, float _fZ, float fRadius, uint32 uiDespawntime, TempSummonType uiType)
 {
-    float fX, fY, fZ;
-    obj->GetGroundPointAroundUnit(fX, fY, fZ, fRadius * rand_norm(), rand_norm()*2*M_PI);
-    return me->SummonCreature(uiEntry, fX, fY, fZ + _fZ, me->GetOrientation(), uiType, uiDespawntime);
+    Position pos;
+    obj->GetRandomNearPosition(pos, fRadius);
+    pos.m_positionZ += _fZ;
+    return me->SummonCreature(uiEntry, pos, uiType, uiDespawntime);
 }
 
 #endif

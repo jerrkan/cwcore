@@ -125,65 +125,12 @@ void CreatureAI::SelectNearestTarget(Unit *who)
     }
 }
 
-bool CreatureAI::UpdateCombatState()
-{
-    if(!me->isInCombat())
-        return false;
-
-    if(!me->HasReactState(REACT_PASSIVE))
-    {
-        if(Unit *victim = me->SelectVictim())
-            AttackStart(victim);
-        return me->getVictim();
-    }
-    else if(me->getThreatManager().isThreatListEmpty())
-    {
-        EnterEvadeMode();
-        return false;
-    }
-
-    return true;
-}
-
-bool CreatureAI::_EnterEvadeMode()
-{
-    if(me->IsInEvadeMode() || !me->isAlive())
-        return false;
-
-    me->RemoveAllAuras();
-    me->DeleteThreatList();
-    me->CombatStop(true);
-    me->LoadCreaturesAddon();
-    me->SetLootRecipient(NULL);
-    me->ResetPlayerDamageReq();
-
-    return true;
-}
-
-bool CreatureAI::UpdateCombatState()
-{
-    if(!me->isInCombat())
-        return false;
-
-    if(!me->HasReactState(REACT_PASSIVE))
-    {
-        if(Unit *victim = me->SelectVictim())
-            AttackStart(victim);
-        return me->getVictim();
-    }
-    else if(me->getThreatManager().isThreatListEmpty())
-    {
-        EnterEvadeMode();
-        return false;
-    }
-
-    return true;
-}
-
 void CreatureAI::EnterEvadeMode()
 {
     if(!_EnterEvadeMode())
         return;
+
+    sLog.outDebug("Creature %u enters evade mode.", me->GetEntry());
 
     if(!me->GetVehicle()) // otherwise me will be in evade mode forever
     {

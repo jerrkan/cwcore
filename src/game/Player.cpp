@@ -14889,7 +14889,14 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
             // Do not look for instance if bg not found
             const WorldLocation& _loc = GetBattleGroundEntryPoint();
             mapId = _loc.GetMapId(); instanceId = 0;
-            Relocate(&_loc);
+
+            if(mapId == MAPID_INVALID) // Battleground Entry Point not found (???)
+            {
+                sLog.outError("Player (guidlow %d) was in BG in database, but BG was not found, and entry point was invalid! Teleport to default race/class locations.",guid);
+                RelocateToHomebind();
+            } else {
+                Relocate(&_loc);
+            }
 
             // We are not in BG anymore
             m_bgData.bgInstanceID = 0;
