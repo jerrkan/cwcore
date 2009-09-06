@@ -17,7 +17,7 @@
 /* ScriptData
 SDName: boss_archaedas
 SD%Complete: 100
-SDComment: Archaedas is activated when 3 prople click on his altar.
+SDComment: Archaedas is activated when 1 person (was 3, changed in 3.0.8) clicks on his altar.
 Every 10 seconds he will awaken one of his minions along the wall.
 At 66%, he will awaken the 6 Guardians.
 At 33%, he will awaken the Vault Walkers
@@ -286,35 +286,38 @@ CreatureAI* GetAI_mob_archaedas_minions(Creature* pCreature)
 /* ScriptData
 SDName: go_altar_archaedas
 SD%Complete: 100
-SDComment: Needs 3 people to activate the Archaedas script
+SDComment: Needs 1 person to activate the Archaedas script
 SDCategory: Uldaman
 EndScriptData */
 
 
 #define OBJECT_ALTAR_OF_ARCHAEDAS   133234
 
-#define NUMBER_NEEDED_TO_ACTIVATE 3
+#define NUMBER_NEEDED_TO_ACTIVATE 1 // as of patch 3.0.8 the altars can be opened by a single player (previously 3)
 
 #define SPELL_BOSS_OBJECT_VISUAL    11206
 
-uint64 altarOfArchaedasCount[5];
-int32 altarOfArchaedasCounter=0;
+//uint64 altarOfArchaedasCount[5];
+//int32 altarOfArchaedasCounter=0;
 
 
 bool GOHello_go_altar_of_archaedas(Player* pPlayer, GameObject* pGo)
 {
-    bool alreadyUsed;
-    pGo->AddUse ();
+    //bool alreadyUsed;
+    //pGo->AddUse ();
 
+    /*
     alreadyUsed = false;
     for (uint32 loop=0; loop<5; loop++) {
         if (altarOfArchaedasCount[loop] == pPlayer->GetGUID()) alreadyUsed = true;
     }
     if (!alreadyUsed)
         altarOfArchaedasCount[altarOfArchaedasCounter++] = pPlayer->GetGUID();
+        */
 
     pPlayer->CastSpell (pPlayer, SPELL_BOSS_OBJECT_VISUAL, false);
 
+    /*
     if (altarOfArchaedasCounter < NUMBER_NEEDED_TO_ACTIVATE) {
         return false;        // not enough people yet
     }
@@ -332,6 +335,7 @@ bool GOHello_go_altar_of_archaedas(Player* pPlayer, GameObject* pGo)
     if (count < NUMBER_NEEDED_TO_ACTIVATE) {
         return false;            // not enough people
     }
+    */
 
     ScriptedInstance* pInstance = pPlayer->GetInstanceData();
     if (!pInstance)
@@ -405,17 +409,17 @@ CreatureAI* GetAI_mob_stonekeepers(Creature* pCreature)
 /* ScriptData
 SDName: go_altar_of_the_keepers
 SD%Complete: 100
-SDComment: Need 3 people to activate to open the altar.  One by one the StoneKeepers will activate.  After all four are dead than the door will open.
+SDComment: Need 1 person to activate to open the altar.  One by one the StoneKeepers will activate.  After all four are dead than the door will open.
 SDCategory: Uldaman
 EndScriptData */
 
 
 #define SPELL_BOSS_OBJECT_VISUAL    11206
 
-#define NUMBER_NEEDED_TO_ACTIVATE 3
+#define NUMBER_NEEDED_TO_ACTIVATE 1 // as of patch 3.0.8 the altars can be opened by a single player (previously 3)
 
-static uint64 altarOfTheKeeperCount[5];
-static uint32 altarOfTheKeeperCounter=0;
+//static uint64 altarOfTheKeeperCount[5];
+//static uint32 altarOfTheKeeperCounter=0;
 
 bool GOHello_go_altar_of_the_keepers(Player* pPlayer, GameObject* pGo)
 {
@@ -423,26 +427,26 @@ bool GOHello_go_altar_of_the_keepers(Player* pPlayer, GameObject* pGo)
     if (!pInstance)
         return true;
 
-    bool alreadyUsed;
+    //bool alreadyUsed;
 
-    pGo->AddUse ();
+    //pGo->AddUse ();
 
-    alreadyUsed = false;
-    for (uint32 loop=0; loop<5; ++loop)
-    {
-        if (altarOfTheKeeperCount[loop] == pPlayer->GetGUID())
-            alreadyUsed = true;
-    }
-    if (!alreadyUsed && altarOfTheKeeperCounter < 5)
-        altarOfTheKeeperCount[altarOfTheKeeperCounter++] = pPlayer->GetGUID();
+    //alreadyUsed = false;
+    //for (uint32 loop=0; loop<5; ++loop)
+    //{
+    //    if (altarOfTheKeeperCount[loop] == pPlayer->GetGUID())
+            //alreadyUsed = true;
+    //}
+    //if (!alreadyUsed && altarOfTheKeeperCounter < 5)
+    //    altarOfTheKeeperCount[altarOfTheKeeperCounter++] = pPlayer->GetGUID();
     pPlayer->CastSpell (pPlayer, SPELL_BOSS_OBJECT_VISUAL, false);
 
-    if (altarOfTheKeeperCounter < NUMBER_NEEDED_TO_ACTIVATE)
-    {
+    //if (altarOfTheKeeperCounter < NUMBER_NEEDED_TO_ACTIVATE)
+    //{
         //error_log ("not enough people yet, altarOfTheKeeperCounter = %d", altarOfTheKeeperCounter);
-        return false;        // not enough people yet
-    }
-
+    //    return false;        // not enough people yet
+    //}
+/*
     // Check to make sure at least three people are still casting
     uint32 count=0;
     Unit *pTarget;
@@ -460,7 +464,7 @@ bool GOHello_go_altar_of_the_keepers(Player* pPlayer, GameObject* pGo)
         // error_log ("still not enough people");
         return true;            // not enough people
     }
-
+*/
     //error_log ("activating stone keepers");
     pInstance->SetData(NULL,1);        // activate the Stone Keepers
     return true;

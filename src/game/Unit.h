@@ -454,13 +454,14 @@ enum UnitState
     UNIT_STAT_JUMPING         = 0x00040000,
     UNIT_STAT_ONVEHICLE       = 0x00080000,
     UNIT_STAT_MOVE            = 0x00100000,
-    //UNIT_STAT_WALK            = 0x00200000,
+    UNIT_STAT_ROTATING        = 0x00200000,
     UNIT_STAT_UNATTACKABLE    = (UNIT_STAT_IN_FLIGHT | UNIT_STAT_ONVEHICLE),
     UNIT_STAT_MOVING          = (UNIT_STAT_ROAMING | UNIT_STAT_CHASE),
     UNIT_STAT_CONTROLLED      = (UNIT_STAT_CONFUSED | UNIT_STAT_STUNNED | UNIT_STAT_FLEEING),
     UNIT_STAT_LOST_CONTROL    = (UNIT_STAT_CONTROLLED | UNIT_STAT_JUMPING | UNIT_STAT_CHARGING),
     UNIT_STAT_SIGHTLESS       = (UNIT_STAT_LOST_CONTROL),
     UNIT_STAT_CANNOT_AUTOATTACK     = (UNIT_STAT_LOST_CONTROL | UNIT_STAT_CASTING),
+    UNIT_STAT_CANNOT_TURN     = (UNIT_STAT_LOST_CONTROL | UNIT_STAT_ROTATING),
     UNIT_STAT_ALL_STATE       = 0xffffffff                      //(UNIT_STAT_STOPPED | UNIT_STAT_MOVING | UNIT_STAT_IN_COMBAT | UNIT_STAT_IN_FLIGHT)
 };
 
@@ -480,6 +481,7 @@ enum UnitMoveType
 #define MAX_MOVE_TYPE     9
 
 extern float baseMoveSpeed[MAX_MOVE_TYPE];
+extern float playerBaseMoveSpeed[MAX_MOVE_TYPE];
 
 enum WeaponAttackType
 {
@@ -543,38 +545,38 @@ enum UnitVisibility
 // Value masks for UNIT_FIELD_FLAGS
 enum UnitFlags
 {
-    UNIT_FLAG_UNK_0            = 0x00000001,
-    UNIT_FLAG_NON_ATTACKABLE   = 0x00000002,                // not attackable
-    UNIT_FLAG_DISABLE_MOVE     = 0x00000004,
-    UNIT_FLAG_PVP_ATTACKABLE   = 0x00000008,                // allow apply pvp rules to attackable state in addition to faction dependent state
-    UNIT_FLAG_RENAME           = 0x00000010,
-    UNIT_FLAG_PREPARATION      = 0x00000020,                // don't take reagents for spells with SPELL_ATTR_EX5_NO_REAGENT_WHILE_PREP
-    UNIT_FLAG_UNK_6            = 0x00000040,
-    UNIT_FLAG_NOT_ATTACKABLE_1 = 0x00000080,                // ?? (UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_NOT_ATTACKABLE_1) is NON_PVP_ATTACKABLE
-    UNIT_FLAG_NOT_ATTACKABLE_2 = 0x00000100,                // 2.0.8
-    UNIT_FLAG_UNK_9            = 0x00000200,                // 3.0.3 - makes you unable to attack everything
-    UNIT_FLAG_LOOTING          = 0x00000400,                // loot animation
-    UNIT_FLAG_PET_IN_COMBAT    = 0x00000800,                // in combat?, 2.0.8
-    UNIT_FLAG_PVP              = 0x00001000,                // changed in 3.0.3
-    UNIT_FLAG_SILENCED         = 0x00002000,                // silenced, 2.1.1
-    UNIT_FLAG_UNK_14           = 0x00004000,                // 2.0.8
-    UNIT_FLAG_UNK_15           = 0x00008000,
-    UNIT_FLAG_UNK_16           = 0x00010000,
-    UNIT_FLAG_PACIFIED         = 0x00020000,                // 3.0.3 ok
-    UNIT_FLAG_STUNNED          = 0x00040000,                // 3.0.3 ok
-    UNIT_FLAG_IN_COMBAT        = 0x00080000,
-    UNIT_FLAG_TAXI_FLIGHT      = 0x00100000,                // disable casting at client side spell not allowed by taxi flight (mounted?), probably used with 0x4 flag
-    UNIT_FLAG_DISARMED         = 0x00200000,                // 3.0.3, disable melee spells casting..., "Required melee weapon" added to melee spells tooltip.
-    UNIT_FLAG_CONFUSED         = 0x00400000,
-    UNIT_FLAG_FLEEING          = 0x00800000,
-    UNIT_FLAG_UNK_24           = 0x01000000,                // used in spell Eyes of the Beast for pet...
-    UNIT_FLAG_NOT_SELECTABLE   = 0x02000000,
-    UNIT_FLAG_SKINNABLE        = 0x04000000,
-    UNIT_FLAG_MOUNT            = 0x08000000,
-    UNIT_FLAG_UNK_28           = 0x10000000,
-    UNIT_FLAG_UNK_29           = 0x20000000,                // used in Feing Death spell
-    UNIT_FLAG_SHEATHE          = 0x40000000,
-    UNIT_FLAG_UNK_31           = 0x80000000
+    UNIT_FLAG_UNK_0                 = 0x00000001,
+    UNIT_FLAG_NON_ATTACKABLE        = 0x00000002,           // not attackable
+    UNIT_FLAG_DISABLE_MOVE          = 0x00000004,
+    UNIT_FLAG_PVP_ATTACKABLE        = 0x00000008,           // allow apply pvp rules to attackable state in addition to faction dependent state
+    UNIT_FLAG_RENAME                = 0x00000010,
+    UNIT_FLAG_PREPARATION           = 0x00000020,           // don't take reagents for spells with SPELL_ATTR_EX5_NO_REAGENT_WHILE_PREP
+    UNIT_FLAG_UNK_6                 = 0x00000040,
+    UNIT_FLAG_NOT_ATTACKABLE_1      = 0x00000080,           // ?? (UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_NOT_ATTACKABLE_1) is NON_PVP_ATTACKABLE
+    UNIT_FLAG_OOC_NOT_ATTACKABLE    = 0x00000100,           // 2.0.8 - (OOC Out Of Combat) Can not be attacked when not in combat. Removed if unit for some reason enter combat.
+    UNIT_FLAG_UNK_9                 = 0x00000200,           // 3.0.3 - makes you unable to attack everything
+    UNIT_FLAG_LOOTING               = 0x00000400,           // loot animation
+    UNIT_FLAG_PET_IN_COMBAT         = 0x00000800,           // in combat?, 2.0.8
+    UNIT_FLAG_PVP                   = 0x00001000,           // changed in 3.0.3
+    UNIT_FLAG_SILENCED              = 0x00002000,           // silenced, 2.1.1
+    UNIT_FLAG_UNK_14                = 0x00004000,           // 2.0.8
+    UNIT_FLAG_UNK_15                = 0x00008000,
+    UNIT_FLAG_UNK_16                = 0x00010000,
+    UNIT_FLAG_PACIFIED              = 0x00020000,           // 3.0.3 ok
+    UNIT_FLAG_STUNNED               = 0x00040000,           // 3.0.3 ok
+    UNIT_FLAG_IN_COMBAT             = 0x00080000,
+    UNIT_FLAG_TAXI_FLIGHT           = 0x00100000,           // disable casting at client side spell not allowed by taxi flight (mounted?), probably used with 0x4 flag
+    UNIT_FLAG_DISARMED              = 0x00200000,           // 3.0.3, disable melee spells casting..., "Required melee weapon" added to melee spells tooltip.
+    UNIT_FLAG_CONFUSED              = 0x00400000,
+    UNIT_FLAG_FLEEING               = 0x00800000,
+    UNIT_FLAG_PLAYER_CONTROLLED     = 0x01000000,           // used in spell Eyes of the Beast for pet... let attack by controlled creature
+    UNIT_FLAG_NOT_SELECTABLE        = 0x02000000,
+    UNIT_FLAG_SKINNABLE             = 0x04000000,
+    UNIT_FLAG_MOUNT                 = 0x08000000,
+    UNIT_FLAG_UNK_28                = 0x10000000,
+    UNIT_FLAG_UNK_29                = 0x20000000,           // used in Feing Death spell
+    UNIT_FLAG_SHEATHE               = 0x40000000,
+    UNIT_FLAG_UNK_31                = 0x80000000
 };
 
 // Value masks for UNIT_FIELD_FLAGS_2
@@ -960,13 +962,6 @@ enum ActionBarIndex
     ACTION_BAR_INDEX_END = 10,
 };
 
-enum Rotation
-{
-    CREATURE_ROTATE_NONE = 0,
-    CREATURE_ROTATE_LEFT = 1,
-    CREATURE_ROTATE_RIGHT = 2
-};
-
 #define MAX_UNIT_ACTION_BAR_INDEX (ACTION_BAR_INDEX_END-ACTION_BAR_INDEX_START)
 
 struct CharmInfo
@@ -1091,9 +1086,6 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         void GetRandomContactPoint( const Unit* target, float &x, float &y, float &z, float distance2dMin, float distance2dMax ) const;
         uint32 m_extraAttacks;
         bool m_canDualWield;
-        void StartAutoRotate(uint8 type, uint32 fulltime);
-        void AutoRotate(uint32 time);
-        bool IsUnitRotating() {return IsRotating;}
 
         void _addAttacker(Unit *pAttacker)                  // must be called only from Unit::Attack(Unit*)
         {
@@ -1119,12 +1111,7 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         void RemoveAllAttackers();
         AttackerSet const& getAttackers() const { return m_attackers; }
         bool isAttackingPlayer() const;
-        Unit* getVictim() const 
-        { 
-            if(IsRotating)return NULL;
-            return m_attacking; 
-        }
-
+        Unit* getVictim() const { return m_attacking; }
 
         void CombatStop(bool includingCast = false);
         void CombatStopWithPets(bool includingCast = false);
@@ -1473,7 +1460,8 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         CharmInfo* InitCharmInfo();
         void       DeleteCharmInfo();
         void UpdateCharmAI();
-        Player * GetMoverSource() const;
+        //Player * GetMoverSource() const;
+        Player *m_movedPlayer;
         SharedVisionList const& GetSharedVisionList() { return m_sharedVision; }
         void AddPlayerToVision(Player* plr);
         void RemovePlayerFromVision(Player* plr);
@@ -1597,14 +1585,16 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         void SetBaseWeaponDamage(WeaponAttackType attType ,WeaponDamageRange damageRange, float value) { m_weaponDamage[attType][damageRange] = value; }
 
         bool isInFrontInMap(Unit const* target,float distance, float arc = M_PI) const;
-        void SetInFront(Unit const* target);
+        void SetInFront(Unit const* target)
+        {
+            if(!hasUnitState(UNIT_STAT_CANNOT_TURN))
+                SetOrientation(GetAngle(target));
+        }
         bool isInBackInMap(Unit const* target, float distance, float arc = M_PI) const;
-        bool isInLine(Unit const* target, float distance, float width) const;
 
         // Visibility system
         UnitVisibility GetVisibility() const { return m_Visibility; }
         void SetVisibility(UnitVisibility x);
-        void DestroyForNearbyPlayers();
 
         // common function for visibility checks for player/creatures with detection code
         virtual bool canSeeOrDetect(Unit const* u, bool detect, bool inVisibleList = false, bool is3dDistance = true) const = 0;
@@ -1706,7 +1696,7 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         float GetAPMultiplier(WeaponAttackType attType, bool normalized);
         void ModifyAuraState(AuraState flag, bool apply);
         uint32 BuildAuraStateUpdateForTarget(Unit * target) const;
-        bool HasAuraState(AuraState flag, SpellEntry const *spellProto = NULL, Unit * Caster = NULL) const ;
+        bool HasAuraState(AuraState flag, SpellEntry const *spellProto = NULL, Unit const * Caster = NULL) const ;
         void UnsummonAllTotems();
         Unit* SelectMagnetTarget(Unit *victim, SpellEntry const *spellInfo = NULL);
         int32 SpellBaseDamageBonus(SpellSchoolMask schoolMask);
@@ -1717,7 +1707,7 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         uint32 SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint32 healamount, DamageEffectType damagetype, uint32 stack = 1);
         bool   isSpellBlocked(Unit *pVictim, SpellEntry const *spellProto, WeaponAttackType attackType = BASE_ATTACK);
         bool   isBlockCritical();
-        bool   isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolMask schoolMask, WeaponAttackType attackType = BASE_ATTACK);
+        bool   isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolMask schoolMask, WeaponAttackType attackType = BASE_ATTACK) const;
         uint32 SpellCriticalDamageBonus(SpellEntry const *spellProto, uint32 damage, Unit *pVictim);
         uint32 SpellCriticalHealingBonus(SpellEntry const *spellProto, uint32 damage, Unit *pVictim);
 
@@ -1979,12 +1969,6 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
 
         uint32 m_reducedThreatPercent;
         uint64 m_misdirectionTargetGUID;
-
-        uint8 IsRotating;//0none 1left 2right
-        uint32 RotateTimer;
-        uint32 RotateTimerFull;
-        double RotateAngle;
-        uint64 LastTargetGUID;
 };
 
 namespace Trinity

@@ -529,7 +529,7 @@ class TRINITY_DLL_SPEC Creature : public Unit
 
         uint32 getLevelForTarget(Unit const* target) const; // overwrite Unit::getLevelForTarget for boss level support
 
-        bool IsInEvadeMode() const;
+        bool IsInEvadeMode() const { return hasUnitState(UNIT_STAT_EVADE); }
 
         bool AIM_Initialize(CreatureAI* ai = NULL);
         void Motion_Initialize();
@@ -690,8 +690,9 @@ class TRINITY_DLL_SPEC Creature : public Unit
                 return m_charmInfo->GetCharmSpell(pos)->GetAction();
         }
 
-        void SetHomePosition(float x, float y, float z, float ori) { mHome_X = x; mHome_Y = y; mHome_Z = z; mHome_O = ori;}
-        void GetHomePosition(float &x, float &y, float &z, float &ori) { x = mHome_X; y = mHome_Y; z = mHome_Z; ori = mHome_O; }
+        void SetHomePosition(float x, float y, float z, float o) { m_homePosition.Relocate(x, y, z, o); }
+        void SetHomePosition(const Position &pos) { m_homePosition.Relocate(pos);}
+        void GetHomePosition(float &x, float &y, float &z, float &ori) { m_homePosition.GetPosition(x, y, z, ori); }
 
         uint32 GetGlobalCooldown() const { return m_GlobalCooldown; }
 
@@ -766,10 +767,7 @@ class TRINITY_DLL_SPEC Creature : public Unit
         SpellSchoolMask m_meleeDamageSchoolMask;
         uint32 m_originalEntry;
 
-        float mHome_X;
-        float mHome_Y;
-        float mHome_Z;
-        float mHome_O;
+        Position m_homePosition;
 
         bool DisableReputationGain;
 

@@ -815,7 +815,8 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOADBGDATA               = 21,
     PLAYER_LOGIN_QUERY_LOADGLYPHS               = 22,
     PLAYER_LOGIN_QUERY_LOADTALENTS              = 23,
-    MAX_PLAYER_LOGIN_QUERY                      = 24
+    PLAYER_LOGIN_QUERY_LOADACCOUNTDATA          = 24,
+    MAX_PLAYER_LOGIN_QUERY                      = 25
 };
 
 enum PlayerDelayedOperations
@@ -961,7 +962,7 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         bool TeleportTo(WorldLocation const &loc, uint32 options = 0)
         {
-            return TeleportTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z, loc.orientation, options);
+            return TeleportTo(loc.GetMapId(), loc.GetPositionX(), loc.GetPositionY(), loc.GetPositionZ(), loc.GetOrientation(), options);
         }
 
         bool TeleportToBGEntryPoint();
@@ -1373,7 +1374,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         void RegenerateAll();
         void Regenerate(Powers power);
         void RegenerateHealth();
-        void setRegenTimer(uint32 time) {m_regenTimer = time;}
+        void setRegenTimerCount(uint32 time) {m_regenTimerCount = time;}
         void setWeaponChangeTimer(uint32 time) {m_weaponChangeTimer = time;}
 
         uint32 GetMoney() { return GetUInt32Value (PLAYER_FIELD_COINAGE); }
@@ -1398,6 +1399,8 @@ class MANGOS_DLL_SPEC Player : public Unit
         QuestStatusMap& getQuestStatusMap() { return mQuestStatus; };
 
         const uint64& GetSelection( ) const { return m_curSelection; }
+        Unit *GetSelectedUnit() const;
+        Player *GetSelectedPlayer() const;
         void SetSelection(const uint64 &guid) { m_curSelection = guid; SetUInt64Value(UNIT_FIELD_TARGET, guid); }
 
         uint8 GetComboPoints() { return m_comboPoints; }
@@ -1678,8 +1681,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         void UpdateAttackPowerAndDamage(bool ranged = false);
         void UpdateShieldBlockValue();
         void UpdateDamagePhysical(WeaponAttackType attType);
-        void ApplySpellDamageBonus(int32 amount, bool apply);
-        void ApplySpellHealingBonus(int32 amount, bool apply);
+        void ApplySpellPowerBonus(int32 amount, bool apply);
         void UpdateSpellDamageAndHealingBonus();
 
         void CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, float& min_damage, float& max_damage);
@@ -1698,8 +1700,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         uint32 GetRangedCritDamageReduction(uint32 damage) const;
         uint32 GetSpellCritDamageReduction(uint32 damage) const;
         uint32 GetDotDamageReduction(uint32 damage) const;
-        uint32 GetBaseSpellDamageBonus() { return m_baseSpellDamage;}
-        uint32 GetBaseSpellHealingBonus() { return m_baseSpellHealing;}
+        uint32 GetBaseSpellPowerBonus() { return m_baseSpellPower; }
 
         float GetExpertiseDodgeOrParryReduction(WeaponAttackType attType) const;
         void UpdateBlockPercentage();
@@ -1747,6 +1748,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         void SendResetInstanceFailed(uint32 reason, uint32 MapId);
         void SendResetFailedNotify(uint32 mapid);
 
+        bool SetPosition(const Position &pos, bool teleport = false) { return SetPosition(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation(), teleport); }
         bool SetPosition(float x, float y, float z, float orientation, bool teleport = false);
         void UpdateUnderwaterState( Map * m, float x, float y, float z );
 
@@ -2052,7 +2054,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         /***              ENVIROMENTAL SYSTEM                  ***/
         /*********************************************************/
 
-        void EnvironmentalDamage(EnviromentalDamage type, uint32 damage);
+        uint32 EnvironmentalDamage(EnviromentalDamage type, uint32 damage);
 
         /*********************************************************/
         /***               FLOOD FILTER SYSTEM                 ***/
@@ -2079,7 +2081,12 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         void SetClientControl(Unit* target, uint8 allowMove);
 
-        void SetMover(Unit* target) { m_mover = target; }
+        void SetMover(Unit* target)
+        {
+            m_mover->m_movedPlayer = NULL;
+            m_mover = target;
+            m_mover->m_movedPlayer = this;
+        }
         void SetSeer(WorldObject *target) { m_seer = target; }
         void SetViewpoint(WorldObject *target, bool apply);
         WorldObject* GetViewpoint() const;
@@ -2228,8 +2235,11 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         uint32 GetChampioningFaction() const { return m_ChampioningFaction; }
         void SetChampioningFaction(uint32 faction) { m_ChampioningFaction = faction; }
+Spell * m_spellModTakingSpell;
     protected:
 
+        uint32 m_regenTimerCount;
+        float m_powerFraction[MAX_POWERS];
         uint32 m_contestedPvPTimer;
 
         /*********************************************************/
@@ -2359,13 +2369,13 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         float m_auraBaseMod[BASEMOD_END][MOD_END];
         int16 m_baseRatingValue[MAX_COMBAT_RATING];
-        uint16 m_baseSpellDamage;
-        uint16 m_baseSpellHealing;
+        uint16 m_baseSpellPower;
         uint16 m_baseFeralAP;
         uint16 m_baseManaRegen;
 
         SpellModList m_spellMods[MAX_SPELLMOD];
-        Spell * m_spellModTakingSpell;  // Spell for which charges are dropped in spell::finish
+        uint32 m_pad;
+//        Spell * m_spellModTakingSpell;  // Spell for which charges are dropped in spell::finish
 
         EnchantDurationList m_enchantDuration;
         ItemDurationList m_itemDuration;

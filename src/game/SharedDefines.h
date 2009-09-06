@@ -181,11 +181,6 @@ enum SpellSchoolMask
     SPELL_SCHOOL_MASK_ALL     = ( SPELL_SCHOOL_MASK_NORMAL | SPELL_SCHOOL_MASK_MAGIC )
 };
 
-#define SPELL_SCHOOL_MASK_MAGIC                            \
-    ( SPELL_SCHOOL_MASK_HOLY | SPELL_SCHOOL_MASK_FIRE | SPELL_SCHOOL_MASK_NATURE |  \
-      SPELL_SCHOOL_MASK_FROST | SPELL_SCHOOL_MASK_SHADOW | \
-      SPELL_SCHOOL_MASK_ARCANE )
-
 inline SpellSchools GetFirstSchoolInMask(SpellSchoolMask mask)
 {
     for(int i = 0; i < MAX_SPELL_SCHOOL; ++i)
@@ -430,7 +425,7 @@ const uint32 ItemQualityColors[MAX_ITEM_QUALITY] = {
 #define SPELL_ATTR_EX5_UNK31                      0x80000000            // 31 Forces all nearby enemies to focus attacks caster
 
 #define SPELL_ATTR_EX6_UNK0                       0x00000001            // 0 Only Move spell have this flag
-#define SPELL_ATTR_EX6_UNK1                       0x00000002            // 1 not set in 3.0.3
+#define SPELL_ATTR_EX6_UNK1                       0x00000002            // 1 only usable in arena
 #define SPELL_ATTR_EX6_IGNORE_CASTER_AURAS        0x00000004            // 2
 #define SPELL_ATTR_EX6_UNK3                       0x00000008            // 3
 #define SPELL_ATTR_EX6_UNK4                       0x00000010            // 4
@@ -440,7 +435,7 @@ const uint32 ItemQualityColors[MAX_ITEM_QUALITY] = {
 #define SPELL_ATTR_EX6_UNK8                       0x00000100            // 8
 #define SPELL_ATTR_EX6_UNK9                       0x00000200            // 9
 #define SPELL_ATTR_EX6_UNK10                      0x00000400            // 10
-#define SPELL_ATTR_EX6_UNK11                      0x00000800            // 11
+#define SPELL_ATTR_EX6_UNK11                      0x00000800            // 11 not usable in raid instance
 #define SPELL_ATTR_EX6_UNK12                      0x00001000            // 12
 #define SPELL_ATTR_EX6_UNK13                      0x00002000            // 13
 #define SPELL_ATTR_EX6_UNK14                      0x00004000            // 14
@@ -561,8 +556,10 @@ enum Team
     //TEAM_HORDE_FORCES        = 892,
     //TEAM_SANCTUARY           = 936,
     //TEAM_OUTLAND             = 980,
-    //TEAM_OTHER               = 0,                         // if ReputationListId > 0 && Flags != FACTION_FLAG_TEAM_HEADER
+    TEAM_OTHER               = 0,                         // if ReputationListId > 0 && Flags != FACTION_FLAG_TEAM_HEADER
 };
+
+const Team TeamId2Team[3] = {ALLIANCE, HORDE, TEAM_OTHER};
 
 enum SpellEffects
 {
@@ -2534,6 +2531,7 @@ enum EventId
 {
     EVENT_SPELLCLICK        = 1001,
     EVENT_FALL_GROUND       = 1002,
+    EVENT_CHARGE            = 1003,
 };
 
 enum ResponseCodes

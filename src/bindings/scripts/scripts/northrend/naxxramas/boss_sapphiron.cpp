@@ -39,6 +39,9 @@
 #define MOB_BLIZZARD            16474
 #define GO_ICEBLOCK             181247
 
+#define ACHIEVEMENT_THE_HUNDRED_CLUB    HEROIC(2146, 2147)
+#define MAX_FROST_RESISTANCE            100
+
 enum Phases
 {
     PHASE_NULL = 0,
@@ -70,11 +73,17 @@ struct TRINITY_DLL_DECL boss_sapphironAI : public BossAI
 {
     boss_sapphironAI(Creature* c) : BossAI(c, BOSS_SAPPHIRON)
         , phase(PHASE_NULL)
-    {}
+    {
+        pMap = m_creature->GetMap();
+    }
 
     Phases phase;
     uint32 iceboltCount;
     IceBlockMap iceblocks;
+
+    bool CanTheHundredClub; // needed for achievement: The Hundred Club(2146, 2147)
+    uint32 CheckFrostResistTimer;
+    Map* pMap;
 
     void InitializeAI()
     {
@@ -96,6 +105,9 @@ struct TRINITY_DLL_DECL boss_sapphironAI : public BossAI
             ClearIceBlock();
 
         phase = PHASE_NULL;
+
+        CanTheHundredClub = true;
+        CheckFrostResistTimer = 5000;
     }
 
     void EnterCombat(Unit *who)
@@ -106,6 +118,8 @@ struct TRINITY_DLL_DECL boss_sapphironAI : public BossAI
 
         events.ScheduleEvent(EVENT_BERSERK, 15*60000);
         EnterPhaseGround();
+
+        CheckPlayersFrostResist();
     }
 
     void SpellHitTarget(Unit *target, const SpellEntry *spell)
@@ -125,6 +139,21 @@ struct TRINITY_DLL_DECL boss_sapphironAI : public BossAI
     {
         _JustDied();
         me->CastSpell(me, SPELL_DIES, true);
+
+        CheckPlayersFrostResist();
+        if(CanTheHundredClub)
+        {
+            AchievementEntry const *AchievTheHundredClub = GetAchievementStore()->LookupEntry(ACHIEVEMENT_THE_HUNDRED_CLUB);
+            if(AchievTheHundredClub)
+            {
+                if(pMap && pMap->IsDungeon())
+                {
+                    Map::PlayerList const &players = pMap->GetPlayers();
+                    for(Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                        itr->getSource()->CompletedAchievement(AchievTheHundredClub);
+                }
+            }
+        }
     }
 
     void MovementInform(uint32, uint32 id)
@@ -139,6 +168,22 @@ struct TRINITY_DLL_DECL boss_sapphironAI : public BossAI
         {
             phase = PHASE_BIRTH;
             events.ScheduleEvent(EVENT_BIRTH, 23000);
+        }
+    }
+
+    void CheckPlayersFrostResist()
+    {
+        if(CanTheHundredClub && pMap && pMap->IsDungeon())
+        {
+            Map::PlayerList const &players = pMap->GetPlayers();
+            for(Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+            {
+                if(itr->getSource()->GetResistance(SPELL_SCHOOL_FROST) > MAX_FROST_RESISTANCE)
+                {
+                    CanTheHundredClub = false;
+                    break;
+                }
+            }
         }
     }
 
@@ -161,7 +206,7 @@ struct TRINITY_DLL_DECL boss_sapphironAI : public BossAI
             if (Player* pPlayer = Unit::GetPlayer(itr->first))
                 pPlayer->RemoveAura(SPELL_ICEBOLT);
             if (GameObject* pGo = GameObject::GetGameObject(*me, itr->second))
-                pGo->DeleteObjectWithOwner();
+                pGo->Delete();
         }
         iceblocks.clear();
     }
@@ -175,6 +220,15 @@ struct TRINITY_DLL_DECL boss_sapphironAI : public BossAI
 
         if (phase != PHASE_BIRTH && !UpdateCombatState() || !CheckInRoom())
             return;
+
+        if(CanTheHundredClub)
+        {
+            if(CheckFrostResistTimer < diff)
+            {
+                CheckPlayersFrostResist();
+                CheckFrostResistTimer = (rand() % 5 + 5) * 1000;
+            }else CheckFrostResistTimer -= diff;
+        }
 
         if (phase == PHASE_GROUND)
         {
@@ -201,9 +255,7 @@ struct TRINITY_DLL_DECL boss_sapphironAI : public BossAI
                     case EVENT_BLIZZARD:
                     {
                         //DoCastAOE(SPELL_SUMMON_BLIZZARD);
-                        float x, y, z;
-                        me->GetGroundPointAroundUnit(x, y, z, rand_norm()*20, rand_norm()*2*M_PI);
-                        if (Creature *summon = me->SummonCreature(MOB_BLIZZARD, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 25000+rand()%5000))
+                        if(Creature *summon = DoSummon(MOB_BLIZZARD, me, 25000+rand()%5000, TEMPSUMMON_TIMED_DESPAWN))
                             summon->GetMotionMaster()->MoveRandom(40);
                         events.ScheduleEvent(EVENT_BLIZZARD, HEROIC(20000,7000), 0, PHASE_GROUND);
                         break;
@@ -314,7 +366,7 @@ struct TRINITY_DLL_DECL boss_sapphironAI : public BossAI
                 if (GameObject* pGo = GameObject::GetGameObject(*me, itr->second))
                 {
                     if (pGo->IsInBetween(me, target, 2.0f)
-                        && me->GetExactDistance2d(target->GetPositionX(), target->GetPositionY()) - me->GetExactDistance2d(pGo->GetPositionX(), pGo->GetPositionY()) < 5.0f)
+                        && me->GetExactDist2d(target->GetPositionX(), target->GetPositionY()) - me->GetExactDist2d(pGo->GetPositionX(), pGo->GetPositionY()) < 5.0f)
                     {
                         target->ApplySpellImmune(0, IMMUNITY_ID, SPELL_FROST_EXPLOSION, true);
                         targets.push_back(target);

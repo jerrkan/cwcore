@@ -102,6 +102,7 @@ UPDATE `creature_template` SET `ScriptName`='npc_salanar_the_horseman' WHERE `en
 UPDATE `creature_template` SET `ScriptName`='npc_dark_rider_of_acherus' WHERE `entry` =28654;
 UPDATE `creature_template` SET `ScriptName`='npc_ros_dark_rider' WHERE `entry`=28768;
 UPDATE `creature_template` SET `ScriptName`='npc_dkc1_gothik' WHERE `entry`=28658;
+UPDATE `creature_template` SET `ScriptName`='npc_scarlet_ghoul' WHERE `entry`=28845;
 UPDATE `creature_template` SET `ScriptName`='npc_a_special_surprise' WHERE `entry` IN (29032,29061,29065,29067,29068,29070,29074,29072,29073,29071);
 UPDATE `creature_template` SET `ScriptName`='npc_koltira_deathweaver' WHERE `entry`=28912;
 UPDATE `creature_template` SET `ScriptName`='mob_high_inquisitor_valroth' WHERE `entry`=29001;
@@ -315,6 +316,8 @@ UPDATE `creature_template` SET `ScriptName`='npc_tiare' WHERE `entry`=30051;
 UPDATE `creature_template` SET `ScriptName`='npc_sinkhole_kill_credit' WHERE `entry` IN (26248,26249);
 UPDATE `creature_template` SET `ScriptName`='npc_khunok_the_behemoth' WHERE `entry`=25862;
 UPDATE `creature_template` SET `ScriptName`='npc_keristrasza' WHERE `entry`=26206;
+update creature_template set ScriptName = 'npc_iruk' where entry = 26219;
+UPDATE creature_template SET ScriptName = 'npc_corastrasza' WHERE entry = 32548;
 
 /* BURNING STEPPES */
 UPDATE `creature_template` SET `ScriptName`='npc_ragged_john' WHERE `entry`=9563;
@@ -1294,3 +1297,11 @@ INSERT INTO `creature_ai_scripts` VALUES ('2918102', '29181', '14', '0', '100', 
 INSERT INTO `creature_ai_scripts` VALUES ('2918103', '29181', '0', '0', '100', '3', '10000', '20000', '10000', '20000', '11', '20678', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Rayne - SPELL_STARFALL');
 INSERT INTO `creature_ai_scripts` VALUES ('2918104', '29181', '0', '0', '100', '3', '10000', '20000', '10000', '20000', '11', '21807', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Rayne - SPELL_WRATH');
 
+
+-- spell 30298 tries to start event script 10675 but it doesn't exist. create it & make it spawn Geezle
+delete from event_scripts where id = 10675;
+insert into `event_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `x`, `y`, `z`, `o`) values 
+(10675, 0, 10, 17318, 90000, '-5139.79','-11248.27','5.23', '6.27609');
+
+-- geezle should not spawn by default
+update creature set spawnMask=0 where guid = 85587;

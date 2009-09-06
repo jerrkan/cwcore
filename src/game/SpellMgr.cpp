@@ -1153,8 +1153,6 @@ void SpellMgr::LoadSpellTargetPositions()
 
         bar.step();
 
-        ++count;
-
         uint32 Spell_ID = fields[0].GetUInt32();
 
         SpellTargetPosition st;
@@ -1201,6 +1199,7 @@ void SpellMgr::LoadSpellTargetPositions()
         }
 
         mSpellTargetPositions[Spell_ID] = st;
+        ++count;
 
     } while( result->NextRow() );
 
@@ -2726,7 +2725,8 @@ SpellCastResult SpellMgr::GetSpellAllowedInLocationError(SpellEntry const *spell
     // wintergrasp
     if(zone_id == 4197)
         for(uint32 i = 0; i < 3; ++i)
-            if(spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED)
+            if(spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED
+                || spellInfo->EffectApplyAuraName[i] == SPELL_AURA_FLY)
                 return SPELL_FAILED_INCORRECT_AREA;
 
     return SPELL_CAST_OK;

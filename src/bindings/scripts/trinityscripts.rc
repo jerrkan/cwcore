@@ -39,7 +39,7 @@
 //IDI_APPICON             ICON                    "TrinityRealm.ico"
 
 /////////////////////////////////////////////////////////////////////////////
-// Neutre (Par dï¿½ut systï¿½) resources
+// Neutre (Par défaut système) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEUSD)
 #ifdef _WIN32

@@ -29,35 +29,51 @@
 #define SPELL_STONE_GRIP        HEROIC(62166,63981)
 #define SPELL_ARM_SWEEP         HEROIC(63766,63983)
 
+enum Events
+{
+    EVENT_NONE = 0,
+    EVENT_SMASH,
+    EVENT_GRIP,
+    EVENT_SWEEP,
+};
+
 struct TRINITY_DLL_DECL boss_kologarnAI : public BossAI
 {
     boss_kologarnAI(Creature *c) : BossAI(c, BOSS_KOLOGARN), vehicle(me->GetVehicleKit()),
-        leftArm(NULL), rightArm(NULL)
+        left(false), right(false)
     {
         assert(vehicle);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
-    }
-
-    void Reset()
-    {
-        _Reset();
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED); // i think this is a hack, but there is no other way to disable his rotation
     }
 
     Vehicle *vehicle;
-    Creature *leftArm, *rightArm;
+    bool left, right;
 
     void AttackStart(Unit *who)
     {
-        me->Attack(who, false);
+        me->Attack(who, true);
     }
 
     void PassengerBoarded(Unit *who, int8 seatId, bool apply)
     {
-        if(who->GetEntry() == 32933)
-            leftArm = apply ? CAST_CRE(who) : NULL;
-        else if(who->GetEntry() == 32934)
-            rightArm = apply ? CAST_CRE(who) : NULL;
+        if(who->GetTypeId() == TYPEID_UNIT)
+        {
+            if(who->GetEntry() == 32933)
+                left = apply;
+            else if(who->GetEntry() == 32934)
+                right = apply;
+            who->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
+            ((Creature*)who)->SetReactState(REACT_PASSIVE);
+        }
+    }
+
+    void EnterCombat(Unit *who)
+    {
+        _EnterCombat();
+        events.ScheduleEvent(EVENT_SMASH, 5000);
+        events.ScheduleEvent(EVENT_SWEEP, 10000);
+        events.ScheduleEvent(EVENT_GRIP, 15000);
     }
 
     void UpdateAI(const uint32 diff)
@@ -65,18 +81,38 @@ struct TRINITY_DLL_DECL boss_kologarnAI : public BossAI
         if(!UpdateVictim())
             return;
 
-        if (me->isAttackReady())
+        events.Update(diff);
+
+        if(me->hasUnitState(UNIT_STAT_CASTING))
+            return;
+
+        // TODO: because we are using hack, he is stunned and cannot cast, so we use triggered for every spell
+        switch(events.GetEvent())
         {
-            //If we are within range melee the target
-            if (me->IsWithinMeleeRange(me->getVictim()))
-            {
-                Unit *attacker = me;
-                if(leftArm) attacker = leftArm;
-                if(rightArm && rand()%2) attacker = rightArm;
-                attacker->AttackerStateUpdate(me->getVictim());
-                me->resetAttackTimer();
-            }
+            case EVENT_NONE: break;
+            case EVENT_SMASH:
+                if(left && right)
+                    DoCastVictim(SPELL_TWO_ARM_SMASH, true);
+                else if(left || right)
+                    DoCastVictim(SPELL_ONE_ARM_SMASH, true);
+                events.RepeatEvent(15000);
+                break;
+            case EVENT_SWEEP:
+                if(left)
+                    DoCastAOE(SPELL_ARM_SWEEP, true);
+                events.RepeatEvent(15000);
+                break;
+            case EVENT_GRIP:
+                if(right)
+                    DoCastAOE(SPELL_STONE_GRIP, true);
+                events.RepeatEvent(15000);
+                break;
+            default:
+                events.PopEvent();
+                break;
         }
+
+        DoMeleeAttackIfReady();
     }
 };
 

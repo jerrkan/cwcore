@@ -43,6 +43,8 @@
 
 #define SPELL_HODIR_FURY        62297 // Not Blizzlike
 
+#define SPELL_ELECTROSHOCK      62522
+
 enum Mobs
 {
     MOB_MECHANOLIFT = 33214,
@@ -109,24 +111,8 @@ struct TRINITY_DLL_DECL boss_flame_leviathanAI : public BossAI
     {
         if(spell->Id == 62472)
             vehicle->InstallAllAccessories();
-    }
-
-    void JustSummoned(Creature *summon)
-    {
-        if(summon->GetEntry() == MOB_MECHANOLIFT)
-        {
-            summons.Summon(summon);
-        }
-    }
-
-    void SummonedCreatureDespawn(Creature *summon)
-    {
-        if(summon->GetEntry() == MOB_MECHANOLIFT)
-        {
-            summons.Despawn(summon);
-            //if(Creature* container = DoSummon(MOB_CONTAINER, summon, 0, 0))
-            //    container->GetMotionMaster()->MovePoint(1, container->GetPositionX(), container->GetPositionY(), me->GetPositionZ());
-        }
+        else if(spell->Id == SPELL_ELECTROSHOCK)
+            me->InterruptSpell(CURRENT_CHANNELED_SPELL);
     }
 
     void UpdateAI(const uint32 diff)
@@ -174,7 +160,7 @@ struct TRINITY_DLL_DECL boss_flame_leviathanAI : public BossAI
                 events.RepeatEvent(15000);
                 return;
             case EVENT_SUMMON:
-                if(summons.size() < 10)
+                if(summons.size() < 15) // 4seat+1turret+10lift
                     if(Creature *lift = DoSummonFlyer(MOB_MECHANOLIFT, me, rand()%20 + 20, 50, 0))
                         lift->GetMotionMaster()->MoveRandom(100);
                 events.RepeatEvent(2000);
@@ -296,6 +282,27 @@ struct TRINITY_DLL_DECL boss_flame_leviathan_overload_deviceAI : public PassiveA
     }
 };
 
+struct TRINITY_DLL_DECL boss_flame_leviathan_safety_containerAI : public PassiveAI
+{
+    boss_flame_leviathan_safety_containerAI(Creature *c) : PassiveAI(c) {}
+
+    void MovementInform(uint32 type, uint32 id)
+    {
+        if(id == me->GetEntry())
+        {
+            if(Creature *liquid = DoSummon(MOB_LIQUID, me, 0))
+                liquid->CastSpell(liquid, 62494, true);
+            me->DisappearAndDie(); // this will relocate creature to sky
+        }
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if(!me->GetVehicle() && me->isSummon() && me->GetMotionMaster()->GetCurrentMovementGeneratorType() != POINT_MOTION_TYPE)
+            me->GetMotionMaster()->MoveFall(409.8f, me->GetEntry());
+    }
+};
+
 struct TRINITY_DLL_DECL spell_pool_of_tarAI : public TriggerAI
 {
     spell_pool_of_tarAI(Creature *c) : TriggerAI(c)
@@ -335,6 +342,11 @@ CreatureAI* GetAI_boss_flame_leviathan_overload_device(Creature* pCreature)
     return new boss_flame_leviathan_overload_deviceAI (pCreature);
 }
 
+CreatureAI* GetAI_boss_flame_leviathan_safety_containerAI(Creature* pCreature)
+{
+    return new boss_flame_leviathan_safety_containerAI(pCreature);
+}
+
 CreatureAI* GetAI_spell_pool_of_tar(Creature* pCreature)
 {
     return new spell_pool_of_tarAI (pCreature);
@@ -362,6 +374,11 @@ void AddSC_boss_flame_leviathan()
     newscript->Name="boss_flame_leviathan_overload_device";
     newscript->GetAI = &GetAI_boss_flame_leviathan_overload_device;
     newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name="boss_flame_leviathan_safety_container";
+    newscript->GetAI = &GetAI_boss_flame_leviathan_safety_containerAI;
+    newscript->RegisterSelf();  
 
     newscript = new Script;
     newscript->Name="spell_pool_of_tar";

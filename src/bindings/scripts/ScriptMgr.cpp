@@ -40,7 +40,7 @@ void LoadDatabase()
     //Initialize connection to DB
     if (!dbstring.empty() && TScriptDB.Initialize(dbstring.c_str()))
     {
-        outstring_log("TSCR: TrinityScript database at %s initialized", dbstring.c_str());
+        outstring_log("TSCR: TrinityScript database initialized successfully.");
         outstring_log("");
 
         pSystemMgr.LoadVersion();
@@ -50,7 +50,7 @@ void LoadDatabase()
     }
     else
     {
-        error_log("TSCR: Unable to connect to Database. Load database aborted.");
+        error_log("TSCR: Unable to connect to database at %s. Load database aborted.", dbstring.c_str());
         return;
     }
 

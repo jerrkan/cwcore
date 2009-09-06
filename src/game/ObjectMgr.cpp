@@ -1033,6 +1033,7 @@ uint32 ObjectMgr::ChooseDisplayId(uint32 team, const CreatureInfo *cinfo, const 
             case 28511: // Eye of Acherus
             case 33114: // Flame Leviathan Seat (model 24914 chair)
             case 33167: // Salvaged Demolisher Mechanic Seat
+            case 33189: // Liquid Pryite
                 return cinfo->DisplayID_A[0];
             case 33218: // Pyrite Safety Container
                 return cinfo->DisplayID_A[1];
@@ -1564,13 +1565,13 @@ void ObjectMgr::LoadGameobjects()
         uint32 entry        = fields[ 1].GetUInt32();
 
         GameObjectInfo const* gInfo = GetGameObjectInfo(entry);
-        if(!gInfo)
+        if (!gInfo)
         {
             sLog.outErrorDb("Table `gameobject` has gameobject (GUID: %u) with non existing gameobject entry %u, skipped.", guid, entry);
             continue;
         }
 
-        if(gInfo->displayId && !sGameObjectDisplayInfoStore.LookupEntry(gInfo->displayId))
+        if (gInfo->displayId && !sGameObjectDisplayInfoStore.LookupEntry(gInfo->displayId))
         {
             sLog.outErrorDb("Gameobject (GUID: %u Entry %u GoType: %u) have invalid displayId (%u), not loaded.",guid, entry, gInfo->type, gInfo->displayId);
             continue;
@@ -1611,25 +1612,25 @@ void ObjectMgr::LoadGameobjects()
         int16 gameEvent     = fields[16].GetInt16();
         int16 PoolId        = fields[17].GetInt16();
 
-        if(data.rotation2 < -1.0f || data.rotation2 > 1.0f)
+        if (data.rotation2 < -1.0f || data.rotation2 > 1.0f)
         {
             sLog.outErrorDb("Table `gameobject` have gameobject (GUID: %u Entry: %u) with invalid rotation2 (%f) value, skip",guid,data.id,data.rotation2 );
             continue;
         }
 
-        if(data.rotation3 < -1.0f || data.rotation3 > 1.0f)
+        if (data.rotation3 < -1.0f || data.rotation3 > 1.0f)
         {
             sLog.outErrorDb("Table `gameobject` have gameobject (GUID: %u Entry: %u) with invalid rotation3 (%f) value, skip",guid,data.id,data.rotation3 );
             continue;
         }
 
-        if(!MapManager::IsValidMapCoord(data.mapid,data.posX,data.posY,data.posZ,data.orientation))
+        if (!MapManager::IsValidMapCoord(data.mapid,data.posX,data.posY,data.posZ,data.orientation))
         {
             sLog.outErrorDb("Table `gameobject` have gameobject (GUID: %u Entry: %u) with invalid coordinates, skip",guid,data.id );
             continue;
         }
 
-        if(data.phaseMask==0)
+        if (data.phaseMask==0)
         {
             sLog.outErrorDb("Table `gameobject` have gameobject (GUID: %u Entry: %u) with `phaseMask`=0 (not visible for anyone), set to 1.",guid,data.id );
             data.phaseMask = 1;
@@ -2116,6 +2117,16 @@ void ObjectMgr::LoadItemPrototypes()
             {
                 sLog.outErrorDb("Item (Entry: %u) has wrong stat_type%d (%u)",i,j+1,proto->ItemStat[j].ItemStatType);
                 const_cast<ItemPrototype*>(proto)->ItemStat[j].ItemStatType = 0;
+            }
+
+            switch(proto->ItemStat[j].ItemStatType)
+            {
+                case ITEM_MOD_SPELL_HEALING_DONE:
+                case ITEM_MOD_SPELL_DAMAGE_DONE:
+                    sLog.outErrorDb("Item (Entry: %u) has deprecated stat_type%d (%u)",i,j+1,proto->ItemStat[j].ItemStatType);
+                    break;
+                default:
+                    break;
             }
         }
 

@@ -20,6 +20,8 @@
 
 #include "Common.h"
 #include "Platform/Define.h"
+#include "TemporarySummon.h"
+#include "CreatureAI.h"
 
 #define HEROIC(n,h) (HeroicMode ? h : n)
 
@@ -87,6 +89,7 @@ const T& RAND(const T& v1, const T& v2, const T& v3, const T& v4, const T& v5, c
         case 5: return v6;
     }
 }
+*/
 
 class EventMap : private std::map<uint32, uint32>
 {
@@ -256,6 +259,93 @@ struct AISpellInfoType
 };
 
 TRINITY_DLL_SPEC AISpellInfoType * GetAISpellInfo(uint32 i);
+
+
+inline void CreatureAI::SetGazeOn(Unit *target)
+{
+    if(me->canAttack(target))
+    {
+        AttackStart(target);
+        me->SetReactState(REACT_PASSIVE);
+    }
+}
+
+inline bool CreatureAI::UpdateVictimWithGaze()
+{
+    if(!me->isInCombat())
+        return false;
+
+    if(me->HasReactState(REACT_PASSIVE))
+    {
+        if(me->getVictim())
+            return true;
+        else
+            me->SetReactState(REACT_AGGRESSIVE);
+    }
+
+    if(Unit *victim = me->SelectVictim())
+        AttackStart(victim);
+    return me->getVictim();
+}
+
+inline bool CreatureAI::UpdateVictim()
+{
+    if(!me->isInCombat())
+        return false;
+    if(Unit *victim = me->SelectVictim())
+        AttackStart(victim);
+    return me->getVictim();
+}
+
+inline bool CreatureAI::_EnterEvadeMode()
+{
+    if(me->IsInEvadeMode() || !me->isAlive())
+        return false;
+
+    me->RemoveAllAuras();
+    me->DeleteThreatList();
+    me->CombatStop(true);
+    me->LoadCreaturesAddon();
+    me->SetLootRecipient(NULL);
+    me->ResetPlayerDamageReq();
+
+    return true;
+}
+
+inline void UnitAI::DoCast(Unit* victim, uint32 spellId, bool triggered)
+{
+    if(!victim || me->hasUnitState(UNIT_STAT_CASTING) && !triggered)
+        return;
+
+    me->CastSpell(victim, spellId, triggered);
+}
+
+inline void UnitAI::DoCastAOE(uint32 spellId, bool triggered)
+{
+    if(!triggered && me->hasUnitState(UNIT_STAT_CASTING))
+        return;
+
+    me->CastSpell((Unit*)NULL, spellId, triggered);
+}
+
+inline Creature *CreatureAI::DoSummon(uint32 uiEntry, const Position &pos, uint32 uiDespawntime, TempSummonType uiType)
+{
+    return me->SummonCreature(uiEntry, pos, uiType, uiDespawntime);
+}
+
+inline Creature *CreatureAI::DoSummon(uint32 uiEntry, WorldObject* pGo, float fRadius, uint32 uiDespawntime, TempSummonType uiType)
+{
+    float fX, fY, fZ;
+    pGo->GetGroundPointAroundUnit(fX, fY, fZ, fRadius * rand_norm(), rand_norm()*2*M_PI);
+    return me->SummonCreature(uiEntry, fX, fY, fZ, me->GetOrientation(), uiType, uiDespawntime);
+}
+
+inline Creature *CreatureAI::DoSummonFlyer(uint32 uiEntry, WorldObject *obj, float _fZ, float fRadius, uint32 uiDespawntime, TempSummonType uiType)
+{
+    float fX, fY, fZ;
+    obj->GetGroundPointAroundUnit(fX, fY, fZ, fRadius * rand_norm(), rand_norm()*2*M_PI);
+    return me->SummonCreature(uiEntry, fX, fY, fZ + _fZ, me->GetOrientation(), uiType, uiDespawntime);
+}
 
 #endif
 

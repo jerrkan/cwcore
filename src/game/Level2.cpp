@@ -638,13 +638,10 @@ bool ChatHandler::HandleGameObjectTurnCommand(const char* args)
         o = chr->GetOrientation();
     }
 
-    Map* map = obj->GetMap();
-    map->Remove(obj,false);
-
     obj->Relocate(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), o);
     obj->UpdateRotationFields();
-
-    map->Add(obj);
+    obj->DestroyForNearbyPlayers();
+    ObjectAccessor::UpdateObjectVisibility(obj);
 
     obj->SaveToDB();
     obj->Refresh();
@@ -686,13 +683,9 @@ bool ChatHandler::HandleGameObjectMoveCommand(const char* args)
     if (!px)
     {
         Player *chr = m_session->GetPlayer();
-
-        Map* map = obj->GetMap();
-        map->Remove(obj,false);
-
         obj->Relocate(chr->GetPositionX(), chr->GetPositionY(), chr->GetPositionZ(), obj->GetOrientation());
-
-        map->Add(obj);
+        obj->DestroyForNearbyPlayers();
+        ObjectAccessor::UpdateObjectVisibility(obj);
     }
     else
     {
@@ -710,12 +703,9 @@ bool ChatHandler::HandleGameObjectMoveCommand(const char* args)
             return false;
         }
 
-        Map* map = obj->GetMap();
-        map->Remove(obj,false);
-
         obj->Relocate(x, y, z, obj->GetOrientation());
-
-        map->Add(obj);
+        obj->DestroyForNearbyPlayers();
+        ObjectAccessor::UpdateObjectVisibility(obj);
     }
 
     obj->SaveToDB();
@@ -743,11 +733,20 @@ bool ChatHandler::HandleGameObjectAddCommand(const char* args)
 
     char* spawntimeSecs = strtok(NULL, " ");
 
-    const GameObjectInfo *goI = objmgr.GetGameObjectInfo(id);
+    const GameObjectInfo *gInfo = objmgr.GetGameObjectInfo(id);
 
-    if (!goI)
+    if (!gInfo)
     {
         PSendSysMessage(LANG_GAMEOBJECT_NOT_EXIST,id);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    if (gInfo->displayId && !sGameObjectDisplayInfoStore.LookupEntry(gInfo->displayId))
+    {
+        // report to DB errors log as in loading case
+        sLog.outErrorDb("Gameobject (Entry %u GoType: %u) have invalid displayId (%u), not spawned.",id, gInfo->type, gInfo->displayId);
+        PSendSysMessage(LANG_GAMEOBJECT_HAVE_INVALID_DATA,id);
         SetSentErrorMessage(true);
         return false;
     }
@@ -762,7 +761,7 @@ bool ChatHandler::HandleGameObjectAddCommand(const char* args)
     GameObject* pGameObj = new GameObject;
     uint32 db_lowGUID = objmgr.GenerateLowGuid(HIGHGUID_GAMEOBJECT);
 
-    if(!pGameObj->Create(db_lowGUID, goI->id, map, chr->GetPhaseMaskForSpawn(), x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f, 0, GO_STATE_READY))
+    if(!pGameObj->Create(db_lowGUID, gInfo->id, map, chr->GetPhaseMaskForSpawn(), x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f, 0, GO_STATE_READY))
     {
         delete pGameObj;
         return false;
@@ -785,14 +784,14 @@ bool ChatHandler::HandleGameObjectAddCommand(const char* args)
         return false;
     }
 
-    sLog.outDebug(GetMangosString(LANG_GAMEOBJECT_CURRENT), goI->name, db_lowGUID, x, y, z, o);
+    sLog.outDebug(GetMangosString(LANG_GAMEOBJECT_CURRENT), gInfo->name, db_lowGUID, x, y, z, o);
 
     map->Add(pGameObj);
 
     // TODO: is it really necessary to add both the real and DB table guid here ?
     objmgr.AddGameobjectToGrid(db_lowGUID, objmgr.GetGOData(db_lowGUID));
 
-    PSendSysMessage(LANG_GAMEOBJECT_ADD,id,goI->name,db_lowGUID,x,y,z);
+    PSendSysMessage(LANG_GAMEOBJECT_ADD,id,gInfo->name,db_lowGUID,x,y,z);
     return true;
 }
 
@@ -4148,14 +4147,11 @@ bool ChatHandler::HandleTempAddSpwCommand(const char* args)
 
     Player *chr = m_session->GetPlayer();
 
-    float x = chr->GetPositionX();
-    float y = chr->GetPositionY();
-    float z = chr->GetPositionZ();
-    float ang = chr->GetOrientation();
-
     uint32 id = atoi(charID);
+    if(!id)
+        return false;
 
-    chr->SummonCreature(id,x,y,z,ang,0,TEMPSUMMON_CORPSE_DESPAWN,120);
+    chr->SummonCreature(id, *chr, TEMPSUMMON_CORPSE_DESPAWN, 120);
 
     return true;
 }

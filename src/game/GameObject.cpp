@@ -178,9 +178,11 @@ bool GameObject::Create(uint32 guidlow, uint32 name_id, Map *map, uint32 phaseMa
 
     SetUInt32Value(GAMEOBJECT_DISPLAYID, goinfo->displayId);
 
+    // GAMEOBJECT_BYTES_1, index at 0, 1, 2 and 3
     SetGoState(go_state);
     SetGoType(GameobjectTypes(goinfo->type));
 
+    SetGoArtKit(0);                                         // unknown what this is
     SetGoAnimProgress(animprogress);
 
     SetByteValue(GAMEOBJECT_BYTES_1, 2, artKit);
@@ -489,17 +491,13 @@ void GameObject::AddUniqueUse(Player* player)
     m_unique_users.insert(player->GetGUIDLow());
 }
 
-void GameObject::DeleteObjectWithOwner()
+void GameObject::Delete()
 {
     SetLootState(GO_NOT_READY);
     if (GetOwnerGUID())
         if (Unit * owner = GetOwner(false))
             owner->RemoveGameObject(this, false);
-    Delete();
-}
 
-void GameObject::Delete()
-{
     assert (!GetOwnerGUID());
     SendObjectDeSpawnAnim(GetGUID());
 
@@ -1476,7 +1474,7 @@ void GameObject::TakenDamage(uint32 damage)
 
             SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_DESTROYED);
             SetUInt32Value(GAMEOBJECT_DISPLAYID, m_goInfo->building.destroyedDisplayId);
-            EventInform(m_goInfo->building.damagedEvent);
+            EventInform(m_goInfo->building.destroyedEvent);
         }
     }
     else // from intact to damaged
@@ -1490,7 +1488,7 @@ void GameObject::TakenDamage(uint32 damage)
 
             SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_DAMAGED);
             SetUInt32Value(GAMEOBJECT_DISPLAYID, m_goInfo->building.damagedDisplayId);
-            EventInform(m_goInfo->building.destroyedEvent);
+            EventInform(m_goInfo->building.damagedEvent);
         }
     }
 }

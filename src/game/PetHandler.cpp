@@ -167,7 +167,7 @@ void WorldSession::HandlePetActionHelper(Unit *pet, uint64 guid1, uint16 spellid
                     else if(pet->GetOwnerGUID() == GetPlayer()->GetGUID())
                     {
                         assert(pet->GetTypeId() == TYPEID_UNIT);
-                        if(((Creature*)pet)->isPet())
+                        if(pet->isPet())
                         {
                             if(((Pet*)pet)->getPetType() == HUNTER_PET)
                                 GetPlayer()->RemovePet((Pet*)pet, PET_SAVE_AS_DELETED);
@@ -175,7 +175,7 @@ void WorldSession::HandlePetActionHelper(Unit *pet, uint64 guid1, uint16 spellid
                                 //dismissing a summoned pet is like killing them (this prevents returning a soulshard...)
                                 pet->setDeathState(CORPSE);
                         }
-                        else if(((Creature*)pet)->HasUnitTypeMask(UNIT_MASK_MINION))
+                        else if(pet->HasUnitTypeMask(UNIT_MASK_MINION))
                         {
                             ((Minion*)pet)->UnSummon();
                         }
@@ -232,7 +232,7 @@ void WorldSession::HandlePetActionHelper(Unit *pet, uint64 guid1, uint16 spellid
             SpellCastResult result = spell->CheckPetCast(unit_target);
 
             //auto turn to target unless possessed
-            if(result == SPELL_FAILED_UNIT_NOT_INFRONT && !pet->isPossessed())
+            if(result == SPELL_FAILED_UNIT_NOT_INFRONT && !pet->isPossessed() && !pet->IsVehicle())
             {
                 if(unit_target)
                 {
@@ -267,7 +267,7 @@ void WorldSession::HandlePetActionHelper(Unit *pet, uint64 guid1, uint16 spellid
                     pet->SendPetAIReaction(guid1);
                 }
 
-                if( unit_target && !GetPlayer()->IsFriendlyTo(unit_target) && !pet->isPossessed())
+                if( unit_target && !GetPlayer()->IsFriendlyTo(unit_target) && !pet->isPossessed() && !pet->IsVehicle())
                 {
                     // This is true if pet has no target or has target but targets differs.
                     if (pet->getVictim() != unit_target)
@@ -284,7 +284,7 @@ void WorldSession::HandlePetActionHelper(Unit *pet, uint64 guid1, uint16 spellid
             }
             else
             {
-                if(pet->isPossessed())
+                if(pet->isPossessed() || pet->IsVehicle())
                     Spell::SendCastResult(GetPlayer(),spellInfo,0,result);
                 else
                     pet->SendPetCastFail(spellid, result);
@@ -632,7 +632,12 @@ void WorldSession::HandlePetCastSpellOpcode( WorldPacket& recvPacket )
     spell->m_cast_count = spellid == 33395 ? 0 : cast_count;                       // probably pending spell cast
     spell->m_targets = targets;
 
-    SpellCastResult result = spell->CheckPetCast(NULL);
+    // TODO: need to check victim?
+    SpellCastResult result;
+    if(caster->m_movedPlayer)
+        result = spell->CheckPetCast(caster->m_movedPlayer->GetSelectedUnit());
+    else
+        result = spell->CheckPetCast(NULL);
     if(result == SPELL_CAST_OK)
     {
         if(caster->GetTypeId() == TYPEID_UNIT)

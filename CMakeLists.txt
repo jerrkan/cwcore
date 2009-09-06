@@ -7,6 +7,7 @@ include(cmake/FindAce.cmake)
 include(cmake/FindMySql.cmake)
 include(cmake/FindPostgreSql.cmake)
 include(cmake/FindReadline.cmake)
+include(cmake/FindTermcap.cmake)
 CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
@@ -22,6 +23,7 @@ OPTION(DO_DEBUG "Debug mode" 0)
 OPTION(DO_WARN "Enable all compile warnings" 0)
 OPTION(LARGE_CELL "Large cell size" 0)
 OPTION(SHORT_SLEEP "Short sleep" 0)
+OPTION(CENTOS "CENTOS" 0)
 
 SET(GENREV_SRC
 src/tools/genrevision/genrevision.cpp
@@ -126,12 +128,16 @@ else(SHORT_SLEEP)
 message("* System sleep time is 100ms")
 endif(SHORT_SLEEP)
 
-IF(EXISTS /etc/centos-release)
-    SET(CENTOS 1)
-    message("* Building with termcap")
-else(EXISTS /etc/centos-release)
-    SET(CENTOS 0)
-ENDIF(EXISTS /etc/centos-release)
+IF(UNIX)
+    IF(CENTOS)
+        add_definitions(-DCENTOS)
+        MESSAGE("* Building with termcap")
+        FIND_TERMCAP()
+    ELSE(CENTOS)
+        MESSAGE("* Building with readline")
+        FIND_READLINE()
+    ENDIF(CENTOS)
+ENDIF(UNIX)
 
 FIND_ACE(ACE)
 if(ACE_FOUND)
@@ -157,18 +163,6 @@ IF(EXISTS ${ACE_INCLUDE_DIR}/ace/Stack_Trace.h)
 ELSE(EXISTS ${ACE_INCLUDE_DIR}/ace/Stack_Trace.h)
     message(STATUS "** Your libace is out of date. Please update your libace!")
 ENDIF(EXISTS ${ACE_INCLUDE_DIR}/ace/Stack_Trace.h)
-
-IF(UNIX AND NOT CENTOS)
-  FIND_READLINE()
-  IF(READLINE_FOUND)
-  message(STATUS "Found Readline library: ${READLINE_LIBRARY}")
-  message(STATUS "Include dir is: ${READLINE_INCLUDE_DIR}")
-  ELSE(READLINE_FOUND)
-  message(SEND_ERROR "** Readline library not found!")
-  message(SEND_ERROR "** Your distro may provide a binary for Readline e.g. for ubuntu try apt-get install libreadline5-dev")
-  return()
-  ENDIF(READLINE_FOUND)
-ENDIF(UNIX AND NOT CENTOS)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
@@ -197,7 +191,6 @@ ${POSTGRESQL_INCLUDE_DIR}
 ${CMAKE_CURRENT_BINARY_DIR}/src/shared 
 ${CMAKE_CURRENT_SOURCE_DIR}/..
 ${ACE_INCLUDE_DIR}
-${READLINE_INCLUDE_DIR}
 )
 
 SET(CMAKE_SKIP_BUILD_RPATH FALSE)

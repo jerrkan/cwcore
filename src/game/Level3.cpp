@@ -2416,26 +2416,25 @@ bool ChatHandler::HandleLearnAllMyTalentsCommand(const char* /*args*/)
             continue;
 
         // search highest talent rank
-        uint32 spellid = 0;
-
-        for(uint8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
+        uint32 spellId = 0;
+        for(int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
         {
-            if(talentInfo->RankID[rank]!=0)
+            if(talentInfo->RankID[rank] != 0)
             {
-                spellid = talentInfo->RankID[rank];
+                spellId = talentInfo->RankID[rank];
                 break;
             }
         }
 
-        if(!spellid)                                        // ??? none spells in talent
+        if(!spellId)                                        // ??? none spells in talent
             continue;
 
-        SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellid);
+        SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellId);
         if(!spellInfo || !SpellMgr::IsSpellValid(spellInfo,m_session->GetPlayer(),false))
             continue;
 
         // learn highest rank of talent and learn all non-talent spell ranks (recursive by tree)
-        player->learnSpellHighRank(spellid);
+        player->learnSpellHighRank(spellId);
     }
 
     SendSysMessage(LANG_COMMAND_LEARN_CLASS_TALENTS);
@@ -2494,7 +2493,7 @@ bool ChatHandler::HandleLearnAllMyPetTalentsCommand(const char* /*args*/)
         // search highest talent rank
         uint32 spellid = 0;
 
-        for(uint8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
+        for(int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
         {
             if(talentInfo->RankID[rank]!=0)
             {
@@ -5152,7 +5151,7 @@ bool ChatHandler::HandleResetHonorCommand (const char * args)
         return false;
 
     target->SetUInt32Value(PLAYER_FIELD_KILLS, 0);
-    target->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS, 0);
+    target->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 0);
     target->SetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, 0);
     target->SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, 0);
     target->SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, 0);
@@ -5260,10 +5259,10 @@ bool ChatHandler::HandleResetSpellsCommand(const char * args)
 
     if(target)
     {
-        target->resetSpells();
+        target->resetSpells(/* bool myClassOnly */);
 
         ChatHandler(target).SendSysMessage(LANG_RESET_SPELLS);
-        if(!m_session || m_session->GetPlayer()!=target)
+        if(!m_session || m_session->GetPlayer() != target)
             PSendSysMessage(LANG_RESET_SPELLS_ONLINE,GetNameLink(target).c_str());
     }
     else

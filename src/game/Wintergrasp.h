@@ -45,6 +45,8 @@ enum WintergraspSpell
     SPELL_DAMAGED_BUILDING  = 59201,
     SPELL_INTACT_BUILDING   = 59203,
 
+    SPELL_TELEPORT_DALARAN  = 53360,
+
     SPELL_SHUTDOWN_VEHICLE  = 21247,
 };
 
@@ -116,13 +118,14 @@ struct BuildingState
     explicit BuildingState(uint32 _worldState, TeamId _team, bool asDefault)
         : worldState(_worldState), health(0)
         , defaultTeam(asDefault ? _team : OTHER_TEAM(_team)), team(_team), damageState(DAMAGE_INTACT)
-        , building(NULL), type(BUILDING_WALL)
+        , building(NULL), type(BUILDING_WALL), graveTeam(NULL)
     {}
     uint32 worldState;
     uint32 health;
-    TeamId team, defaultTeam;
+    TeamId defaultTeam;
     DamageState damageState;
     GameObject *building;
+    uint32 *graveTeam;
     BuildingType type;
 
     void SendUpdate(Player *player) const
@@ -134,6 +137,16 @@ struct BuildingState
     {
         data << worldState << AreaPOIIconId[team][damageState];
     }
+
+    TeamId GetTeam() const { return team; }
+    void SetTeam(TeamId t)
+    {
+        team = t;
+        if(graveTeam)
+            *graveTeam = TeamId2Team[t];
+    }
+private:
+    TeamId team;
 };
 
 typedef std::map<uint32, uint32> TeamPairMap;
@@ -147,7 +160,7 @@ class OPvPWintergrasp : public OutdoorPvP
         typedef std::set<Creature*> CreatureSet;
         typedef std::set<GameObject*> GameObjectSet;
     public:
-        explicit OPvPWintergrasp() : m_tenacityStack(0) {}
+        explicit OPvPWintergrasp() : m_tenacityStack(0), m_gate(NULL) {}
         bool SetupOutdoorPvP();
 
         uint32 GetCreatureEntry(uint32 guidlow, const CreatureData *data);
@@ -175,6 +188,7 @@ class OPvPWintergrasp : public OutdoorPvP
         int32 m_tenacityStack;
 
         BuildingStateMap m_buildingStates;
+        BuildingState *m_gate;
 
         CreatureSet m_creatures;
         CreatureSet m_vehicles[2];
@@ -198,6 +212,7 @@ class OPvPWintergrasp : public OutdoorPvP
 
         void UpdateClock();
         void UpdateClockDigit(uint32 &timer, uint32 digit, uint32 mod);
+        void PromotePlayer(Player *player) const;
         void UpdateTenacityStack();
         void UpdateAllWorldObject();
         bool UpdateCreatureInfo(Creature *creature) const;
