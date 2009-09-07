@@ -1426,10 +1426,10 @@ void WorldObject::UpdateGroundPositionZ(float x, float y, float &z) const
         z = new_z+ 0.05f;                                   // just to be sure that we are not a few pixel under the surface
 }
 
-bool Position::IsPositionValid() const
+/*bool Position::IsPositionValid() const
 {
     return Trinity::IsValidMapCoord(m_positionX,m_positionY,m_positionZ,m_orientation);
-}
+}*/
 
 void WorldObject::MonsterSay(const char* text, uint32 language, uint64 TargetGuid)
 {
@@ -1808,12 +1808,12 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
     }
 
     pet->Relocate(x, y, z, ang);
-    if(!pet->IsPositionValid())
+    /*if(!pet->IsPositionValid())
     {
         sLog.outError("ERROR: Pet (guidlow %d, entry %d) not summoned. Suggested coordinates isn't valid (X: %f Y: %f)",pet->GetGUIDLow(),pet->GetEntry(),pet->GetPositionX(),pet->GetPositionY());
         delete pet;
         return NULL;
-    }
+    }*/
 
     Map *map = GetMap();
     uint32 pet_number = objmgr.GeneratePetNumber();

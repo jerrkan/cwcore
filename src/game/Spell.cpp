@@ -258,7 +258,7 @@ bool SpellCastTargets::read ( WorldPacket * data, Unit *caster )
             return false;
 
         *data >> m_srcPos.m_positionX >> m_srcPos.m_positionY >> m_srcPos.m_positionZ;
-        if(!m_srcPos.IsPositionValid())
+        //if(!m_srcPos.IsPositionValid())
             return false;
     }
     else
@@ -273,7 +273,7 @@ bool SpellCastTargets::read ( WorldPacket * data, Unit *caster )
             return false;
 
         *data >> m_dstPos.m_positionX >> m_dstPos.m_positionY >> m_dstPos.m_positionZ;
-        if(!m_dstPos.IsPositionValid())
+        //if(!m_dstPos.IsPositionValid())
             return false;
 
         if( m_targetMask & TARGET_FLAG_SOURCE_LOCATION )

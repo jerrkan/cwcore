@@ -74,11 +74,11 @@ bool DynamicObject::Create(uint32 guidlow, Unit *caster, uint32 spellId, uint32 
 {
     SetMap(caster->GetMap());
     Relocate(pos);
-    if(!IsPositionValid())
+    /*if(!IsPositionValid())
     {
         sLog.outError("DynamicObject (spell %u eff %u) not created. Suggested coordinates isn't valid (X: %f Y: %f)",spellId,effMask,GetPositionX(),GetPositionY());
         return false;
-    }
+    }*/
 
     WorldObject::_Create(guidlow, HIGHGUID_DYNAMICOBJECT, caster->GetPhaseMask());
 

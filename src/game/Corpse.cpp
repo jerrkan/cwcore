@@ -81,12 +81,12 @@ bool Corpse::Create( uint32 guidlow, Player *owner)
 
     Relocate(owner->GetPositionX(), owner->GetPositionY(), owner->GetPositionZ(), owner->GetOrientation());
 
-    if(!IsPositionValid())
+    /*if(!IsPositionValid())
     {
         sLog.outError("Corpse (guidlow %d, owner %s) not created. Suggested coordinates isn't valid (X: %f Y: %f)",
             guidlow, owner->GetName(), owner->GetPositionX(), owner->GetPositionY());
         return false;
-    }
+    }*/
 
     //we need to assign owner's map for corpse
     //in other way we will get a crash in Corpse::SaveToDB()
@@ -226,12 +226,12 @@ bool Corpse::LoadFromDB(uint32 guid, Field *fields)
     SetPhaseMask(phaseMask, false);
     Relocate(positionX, positionY, positionZ, ort);
 
-    if(!IsPositionValid())
+    /*if(!IsPositionValid())
     {
         sLog.outError("Corpse (guidlow %d, owner %d) not created. Suggested coordinates isn't valid (X: %f Y: %f)",
             GetGUIDLow(), GUID_LOPART(GetOwnerGUID()), GetPositionX(), GetPositionY());
         return false;
-    }
+    }*/
 
     m_grid = Trinity::ComputeGridPair(GetPositionX(), GetPositionY());
 

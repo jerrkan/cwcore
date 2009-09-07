@@ -145,12 +145,12 @@ bool Transport::Create(uint32 guidlow, uint32 mapid, float x, float y, float z, 
     Relocate(x,y,z,ang);
     // instance id and phaseMask isn't set to values different from std.
 
-    if(!IsPositionValid())
+    /*if(!IsPositionValid())
     {
         sLog.outError("Transport (GUID: %u) not created. Suggested coordinates isn't valid (X: %f Y: %f)",
             guidlow,x,y);
         return false;
-    }
+    }*/
 
     Object::_Create(guidlow, 0, HIGHGUID_MO_TRANSPORT);
 
