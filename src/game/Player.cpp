@@ -16373,13 +16373,13 @@ void Player::SaveToDB()
     }
     else
     {
-        ss << GetTeleportDest().mapid << ", "
+        ss << GetTeleportDest().GetMapId() << ", "
         << (uint32)0 << ", "
         << (uint32)GetDungeonDifficulty() << ", "
-        << finiteAlways(GetTeleportDest().coord_x) << ", "
-        << finiteAlways(GetTeleportDest().coord_y) << ", "
-        << finiteAlways(GetTeleportDest().coord_z) << ", "
-        << finiteAlways(GetTeleportDest().orientation) << ", '";
+        << finiteAlways(GetTeleportDest().GetPositionX()) << ", "
+        << finiteAlways(GetTeleportDest().GetPositionY()) << ", "
+        << finiteAlways(GetTeleportDest().GetPositionZ()) << ", "
+        << finiteAlways(GetTeleportDest().GetOrientation()) << ", '";
     }
 
     uint16 i;

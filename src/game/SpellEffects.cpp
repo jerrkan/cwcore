@@ -6990,11 +6990,13 @@ void Spell::SummonGuardian(uint32 i, uint32 entry, SummonPropertiesEntry const *
 
 void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 count)
 {
+    pos.SetOrientation(m_caster->GetOrientation());
+
     if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
     {
         // Summon 1 unit in dest location
         if (count == 0)
-            pos.Relocate(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, m_caster->GetOrientation());
+            pos.Relocate(m_targets.m_dstPos);
         // Summon in random point all other units if location present
         else
         {
@@ -7003,22 +7005,14 @@ void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 coun
             {
                 case TARGET_MINION:
                 case TARGET_DEST_CASTER_RANDOM:
-                {
-                    float x, y, z;
-                    m_caster->GetGroundPointAroundUnit(x, y, z, radius * rand_norm(), rand_norm()*2*M_PI);
-                    pos.Relocate(x, y, z, m_caster->GetOrientation());
+                    m_caster->GetNearPosition(pos, radius * rand_norm(), rand_norm()*2*M_PI);
                     break;
-                }
                 case TARGET_DEST_DEST_RANDOM:
                 case TARGET_DEST_TARGET_RANDOM:
-                {
-                    float x, y, z;
-                    m_caster->GetRandomPoint(m_targets.m_destX,m_targets.m_destY,m_targets.m_destZ,radius,x,y,z);
-                    pos.Relocate(x, y, z, m_caster->GetOrientation());
+                    m_caster->GetRandomPoint(m_targets.m_dstPos, radius, pos);
                     break;
-                }
                 default:
-                    pos.Relocate(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, m_caster->GetOrientation());
+                    pos.Relocate(m_targets.m_dstPos);
                     break;
             }
         }
@@ -7028,7 +7022,7 @@ void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 coun
     {
         float x, y, z;
         m_caster->GetClosePoint(x,y,z,3.0f);
-        pos.Relocate(x, y, z, m_caster->GetOrientation());
+        pos.Relocate(x, y, z);
     }
 }
 
