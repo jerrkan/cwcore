@@ -2162,7 +2162,7 @@ INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
 -- ULDUAR
 -- --------
 INSERT INTO creature_template (entry, vehicleid) VALUES
-(32930, 338), # Kologarn
+(32930, 328), # Kologarn
 (32934, 380), # Right Arm
 (33113, 340), # Flame Leviathan
 (33114, 341), # Flame Leviathan Seat
@@ -2194,12 +2194,13 @@ spell5 = VALUES(spell5),
 spell6 = VALUES(spell6),
 vehicleid = VALUES(vehicleid);
 
-DELETE FROM `spell_script_target` WHERE `entry` IN (62427,62374,62399,62056,63985);
+DELETE FROM `spell_script_target` WHERE `entry` IN (62427,62496,62374,62399,62056,63985);
 INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
 (62427, 1, 33109), # Load into Catapult
 (62374, 1, 33060), # Pursued
 (62374, 1, 33109),
 (62399, 1, 33139), # Overload Circuit
+(62496, 1, 33167), # Liquid Pyrite - Salvaged Demolisher Mechanic Seat
 (63985, 1, 32934), # Stone Grip
 (62056, 1, 32934);
 
@@ -2273,3 +2274,18 @@ UPDATE `script_texts` SET `type` = '3' WHERE `entry` IN ('-1532089','-1532090');
 # Chicken Net
 DELETE FROM `spell_script_target` WHERE `entry` = '51959' and `type` = '1';
 INSERT INTO `spell_script_target` ( `entry`, `type`, `targetEntry`) VALUES ('51959', '1', '28161');
+
+# the lurker below
+update creature_template set inhabittype=3 where entry=21217;
+
+
+-- update creature_template set ScriptName = 'npc_iruk' where entry = 26219;
+-- UPDATE creature_template SET ScriptName = 'npc_corastrasza' WHERE entry = 32548;
+
+DELETE FROM `spell_script_target` WHERE entry = 61245;
+INSERT INTO `spell_script_target` (`entry`, `type`, `targetEntry`) VALUES
+(61245, 1, 32535);
+
+UPDATE creature_template SET VehicleId = 165 , spell1 = 56091,spell2 = 56092,spell3 = 57090,spell4 = 57143 ,spell5 = 57108,spell6=57403, unit_class = 1, minhealth = 100000, maxhealth = 100000 WHERE entry = 32535;
+UPDATE creature_template SET armor = 9729, mindmg = 422, maxdmg=586, minrangedmg=345, maxrangedmg=509, attackpower=642, rangedattackpower=103 WHERE entry = 32535;
+update creature set DeathState = 0 where id = 26219;
