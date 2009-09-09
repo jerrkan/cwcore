@@ -354,6 +354,7 @@ void WorldSession::HandleQuestLogRemoveQuest(WorldPacket& recv_data)
             if(!_player->TakeQuestSourceItem( quest, true ))
                 return;                                     // can't un-equip some items, reject quest cancel
 
+            _player->TakeQuestSourceItem(quest, true); // remove quest src item from player
             _player->SetQuestStatus( quest, QUEST_STATUS_NONE);
         }
 
