@@ -8639,28 +8639,3 @@ void ObjectMgr::RemoveGMTicket(uint64 ticketGuid, int64 source, bool permanently
     assert( ticket );
     RemoveGMTicket(ticket, source, permanently);
 }
-
-bool ObjectMgr::CheckDB() const
-{
-    CreatureInfo const* cInfo = sCreatureStorage.LookupEntry<CreatureInfo>(28511);
-    if(!cInfo || cInfo->spells[4] != 51890)
-        return false;
-
-    cInfo = sCreatureStorage.LookupEntry<CreatureInfo>(30068);
-    if(!cInfo || cInfo->faction_A != 21)
-        return false;
-
-    cInfo = sCreatureStorage.LookupEntry<CreatureInfo>(28768); // Dark Rider of Acherus
-    if(!cInfo || !cInfo->ScriptID)
-        return false;
-
-    cInfo = sCreatureStorage.LookupEntry<CreatureInfo>(32627); // Wintergrasp Siege Engine
-    if(!cInfo || !cInfo->spells[0] || cInfo->VehicleId != 117)
-        return false;
-
-    cInfo = sCreatureStorage.LookupEntry<CreatureInfo>(33114); // Flame Leviathan Seat
-    if(!cInfo || cInfo->VehicleId != 341)
-        return false;
-
-    return true;
-}

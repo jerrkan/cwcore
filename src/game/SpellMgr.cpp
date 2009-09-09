@@ -3928,12 +3928,3 @@ void SpellMgr::LoadSpellLinked()
     sLog.outString();
     sLog.outString( ">> Loaded %u linked spells", count );
 }
-
-bool SpellMgr::CheckDB() const
-{
-    SpellScriptTargetBounds bounds = spellmgr.GetSpellScriptTargetBounds(30531);
-    if(bounds.first == bounds.second || bounds.first->second.targetEntry != 17256)
-        return false;
-
-    return true;
-}
