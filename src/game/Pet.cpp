@@ -77,6 +77,18 @@ void Pet::AddToWorld()
         Unit::AddToWorld();
         AIM_Initialize();
     }
+
+    // MrSmite 09-09-2009 PetAI_v1.1
+    // Prevent stuck pets when zoning. Pets default to "follow" when added to world
+    // so we'll reset flags and let the AI handle things
+    if (this->GetCharmInfo() && this->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW))
+    {
+        this->GetCharmInfo()->SetIsCommandAttack(false);
+        this->GetCharmInfo()->SetIsAtStay(false);
+        this->GetCharmInfo()->SetIsFollowing(false);
+        this->GetCharmInfo()->SetIsReturning(false);
+    }
+
 }
 
 void Pet::RemoveFromWorld()
@@ -480,7 +492,7 @@ void Pet::setDeathState(DeathState s)                       // overwrite virtual
     }
 }
 
-void Pet::Update(int32 diff)
+void Pet::Update(uint32 diff)
 {
     if(m_removed)                                           // pet already removed, just wait in remove queue, no updates
         return;
