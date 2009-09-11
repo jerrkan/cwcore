@@ -36,6 +36,10 @@ class InstanceData;
 
 bool LoadScriptingModule(char const* libName = "");
 void UnloadScriptingModule();
+//Hawthorne - On Events
+typedef void(TRINITY_IMPORT * scriptCallOnLogin) (Player *player);
+typedef void(TRINITY_IMPORT * scriptCallOnLogout) (Player *player);
+typedef void(TRINITY_IMPORT * scriptCallOnPVPKill) (Player *killer, Player *killed );
 
 typedef void(TRINITY_IMPORT * scriptCallScriptsInit) (char const*);
 typedef void(TRINITY_IMPORT * scriptCallScriptsFree) ();
@@ -71,7 +75,9 @@ typedef struct
     scriptCallScriptsInit ScriptsInit;
     scriptCallScriptsFree ScriptsFree;
     scriptCallScriptsVersion ScriptsVersion;
-
+    scriptCallOnLogin OnLogin;
+    scriptCallOnLogout OnLogout;
+    scriptCallOnPVPKill OnPVPKill;
     scriptCallGossipHello GossipHello;
     scriptCallGOChooseReward GOChooseReward;
     scriptCallQuestAccept QuestAccept;

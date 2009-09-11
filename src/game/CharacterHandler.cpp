@@ -42,6 +42,7 @@
 #include "SocialMgr.h"
 #include "UpdateMask.h"
 #include "Util.h"
+#include "ScriptCalls.h"
 
 class LoginQueryHolder : public SqlQueryHolder
 {
@@ -810,7 +811,8 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
 
     if(!pCurrChar->IsStandState() && !pCurrChar->hasUnitState(UNIT_STAT_STUNNED))
         pCurrChar->SetStandState(UNIT_STAND_STATE_STAND);
-
+    //Hawthorne - Hook for OnLogin Event
+    Script->OnLogin(pCurrChar);
     m_playerLoading = false;
     delete holder;
 }

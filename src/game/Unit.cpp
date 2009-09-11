@@ -53,7 +53,7 @@
 #include "TemporarySummon.h"
 #include "Vehicle.h"
 #include "Transports.h"
-
+#include "ScriptCalls.h"
 #include <math.h>
 
 float baseMoveSpeed[MAX_MOVE_TYPE] =
@@ -778,6 +778,13 @@ uint32 Unit::DealDamage(Unit *pVictim, uint32 damage, CleanDamage const* cleanDa
             ((Player*)pVictim)->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED, health);
 
         Kill(pVictim, durabilityLoss);
+        //Hawthorne - Hook for OnPVPKill Event
+        if (pVictim->GetTypeId() == TYPEID_PLAYER && this->GetTypeId() == TYPEID_PLAYER)
+        {
+            Player *killer = ((Player*)this);
+            Player *killed = ((Player*)pVictim);
+            Script->OnPVPKill(killer,killed);
+        }
     }
     else                                                    // if (health <= damage)
     {

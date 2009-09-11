@@ -8377,7 +8377,9 @@ void ObjectMgr::LoadScriptNames()
     }
 
     barGoLink bar( result->GetRowCount() );
-    uint32 count = 0;
+    //Hawthorne - OnEvents Changes
+    m_scriptNames.push_back("scripted_on_events");
+    uint32 count = 1;
 
     do
     {

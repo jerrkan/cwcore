@@ -43,6 +43,10 @@ struct Script
     std::string Name;
 
     //Methods to be scripted
+    //Hawthorne - Non-Gossip related events
+    void (*pOnLogin                )(Player*);
+    void (*pOnLogout            )(Player*);
+    void (*pOnPVPKill            )(Player*,Player*);
     bool (*pGossipHello         )(Player*, Creature*);
     bool (*pQuestAccept         )(Player*, Creature*, Quest const* );
     bool (*pGossipSelect        )(Player*, Creature*, uint32 , uint32 );
