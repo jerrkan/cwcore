@@ -2651,6 +2651,10 @@
 					RelativePath="..\scripts\custom\npc_wyrmresttempel_taxi.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\scripts\custom\onevents.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
