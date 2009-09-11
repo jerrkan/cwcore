@@ -42,13 +42,13 @@
 #endif
 
 #ifndef _TRINITY_REALM_CONFIG
-# define _TRINITY_REALM_CONFIG  "TrinityRealm.conf"
+# define _TRINITY_REALM_CONFIG  "CWRealm.conf"
 #endif //_TRINITY_REALM_CONFIG
 
 #ifdef WIN32
 #include "ServiceWin32.h"
-char serviceName[] = "TrinityRealm";
-char serviceLongName[] = "Trinity realm service";
+char serviceName[] = "CWRealm";
+char serviceLongName[] = "Cold Weather realm service";
 char serviceDescription[] = "Massive Network Game Object Server";
 /*
  * -1 - not in service mode

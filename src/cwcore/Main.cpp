@@ -34,7 +34,7 @@
 
 
 #ifndef _TRINITY_CORE_CONFIG
-# define _TRINITY_CORE_CONFIG  "TrinityCore.conf"
+# define _TRINITY_CORE_CONFIG  "CWCore.conf"
 #endif //_TRINITY_CORE_CONFIG
 
 // Format is YYYYMMDDRR where RR is the change in the conf file
@@ -45,8 +45,8 @@
 
 #ifdef WIN32
 #include "ServiceWin32.h"
-char serviceName[] = "TrinityCore";
-char serviceLongName[] = "Trinity core service";
+char serviceName[] = "CWCore";
+char serviceLongName[] = "Cold Weather core service";
 char serviceDescription[] = "Massive Network Game Object Server";
 /*
  * -1 - not in service mode
