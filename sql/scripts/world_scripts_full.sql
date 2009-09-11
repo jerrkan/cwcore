@@ -519,6 +519,10 @@ UPDATE `creature_template` SET `ScriptName`='npc_volkhan_anvil' WHERE `entry`=28
 UPDATE `creature_template` SET `ScriptName`='boss_ionar' WHERE `entry`=28546;
 UPDATE `creature_template` SET `ScriptName`='mob_spark_of_ionar' WHERE `entry`=28926;
 
+/* HALLS OF STONE */
+/* Maiden of Grief */
+UPDATE `creature_template` SET `ScriptName`='boss_maiden_of_grief' WHERE `entry`=27975;
+
 /* HELLFIRE CITADEL */
 
 /* BLOOD FURNACE */
@@ -574,6 +578,8 @@ UPDATE `creature_template` SET `ScriptName`='npc_rinji' WHERE `entry`=7780;
 
 /* Howling Fjord */
 UPDATE `creature_template` SET `ScriptName`='npc_plaguehound_tracker' WHERE `entry`=24156;
+UPDATE `creature_template` SET `ScriptName`='npc_razael_and_lyana',`npcflag`=`npcflag`|1 WHERE `entry` IN (23778,23998);
+
 
 /* ICECROWN */
 UPDATE `creature_template` SET `ScriptName`='npc_arete' WHERE `entry`=29344;
@@ -1170,6 +1176,7 @@ UPDATE `creature_template` SET `ScriptName`='npc_drakuru_shackles' WHERE (`entry
 /* ZUL'FARRAK */
 UPDATE `creature_template` SET `ScriptName`='npc_sergeant_bly' WHERE `entry`=7604;
 UPDATE `creature_template` SET `ScriptName`='npc_weegli_blastfuse' WHERE `entry`=7607;
+UPDATE `gameobject_template` SET `ScriptName`='go_shallow_grave' WHERE `entry` IN (128308,128403);
 
 /* ZUL'GURUB */
 UPDATE `instance_template` SET `script`='instance_zulgurub' WHERE `map`=309;

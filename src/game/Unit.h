@@ -1013,7 +1013,6 @@ struct CharmInfo
 
         CharmSpellEntry* GetCharmSpell(uint8 index) { return &(m_charmspells[index]); }
 
-        // MrSmite 09-05-2009 PetAI_v1.0
         void SetIsCommandAttack(bool val);
         bool IsCommandAttack();
         void SetIsAtStay(bool val);
@@ -1038,7 +1037,6 @@ struct CharmInfo
         //for restoration after charmed
         ReactStates     m_oldReactState;
 
-        // MrSmite 09-05-2009 PetAI_v1.0
         bool m_isCommandAttack;
         bool m_isAtStay;
         bool m_isFollowing;
