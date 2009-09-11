@@ -36,7 +36,7 @@
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-//IDI_APPICON             ICON                    "TrinityRealm.ico"
+//IDI_APPICON             ICON                    "CWRealm.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 // Neutre (Par défaut système) resources
@@ -69,12 +69,12 @@ BEGIN
     BEGIN
         BLOCK "080004b0"
         BEGIN
-            VALUE "FileDescription", "TrinityScripts"
+            VALUE "FileDescription", "CWScripts"
             VALUE "FileVersion", STRFILEVER
-            VALUE "InternalName", "TrinityScripts"
-            VALUE "LegalCopyright", "Copyright (C) 2008-2009"
-            VALUE "OriginalFilename", "TrinityScripts.dll"
-            VALUE "ProductName", "TrinityScripts"
+            VALUE "InternalName", "CWScripts"
+            VALUE "LegalCopyright", "Copyright (C) 2009"
+            VALUE "OriginalFilename", "CWScripts.dll"
+            VALUE "ProductName", "CWScripts"
             VALUE "ProductVersion", STRPRODUCTVER
         END
     END

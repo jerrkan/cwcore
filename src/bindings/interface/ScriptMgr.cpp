@@ -43,7 +43,7 @@ void ScriptsFree()
 }
 
 TRINITY_DLL_EXPORT
-void ScriptsInit(char const* cfg_file = "trinitycore.conf")
+void ScriptsInit(char const* cfg_file = "cwcore.conf")
 {
     num_sc_scripts = 0;
     for(int i=0;i<MAX_SCRIPTS;i++)

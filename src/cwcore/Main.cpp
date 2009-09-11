@@ -148,7 +148,7 @@ extern int main(int argc, char **argv)
     if (confVersion < _TRINITY_CORE_CONFVER)
     {
         sLog.outError("*****************************************************************************");
-        sLog.outError(" WARNING: Your trinitycore.conf version indicates your conf file is out of date!");
+        sLog.outError(" WARNING: Your cwcore.conf version indicates your conf file is out of date!");
         sLog.outError("          Please check for updates, as your current default values may cause");
         sLog.outError("          strange behavior.");
         sLog.outError("*****************************************************************************");

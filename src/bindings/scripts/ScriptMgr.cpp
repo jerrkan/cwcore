@@ -11,10 +11,10 @@
 #include "../system/ScriptLoader.h"
 #include "../system/system.h"
 
-#define _FULLVERSION "TrinityScript"
+#define _FULLVERSION "CWScript"
 
 #ifndef _TRINITY_SCRIPT_CONFIG
-# define _TRINITY_SCRIPT_CONFIG  "trinitycore.conf"
+# define _TRINITY_SCRIPT_CONFIG  "cwcore.conf"
 #endif _TRINITY_SCRIPT_CONFIG
 
 int num_sc_scripts;
@@ -40,7 +40,7 @@ void LoadDatabase()
     //Initialize connection to DB
     if (!dbstring.empty() && TScriptDB.Initialize(dbstring.c_str()))
     {
-        outstring_log("TSCR: TrinityScript database initialized successfully.");
+        outstring_log("TSCR: CWScript database initialized successfully.");
         outstring_log("");
 
         pSystemMgr.LoadVersion();
@@ -77,7 +77,7 @@ void ScriptsFree()
 }
 
 TRINITY_DLL_EXPORT
-void ScriptsInit(char const* cfg_file = "trinitycore.conf")
+void ScriptsInit(char const* cfg_file = "cwcore.conf")
 {
     //Trinity Script startup
     outstring_log(" _____     _       _ _         ____            _       _");
@@ -212,7 +212,7 @@ void Script::RegisterSelf()
     }
     else if(Name.find("example") == std::string::npos)
     {
-        error_db_log("CRASH ALERT! TrinityScript: RegisterSelf, but script named %s does not have ScriptName assigned in database.",(this)->Name.c_str());
+        error_db_log("CRASH ALERT! CWScript: RegisterSelf, but script named %s does not have ScriptName assigned in database.",(this)->Name.c_str());
         delete this;
     }
 }

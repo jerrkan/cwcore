@@ -47,7 +47,7 @@
 #  define TRINITY_GET_PROC_ADDR GetProcAddress
 #  define TRINITY_IMPORT __cdecl
 #  define TRINITY_SCRIPT_EXT ".dll"
-#  define TRINITY_SCRIPT_NAME "TrinityScript"
+#  define TRINITY_SCRIPT_NAME "CWScript"
 #  define TRINITY_PATH_MAX MAX_PATH
 #else //PLATFORM != PLATFORM_WINDOWS
 #  define TRINITY_LIBRARY_HANDLE void*
@@ -65,16 +65,16 @@
 #  if defined(__APPLE_CC__)
 #    define TRINITY_SCRIPT_EXT ".dylib"
 #    if defined(DO_SCRIPTS)
-#      define TRINITY_SCRIPT_NAME "../lib/libtrinityscript"
+#      define TRINITY_SCRIPT_NAME "../lib/libcwscript"
 #    else
-#      define TRINITY_SCRIPT_NAME "../lib/libtrinityinterface"
+#      define TRINITY_SCRIPT_NAME "../lib/libcwinterface"
 #    endif // DO_SCRIPTS
 #  else
 #    define TRINITY_SCRIPT_EXT ".so"
 #    if defined(DO_SCRIPTS)
-#      define TRINITY_SCRIPT_NAME "libtrinityscript"
+#      define TRINITY_SCRIPT_NAME "libcwscript"
 #    else
-#      define TRINITY_SCRIPT_NAME "libtrinityinterface"
+#      define TRINITY_SCRIPT_NAME "libcwinterface"
 #    endif // DO_SCRIPTS
 #  endif //__APPLE_CC__
 #  define TRINITY_PATH_MAX PATH_MAX
