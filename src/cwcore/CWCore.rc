@@ -36,7 +36,7 @@
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_APPICON             ICON                    "TrinityCore.ico"
+IDI_APPICON             ICON                    "CWCore.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 // Neutre (Par défaut système) resources
@@ -69,12 +69,12 @@ BEGIN
     BEGIN
         BLOCK "080004b0"
         BEGIN
-            VALUE "FileDescription", "TrinityCore"
+            VALUE "FileDescription", "CWCore"
             VALUE "FileVersion", STRFILEVER
-            VALUE "InternalName", "TrinityCore"
-            VALUE "LegalCopyright", "Copyright (C) 2008-2009"
-            VALUE "OriginalFilename", "TrinityCore.exe"
-            VALUE "ProductName", "TrinityCore"
+            VALUE "InternalName", "CWCore"
+            VALUE "LegalCopyright", "Copyright (C) 2009"
+            VALUE "OriginalFilename", "CWCore.exe"
+            VALUE "ProductName", "CWCore"
             VALUE "ProductVersion", STRPRODUCTVER
         END
     END

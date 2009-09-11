@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="TrinityRealm"
-	ProjectGUID="{563E9905-3657-460C-AE63-0AC39D162E23}"
-	RootNamespace="TrinityRealm"
+	Name="CWCore"
+	ProjectGUID="{A3A04E47-43A2-4C08-90B3-029CEF558594}"
+	RootNamespace="cwcore"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="0"
 	>
@@ -21,8 +21,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\trinityrealm__$(PlatformName)_$(ConfigurationName)"
-			IntermediateDirectory=".\trinityrealm__$(PlatformName)_$(ConfigurationName)"
+			OutputDirectory=".\cwcore__$(PlatformName)_$(ConfigurationName)"
+			IntermediateDirectory=".\cwcore__$(PlatformName)_$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -42,23 +42,23 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\TrinityRealm.tlb"
+				TypeLibraryName=".\..\..\bin\Release\cwcore.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\framework;..\..\src\shared;..\..\src\TrinityRealm;..\..\dep\ACE_wrappers"
-				PreprocessorDefinitions="VERSION=&quot;0.12.0-SVN&quot;,WIN32,NDEBUG,_CONSOLE;_SECURE_SCL=0"
+				AdditionalIncludeDirectories="..\..\dep\include,..\..\src\framework,..\..\src\shared,..\..\src\game,..\..\src\cwcore;..\..\dep\ACE_wrappers"
+				PreprocessorDefinitions="VERSION=&quot;0.12.0-SVN&quot;;WIN32;NDEBUG;_CONSOLE;ENABLE_CLI;_SECURE_SCL=0"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				EnableEnhancedInstructionSet="1"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\TrinityRealm.pch"
-				AssemblerListingLocation=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\"
-				ObjectFile=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\"
-				ProgramDataBaseFileName=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\"
+				PrecompiledHeaderFile=".\cwcore__$(PlatformName)_$(ConfigurationName)\cwcore.pch"
+				AssemblerListingLocation=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
+				ObjectFile=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
+				ProgramDataBaseFileName=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -80,19 +80,21 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib advapi32.lib dbghelp.lib MSVCPRT.LIB msvcrt.lib"
-				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.exe"
+				AdditionalDependencies="libmySQL.lib ssleay32.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib advapi32.lib dbghelp.lib MSVCPRT.LIB msvcrt.lib"
+				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.pdb"
+				ProgramDatabaseFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.pdb"
 				GenerateMapFile="true"
-				MapFileName="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.map"
+				MapFileName="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.map"
 				SubSystem="1"
 				LargeAddressAware="2"
+				LinkTimeCodeGeneration="0"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\CWCore.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -114,13 +116,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\..\src\trinityrealm\trinityrealm.conf.dist ..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.conf.dist"
+				CommandLine="copy ..\..\dep\lib\$(PlatformName)_$(ConfigurationName)\*.dll ..\..\bin\$(PlatformName)_$(ConfigurationName)&#x0D;&#x0A;copy ..\..\src\cwcore\cwcore.conf.dist ..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.conf.dist&#x0D;&#x0A;copy ..\..\README.* ..\..\bin\$(PlatformName)_$(ConfigurationName)&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory=".\trinityrealm__$(PlatformName)_$(ConfigurationName)"
-			IntermediateDirectory=".\trinityrealm__$(PlatformName)_$(ConfigurationName)"
+			OutputDirectory=".\cwcore__$(PlatformName)_$(ConfigurationName)"
+			IntermediateDirectory=".\cwcore__$(PlatformName)_$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -141,23 +143,23 @@
 			<Tool
 				Name="VCMIDLTool"
 				TargetEnvironment="3"
-				TypeLibraryName=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\TrinityRealm.tlb"
+				TypeLibraryName=".\..\..\bin\Release\cwcore.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\framework;..\..\src\shared;..\..\src\TrinityRealm;..\..\dep\ACE_wrappers"
-				PreprocessorDefinitions="VERSION=&quot;0.12.0-SVN&quot;,WIN32,NDEBUG,_CONSOLE;_SECURE_SCL=0"
+				AdditionalIncludeDirectories="..\..\dep\include,..\..\src\framework,..\..\src\shared,..\..\src\game,..\..\src\cwcore;..\..\dep\ACE_wrappers"
+				PreprocessorDefinitions="VERSION=&quot;0.12.0-SVN&quot;;WIN32;NDEBUG;_CONSOLE;ENABLE_CLI;_SECURE_SCL=0"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				EnableEnhancedInstructionSet="0"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\TrinityRealm.pch"
-				AssemblerListingLocation=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\"
-				ObjectFile=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\"
-				ProgramDataBaseFileName=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\"
+				PrecompiledHeaderFile=".\cwcore__$(PlatformName)_$(ConfigurationName)\cwcore.pch"
+				AssemblerListingLocation=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
+				ObjectFile=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
+				ProgramDataBaseFileName=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -178,18 +180,20 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib advapi32.lib dbghelp.lib MSVCPRT.LIB msvcrt.lib"
-				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.exe"
+				AdditionalDependencies="libmySQL.lib ssleay32.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib advapi32.lib dbghelp.lib MSVCPRT.LIB msvcrt.lib"
+				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.pdb"
+				ProgramDatabaseFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.pdb"
 				GenerateMapFile="true"
-				MapFileName="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.map"
+				MapFileName="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.map"
 				SubSystem="1"
+				LinkTimeCodeGeneration="0"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\CWCore.lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -212,13 +216,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\..\src\trinityrealm\trinityrealm.conf.dist ..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.conf.dist"
+				CommandLine="copy ..\..\dep\lib\$(PlatformName)_$(ConfigurationName)\*.dll ..\..\bin\$(PlatformName)_$(ConfigurationName)&#x0D;&#x0A;copy ..\..\src\cwcore\cwcore.conf.dist ..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.conf.dist&#x0D;&#x0A;copy ..\..\README.* ..\..\bin\$(PlatformName)_$(ConfigurationName)&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\trinityrealm__$(PlatformName)_$(ConfigurationName)"
-			IntermediateDirectory=".\trinityrealm__$(PlatformName)_$(ConfigurationName)"
+			OutputDirectory=".\cwcore__$(PlatformName)_$(ConfigurationName)"
+			IntermediateDirectory=".\cwcore__$(PlatformName)_$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -238,23 +242,23 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\TrinityRealm.tlb"
+				TypeLibraryName=".\cwcore__$(PlatformName)_$(ConfigurationName)\cwcore.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\framework;..\..\src\shared;..\..\src\TrinityRealm;..\..\dep\ACE_wrappers"
-				PreprocessorDefinitions="VERSION=&quot;0.12.0-SVN&quot;;WIN32;_DEBUG;TRINITY_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="..\..\dep\include,..\..\src\framework,..\..\src\shared,..\..\src\game,..\..\src\cwcore;..\..\dep\ACE_wrappers"
+				PreprocessorDefinitions="VERSION=&quot;0.12.0-SVN&quot;;WIN32;_DEBUG;CWCORE_DEBUG;_CONSOLE;ENABLE_CLI"
 				IgnoreStandardIncludePath="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\TrinityRealm.pch"
-				AssemblerListingLocation=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\"
-				ObjectFile=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\"
-				ProgramDataBaseFileName=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\"
+				PrecompiledHeaderFile=".\cwcore__$(PlatformName)_$(ConfigurationName)\cwcore.pch"
+				AssemblerListingLocation=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
+				ObjectFile=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
+				ProgramDataBaseFileName=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -276,20 +280,22 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib advapi32.lib dbghelp.lib MSVCPRTD.LIB msvcrtd.lib"
-				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.exe"
+				AdditionalDependencies="libmySQL.lib ssleay32.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib advapi32.lib dbghelp.lib MSVCPRTD.LIB msvcrtd.lib"
+				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.exe"
+				Version=""
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.pdb"
+				ProgramDatabaseFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.pdb"
 				GenerateMapFile="true"
-				MapFileName="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.map"
+				MapFileName="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.map"
 				SubSystem="1"
 				LargeAddressAware="2"
 				RandomizedBaseAddress="1"
 				FixedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\CWCore.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -311,13 +317,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\..\src\trinityrealm\trinityrealm.conf.dist ..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.conf.dist"
+				CommandLine="copy ..\..\dep\lib\$(PlatformName)_$(ConfigurationName)\*.dll ..\..\bin\$(PlatformName)_$(ConfigurationName)&#x0D;&#x0A;copy ..\..\src\cwcore\cwcore.conf.dist ..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.conf.dist&#x0D;&#x0A;copy ..\..\README.* ..\..\bin\$(PlatformName)_$(ConfigurationName)&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory=".\trinityrealm__$(PlatformName)_$(ConfigurationName)"
-			IntermediateDirectory=".\trinityrealm__$(PlatformName)_$(ConfigurationName)"
+			OutputDirectory=".\cwcore__$(PlatformName)_$(ConfigurationName)"
+			IntermediateDirectory=".\cwcore__$(PlatformName)_$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -338,23 +344,23 @@
 			<Tool
 				Name="VCMIDLTool"
 				TargetEnvironment="3"
-				TypeLibraryName=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\TrinityRealm.tlb"
+				TypeLibraryName=".\cwcore__$(PlatformName)_$(ConfigurationName)\cwcore.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\framework;..\..\src\shared;..\..\src\TrinityRealm;..\..\dep\ACE_wrappers"
-				PreprocessorDefinitions="VERSION=&quot;0.12.0-SVN&quot;;WIN32;_DEBUG;TRINITY_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="..\..\dep\include,..\..\src\framework,..\..\src\shared,..\..\src\game,..\..\src\cwcore;..\..\dep\ACE_wrappers"
+				PreprocessorDefinitions="VERSION=&quot;0.12.0-SVN&quot;;WIN32;_DEBUG;CWCORE_DEBUG;_CONSOLE;ENABLE_CLI"
 				IgnoreStandardIncludePath="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\TrinityRealm.pch"
-				AssemblerListingLocation=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\"
-				ObjectFile=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\"
-				ProgramDataBaseFileName=".\trinityrealm__$(PlatformName)_$(ConfigurationName)\"
+				PrecompiledHeaderFile=".\cwcore__$(PlatformName)_$(ConfigurationName)\cwcore.pch"
+				AssemblerListingLocation=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
+				ObjectFile=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
+				ProgramDataBaseFileName=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -375,19 +381,21 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib advapi32.lib dbghelp.lib MSVCPRTD.LIB msvcrtd.lib"
-				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.exe"
+				AdditionalDependencies="libmySQL.lib ssleay32.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib advapi32.lib dbghelp.lib MSVCPRTD.LIB msvcrtd.lib"
+				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.exe"
+				Version=""
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\dep\lib\$(PlatformName)_$(ConfigurationName)"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.pdb"
+				ProgramDatabaseFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.pdb"
 				GenerateMapFile="true"
-				MapFileName="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.map"
+				MapFileName="..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.map"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
 				FixedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\CWCore.lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -410,13 +418,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\..\src\trinityrealm\trinityrealm.conf.dist ..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.conf.dist"
+				CommandLine="copy ..\..\dep\lib\$(PlatformName)_$(ConfigurationName)\*.dll ..\..\bin\$(PlatformName)_$(ConfigurationName)&#x0D;&#x0A;copy ..\..\src\cwcore\cwcore.conf.dist ..\..\bin\$(PlatformName)_$(ConfigurationName)\CWCore.conf.dist&#x0D;&#x0A;copy ..\..\README.* ..\..\bin\$(PlatformName)_$(ConfigurationName)&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Debug_NoPCH|Win32"
-			OutputDirectory=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)"
-			IntermediateDirectory=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)"
+			OutputDirectory=".\cwcore__$(PlatformName)_$(ConfigurationName)"
+			IntermediateDirectory=".\cwcore__$(PlatformName)_$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -436,23 +444,23 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\TrinityRealm.tlb"
+				TypeLibraryName=".\cwcore__$(PlatformName)_$(ConfigurationName)\cwcore.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\framework;..\..\src\shared;..\..\src\TrinityRealm;..\..\dep\ACE_wrappers"
-				PreprocessorDefinitions="VERSION=&quot;0.12.0-SVN&quot;;WIN32;_DEBUG;TRINITY_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="..\..\dep\include,..\..\src\framework,..\..\src\shared,..\..\src\game,..\..\src\cwcore;..\..\dep\ACE_wrappers"
+				PreprocessorDefinitions="VERSION=&quot;0.13.0-DEV&quot;;WIN32;_DEBUG;CWCORE_DEBUG;_CONSOLE;ENABLE_CLI"
 				IgnoreStandardIncludePath="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\TrinityRealm.pch"
-				AssemblerListingLocation=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\"
-				ObjectFile=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\"
-				ProgramDataBaseFileName=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\"
+				PrecompiledHeaderFile=".\cwcore__$(PlatformName)_$(ConfigurationName)\cwcore.pch"
+				AssemblerListingLocation=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
+				ObjectFile=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
+				ProgramDataBaseFileName=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -474,20 +482,22 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib advapi32.lib dbghelp.lib MSVCPRTD.LIB msvcrtd.lib"
-				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.exe"
+				AdditionalDependencies="libmySQL.lib ssleay32.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib advapi32.lib dbghelp.lib MSVCPRTD.LIB msvcrtd.lib"
+				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\cwcore.exe"
+				Version=""
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\dep\lib\$(PlatformName)_debug"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.pdb"
+				ProgramDatabaseFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\cwcore.pdb"
 				GenerateMapFile="true"
-				MapFileName="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.map"
+				MapFileName="..\..\bin\$(PlatformName)_$(ConfigurationName)\cwcore.map"
 				SubSystem="1"
 				LargeAddressAware="2"
 				RandomizedBaseAddress="1"
 				FixedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\cwcore.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -509,12 +519,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy ..\..\dep\lib\$(PlatformName)_debug\*.dll ..\..\bin\$(PlatformName)_$(ConfigurationName)"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Debug_NoPCH|x64"
-			OutputDirectory=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)"
-			IntermediateDirectory=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)"
+			OutputDirectory=".\cwcore__$(PlatformName)_$(ConfigurationName)"
+			IntermediateDirectory=".\cwcore__$(PlatformName)_$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -535,23 +546,23 @@
 			<Tool
 				Name="VCMIDLTool"
 				TargetEnvironment="3"
-				TypeLibraryName=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\TrinityRealm.tlb"
+				TypeLibraryName=".\cwcore__$(PlatformName)_$(ConfigurationName)\cwcore.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\framework;..\..\src\shared;..\..\src\TrinityRealm;..\..\dep\ACE_wrappers"
-				PreprocessorDefinitions="VERSION=&quot;0.12.0-SVN&quot;;WIN32;_DEBUG;TRINITY_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="..\..\dep\include,..\..\src\framework,..\..\src\shared,..\..\src\game,..\..\src\cwcore;..\..\dep\ACE_wrappers"
+				PreprocessorDefinitions="VERSION=&quot;0.13.0-DEV&quot;;WIN32;_DEBUG;CWCORE_DEBUG;_CONSOLE;ENABLE_CLI"
 				IgnoreStandardIncludePath="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				RuntimeTypeInfo="true"
-				PrecompiledHeaderFile=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\TrinityRealm.pch"
-				AssemblerListingLocation=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\"
-				ObjectFile=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\"
-				ProgramDataBaseFileName=".\TrinityRealm__$(PlatformName)_$(ConfigurationName)\"
+				PrecompiledHeaderFile=".\cwcore__$(PlatformName)_$(ConfigurationName)\cwcore.pch"
+				AssemblerListingLocation=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
+				ObjectFile=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
+				ProgramDataBaseFileName=".\cwcore__$(PlatformName)_$(ConfigurationName)\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -572,19 +583,21 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib advapi32.lib dbghelp.lib MSVCPRTD.LIB msvcrtd.lib"
-				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.exe"
+				AdditionalDependencies="libmySQL.lib ssleay32.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib advapi32.lib dbghelp.lib MSVCPRTD.LIB msvcrtd.lib"
+				OutputFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\cwcore.exe"
+				Version=""
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\dep\lib\$(PlatformName)_debug"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.pdb"
+				ProgramDatabaseFile="..\..\bin\$(PlatformName)_$(ConfigurationName)\cwcore.pdb"
 				GenerateMapFile="true"
-				MapFileName="..\..\bin\$(PlatformName)_$(ConfigurationName)\TrinityRealm.map"
+				MapFileName="..\..\bin\$(PlatformName)_$(ConfigurationName)\cwcore.map"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
 				FixedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\cwcore.lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -607,38 +620,79 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy ..\..\dep\lib\$(PlatformName)_debug\*.dll ..\..\bin\$(PlatformName)_$(ConfigurationName)"
 			/>
 		</Configuration>
 	</Configurations>
 	<References>
 	</References>
 	<Files>
+		<Filter
+			Name="doc"
+			>
+			<File
+				RelativePath="..\..\Authors"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ChangeLog"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Copying"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Install"
+				>
+			</File>
+			<File
+				RelativePath="..\..\News"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Readme"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Thanks"
+				>
+			</File>
+		</Filter>
 		<File
-			RelativePath="..\..\src\trinityrealm\AuthCodes.h"
+			RelativePath="..\..\src\cwcore\CliRunnable.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\trinityrealm\AuthSocket.cpp"
+			RelativePath="..\..\src\cwcore\CliRunnable.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\trinityrealm\AuthSocket.h"
+			RelativePath="..\..\src\cwcore\Main.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\trinityrealm\Main.cpp"
+			RelativePath="..\..\src\cwcore\CWCore.rc"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\trinityrealm\TrinityRealm.rc"
+			RelativePath="..\..\src\cwcore\Master.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\trinityrealm\RealmList.cpp"
+			RelativePath="..\..\src\cwcore\Master.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\trinityrealm\RealmList.h"
+			RelativePath="..\..\src\cwcore\RASocket.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cwcore\RASocket.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cwcore\resource.h"
 			>
 		</File>
 		<File
@@ -647,6 +701,14 @@
 		</File>
 		<File
 			RelativePath="..\..\src\shared\WheatyExceptionReport.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cwcore\WorldRunnable.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cwcore\WorldRunnable.h"
 			>
 		</File>
 	</Files>
