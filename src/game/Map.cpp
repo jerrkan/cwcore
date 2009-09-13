@@ -2866,7 +2866,7 @@ void Map::ScriptsProcess()
                     sLog.outError("SCRIPT_COMMAND_TALK call for non-creature (TypeId: %u, Entry: %u, GUID: %u), skipping.",source->GetTypeId(),source->GetEntry(),source->GetGUIDLow());
                     break;
                 }
-                if(step.script->datalong > 3)
+                if(step.script->datalong > 4)
                 {
                     sLog.outError("SCRIPT_COMMAND_TALK invalid chat type (%u), skipping.",step.script->datalong);
                     break;
@@ -2874,7 +2874,7 @@ void Map::ScriptsProcess()
 
                 uint64 unit_target = target ? target->GetGUID() : 0;
 
-                //datalong 0=normal say, 1=whisper, 2=yell, 3=emote text
+                //datalong 0=normal say, 1=whisper, 2=yell, 3=emote text, 4=boss emote text
                 switch(step.script->datalong)
                 {
                     case 0:                                 // Say
@@ -2894,6 +2894,9 @@ void Map::ScriptsProcess()
                     case 3:                                 // Emote text
                         ((Creature *)source)->TextEmote(step.script->dataint, unit_target);
                         break;
+                    case 4:                                 // Boss Emote text
+                        ((Creature *)source)->MonsterTextEmote(step.script->dataint, unit_target, true);
+                         break;
                     default:
                         break;                              // must be already checked at load
                 }
