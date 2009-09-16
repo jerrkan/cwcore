@@ -10526,8 +10526,8 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
     if(GetTypeId() != TYPEID_PLAYER)
     {
         // Set home position at place of engaging combat for escorted creatures
-        if(((Creature*)this)->IsAIEnabled)
-            if (((Creature *)this)->AI()->IsEscorted())
+        //if(((Creature*)this)->IsAIEnabled)
+            //if (((Creature *)this)->AI()->IsEscorted())
                 ((Creature*)this)->SetHomePosition(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
         if(enemy)
         {
@@ -12590,8 +12590,8 @@ void Unit::ProcDamageAndSpellFor( bool isVictim, Unit * pTarget, uint32 procFlag
                     ((Player*)this)->UpdateCombatSkills(pTarget, attType, isVictim);
             }
             // Update defence if player is victim and parry/dodge/block
-            if (isVictim && procExtra&(PROC_EX_DODGE|PROC_EX_PARRY|PROC_EX_BLOCK))
-                ((Player*)this)->UpdateDefense();
+            else if (isVictim && procExtra&(PROC_EX_DODGE|PROC_EX_PARRY|PROC_EX_BLOCK))
+                    ((Player*)this)->UpdateCombatSkills(pTarget, attType, MELEE_HIT_DODGE);
         }
         // If exist crit/parry/dodge/block need update aura state (for victim and attacker)
         if (procExtra & (PROC_EX_CRITICAL_HIT|PROC_EX_PARRY|PROC_EX_DODGE|PROC_EX_BLOCK))
