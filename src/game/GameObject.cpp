@@ -138,12 +138,12 @@ bool GameObject::Create(uint32 guidlow, uint32 name_id, Map *map, uint32 phaseMa
     ASSERT(map);
     SetMap(map);
 
-    Relocate(x,y,z,ang);
-    /*if(!IsPositionValid())
+    Relocate(x, y, z, ang);
+    if(!IsPositionValid())
     {
         sLog.outError("Gameobject (GUID: %u Entry: %u ) not created. Suggested coordinates isn't valid (X: %f Y: %f)",guidlow,name_id,x,y);
         return false;
-    }*/
+    }
 
     SetPhaseMask(phaseMask,false);
 

@@ -740,11 +740,11 @@ namespace Trinity
                             i_data->push_back(target);
                         break;
                     case PUSH_IN_LINE:
-                        if(i_source->IsInLine(target, i_radius, i_source->GetObjectSize()))
+                        if(i_source->HasInLine(target, i_radius, i_source->GetObjectSize()))
                             i_data->push_back(target);
                         break;
-                    case PUSH_IN_THIN_LINE:
-                        if(i_source->IsInLine(target, i_radius, 0))
+                    case PUSH_IN_THIN_LINE: // only traj
+                        if(i_pos->HasInLine(target, i_radius, 0))
                             i_data->push_back(target);
                         break;
                 }

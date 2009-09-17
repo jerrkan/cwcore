@@ -2019,4 +2019,3 @@ namespace Trinity
 }
 
 #endif
-

@@ -189,13 +189,13 @@ bool Pet::LoadPetFromDB( Player* owner, uint32 petentry, uint32 petnumber, bool 
     owner->GetClosePoint(px, py, pz, GetObjectSize(), PET_FOLLOW_DIST, GetFollowAngle());
     Relocate(px, py, pz, owner->GetOrientation());
 
-    /*if (!IsPositionValid())
+    if (!IsPositionValid())
     {
         sLog.outError("Pet (guidlow %d, entry %d) not loaded. Suggested coordinates isn't valid (X: %f Y: %f)",
             GetGUIDLow(), GetEntry(), GetPositionX(), GetPositionY());
         delete result;
         return false;
-    }*/
+    }
 
     setPetType(pet_type);
     setFaction(owner->getFaction());
@@ -754,12 +754,12 @@ bool Pet::CreateBaseAtCreature(Creature* creature)
 
     Relocate(creature->GetPositionX(), creature->GetPositionY(), creature->GetPositionZ(), creature->GetOrientation());
 
-    /*if(!IsPositionValid())
+    if(!IsPositionValid())
     {
         sLog.outError("Pet (guidlow %d, entry %d) not created base at creature. Suggested coordinates isn't valid (X: %f Y: %f)",
             GetGUIDLow(), GetEntry(), GetPositionX(), GetPositionY());
         return false;
-    }*/
+    }
 
     CreatureInfo const *cinfo = GetCreatureInfo();
     if(!cinfo)

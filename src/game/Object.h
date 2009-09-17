@@ -418,7 +418,7 @@ struct TRINITY_DLL_SPEC Position
     bool IsInDist(const Position *pos, float dist) const
         { return GetExactDistSq(pos) < dist * dist; }
     bool HasInArc(float arcangle, const Position *pos) const;
-    bool IsInLine(const Unit *target, float distance, float width) const;
+    bool HasInLine(const Unit *target, float distance, float width) const;
 };
 
 #define MAPID_INVALID 0xFFFFFFFF
@@ -475,7 +475,6 @@ class TRINITY_DLL_SPEC WorldObject : public Object, public WorldLocation
         {
             return ( m_valuesCount > UNIT_FIELD_COMBATREACH ) ? m_floatValues[UNIT_FIELD_COMBATREACH] : DEFAULT_WORLD_OBJECT_SIZE;
         }
-        bool IsPositionValid() const;
         void UpdateGroundPositionZ(float x, float y, float &z) const;
 
         void GetRandomPoint(const Position &srcPos, float distance, float &rand_x, float &rand_y, float &rand_z) const;

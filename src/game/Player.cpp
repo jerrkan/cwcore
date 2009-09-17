@@ -14872,11 +14872,11 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
     _LoadBGData(holder->GetResult(PLAYER_LOGIN_QUERY_LOADBGDATA));
 
     MapEntry const * mapEntry = sMapStore.LookupEntry(mapId);
-    /*if(!mapEntry || !IsPositionValid())
+    if(!mapEntry || !IsPositionValid())
     {
         sLog.outError("Player (guidlow %d) have invalid coordinates (MapId: %u X: %f Y: %f Z: %f O: %f). Teleport to default race/class locations.",guid,mapId,GetPositionX(),GetPositionY(),GetPositionZ(),GetOrientation());
         RelocateToHomebind();
-    }*/
+    }
     // Player was saved in Arena or Bg
     if (mapEntry && mapEntry->IsBattleGroundOrArena())
     {
