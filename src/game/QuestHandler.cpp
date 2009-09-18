@@ -83,8 +83,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode( WorldPacket & recv_data )
 void WorldSession::HandleQuestgiverHelloOpcode( WorldPacket & recv_data )
 {
     uint64 guid;
-	uint32 quest;
-    recv_data >> guid >> quest;
+    recv_data >> guid;
 
     sLog.outDebug ("WORLD: Received CMSG_QUESTGIVER_HELLO npc = %u", GUID_LOPART(guid));
 
