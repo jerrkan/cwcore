@@ -182,7 +182,7 @@ void Creature::AddToWorld()
             m_zoneScript->OnCreatureCreate(this, true);
         ObjectAccessor::Instance().AddObject(this);
         Unit::AddToWorld();
-        SearchFormationAndPath();
+        SearchFormation();
         AIM_Initialize();
         if(IsVehicle())
             GetVehicleKit()->Install();
@@ -212,7 +212,7 @@ void Creature::DisappearAndDie()
     RemoveCorpse();
 }
 
-void Creature::SearchFormationAndPath()
+void Creature::SearchFormation()
 {
     if(isSummon())
         return;
@@ -221,33 +221,14 @@ void Creature::SearchFormationAndPath()
     if(!lowguid)
         return;
 
-    bool usePath = (GetDefaultMovementType() == WAYPOINT_MOTION_TYPE);
     CreatureGroupInfoType::iterator frmdata = CreatureGroupMap.find(lowguid);
     if(frmdata != CreatureGroupMap.end())
-    {
-        if(usePath && lowguid != frmdata->second->leaderGUID)
-        {
-            SetDefaultMovementType(IDLE_MOTION_TYPE);
-            usePath = false;
-        }
         formation_mgr.AddCreatureToGroup(frmdata->second->leaderGUID, this);
-    }
-
-    if(usePath)
-    {
-        if(WaypointMgr.GetPath(lowguid * 10))
-            SetWaypointPathId(lowguid * 10);
-        else
-        {
-            sLog.outErrorDb("Creature DBGUID %u has waypoint motion type, but it does not have a waypoint path!", lowguid);
-            SetDefaultMovementType(IDLE_MOTION_TYPE);
-        }
-    }
 }
 
 void Creature::RemoveCorpse()
 {
-    if( getDeathState()!=CORPSE && !m_isDeadByDefault || getDeathState()!=ALIVE && m_isDeadByDefault )
+    if ((getDeathState()!=CORPSE && !m_isDeadByDefault) || (getDeathState()!=ALIVE && m_isDeadByDefault))
         return;
 
     m_deathTimer = 0;
@@ -1736,10 +1717,10 @@ float Creature::GetAttackDistance(Unit const* pl) const
     if(aggroRate==0)
         return 0.0f;
 
-    int32 playerlevel   = pl->getLevelForTarget(this);
-    int32 creaturelevel = getLevelForTarget(pl);
+    uint32 playerlevel   = pl->getLevelForTarget(this);
+    uint32 creaturelevel = getLevelForTarget(pl);
 
-    int32 leveldif       = playerlevel - creaturelevel;
+    int32 leveldif       = int32(playerlevel) - int32(creaturelevel);
 
     // "The maximum Aggro Radius has a cap of 25 levels under. Example: A level 30 char has the same Aggro Radius of a level 5 char on a level 60 mob."
     if ( leveldif < - 25)
@@ -2031,7 +2012,7 @@ bool Creature::IsVisibleInGridForPlayer(Player const* pl) const
     {
         if( GetEntry() == VISUAL_WAYPOINT && !pl->isGameMaster() )
             return false;
-        return isAlive() || m_deathTimer > 0 || m_isDeadByDefault && m_deathState==CORPSE;
+        return (isAlive() || m_deathTimer > 0 || (m_isDeadByDefault && m_deathState==CORPSE));
     }
 
     // Dead player see live creatures near own corpse
@@ -2275,6 +2256,10 @@ bool Creature::LoadCreaturesAddon(bool reload)
     if (cainfo->move_flags != 0)
         SetUnitMovementFlags(cainfo->move_flags);
 
+    //Load Path
+    if (cainfo->path_id != 0)
+        m_path_id = cainfo->path_id;
+
     if(cainfo->auras)
     {
         for (CreatureDataAddonAura const* cAura = cainfo->auras; cAura->spell_id; ++cAura)
@@ -2290,7 +2275,7 @@ bool Creature::LoadCreaturesAddon(bool reload)
             if(HasAuraEffect(cAura->spell_id,cAura->effect_idx))
             {
                 if(!reload)
-                    sLog.outErrorDb("Creature (GUID: %u Entry: %u) has duplicate aura (spell %u effect %u) in `auras` field.",GetGUIDLow(),GetEntry(),cAura->spell_id,cAura->effect_idx);
+                    sLog.outDebug("Creature (GUID: %u Entry: %u) has duplicate aura (spell %u effect %u) in `auras` field.",GetGUIDLow(),GetEntry(),cAura->spell_id,cAura->effect_idx);
 
                 continue;
             }

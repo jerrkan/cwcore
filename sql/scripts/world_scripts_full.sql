@@ -300,6 +300,8 @@ UPDATE `creature_template` SET `ScriptName`='mobs_nether_drake' WHERE `entry` IN
 UPDATE `creature_template` SET `ScriptName`='npc_daranelle' WHERE `entry`=21469;
 UPDATE `creature_template` SET `ScriptName`='npc_overseer_nuaar' WHERE `entry`=21981;
 UPDATE `creature_template` SET `ScriptName`='npc_saikkal_the_elder' WHERE `entry`=22932;
+UPDATE `gameobject_template` SET `ScriptName`='go_fel_crystalforge' WHERE `entry`=185919;
+UPDATE `gameobject_template` SET `ScriptName`='go_bashir_crystalforge' WHERE `entry`=185921;
 
 /* BLASTED LANDS */
 UPDATE `creature_template` SET `ScriptName`='npc_deathly_usher' WHERE `entry`=8816;
@@ -316,8 +318,9 @@ UPDATE `creature_template` SET `ScriptName`='npc_tiare' WHERE `entry`=30051;
 UPDATE `creature_template` SET `ScriptName`='npc_sinkhole_kill_credit' WHERE `entry` IN (26248,26249);
 UPDATE `creature_template` SET `ScriptName`='npc_khunok_the_behemoth' WHERE `entry`=25862;
 UPDATE `creature_template` SET `ScriptName`='npc_keristrasza' WHERE `entry`=26206;
-update creature_template set ScriptName = 'npc_iruk' where entry = 26219;
-UPDATE creature_template SET ScriptName = 'npc_corastrasza' WHERE entry = 32548;
+UPDATE `creature_template` SET `ScriptName`='npc_iruk' WHERE `entry`=26219;
+UPDATE `creature_template` SET `ScriptName`='npc_corastrasza' WHERE `entry`=32548;
+UPDATE `creature_template` SET `ScriptName`='mob_nerubar_victim' WHERE `entry`=25284;
 
 /* BURNING STEPPES */
 UPDATE `creature_template` SET `ScriptName`='npc_ragged_john' WHERE `entry`=9563;
@@ -448,6 +451,9 @@ UPDATE `creature_template` SET `ScriptName`='npc_narm_faulk' WHERE `entry`=6177;
 /* DUROTAR */
 
 /* DUSKWOOD */
+DELETE FROM `areatrigger_scripts` WHERE `entry`=4017;
+INSERT INTO `areatrigger_scripts` (`entry`,`ScriptName`) VALUES (4017,'at_twilight_grove');
+UPDATE `creature_template` SET `ScriptName`='boss_twilight_corrupter' WHERE `entry`=15625;
 
 /* DUSTWALLOW MARSH */
 UPDATE `creature_template` SET `ScriptName`='mobs_risen_husk_spirit' WHERE `entry` IN (23554,23555);
@@ -569,6 +575,7 @@ UPDATE `gameobject_template` SET `ScriptName`='go_haaleshi_altar' WHERE `entry`=
 UPDATE `creature_template` SET `ScriptName`='npc_naladu' WHERE `entry`=19361;
 UPDATE `creature_template` SET `ScriptName`='npc_tracy_proudwell' WHERE `entry`=18266;
 UPDATE `creature_template` SET `ScriptName`='npc_trollbane' WHERE `entry`=16819;
+UPDATE `creature_template` SET `ScriptName`='npc_ancestral_wolf' WHERE `entry`=17077;
 
 /* HILLSBRAD FOOTHILLS */
 
@@ -702,6 +709,7 @@ UPDATE `creature_template` SET `ScriptName`='npc_greatmother_geyah' WHERE `entry
 UPDATE `creature_template` SET `ScriptName`='npc_lantresor_of_the_blade' WHERE `entry`=18261;
 UPDATE `creature_template` SET `ScriptName`='npc_creditmarker_visit_with_ancestors' WHERE `entry` IN (18840,18841,18842,18843);
 UPDATE `creature_template` SET `ScriptName`='mob_sparrowhawk' WHERE `entry`=22979;
+UPDATE `creature_template` SET `ScriptName`='npc_maghar_captive' WHERE `entry`=18210;
 
 /* NAXXRAMAS */
 UPDATE `instance_template` SET `script`='instance_naxxramas' WHERE `map`=533;
@@ -864,6 +872,10 @@ UPDATE `creature_template` SET `ScriptName`='npc_avatar_of_freya' WHERE `entry`=
 UPDATE `creature_template` SET `ScriptName`='npcs_rutgar_and_frankal' WHERE `entry` IN (15170,15171);
 UPDATE `creature_template` SET `ScriptName`='npc_highlord_demitrian' WHERE `entry`=14347;
 UPDATE `gameobject_template` SET `ScriptName`='go_gauntlet_gate' WHERE `entry`=175357;
+UPDATE `gameobject_template` SET `ScriptName`='go_crystalline_tear' WHERE `entry`=180633;
+UPDATE `creature_template` SET `ScriptName`='mob_qiraj_war_spawn' WHERE `entry` IN (15414,15422,15424,15423);
+UPDATE `creature_template` SET `ScriptName`='npc_anachronos_the_ancient' WHERE `entry`=15381;
+UPDATE `creature_template` SET `ScriptName`='npc_anachronos_quest_trigger' WHERE `entry`=15454;
 
 /* SILVERMOON */
 UPDATE `creature_template` SET `ScriptName`='npc_blood_knight_stillblade' WHERE `entry`=17768;
@@ -912,6 +924,11 @@ UPDATE `creature_template` SET `ScriptName`='mob_restless_soul' WHERE `entry`=11
 UPDATE `creature_template` SET `ScriptName`='mob_freed_soul' WHERE `entry`=11136;
 
 /* SUNKEN TEMPLE */
+UPDATE `instance_template` SET `script`='instance_sunken_temple' WHERE `map`=109;
+UPDATE `gameobject_template` SET `ScriptName`='go_atalai_statue' WHERE `entry` IN (148830,148831,148832,148833,148834,148835);
+UPDATE `creature_template` SET `ScriptName`='boss_twilight_corrupter' WHERE `entry`=15625;
+DELETE FROM `areatrigger_scripts` WHERE `entry`=4016;
+INSERT INTO `areatrigger_scripts` (`entry`,`ScriptName`) VALUES (4016,'at_malfurion_stormrage');
 
 /* SUNWELL PLATEAU */
 UPDATE `instance_template` SET `script`='instance_sunwell_plateau' WHERE `map`=580;
@@ -1141,6 +1158,7 @@ UPDATE `creature_template` SET `ScriptName`='npc_elder_kuruti' WHERE `entry`=181
 UPDATE `creature_template` SET `ScriptName`='npc_mortog_steamhead' WHERE `entry`=23373;
 UPDATE `creature_template` SET `ScriptName`='npc_kayra_longmane' WHERE `entry`=17969;
 UPDATE `creature_template` SET `ScriptName`='npc_timothy_daniels' WHERE `entry`=18019;
+UPDATE `gameobject_template` SET `ScriptName`='go_southfury_moonstone' WHERE `entry`=185566;
 
 /* ZUL'AMAN */
 UPDATE `instance_template` SET `script`='instance_zulaman' WHERE `map`=568;
@@ -1255,12 +1273,12 @@ INSERT INTO `creature_ai_scripts` VALUES
 ( 3375000, 33750, 1, 0, 100, 0, 1, 1, 0, 0, 11, 63587, 0, 2, 11, 63583, 0, 2, 0, 0, 0, 0, 'Desecration');
 /* EOF */
 
-UPDATE `creature_template` SET `ScriptName` = 'npc_skywing' WHERE entry=22424;
+UPDATE `creature_template` SET `ScriptName` = 'npc_skywing' WHERE `entry`=22424;
 
-DELETE FROM areatrigger_scripts WHERE entry=4156;
+DELETE FROM areatrigger_scripts WHERE `entry`=4156;
 INSERT INTO areatrigger_scripts VALUES (4156, 'at_naxxramas_frostwyrm_wing');
 
-DELETE FROM areatrigger_scripts WHERE entry=3066;
+DELETE FROM areatrigger_scripts WHERE `entry`=3066;
 INSERT INTO areatrigger_scripts VALUES (3066,'at_ravenholdt');
 
 /* Oculus: "Just for the logic, shouldn't be necessary": */
@@ -1269,8 +1287,8 @@ INSERT INTO `creature_ai_scripts` (`creature_id`,`event_type`,`event_chance`,`ev
 (23035,6,100,6,34,2,3,'Anzu - Set Inst Data on Death');
 
 -- dk final quest
-UPDATE creature_template SET unit_flags=32768,AIName='EventAI' WHERE entry IN (29199,29204,29200,29174,29182,29186,29190,29219,29206,29176,29178,29179,29180,29177,29181);
-DELETE FROM creature_ai_scripts WHERE creature_id IN (29199,29204,29200,29174,29182,29186,29190,29219,29206,29176,29178,29179,29180,29177,29181);
+UPDATE `creature_template` SET `unit_flags`=32768,`AIName`='EventAI' WHERE `entry` IN (29199,29204,29200,29174,29182,29186,29190,29219,29206,29176,29178,29179,29180,29177,29181);
+DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (29199,29204,29200,29174,29182,29186,29190,29219,29206,29176,29178,29179,29180,29177,29181);
 INSERT INTO `creature_ai_scripts` VALUES ('2919901', '29199', '0', '0', '100', '3', '10000', '20000', '10000', '20000', '11', '52374', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Koltira Deathweaver - SPELL_BLOOD_STRIKE1');
 INSERT INTO `creature_ai_scripts` VALUES ('2919902', '29199', '0', '0', '100', '3', '10000', '20000', '10000', '20000', '11', '49576', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Koltira Deathweaver - SPELL_DEATH_GRIP');
 INSERT INTO `creature_ai_scripts` VALUES ('2919903', '29199', '0', '0', '100', '3', '10000', '20000', '10000', '20000', '11', '52372', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Koltira Deathweaver - SPELL_ICY_TOUCH2');
@@ -1306,7 +1324,6 @@ INSERT INTO `creature_ai_scripts` VALUES ('2918102', '29181', '14', '0', '100', 
 INSERT INTO `creature_ai_scripts` VALUES ('2918103', '29181', '0', '0', '100', '3', '10000', '20000', '10000', '20000', '11', '20678', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Rayne - SPELL_STARFALL');
 INSERT INTO `creature_ai_scripts` VALUES ('2918104', '29181', '0', '0', '100', '3', '10000', '20000', '10000', '20000', '11', '21807', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'Rayne - SPELL_WRATH');
 
-
 -- spell 30298 tries to start event script 10675 but it doesn't exist. create it & make it spawn Geezle
 delete from event_scripts where id = 10675;
 insert into `event_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `x`, `y`, `z`, `o`) values 
@@ -1314,3 +1331,10 @@ insert into `event_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, 
 
 -- geezle should not spawn by default
 update creature set spawnMask=0 where guid = 85587;
+
+-- Quest - The Warsong Farms
+DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (25669,25671,25672);
+INSERT INTO `creature_ai_scripts`
+(`id`, `creature_id`, `event_type`, `event_inverse_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action1_type`, `action1_param1`, `action1_param2`, `action1_param3`, `action2_type`, `action2_param1`, `action2_param2`, `action2_param3`, `action3_type`, `action3_param1`, `action3_param2`, `action3_param3`, `comment`)
+VALUES
+(2566901, 25669, 10, 0, 100, 3, 1, 20, 2000, 2000, 33, 25669, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Scout Warsong Granary - Killed Moster at LOS'),(2567101, 25671, 10, 0, 100, 3, 1, 20, 2000, 2000, 33, 25671, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Scout Torp''s Farm - Killed Moster at LOS'),(2567201, 25672, 10, 0, 100, 3, 1, 20, 2000, 2000, 33, 25672, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Scout Warsong Slaughterhouse - Killed Moster at LOS');
