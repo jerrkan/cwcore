@@ -24,8 +24,7 @@
 #include "Common.h"
 #include <openssl/sha.h>
 #include <openssl/crypto.h>
-
-class BigNumber;
+#include "Auth/BigNumber.h"
 
 class Sha1Hash
 {
