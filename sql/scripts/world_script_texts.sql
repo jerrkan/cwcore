@@ -1904,6 +1904,16 @@ INSERT INTO `script_texts` (`npc_entry`,`entry`,`content_default`,`content_loc1`
    (28860,-1615041,'A Vesperon Disciple appears in the Twilight!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,5,0,0,'shadron WHISPER_VESPERON_DICIPLE'),
    (28860,-1615042,'%s begins to open a Twilight Portal!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,5,0,0,'sartharion drake WHISPER_OPEN_PORTAL'),
 
+-- -1 619 000 AHN'KAHET: THE OLD KINGDOM
+   (29308,-1619021,'I will feast on your remains.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,0,0,'prince taldaram SAY_AGGRO'),
+   (29308,-1619022,'I will drink no blood before it''s time.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,0,0,'prince taldaram SAY_SLAY_1'),
+   (29308,-1618023,'One final embrace.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,0,0,'prince taldaram SAY_SLAY_2'),
+   (29308,-1618024,'Still I hunger, still I thirst.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,0,0,'prince taldaram SAY_DEATH'),
+   (29308,-1618025,'So appetizing.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,0,0,'prince taldaram SAY_FEED1'),
+   (29308,-1618026,'Fresh, warm blood. It has been too long.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,0,0,'prince taldaram SAY_FEED2'),
+   (29308,-1618027,'Your heartbeat is music to my ears.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,0,0,'prince taldaram SAY_VANISH1'),
+   (29308,-1618028,'I am nowhere. I am everywhere. I am the watcher, unseen.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,0,0,'prince taldaram SAY_VANISH2'),
+   
 -- -1 999 900+ - RANDOM
    (0,-1999900,'Let the games begin.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,8280,1,0,0,'example_creature SAY_AGGRO'),
    (0,-1999901,'I see endless suffering. I see torment. I see rage. I see everything.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,8831,1,0,0,'example_creature SAY_RANDOM_0'),
@@ -2193,20 +2203,6 @@ DELETE FROM `npc_text` WHERE `ID` IN (30000,30001);
 INSERT INTO `npc_text` (`ID`,`text0_0`,`text0_1`,`lang0`,`prob0`,`em0_0`,`em0_1`,`em0_2`,`em0_3`,`em0_4`,`em0_5`,`text1_0`,`text1_1`,`lang1`,`prob1`,`em1_0`,`em1_1`,`em1_2`,`em1_3`,`em1_4`,`em1_5`,`text2_0`,`text2_1`,`lang2`,`prob2`,`em2_0`,`em2_1`,`em2_2`,`em2_3`,`em2_4`,`em2_5`,`text3_0`,`text3_1`,`lang3`,`prob3`,`em3_0`,`em3_1`,`em3_2`,`em3_3`,`em3_4`,`em3_5`,`text4_0`,`text4_1`,`lang4`,`prob4`,`em4_0`,`em4_1`,`em4_2`,`em4_3`,`em4_4`,`em4_5`,`text5_0`,`text5_1`,`lang5`,`prob5`,`em5_0`,`em5_1`,`em5_2`,`em5_3`,`em5_4`,`em5_5`,`text6_0`,`text6_1`,`lang6`,`prob6`,`em6_0`,`em6_1`,`em6_2`,`em6_3`,`em6_4`,`em6_5`,`text7_0`,`text7_1`,`lang7`,`prob7`,`em7_0`,`em7_1`,`em7_2`,`em7_3`,`em7_4`,`em7_5`) VALUES
    ('30000','Here you will find the Inscription Trainer.','Here you will find the Inscription Trainer.','0','1','0','0','0','0','0','0','So you want to be a Inscriber? Well here you will find the trainer.','So you want to be a Inscriber? Well here you will find the trainer.','0','0','0','0','0','0','0','0',NULL,NULL,'0','0','0','0','0','0','0','0',NULL,NULL,'0','0','0','0','0','0','0','0',NULL,NULL,'0','0','0','0','0','0','0','0',NULL,NULL,'0','0','0','0','0','0','0','0',NULL,NULL,'0','0','0','0','0','0','0','0',NULL,NULL,'0','0','0','0','0','0','0','0'),
    ('30001','So you are looking for a Inscription Trainer? Well you can''t find the trainer out here, better head to the nearest city.\r\n','So you are looking for a Inscription Trainer? Well you can''t find the trainer out here, better head to the nearest city.\r\n','0','0','0','0','0','0','0','0','So you want to be a Inscriber? Well you can''t find the trainer out here, better head to the nearest city.','So you want to be a Inscriber? Well you can''t find the trainer out here, better head to the nearest city.','0','0','0','0','0','0','0','0',NULL,NULL,'0','0','0','0','0','0','0','0',NULL,NULL,'0','0','0','0','0','0','0','0',NULL,NULL,'0','0','0','0','0','0','0','0',NULL,NULL,'0','0','0','0','0','0','0','0',NULL,NULL,'0','0','0','0','0','0','0','0',NULL,NULL,'0','0','0','0','0','0','0','0');
-
--- Used in Gates of Ahn'Quiraj Opening Event
-DELETE FROM `game_event_npc_gossip` WHERE `guid` IN (135161,135162);
-INSERT INTO `game_event_npc_gossip` (`guid`,`event_id`,`textid`) VALUES
-   (135161,22,16000),
-   (135162,22,16001);
-DELETE FROM `npc_text` WHERE `ID` IN (16000,16001);
-INSERT INTO `npc_text` (`ID`,`text0_0`,`text0_1`,`prob0`,`lang0`) VALUES
-   (16000,'The current situation in the front lines look like this:$B$B Iron $2000w % $B Thorium $2001w % $B Stranglekeep $2002w % $B Arthas Tears $2003w % $B Light Leather $2004w % $B Medium Leather $2005w % $B Linen Bandages $2006w % $B Silk Bandages $2007w % $B Rainbow Fin Albacore $2008w % $B Roast Raptor $2009w % $B$B Allongside with the Horde, we managed to gather: $B Copper $2020w % $B Purple Lotus $2021w % $B Thick Leather $2022w % $B Runecloth Bandage $2023w % $B Spotted Yellowtail $2024w. $B that is the current state of the effort, Aid us $N.','The current situation in the front lines look like this:$B$B Iron $2000w % $B Thorium $2001w % $B Stranglekeep $2002w % $B Arthas Tears $2003w % $B Light Leather $2004w % $B Medium Leather $2005w % $B Linen Bandages $2006w % $B Silk Bandages $2007w % $B Rainbow Fin Albacore $2008w % $B Roast Raptor $2009w % $B$B Allongside with the Horde, we managed to gather: $B Copper $2020w % $B Purple Lotus $2021w % $B Thick Leather $2022w % $B Runecloth Bandage $2023w % $B Spotted Yellowtail $2024w. $B that is the current state of the effort, Aid us $N.',100,0),
-   (16001,'The current situation in the front lines look like this:$B$B Tin $2010w % $B Mithril $2011w % $B PeaceBloom $2012w % $B FireBloom $2013w % $B Heavy Leather $2014w % $B Rugged Leather $2015w % $B Wool Bandages $2016w % $B Mageweave Bandages $2017w % $B Lean Wolf Steaks $2018w % $B Baked Salmon $2019w % $B$B Allongside with the Alliance, we managed to gather: $B Copper $2020w % $B Purple Lotus $2021w % $B Thick Leather $2022w % $B Runecloth Bandage $2023w % $B Spotted Yellowtail $2024w. $B that is the current state of the effort, Aid us $N.','The current situation in the front lines look like this:$B$B Tin $2010w % $B Mithril $2011w % $B PeaceBloom $2012w % $B FireBloom $2013w % $B Heavy Leather $2014w % $B Rugged Leather $2015w % $B Wool Bandages $2016w % $B Mageweave Bandages $2017w % $B Lean Wolf Steaks $2018w % $B Baked Salmon $2019w % $B$B Allongside with the Alliance, we managed to gather: $B Copper $2020w % $B Purple Lotus $2021w % $B Thick Leather $2022w % $B Runecloth Bandage $2023w % $B Spotted Yellowtail $2024w. $B that is the current state of the effort, Aid us $N.',100,0);
-DELETE FROM `npc_gossip` WHERE `npc_guid` IN (135161,135162);
-INSERT INTO `npc_gossip` (`npc_guid`,`textid`) VALUES
-   (135161,16000),
-   (135162,16001);
    
 -- Dual Spec `npc_option` change
 UPDATE `npc_option` SET `id`=52,`action`=19 WHERE `id`=51 AND `action`=18 AND `option_text`='UNIT_NPC_FLAG_OUTDOORPVP';
