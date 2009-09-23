@@ -1125,6 +1125,20 @@ UPDATE `creature_template` SET `ScriptName`='mob_annhylde_the_caller' WHERE `ent
 UPDATE `creature_template` SET `ScriptName`='mob_ingvar_throw_dummy' WHERE `entry`=23997;
 UPDATE `creature_template` SET `ScriptName`='npc_dragonflayer_forge_master' WHERE `entry`=24079;
 
+/* UTGARDE PINNACLE */
+UPDATE `creature_template` SET `ScriptName`='boss_svala_sorrowgrave' WHERE `entry`=26668;
+UPDATE `creature_template` SET `ScriptName`='mob_ritual_channeler' WHERE `entry`=27281;
+UPDATE `creature_template` SET `ScriptName`='boss_svala' WHERE `entry`=29281;
+UPDATE `creature_template` SET `ScriptName`='boss_palehoof' WHERE `entry`=26687;
+UPDATE `creature_template` SET `ScriptName`='boss_skadi' WHERE `entry`=26693;
+UPDATE `creature_template` SET `ScriptName`='boss_ymiron' WHERE `entry`=26861;
+UPDATE `creature_template` SET `ScriptName`='mob_frenzied_worgen' WHERE `entry`=26683;
+UPDATE `creature_template` SET `ScriptName`='mob_ravenous_furbolg' WHERE `entry`=26684;
+UPDATE `creature_template` SET `ScriptName`='mob_ferocious_rhino' WHERE `entry`=26685;
+UPDATE `creature_template` SET `ScriptName`='mob_massive_jormungar' WHERE `entry`=26686;
+UPDATE `instance_template` SET `script`='instance_utgarde_pinnacle' WHERE `map`=575;
+UPDATE `gameobject_template` SET `ScriptName`='go_palehoof_sphere'WHERE `entry`=188593;
+
 /* VAULT OF ARCHAVON */
 UPDATE `creature_template` SET `ScriptName`='boss_archavon' WHERE `entry`=31125;
 UPDATE `creature_template` SET `ScriptName`='mob_archavon_warder' WHERE `entry`=32353;
@@ -1225,7 +1239,7 @@ UPDATE `creature_template` SET `ScriptName`='mob_batrider' WHERE `entry`=14965;
 UPDATE `creature_template` SET `ScriptName`='mob_shade_of_jindo' WHERE `entry`=14986;
 UPDATE `creature_template` SET `ScriptName`='mob_ohgan' WHERE `entry`=14988;
 
-UPDATE `creature_template` SET `ScriptName`='EventAI',`modelid_A` = 16925,`modelid_H` = 16925, `minmana` = 1000000,`maxmana` = 1000000, `unit_flags` = 33554434 WHERE `entry` IN(29998,33753,33752,33751,33750);
+UPDATE `creature_template` SET `ScriptName`='EventAI',`modelid1` = 16925,`modelid3` = 16925, `minmana` = 1000000,`maxmana` = 1000000, `unit_flags` = 33554434 WHERE `entry` IN(29998,33753,33752,33751,33750);
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (29998,33753,33752,33751,33750);
 
 -- --------

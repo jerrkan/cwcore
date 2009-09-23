@@ -25,6 +25,8 @@
 
 #include "SharedDefines.h"
 
+#include "AuctionHouseBot.h"
+
 class Item;
 class Player;
 class WorldPacket;
@@ -91,22 +93,15 @@ class AuctionHouseObject
     AuctionEntryMap::iterator GetAuctionsBegin() {return AuctionsMap.begin();}
     AuctionEntryMap::iterator GetAuctionsEnd() {return AuctionsMap.end();}
 
-    void AddAuction(AuctionEntry *ah)
-    {
-        ASSERT( ah );
-        AuctionsMap[ah->Id] = ah;
-    }
-
     AuctionEntry* GetAuction(uint32 id) const
     {
-        AuctionEntryMap::const_iterator itr = AuctionsMap.find( id );
+        AuctionEntryMap::const_iterator itr = AuctionsMap.find(id);
         return itr != AuctionsMap.end() ? itr->second : NULL;
     }
 
-    bool RemoveAuction(uint32 id)
-    {
-        return AuctionsMap.erase(id) ? true : false;
-    }
+    void AddAuction(AuctionEntry *ah);
+
+    bool RemoveAuction(AuctionEntry *auction, uint32 item_template);
 
     void Update();
 
@@ -132,7 +127,8 @@ class AuctionHouseMgr
 
     typedef UNORDERED_MAP<uint32, Item*> ItemMap;
 
-    AuctionHouseObject* GetAuctionsMap( uint32 factionTemplateId );
+    AuctionHouseObject* GetAuctionsMap(uint32 factionTemplateId);
+    AuctionHouseObject* GetBidsMap(uint32 factionTemplateId);
 
     Item* GetAItem(uint32 id)
     {
@@ -145,10 +141,10 @@ class AuctionHouseMgr
     }
 
     //auction messages
-    void SendAuctionWonMail( AuctionEntry * auction );
-    void SendAuctionSalePendingMail( AuctionEntry * auction );
-    void SendAuctionSuccessfulMail( AuctionEntry * auction );
-    void SendAuctionExpiredMail( AuctionEntry * auction );
+    void SendAuctionWonMail(AuctionEntry * auction);
+    void SendAuctionSalePendingMail(AuctionEntry * auction);
+    void SendAuctionSuccessfulMail(AuctionEntry * auction);
+    void SendAuctionExpiredMail(AuctionEntry * auction);
     static uint32 GetAuctionDeposit(AuctionHouseEntry const* entry, uint32 time, Item *pItem);
     static AuctionHouseEntry const* GetAuctionHouseEntry(uint32 factionTemplateId);
 

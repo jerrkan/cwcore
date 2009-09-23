@@ -1955,7 +1955,7 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         //uint32 m_unit_movement_flags;
 
         uint32 m_reactiveTimer[MAX_REACTIVE];
-        int32 m_regenTimer;
+        uint32 m_regenTimer;
 
         ThreatManager m_ThreatManager;
 
