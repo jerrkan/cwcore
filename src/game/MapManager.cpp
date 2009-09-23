@@ -19,7 +19,6 @@
  */
 
 #ifdef MULTI_THREAD_MAP
-#include <omp.h>
 #endif
 #include "MapManager.h"
 #include "InstanceSaveMgr.h"
