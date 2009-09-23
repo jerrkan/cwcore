@@ -1802,22 +1802,6 @@ void World::LoadAutobroadcasts()
 /// Update the World !
 void World::Update(uint32 diff)
 {
-    m_updateTime = uint32(diff);
-    if (m_configs[CONFIG_INTERVAL_LOG_UPDATE])
-    {
-        if (m_updateTimeSum > m_configs[CONFIG_INTERVAL_LOG_UPDATE])
-        {
-            sLog.outBasic("Update time diff: %u. Players online: %u.", m_updateTimeSum / m_updateTimeCount, GetActiveSessionCount());
-            m_updateTimeSum = m_updateTime;
-            m_updateTimeCount = 1;
-        }
-        else
-        {
-            m_updateTimeSum += m_updateTime;
-            ++m_updateTimeCount;
-        }
-    }
-
     ///- Update the different timers
     for (int i = 0; i < WUPDATE_COUNT; ++i)
         if (m_timers[i].GetCurrent()>=0)
@@ -2385,8 +2369,7 @@ void World::UpdateSessions(uint32 diff)
         ///- and remove not active sessions from the list
         if (!itr->second->Update(diff))                      // As interval = 0
         {
-            if (!RemoveQueuedPlayer(itr->second) && itr->second && getConfig(CONFIG_INTERVAL_DISCONNECT_TOLERANCE))
-                m_disconnects[itr->second->GetAccountId()] = time(NULL);
+            RemoveQueuedPlayer (itr->second);
             delete itr->second;
             m_sessions.erase(itr);
         }
