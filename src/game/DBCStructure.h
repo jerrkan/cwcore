@@ -674,14 +674,15 @@ struct ChrRacesEntry
     uint32      TeamID;                                     // 7 (7-Alliance 1-Horde)
                                                             // 8-11 unused
     uint32      CinematicSequence;                          // 12 id from CinematicSequences.dbc
-    char*       name[16];                                   // 13-28 used for DBC language detection/selection
-                                                            // 29 string flags, unused
-    //char*       nameFemale[16];                           // 30-45, if different from base (male) case
-                                                            // 46 string flags, unused
-    //char*       nameNeutralGender[16];                    // 47-62, if different from base (male) case
-                                                            // 63 string flags, unused
-                                                            // 64-66 unused
-    uint32      expansion;                                  // 67 (0 - original race, 1 - tbc addon, ...)
+    //uint32    unk_322;                                    // 13 faction (0 alliance, 1 horde, 2 not available?)
+    char*       name[16];                                   // 14-29 used for DBC language detection/selection
+                                                            // 30 string flags, unused
+    //char*       nameFemale[16];                           // 31-46, if different from base (male) case
+                                                            // 47 string flags, unused
+    //char*       nameNeutralGender[16];                    // 48-63, if different from base (male) case
+                                                            // 64 string flags, unused
+                                                            // 65-67 unused
+    uint32      expansion;                                  // 68 (0 - original race, 1 - tbc addon, ...)
 };
 
 /* not used
@@ -1208,10 +1209,11 @@ struct ScalingStatValuesEntry
     uint32  ssdMultiplier[4];                               // 2-5 Multiplier for ScalingStatDistribution
     uint32  armorMod[4];                                    // 6-9 Armor for level
     uint32  dpsMod[6];                                      // 10-15 DPS mod for level
-    uint32  spellBonus;                                     // 16 not sure.. TODO: need more info about
-    uint32  feralBonus;                                     // 17 Feral AP bonus (there's data from 3.1 ssdMultiplier[3])
-    //uint32 unk1;                                          // 18 all zero's
-    //uint32 unk2[5];                                       // 19-23 3.2 new feral bonus?
+    uint32  spellBonus;                                     // 16 spell power for level
+    uint32  ssdMultiplier2;                                 // 17 there's data from 3.1 dbc ssdMultiplier[3]
+    //uint32 unk1;                                          // 18 all fields equal to 0
+    //uint32 unk2;                                          // 19 unk, probably also Armor for level
+    uint32  armorMod2[4];                                   // 20-23 Armor for level
 
     uint32  getssdMultiplier(uint32 mask) const
     {
@@ -1220,19 +1222,25 @@ struct ScalingStatValuesEntry
             if(mask & 0x00000001) return ssdMultiplier[0];
             if(mask & 0x00000002) return ssdMultiplier[1];
             if(mask & 0x00000004) return ssdMultiplier[2];
-            if(mask & 0x00000008) return feralBonus;
+            if(mask & 0x00000008) return ssdMultiplier2;
             if(mask & 0x00000010) return ssdMultiplier[3];
         }
         return 0;
     }
+
     uint32  getArmorMod(uint32 mask) const
     {
-        if (mask & 0x01E0)
+        if (mask & 0x00F001E0)
         {
             if(mask & 0x00000020) return armorMod[0];
             if(mask & 0x00000040) return armorMod[1];
             if(mask & 0x00000080) return armorMod[2];
             if(mask & 0x00000100) return armorMod[3];
+
+            if(mask & 0x00100000) return armorMod2[0];      // cloth
+            if(mask & 0x00200000) return armorMod2[1];      // leather
+            if(mask & 0x00400000) return armorMod2[2];      // mail
+            if(mask & 0x00800000) return armorMod2[3];      // plate
         }
         return 0;
     }
@@ -1246,7 +1254,7 @@ struct ScalingStatValuesEntry
             if(mask & 0x00000800) return dpsMod[2];
             if(mask & 0x00001000) return dpsMod[3];
             if(mask & 0x00002000) return dpsMod[4];
-            if(mask & 0x00004000) return dpsMod[5];
+            if(mask & 0x00004000) return dpsMod[5];         // not used?
         }
         return 0;
     }
@@ -1258,10 +1266,10 @@ struct ScalingStatValuesEntry
         return 0;
     }
 
-    uint32 getFeralBonus(uint32 mask) const
+    uint32 getFeralBonus(uint32 mask) const                 // removed in 3.2.x?
     {
-        if (mask & 0x00010000)
-            return feralBonus;
+        if (mask & 0x00010000)                              // not used?
+            return 0;
         return 0;
     }
 };

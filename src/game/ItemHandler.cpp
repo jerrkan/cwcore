@@ -1342,7 +1342,6 @@ void WorldSession::HandleItemRefundInfoRequest(WorldPacket& recv_data)
     sLog.outDebug("WORLD: CMSG_ITEM_REFUND_INFO_REQUEST");
 
     uint64 guid;
-
     recv_data >> guid;                                      // item guid
 
     Item *item = _player->GetItemByGuid(guid);

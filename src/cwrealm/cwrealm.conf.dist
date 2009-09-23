@@ -108,7 +108,7 @@ ConfVersion=2009081701
 #
 ###################################################################################################################
 
-LoginDatabaseInfo = "127.0.0.1;3306;root;mangos;realmd"
+LoginDatabaseInfo = "127.0.0.1;3306;root;trinity;realmd"
 LogsDir = "Logs"
 MaxPingTime = 30
 RealmServerPort = 3724
@@ -127,6 +127,6 @@ WrongPass.BanType = 0
 LogColors = "13 11 9 5"
 EnableLogDB = 0
 DBLogLevel = 1
-MinBuild = 10314
-MaxBuild = 10314
+MinBuild = 10482
+MaxBuild = 10482
 

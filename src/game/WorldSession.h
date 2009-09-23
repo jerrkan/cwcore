@@ -46,6 +46,8 @@ class QueryResult;
 class LoginQueryHolder;
 class CharacterHandler;
 
+#define CHECK_PACKET_SIZE(P,S) if((P).size() < (S)) return SizeError((P),(S));
+
 enum AccountDataType
 {
     GLOBAL_CONFIG_CACHE             = 0,                    // 0x01 g
@@ -58,6 +60,9 @@ enum AccountDataType
     PER_CHARACTER_CHAT_CACHE        = 7,                    // 0x80 p
 };
 
+#define GLOBAL_CACHE_MASK           0x15
+#define PER_CHARACTER_CACHE_MASK    0xEA
+#define NUM_ACCOUNT_DATA_TYPES 8
 #define NUM_ACCOUNT_DATA_TYPES        8
 
 #define GLOBAL_CACHE_MASK           0x15
@@ -205,6 +210,9 @@ class TRINITY_DLL_SPEC WorldSession
         void SendPetNameQuery(uint64 guid, uint32 petnumber);
 
         // Account Data
+        AccountData *GetAccountData(uint32 type) { return &m_accountData[type]; }
+        void SetAccountData(uint32 type, time_t time_, std::string data);
+        void SendAccountDataTimes(uint32 mask);
         AccountData *GetAccountData(AccountDataType type) { return &m_accountData[type]; }
         void SetAccountData(AccountDataType type, time_t time_, std::string data);
         void SendAccountDataTimes();
@@ -581,6 +589,7 @@ class TRINITY_DLL_SPEC WorldSession
 
         void HandleReclaimCorpseOpcode( WorldPacket& recvPacket );
         void HandleCorpseQueryOpcode( WorldPacket& recvPacket );
+        void HandleCorpseMapPositionQuery( WorldPacket& recvPacket );
         void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
         void HandleSummonResponseOpcode(WorldPacket& recv_data);
 

@@ -734,7 +734,7 @@ enum InstanceResetWarningType
 enum ArenaTeamInfoType
 {
     ARENA_TEAM_ID               = 0,
-    ARENA_TEAM_UNK2             = 1,                        // new in 3.2 - team type?
+    ARENA_TEAM_TYPE             = 1,                        // new in 3.2 - team type?
     ARENA_TEAM_MEMBER           = 2,                        // 0 - captain, 1 - member
     ARENA_TEAM_GAMES_WEEK       = 3,
     ARENA_TEAM_GAMES_SEASON     = 4,
@@ -1655,9 +1655,10 @@ class MANGOS_DLL_SPEC Player : public Unit
         static void RemovePetitionsAndSigns(uint64 guid, uint32 type);
 
         // Arena Team
-        void SetInArenaTeam(uint32 ArenaTeamId, uint8 slot)
+        void SetInArenaTeam(uint32 ArenaTeamId, uint8 slot, uint8 type)
         {
-            SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (slot * ARENA_TEAM_END), ArenaTeamId);
+            SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (slot * ARENA_TEAM_END) + ARENA_TEAM_ID, ArenaTeamId);
+            SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (slot * ARENA_TEAM_END) + ARENA_TEAM_TYPE, type);
         }
         uint32 GetArenaTeamId(uint8 slot) { return GetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (slot * ARENA_TEAM_END)); }
         static uint32 GetArenaTeamIdFromDB(uint64 guid, uint8 slot);
@@ -2412,8 +2413,6 @@ Spell * m_spellModTakingSpell;
         bool acceptTrade;
         uint16 tradeItems[TRADE_SLOT_COUNT];
         uint32 tradeGold;
-
-        time_t m_nextThinkTime;
 
         bool   m_DailyQuestChanged;
         time_t m_lastDailyQuestTime;

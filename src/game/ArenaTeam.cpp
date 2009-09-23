@@ -109,7 +109,7 @@ bool ArenaTeam::AddMember(const uint64& PlayerGuid)
             return false;
         }
 
-        plClass = (uint8)pl->getClass();
+        plClass = pl->getClass();
         plName = pl->GetName();
     }
     else
@@ -160,7 +160,7 @@ bool ArenaTeam::AddMember(const uint64& PlayerGuid)
 
     if(pl)
     {
-        pl->SetInArenaTeam(m_TeamId, GetSlot());
+        pl->SetInArenaTeam(m_TeamId, GetSlot(), GetType());
         pl->SetArenaTeamIdInvited(0);
         pl->SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (GetSlot() * ARENA_TEAM_END) + ARENA_TEAM_PERSONAL_RATING, newmember.personal_rating );
 
@@ -295,7 +295,7 @@ void ArenaTeam::DelMember(uint64 guid)
 
     if(player)
     {
-        player->SetInArenaTeam(0, GetSlot());
+        player->SetInArenaTeam(m_TeamId, GetSlot(), GetType());
         player->GetSession()->SendArenaTeamCommandResult(ERR_ARENA_TEAM_QUIT_S, GetName(), "", 0);
         // delete all info regarding this team
         for(int i = 0; i < ARENA_TEAM_END; ++i)
