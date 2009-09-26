@@ -17,6 +17,9 @@
 #include "sc_instance.h"
 #include "CombatAI.h"
 #include "PassiveAI.h"
+#include "Chat.h"
+#include "DBCStructure.h"
+#include "DBCStores.h"
 
 #ifdef WIN32
 #include <windows.h>

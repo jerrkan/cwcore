@@ -171,6 +171,7 @@ UPDATE `creature_template` SET `ScriptName`='boss_ambassador_hellmaw' WHERE `ent
 UPDATE `creature_template` SET `ScriptName`='mob_voidtraveler' WHERE `entry`=19226;
 
 /* AZJOL-NERUB */
+UPDATE `creature_template` SET `ScriptName`='boss_krik_thir' where `entry`=28684;
 
 /* AHN'KAHET: THE OLD KINGDOM */
 UPDATE `instance_template` SET `script`='instance_ahnkahet' WHERE `map`=619;
@@ -513,6 +514,10 @@ UPDATE `creature_template` SET `ScriptName`='boss_kiggler_the_crazed' WHERE `ent
 UPDATE `creature_template` SET `ScriptName`='boss_blindeye_the_seer' WHERE `entry`=18836;
 UPDATE `creature_template` SET `ScriptName`='boss_olm_the_summoner' WHERE `entry`=18834;
 UPDATE `creature_template` SET `ScriptName`='boss_krosh_firehand' WHERE `entry`=18832;
+
+/* GUNDRAK */
+/* Moorabi */
+UPDATE `creature_template` SET `ScriptName`='boss_moorabi' where entry=29305;
 
 /* HALLS OF LIGHTNING */
 UPDATE `instance_template` SET `script`='instance_halls_of_lightning' WHERE `map`=602;

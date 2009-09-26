@@ -52,5 +52,17 @@ void AddSC_onevents()
     newscript->pOnLogin = &OnLogin;
     newscript->pOnLogout = &OnLogout;
     newscript->pOnPVPKill = &OnPVPKill;
+    newscript->pOnAreaChange = &OnAreaChange;
+    newscript->pOnCreatureKill = &OnCreatureKill;
+    newscript->pOnGetMoney = &OnGetMoney;
+    newscript->pOnGetXP = &OnGetXP;
+    newscript->pOnGoClick = &OnGoClick;
+    newscript->pOnItemClick = &OnItemClick;
+    newscript->pOnItemOpen = &OnItemOpen;
+    newscript->pOnPlayerChat = &OnPlayerChat;
+    newscript->pOnServerShutdown = &OnServerShutdown;
+    newscript->pOnServerStartup = &OnServerStartup;
+    newscript->pOnSpellCast = &OnSpellCast;
+    
     newscript->RegisterSelf();
 }

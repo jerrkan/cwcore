@@ -88,9 +88,24 @@ VendorItem const* VendorItemData::FindItem(uint32 item_id) const
     return NULL;
 }
 
+uint32 CreatureInfo::GetRandomValidModelIdIncludingNativeId(uint32 native_id) const
+{
+    uint8 c = 0;
+    uint32 modelIDs[5];
+
+    if (Modelid1) modelIDs[c++] = Modelid1;
+    if (Modelid2) modelIDs[c++] = Modelid2;
+    if (Modelid3) modelIDs[c++] = Modelid3;
+    if (Modelid4) modelIDs[c++] = Modelid4;
+    if (native_id != Modelid1 && native_id != Modelid2
+    && native_id != Modelid3 && native_id != Modelid4) modelIDs[c++] = native_id;
+
+    return ((c>0) ? modelIDs[urand(0,c-1)] : 0);
+}
+
 uint32 CreatureInfo::GetRandomValidModelId() const
 {
-    uint32 c = 0;
+    uint8 c = 0;
     uint32 modelIDs[4];
 
     if (Modelid1) modelIDs[c++] = Modelid1;
@@ -723,6 +738,7 @@ bool Creature::Create(uint32 guidlow, Map *map, uint32 phaseMask, uint32 Entry, 
                 break;
         }
         LoadCreaturesAddon();
+        SetDisplayId(GetCreatureInfo()->GetRandomValidModelIdIncludingNativeId(GetNativeDisplayId()));
     }
     return bResult;
 }
@@ -1757,7 +1773,7 @@ void Creature::setDeathState(DeathState s)
         if(m_formation && m_formation->getLeader() == this)
             m_formation->FormationReset(true);
 
-        if (canFly() && FallGround())
+        if ((canFly() || IsFlying()) && FallGround())
             return;
 
         Unit::setDeathState(CORPSE);
@@ -1846,6 +1862,8 @@ void Creature::Respawn(bool force)
         }
         else
             setDeathState( JUST_ALIVED );
+
+        SetDisplayId(cinfo->GetRandomValidModelIdIncludingNativeId(GetNativeDisplayId()));
 
         //Call AI respawn virtual function
         AI()->JustRespawned();

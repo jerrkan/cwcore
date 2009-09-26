@@ -1687,6 +1687,8 @@ void World::SetInitialWorldSettings()
         sLog.SetLogDBLater(false);
     }
 
+    Script->OnServerStartup();
+
     sLog.outString("WORLD: World initialized");
 }
 
@@ -2287,6 +2289,8 @@ void World::ShutdownServ(uint32 time, uint32 options, uint8 exitcode)
         m_ShutdownTimer = time;
         ShutdownMsg(true);
     }
+
+    Script->OnServerShutdown();
 }
 
 /// Display a shutdown message to the user(s)

@@ -41,7 +41,7 @@ class ChatCommand
         ChatCommand *      ChildCommands;
 };
 
-class ChatHandler
+class TRINITY_DLL_SPEC ChatHandler
 {
     public:
         explicit ChatHandler(WorldSession* session) : m_session(session) {}
@@ -76,6 +76,7 @@ class ChatHandler
         static ChatCommand* getCommandTable();
 
         bool isValidChatMessage(const char* msg);
+        void SendGlobalSysMessage(const char *str);
     protected:
         explicit ChatHandler() : m_session(NULL) {}      // for CLI subclass
 
@@ -91,7 +92,7 @@ class ChatHandler
         bool HasLowerSecurity(Player* target, uint64 guid, bool strong = false);
         bool HasLowerSecurityAccount(WorldSession* target, uint32 account, bool strong = false);
 
-        void SendGlobalSysMessage(const char *str);
+      
         void SendGlobalGMSysMessage(const char *str);
 
         static bool SetDataForCommandInTable(ChatCommand *table, const char* text, uint32 security, std::string const& help, std::string const& fullcommand );

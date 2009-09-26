@@ -18,9 +18,8 @@
 
 /* ScriptData
 SDName: boss_krikthir_the_gatewatcher
-SDAuthor: LordVanMartin
-SD%Complete: 0
-SDComment: Placeholder
+SD%Complete: 80 % 
+SDComment: Find in the future best timers and the event is not implemented.
 SDCategory: Azjol Nerub
 EndScriptData */
 
@@ -85,18 +84,22 @@ struct CW_DLL_DECL boss_krik_thirAI : public ScriptedAI
     void JustDied(Unit* killer)
     {
         DoScriptText(SAY_DEATH, m_creature);
+
+        if (pInstance)
+            pInstance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, DONE);
     }
     void KilledUnit(Unit *victim)
     {
         if (victim == m_creature)
             return;
 
-        switch(rand()%3)
-        {
-            case 0: DoScriptText(SAY_SLAY_1, m_creature);break;
-            case 1: DoScriptText(SAY_SLAY_2, m_creature);break;
-            case 2: DoScriptText(SAY_SLAY_3, m_creature);break;
-        }
+        DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2), m_creature);
+    }
+
+    void JustSummoned(Creature* summoned)
+    {
+        summoned->GetMotionMaster()->MovePoint(m_creature->GetEntry(),m_creature->GetPositionX(),m_creature->GetPositionY(),m_creature->GetPositionZ());
+        
     }
 };
 
@@ -113,5 +116,4 @@ void AddSC_boss_krik_thir()
     newscript->Name="boss_krik_thir";
     newscript->GetAI = &GetAI_boss_krik_thir;
     newscript->RegisterSelf();
-
 }

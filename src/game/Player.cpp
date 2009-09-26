@@ -2518,7 +2518,7 @@ void Player::GiveXP(uint32 xp, Unit* victim)
         level = getLevel();
         nextLvlXP = GetUInt32Value(PLAYER_NEXT_LEVEL_XP);
     }
-
+    newXP = GetSession()->HandleOnGetXP(newXP);
     SetUInt32Value(PLAYER_XP, newXP);
 }
 
@@ -4462,8 +4462,27 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
     }
 }
 
+bool Player::FallGround(bool noDeath/* = false*/)
+{
+    // Let's abort after we called this function one time
+    if (getDeathState() == DEAD_FALLING && !noDeath)
+        return false;
+
+    float x, y, z;
+    GetPosition(x, y, z);
+    float ground_Z = GetMap()->GetVmapHeight(x, y, z, true);
+    if (fabs(ground_Z - z) < 0.1f)
+        return false;
+
+    GetMotionMaster()->MoveFall(ground_Z, EVENT_FALL_GROUND);
+    if(!noDeath) Unit::setDeathState(DEAD_FALLING);
+    return true;
+}
+
 void Player::KillPlayer()
 {
+    if(IsFlying() && !GetTransport()) FallGround();
+
     SetMovement(MOVE_ROOT);
 
     StopMirrorTimers();                                     //disable timers(bars)
@@ -6022,6 +6041,14 @@ void Player::CheckExploreSystem()
 
     if (isInFlight())
         return;
+
+    if(!m_AreaID)
+        m_AreaID = GetAreaId();
+    if(m_AreaID != GetAreaId())
+    {
+        m_AreaID = GetAreaId();
+        GetSession()->HandleOnAreaChange(GetAreaEntryByAreaID(m_AreaID));
+    }
 
     uint16 areaFlag = GetBaseMap()->GetAreaFlag(GetPositionX(),GetPositionY(),GetPositionZ());
     if(areaFlag==0xffff)
@@ -22148,3 +22175,15 @@ void Player::ActivateSpec(uint8 spec)
     SetPower(pw, 0);
 }
 
+void Player::SetReputation(uint32 factionentry, uint32 value)
+{
+    GetReputationMgr().SetReputation(sFactionStore.LookupEntry(factionentry),value);
+}
+uint32 Player::GetReputation(uint32 factionentry)
+{
+    return GetReputationMgr().GetReputation(sFactionStore.LookupEntry(factionentry));
+}
+std::string Player::GetGuildName()
+{
+    return objmgr.GetGuildById(GetGuildId())->GetName();
+}

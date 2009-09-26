@@ -261,7 +261,9 @@ extern void AddSC_ungoro_crater();
 extern void AddSC_winterspring();
 
 //northrend
+extern void AddSC_boss_moorabi();
 extern void AddSC_instance_ahnkahet();          //Azjol-Nerub Ahn'kahet
+extern void AddSC_boss_krik_thir();
 extern void AddSC_boss_taldaram();
 extern void AddSC_boss_elder_nadox();
 extern void AddSC_boss_volazj();
@@ -668,7 +670,9 @@ void AddScripts()
     AddSC_winterspring();
 
     //northrend
+    AddSC_boss_moorabi();
     AddSC_instance_ahnkahet();          //Azjol-Nerub Ahn'kahet
+    AddSC_boss_krik_thir();
     AddSC_boss_taldaram();
     AddSC_boss_elder_nadox();
     AddSC_boss_volazj();
