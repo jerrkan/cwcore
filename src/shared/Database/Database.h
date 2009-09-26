@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ typedef UNORDERED_MAP<ACE_Based::Thread* , SqlResultQueue*> QueryQueues;
 
 #define MAX_QUERY_LEN   32*1024
 
-class TRINITY_DLL_SPEC Database
+class CW_DLL_SPEC Database
 {
     protected:
         Database() : m_threadBody(NULL), m_delayThread(NULL) {};
@@ -102,7 +102,7 @@ class TRINITY_DLL_SPEC Database
         virtual bool DirectExecute(const char* sql) = 0;
         bool DirectPExecute(const char *format,...) ATTR_PRINTF(2,3);
 
-        // Writes SQL commands to a LOG file (see Trinityd.conf "LogSQL")
+        // Writes SQL commands to a LOG file (see CWd.conf "LogSQL")
         bool PExecuteLog(const char *format,...) ATTR_PRINTF(2,3);
 
         virtual bool BeginTransaction()                     // nothing do if DB not support transactions

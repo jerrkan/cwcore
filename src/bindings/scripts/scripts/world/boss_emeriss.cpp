@@ -36,7 +36,7 @@ enum
     SPELL_CORRUPTIONOFEARTH = 24910
 };
 
-struct TRINITY_DLL_DECL boss_emerissAI : public ScriptedAI
+struct CW_DLL_DECL boss_emerissAI : public ScriptedAI
 {
     boss_emerissAI(Creature *c) : ScriptedAI(c) {}
 

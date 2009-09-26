@@ -38,7 +38,7 @@ EndContentData */
 ## mob_shattered_rumbler - this should be done with ACID
 ######*/
 
-struct TRINITY_DLL_DECL mob_shattered_rumblerAI : public ScriptedAI
+struct CW_DLL_DECL mob_shattered_rumblerAI : public ScriptedAI
 {
     bool Spawn;
 
@@ -90,7 +90,7 @@ CreatureAI* GetAI_mob_shattered_rumbler(Creature* pCreature)
 #define GOSSIP_SL2 "And you think you can just eat anything you want? You're obviously trying to eat the Broken of Telaar."
 #define GOSSIP_SL3 "This means war, Lump! War I say!"
 
-struct TRINITY_DLL_DECL mob_lumpAI : public ScriptedAI
+struct CW_DLL_DECL mob_lumpAI : public ScriptedAI
 {
     mob_lumpAI(Creature *c) : ScriptedAI(c)
     {
@@ -231,7 +231,7 @@ bool GossipSelect_mob_lump(Player* pPlayer, Creature* pCreature, uint32 uiSender
 # mob_sunspring_villager - should be done with ACID
 ####*/
 
-struct TRINITY_DLL_DECL mob_sunspring_villagerAI : public ScriptedAI
+struct CW_DLL_DECL mob_sunspring_villagerAI : public ScriptedAI
 {
     mob_sunspring_villagerAI(Creature *c) : ScriptedAI(c) {}
 
@@ -525,7 +525,7 @@ bool GossipSelect_npc_lantresor_of_the_blade(Player* pPlayer, Creature* pCreatur
 ## npc_creditmarker_visist_with_ancestors
 ######*/
 
-struct TRINITY_DLL_DECL npc_creditmarker_visit_with_ancestorsAI : public ScriptedAI
+struct CW_DLL_DECL npc_creditmarker_visit_with_ancestorsAI : public ScriptedAI
 {
     npc_creditmarker_visit_with_ancestorsAI(Creature* c) : ScriptedAI(c) {}
 
@@ -566,7 +566,7 @@ CreatureAI* GetAI_npc_creditmarker_visit_with_ancestors(Creature* pCreature)
 #define SPELL_SPARROWHAWK_NET 39810
 #define SPELL_ITEM_CAPTIVE_SPARROWHAWK 39812
 
-struct TRINITY_DLL_DECL mob_sparrowhawkAI : public ScriptedAI
+struct CW_DLL_DECL mob_sparrowhawkAI : public ScriptedAI
 {
 
     mob_sparrowhawkAI(Creature *c) : ScriptedAI(c) {}

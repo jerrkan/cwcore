@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,38 +37,38 @@ class InstanceData;
 bool LoadScriptingModule(char const* libName = "");
 void UnloadScriptingModule();
 //Hawthorne - On Events
-typedef void(TRINITY_IMPORT * scriptCallOnLogin) (Player *player);
-typedef void(TRINITY_IMPORT * scriptCallOnLogout) (Player *player);
-typedef void(TRINITY_IMPORT * scriptCallOnPVPKill) (Player *killer, Player *killed );
+typedef void(CW_IMPORT * scriptCallOnLogin) (Player *player);
+typedef void(CW_IMPORT * scriptCallOnLogout) (Player *player);
+typedef void(CW_IMPORT * scriptCallOnPVPKill) (Player *killer, Player *killed );
 
-typedef void(TRINITY_IMPORT * scriptCallScriptsInit) (char const*);
-typedef void(TRINITY_IMPORT * scriptCallScriptsFree) ();
-typedef char const* (TRINITY_IMPORT * scriptCallScriptsVersion) ();
+typedef void(CW_IMPORT * scriptCallScriptsInit) (char const*);
+typedef void(CW_IMPORT * scriptCallScriptsFree) ();
+typedef char const* (CW_IMPORT * scriptCallScriptsVersion) ();
 
-typedef bool(TRINITY_IMPORT * scriptCallGossipHello) (Player *player, Creature *_Creature );
-typedef bool(TRINITY_IMPORT * scriptCallQuestAccept) (Player *player, Creature *_Creature, Quest const *);
-typedef bool(TRINITY_IMPORT * scriptCallGossipSelect)(Player *player, Creature *_Creature, uint32 sender, uint32 action);
-typedef bool(TRINITY_IMPORT * scriptCallGossipSelectWithCode)( Player *player, Creature *_Creature, uint32 sender, uint32 action, const char* sCode );
-typedef bool(TRINITY_IMPORT * scriptCallGOSelect)(Player *player, GameObject *_GO, uint32 sender, uint32 action);
-typedef bool(TRINITY_IMPORT * scriptCallGOSelectWithCode)( Player *player, GameObject *_GO, uint32 sender, uint32 action, const char* sCode );
-typedef bool(TRINITY_IMPORT * scriptCallQuestSelect)( Player *player, Creature *_Creature, Quest const* );
-typedef bool(TRINITY_IMPORT * scriptCallQuestComplete)(Player *player, Creature *_Creature, Quest const*);
-typedef uint32(TRINITY_IMPORT * scriptCallNPCDialogStatus)( Player *player, Creature *_Creature);
-typedef uint32(TRINITY_IMPORT * scriptCallGODialogStatus)( Player *player, GameObject * _GO);
-typedef bool(TRINITY_IMPORT * scriptCallChooseReward)( Player *player, Creature *_Creature, Quest const*, uint32 opt );
-typedef bool(TRINITY_IMPORT * scriptCallItemHello)( Player *player, Item *, Quest const*);
-typedef bool(TRINITY_IMPORT * scriptCallGOHello)( Player *player, GameObject * );
-typedef bool(TRINITY_IMPORT * scriptCallAreaTrigger)( Player *player, AreaTriggerEntry const* );
-typedef bool(TRINITY_IMPORT * scriptCallItemQuestAccept)(Player *player, Item *, Quest const*);
-typedef bool(TRINITY_IMPORT * scriptCallGOQuestAccept)(Player *player, GameObject *, Quest const*);
-typedef bool(TRINITY_IMPORT * scriptCallGOChooseReward)(Player *player, GameObject *, Quest const*, uint32 opt );
-typedef bool(TRINITY_IMPORT * scriptCallItemUse) (Player *player, Item *_Item, SpellCastTargets const& targets);
-typedef bool(TRINITY_IMPORT * scriptCallItemExpire) (Player *player, ItemPrototype const *_ItemProto);
-typedef bool(TRINITY_IMPORT * scriptCallEffectDummyGameObj) (Unit *caster, uint32 spellId, uint32 effIndex, GameObject *gameObjTarget);
-typedef bool(TRINITY_IMPORT * scriptCallEffectDummyCreature) (Unit *caster, uint32 spellId, uint32 effIndex, Creature *crTarget);
-typedef bool(TRINITY_IMPORT * scriptCallEffectDummyItem) (Unit *caster, uint32 spellId, uint32 effIndex, Item *itemTarget);
-typedef CreatureAI* (TRINITY_IMPORT * scriptCallGetAI) ( Creature *_Creature );
-typedef InstanceData* (TRINITY_IMPORT * scriptCallCreateInstanceData) (Map *map);
+typedef bool(CW_IMPORT * scriptCallGossipHello) (Player *player, Creature *_Creature );
+typedef bool(CW_IMPORT * scriptCallQuestAccept) (Player *player, Creature *_Creature, Quest const *);
+typedef bool(CW_IMPORT * scriptCallGossipSelect)(Player *player, Creature *_Creature, uint32 sender, uint32 action);
+typedef bool(CW_IMPORT * scriptCallGossipSelectWithCode)( Player *player, Creature *_Creature, uint32 sender, uint32 action, const char* sCode );
+typedef bool(CW_IMPORT * scriptCallGOSelect)(Player *player, GameObject *_GO, uint32 sender, uint32 action);
+typedef bool(CW_IMPORT * scriptCallGOSelectWithCode)( Player *player, GameObject *_GO, uint32 sender, uint32 action, const char* sCode );
+typedef bool(CW_IMPORT * scriptCallQuestSelect)( Player *player, Creature *_Creature, Quest const* );
+typedef bool(CW_IMPORT * scriptCallQuestComplete)(Player *player, Creature *_Creature, Quest const*);
+typedef uint32(CW_IMPORT * scriptCallNPCDialogStatus)( Player *player, Creature *_Creature);
+typedef uint32(CW_IMPORT * scriptCallGODialogStatus)( Player *player, GameObject * _GO);
+typedef bool(CW_IMPORT * scriptCallChooseReward)( Player *player, Creature *_Creature, Quest const*, uint32 opt );
+typedef bool(CW_IMPORT * scriptCallItemHello)( Player *player, Item *, Quest const*);
+typedef bool(CW_IMPORT * scriptCallGOHello)( Player *player, GameObject * );
+typedef bool(CW_IMPORT * scriptCallAreaTrigger)( Player *player, AreaTriggerEntry const* );
+typedef bool(CW_IMPORT * scriptCallItemQuestAccept)(Player *player, Item *, Quest const*);
+typedef bool(CW_IMPORT * scriptCallGOQuestAccept)(Player *player, GameObject *, Quest const*);
+typedef bool(CW_IMPORT * scriptCallGOChooseReward)(Player *player, GameObject *, Quest const*, uint32 opt );
+typedef bool(CW_IMPORT * scriptCallItemUse) (Player *player, Item *_Item, SpellCastTargets const& targets);
+typedef bool(CW_IMPORT * scriptCallItemExpire) (Player *player, ItemPrototype const *_ItemProto);
+typedef bool(CW_IMPORT * scriptCallEffectDummyGameObj) (Unit *caster, uint32 spellId, uint32 effIndex, GameObject *gameObjTarget);
+typedef bool(CW_IMPORT * scriptCallEffectDummyCreature) (Unit *caster, uint32 spellId, uint32 effIndex, Creature *crTarget);
+typedef bool(CW_IMPORT * scriptCallEffectDummyItem) (Unit *caster, uint32 spellId, uint32 effIndex, Item *itemTarget);
+typedef CreatureAI* (CW_IMPORT * scriptCallGetAI) ( Creature *_Creature );
+typedef InstanceData* (CW_IMPORT * scriptCallCreateInstanceData) (Map *map);
 
 typedef struct
 {
@@ -103,7 +103,7 @@ typedef struct
     scriptCallGetAI GetAI;
     scriptCallCreateInstanceData CreateInstanceData;
 
-    TRINITY_LIBRARY_HANDLE hScriptsLib;
+    CW_LIBRARY_HANDLE hScriptsLib;
 }_ScriptSet,*ScriptsSet;
 
 extern ScriptsSet Script;

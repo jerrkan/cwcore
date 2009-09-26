@@ -53,7 +53,7 @@ enum
 
 #define SPIKE_DISTANCE                            5.0f
 
-struct TRINITY_DLL_DECL boss_ormorokAI : public ScriptedAI
+struct CW_DLL_DECL boss_ormorokAI : public ScriptedAI
 {
     boss_ormorokAI(Creature *c) : ScriptedAI(c)
     {
@@ -213,7 +213,7 @@ struct TRINITY_DLL_DECL boss_ormorokAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_crystal_spikeAI : public Scripted_NoMovementAI
+struct CW_DLL_DECL mob_crystal_spikeAI : public Scripted_NoMovementAI
 {
     mob_crystal_spikeAI(Creature *c) : Scripted_NoMovementAI(c)
     {
@@ -251,7 +251,7 @@ struct TRINITY_DLL_DECL mob_crystal_spikeAI : public Scripted_NoMovementAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_crystalline_tanglerAI : public ScriptedAI
+struct CW_DLL_DECL mob_crystalline_tanglerAI : public ScriptedAI
 {
     mob_crystalline_tanglerAI(Creature *c) : ScriptedAI(c) {}
 

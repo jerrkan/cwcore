@@ -41,7 +41,7 @@ enum
     FACTION_HOSTILE     = 168
 };
 
-struct TRINITY_DLL_DECL npc_calvin_montagueAI : public ScriptedAI
+struct CW_DLL_DECL npc_calvin_montagueAI : public ScriptedAI
 {
     npc_calvin_montagueAI(Creature* pCreature) : ScriptedAI(pCreature) { }
 

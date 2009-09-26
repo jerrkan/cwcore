@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 - 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2009 CW <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ enum Seats
     SEAT_DEVICE = 2,
 };
 
-struct TRINITY_DLL_DECL boss_flame_leviathanAI : public BossAI
+struct CW_DLL_DECL boss_flame_leviathanAI : public BossAI
 {
     boss_flame_leviathanAI(Creature *c) : BossAI(c, BOSS_LEVIATHAN), vehicle(me->GetVehicleKit())
     {
@@ -183,7 +183,7 @@ struct TRINITY_DLL_DECL boss_flame_leviathanAI : public BossAI
 
 //#define BOSS_DEBUG
 
-struct TRINITY_DLL_DECL boss_flame_leviathan_seatAI : public PassiveAI
+struct CW_DLL_DECL boss_flame_leviathan_seatAI : public PassiveAI
 {
     boss_flame_leviathan_seatAI(Creature *c) : PassiveAI(c), vehicle(c->GetVehicleKit())
     {
@@ -240,7 +240,7 @@ struct TRINITY_DLL_DECL boss_flame_leviathan_seatAI : public PassiveAI
     }
 };
 
-struct TRINITY_DLL_DECL boss_flame_leviathan_defense_turretAI : public TurretAI
+struct CW_DLL_DECL boss_flame_leviathan_defense_turretAI : public TurretAI
 {
     boss_flame_leviathan_defense_turretAI(Creature *c) : TurretAI(c) {}
 
@@ -258,7 +258,7 @@ struct TRINITY_DLL_DECL boss_flame_leviathan_defense_turretAI : public TurretAI
     }
 };
 
-struct TRINITY_DLL_DECL boss_flame_leviathan_overload_deviceAI : public PassiveAI
+struct CW_DLL_DECL boss_flame_leviathan_overload_deviceAI : public PassiveAI
 {
     boss_flame_leviathan_overload_deviceAI(Creature *c) : PassiveAI(c) {}
 
@@ -282,7 +282,7 @@ struct TRINITY_DLL_DECL boss_flame_leviathan_overload_deviceAI : public PassiveA
     }
 };
 
-struct TRINITY_DLL_DECL boss_flame_leviathan_safety_containerAI : public PassiveAI
+struct CW_DLL_DECL boss_flame_leviathan_safety_containerAI : public PassiveAI
 {
     boss_flame_leviathan_safety_containerAI(Creature *c) : PassiveAI(c) {}
 
@@ -303,7 +303,7 @@ struct TRINITY_DLL_DECL boss_flame_leviathan_safety_containerAI : public Passive
     }
 };
 
-struct TRINITY_DLL_DECL spell_pool_of_tarAI : public TriggerAI
+struct CW_DLL_DECL spell_pool_of_tarAI : public TriggerAI
 {
     spell_pool_of_tarAI(Creature *c) : TriggerAI(c)
     {

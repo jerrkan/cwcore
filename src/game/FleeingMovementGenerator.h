@@ -1,7 +1,7 @@
 /*
 * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
 *
-* Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+* Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,15 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 
-#ifndef TRINITY_FLEEINGMOVEMENTGENERATOR_H
-#define TRINITY_FLEEINGMOVEMENTGENERATOR_H
+#ifndef CW_FLEEINGMOVEMENTGENERATOR_H
+#define CW_FLEEINGMOVEMENTGENERATOR_H
 
 #include "MovementGenerator.h"
 #include "DestinationHolder.h"
 #include "Traveller.h"
 
 template<class T>
-class TRINITY_DLL_SPEC FleeingMovementGenerator
+class CW_DLL_SPEC FleeingMovementGenerator
 : public MovementGeneratorMedium< T, FleeingMovementGenerator<T> >
 {
     public:

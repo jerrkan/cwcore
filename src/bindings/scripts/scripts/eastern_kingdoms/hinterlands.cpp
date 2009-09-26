@@ -177,7 +177,7 @@ Location m_afAmbushMoveTo[] =
     {70.886589,  -2874.335449, 116.675}
 };
 
-struct TRINITY_DLL_DECL npc_rinjiAI : public npc_escortAI
+struct CW_DLL_DECL npc_rinjiAI : public npc_escortAI
 {
     npc_rinjiAI(Creature* pCreature) : npc_escortAI(pCreature)
     {

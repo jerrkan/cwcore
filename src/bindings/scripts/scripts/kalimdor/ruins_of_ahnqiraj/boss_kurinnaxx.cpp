@@ -27,7 +27,7 @@ EndScriptData */
 #define SPELL_SANDTRAP 25656
 #define SPELL_ENRAGE 28798
 
-struct TRINITY_DLL_DECL boss_kurinnaxxAI : public ScriptedAI
+struct CW_DLL_DECL boss_kurinnaxxAI : public ScriptedAI
 {
     boss_kurinnaxxAI(Creature *c) : ScriptedAI(c) {}
 

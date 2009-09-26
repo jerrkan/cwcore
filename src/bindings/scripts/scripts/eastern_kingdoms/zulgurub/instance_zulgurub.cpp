@@ -24,7 +24,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_zulgurub.h"
 
-struct TRINITY_DLL_DECL instance_zulgurub : public ScriptedInstance
+struct CW_DLL_DECL instance_zulgurub : public ScriptedInstance
 {
     instance_zulgurub(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 

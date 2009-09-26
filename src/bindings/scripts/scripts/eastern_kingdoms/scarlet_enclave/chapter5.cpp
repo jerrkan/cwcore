@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -284,7 +284,7 @@ static Locations LightofDawnLoc[]=
     {2273.972, -5257.676, 78.862, 0}      // 29 Lich king moves forward
 };
 
-struct TRINITY_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
+struct CW_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
 {
     npc_highlord_darion_mograineAI(Creature *pCreature) : npc_escortAI(pCreature)
     {
@@ -1637,7 +1637,7 @@ bool GossipSelect_npc_highlord_darion_mograine(Player* pPlayer, Creature* pCreat
 /*######
 ## npc the lich king in dawn of light
 ######*/
-struct TRINITY_DLL_DECL npc_the_lich_king_tirion_dawnAI : public ScriptedAI
+struct CW_DLL_DECL npc_the_lich_king_tirion_dawnAI : public ScriptedAI
 {
     npc_the_lich_king_tirion_dawnAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
     void Reset() {}

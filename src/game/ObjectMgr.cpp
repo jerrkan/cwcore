@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1388,7 +1388,7 @@ void ObjectMgr::AddCreatureToGrid(uint32 guid, CreatureData const* data)
     {
         if(mask & 1)
         {
-            CellPair cell_pair = Trinity::ComputeCellPair(data->posX, data->posY);
+            CellPair cell_pair = CW::ComputeCellPair(data->posX, data->posY);
             uint32 cell_id = (cell_pair.y_coord*TOTAL_NUMBER_OF_CELLS_PER_MAP) + cell_pair.x_coord;
 
             CellObjectGuids& cell_guids = mMapObjectGuids[MAKE_PAIR32(data->mapid,i)][cell_id];
@@ -1404,7 +1404,7 @@ void ObjectMgr::RemoveCreatureFromGrid(uint32 guid, CreatureData const* data)
     {
         if(mask & 1)
         {
-            CellPair cell_pair = Trinity::ComputeCellPair(data->posX, data->posY);
+            CellPair cell_pair = CW::ComputeCellPair(data->posX, data->posY);
             uint32 cell_id = (cell_pair.y_coord*TOTAL_NUMBER_OF_CELLS_PER_MAP) + cell_pair.x_coord;
 
             CellObjectGuids& cell_guids = mMapObjectGuids[MAKE_PAIR32(data->mapid,i)][cell_id];
@@ -1636,7 +1636,7 @@ void ObjectMgr::AddGameobjectToGrid(uint32 guid, GameObjectData const* data)
     {
         if(mask & 1)
         {
-            CellPair cell_pair = Trinity::ComputeCellPair(data->posX, data->posY);
+            CellPair cell_pair = CW::ComputeCellPair(data->posX, data->posY);
             uint32 cell_id = (cell_pair.y_coord*TOTAL_NUMBER_OF_CELLS_PER_MAP) + cell_pair.x_coord;
 
             CellObjectGuids& cell_guids = mMapObjectGuids[MAKE_PAIR32(data->mapid,i)][cell_id];
@@ -1652,7 +1652,7 @@ void ObjectMgr::RemoveGameobjectFromGrid(uint32 guid, GameObjectData const* data
     {
         if(mask & 1)
         {
-            CellPair cell_pair = Trinity::ComputeCellPair(data->posX, data->posY);
+            CellPair cell_pair = CW::ComputeCellPair(data->posX, data->posY);
             uint32 cell_id = (cell_pair.y_coord*TOTAL_NUMBER_OF_CELLS_PER_MAP) + cell_pair.x_coord;
 
             CellObjectGuids& cell_guids = mMapObjectGuids[MAKE_PAIR32(data->mapid,i)][cell_id];
@@ -2468,7 +2468,7 @@ void ObjectMgr::LoadPetLevelInfo()
                     sLog.outErrorDb("Wrong (> %u) level %u in `pet_levelstats` table, ignoring.",STRONG_MAX_LEVEL,current_level);
                 else
                 {
-                    sLog.outDetail("Unused (> MaxPlayerLevel in Trinityd.conf) level %u in `pet_levelstats` table, ignoring.",current_level);
+                    sLog.outDetail("Unused (> MaxPlayerLevel in CWd.conf) level %u in `pet_levelstats` table, ignoring.",current_level);
                     ++count;                                // make result loading percent "expected" correct in case disabled detail mode for example.
                 }
                 continue;
@@ -2861,7 +2861,7 @@ void ObjectMgr::LoadPlayerInfo()
                     sLog.outErrorDb("Wrong (> %u) level %u in `player_classlevelstats` table, ignoring.",STRONG_MAX_LEVEL,current_level);
                 else
                 {
-                    sLog.outDetail("Unused (> MaxPlayerLevel in Trinityd.conf) level %u in `player_classlevelstats` table, ignoring.",current_level);
+                    sLog.outDetail("Unused (> MaxPlayerLevel in CWd.conf) level %u in `player_classlevelstats` table, ignoring.",current_level);
                     ++count;                                // make result loading percent "expected" correct in case disabled detail mode for example.
                 }
                 continue;
@@ -2959,7 +2959,7 @@ void ObjectMgr::LoadPlayerInfo()
                     sLog.outErrorDb("Wrong (> %u) level %u in `player_levelstats` table, ignoring.",STRONG_MAX_LEVEL,current_level);
                 else
                 {
-                    sLog.outDetail("Unused (> MaxPlayerLevel in Trinityd.conf) level %u in `player_levelstats` table, ignoring.",current_level);
+                    sLog.outDetail("Unused (> MaxPlayerLevel in CWd.conf) level %u in `player_levelstats` table, ignoring.",current_level);
                     ++count;                                // make result loading percent "expected" correct in case disabled detail mode for example.
                 }
                 continue;
@@ -3531,19 +3531,19 @@ void ObjectMgr::LoadQuests()
             sLog.outErrorDb("Quest %u has `Method` = %u, expected values are 0, 1 or 2.",qinfo->GetQuestId(),qinfo->GetQuestMethod());
         }
 
-        if (qinfo->QuestFlags & ~QUEST_TRINITY_FLAGS_DB_ALLOWED)
+        if (qinfo->QuestFlags & ~QUEST_CW_FLAGS_DB_ALLOWED)
         {
             sLog.outErrorDb("Quest %u has `SpecialFlags` = %u > max allowed value. Correct `SpecialFlags` to value <= %u",
-                qinfo->GetQuestId(),qinfo->QuestFlags,QUEST_TRINITY_FLAGS_DB_ALLOWED >> 16);
-            qinfo->QuestFlags &= QUEST_TRINITY_FLAGS_DB_ALLOWED;
+                qinfo->GetQuestId(),qinfo->QuestFlags,QUEST_CW_FLAGS_DB_ALLOWED >> 16);
+            qinfo->QuestFlags &= QUEST_CW_FLAGS_DB_ALLOWED;
         }
 
         if(qinfo->QuestFlags & (QUEST_FLAGS_DAILY | QUEST_FLAGS_WEEKLY))
         {
-            if(!(qinfo->QuestFlags & QUEST_TRINITY_FLAGS_REPEATABLE))
+            if(!(qinfo->QuestFlags & QUEST_CW_FLAGS_REPEATABLE))
             {
                 sLog.outErrorDb("Daily Quest %u not marked as repeatable in `SpecialFlags`, added.",qinfo->GetQuestId());
-                qinfo->QuestFlags |= QUEST_TRINITY_FLAGS_REPEATABLE;
+                qinfo->QuestFlags |= QUEST_CW_FLAGS_REPEATABLE;
             }
         }
 
@@ -3756,7 +3756,7 @@ void ObjectMgr::LoadQuests()
                     // no changes, quest can't be done for this requirement
                 }
 
-                qinfo->SetFlag(QUEST_TRINITY_FLAGS_DELIVER);
+                qinfo->SetFlag(QUEST_CW_FLAGS_DELIVER);
 
                 if(!sItemStorage.LookupEntry<ItemPrototype>(id))
                 {
@@ -3824,12 +3824,12 @@ void ObjectMgr::LoadQuests()
 
                     if(found)
                     {
-                        if(!qinfo->HasFlag(QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT))
+                        if(!qinfo->HasFlag(QUEST_CW_FLAGS_EXPLORATION_OR_EVENT))
                         {
-                            sLog.outErrorDb("Spell (id: %u) have SPELL_EFFECT_QUEST_COMPLETE or SPELL_EFFECT_SEND_EVENT for quest %u and ReqCreatureOrGOId%d = 0, but quest not have flag QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT. Quest flags or ReqCreatureOrGOId%d must be fixed, quest modified to enable objective.",spellInfo->Id,qinfo->QuestId,j+1,j+1);
+                            sLog.outErrorDb("Spell (id: %u) have SPELL_EFFECT_QUEST_COMPLETE or SPELL_EFFECT_SEND_EVENT for quest %u and ReqCreatureOrGOId%d = 0, but quest not have flag QUEST_CW_FLAGS_EXPLORATION_OR_EVENT. Quest flags or ReqCreatureOrGOId%d must be fixed, quest modified to enable objective.",spellInfo->Id,qinfo->QuestId,j+1,j+1);
 
                             // this will prevent quest completing without objective
-                            const_cast<Quest*>(qinfo)->SetFlag(QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT);
+                            const_cast<Quest*>(qinfo)->SetFlag(QUEST_CW_FLAGS_EXPLORATION_OR_EVENT);
                         }
                     }
                     else
@@ -3863,7 +3863,7 @@ void ObjectMgr::LoadQuests()
             {
                 // In fact SpeakTo and Kill are quite same: either you can speak to mob:SpeakTo or you can't:Kill/Cast
 
-                qinfo->SetFlag(QUEST_TRINITY_FLAGS_KILL_OR_CAST | QUEST_TRINITY_FLAGS_SPEAKTO);
+                qinfo->SetFlag(QUEST_CW_FLAGS_KILL_OR_CAST | QUEST_CW_FLAGS_SPEAKTO);
 
                 if(!qinfo->ReqCreatureOrGOCount[j])
                 {
@@ -4066,10 +4066,10 @@ void ObjectMgr::LoadQuests()
         if(qinfo->ExclusiveGroup)
             mExclusiveQuestGroups.insert(std::pair<int32, uint32>(qinfo->ExclusiveGroup, qinfo->GetQuestId()));
         if(qinfo->LimitTime)
-            qinfo->SetFlag(QUEST_TRINITY_FLAGS_TIMED);
+            qinfo->SetFlag(QUEST_CW_FLAGS_TIMED);
     }
 
-    // check QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT for spell with SPELL_EFFECT_QUEST_COMPLETE
+    // check QUEST_CW_FLAGS_EXPLORATION_OR_EVENT for spell with SPELL_EFFECT_QUEST_COMPLETE
     for (uint32 i = 0; i < sSpellStore.GetNumRows(); ++i)
     {
         SpellEntry const *spellInfo = sSpellStore.LookupEntry(i);
@@ -4089,12 +4089,12 @@ void ObjectMgr::LoadQuests()
             if(!quest)
                 continue;
 
-            if(!quest->HasFlag(QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT))
+            if(!quest->HasFlag(QUEST_CW_FLAGS_EXPLORATION_OR_EVENT))
             {
-                sLog.outErrorDb("Spell (id: %u) have SPELL_EFFECT_QUEST_COMPLETE for quest %u , but quest not have flag QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT. Quest flags must be fixed, quest modified to enable objective.",spellInfo->Id,quest_id);
+                sLog.outErrorDb("Spell (id: %u) have SPELL_EFFECT_QUEST_COMPLETE for quest %u , but quest not have flag QUEST_CW_FLAGS_EXPLORATION_OR_EVENT. Quest flags must be fixed, quest modified to enable objective.",spellInfo->Id,quest_id);
 
                 // this will prevent quest completing without objective
-                const_cast<Quest*>(quest)->SetFlag(QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT);
+                const_cast<Quest*>(quest)->SetFlag(QUEST_CW_FLAGS_EXPLORATION_OR_EVENT);
             }
         }
     }
@@ -4324,7 +4324,7 @@ void ObjectMgr::LoadScripts(ScriptMapMap& scripts, char const* tablename)
                     continue;
                 }
 
-                if(!Trinity::IsValidMapCoord(tmp.x,tmp.y,tmp.z,tmp.o))
+                if(!CW::IsValidMapCoord(tmp.x,tmp.y,tmp.z,tmp.o))
                 {
                     sLog.outErrorDb("Table `%s` has invalid coordinates (X: %f Y: %f) in SCRIPT_COMMAND_TELEPORT_TO for script id %u",tablename,tmp.x,tmp.y,tmp.id);
                     continue;
@@ -4334,7 +4334,7 @@ void ObjectMgr::LoadScripts(ScriptMapMap& scripts, char const* tablename)
 
             case SCRIPT_COMMAND_TEMP_SUMMON_CREATURE:
             {
-                if(!Trinity::IsValidMapCoord(tmp.x,tmp.y,tmp.z,tmp.o))
+                if(!CW::IsValidMapCoord(tmp.x,tmp.y,tmp.z,tmp.o))
                 {
                     sLog.outErrorDb("Table `%s` has invalid coordinates (X: %f Y: %f) in SCRIPT_COMMAND_TEMP_SUMMON_CREATURE for script id %u",tablename,tmp.x,tmp.y,tmp.id);
                     continue;
@@ -4409,12 +4409,12 @@ void ObjectMgr::LoadScripts(ScriptMapMap& scripts, char const* tablename)
                     continue;
                 }
 
-                if(!quest->HasFlag(QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT))
+                if(!quest->HasFlag(QUEST_CW_FLAGS_EXPLORATION_OR_EVENT))
                 {
-                    sLog.outErrorDb("Table `%s` has quest (ID: %u) in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u, but quest not have flag QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT in quest flags. Script command or quest flags wrong. Quest modified to require objective.",tablename,tmp.datalong,tmp.id);
+                    sLog.outErrorDb("Table `%s` has quest (ID: %u) in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u, but quest not have flag QUEST_CW_FLAGS_EXPLORATION_OR_EVENT in quest flags. Script command or quest flags wrong. Quest modified to require objective.",tablename,tmp.datalong,tmp.id);
 
                     // this will prevent quest completing without objective
-                    const_cast<Quest*>(quest)->SetFlag(QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT);
+                    const_cast<Quest*>(quest)->SetFlag(QUEST_CW_FLAGS_EXPLORATION_OR_EVENT);
 
                     // continue; - quest objective requirement set and command can be allowed
                 }
@@ -5110,12 +5110,12 @@ void ObjectMgr::LoadQuestAreaTriggers()
             continue;
         }
 
-        if(!quest->HasFlag(QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT))
+        if(!quest->HasFlag(QUEST_CW_FLAGS_EXPLORATION_OR_EVENT))
         {
-            sLog.outErrorDb("Table `areatrigger_involvedrelation` has record (id: %u) for not quest %u, but quest not have flag QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT. Trigger or quest flags must be fixed, quest modified to require objective.",trigger_ID,quest_ID);
+            sLog.outErrorDb("Table `areatrigger_involvedrelation` has record (id: %u) for not quest %u, but quest not have flag QUEST_CW_FLAGS_EXPLORATION_OR_EVENT. Trigger or quest flags must be fixed, quest modified to require objective.",trigger_ID,quest_ID);
 
             // this will prevent quest completing without objective
-            const_cast<Quest*>(quest)->SetFlag(QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT);
+            const_cast<Quest*>(quest)->SetFlag(QUEST_CW_FLAGS_EXPLORATION_OR_EVENT);
 
             // continue; - quest modified to required objective and trigger can be allowed.
         }
@@ -7319,7 +7319,7 @@ void ObjectMgr::LoadGameObjectForQuests()
     sLog.outString( ">> Loaded %u GameObjects for quests", count );
 }
 
-bool ObjectMgr::LoadTrinityStrings(DatabaseType& db, char const* table, int32 min_value, int32 max_value)
+bool ObjectMgr::LoadCWStrings(DatabaseType& db, char const* table, int32 min_value, int32 max_value)
 {
     int32 start_value = min_value;
     int32 end_value   = max_value;
@@ -7347,10 +7347,10 @@ bool ObjectMgr::LoadTrinityStrings(DatabaseType& db, char const* table, int32 mi
     }
 
     // cleanup affected map part for reloading case
-    for(TrinityStringLocaleMap::iterator itr = mTrinityStringLocaleMap.begin(); itr != mTrinityStringLocaleMap.end();)
+    for(CWStringLocaleMap::iterator itr = mCWStringLocaleMap.begin(); itr != mCWStringLocaleMap.end();)
     {
         if (itr->first >= start_value && itr->first < end_value)
-            mTrinityStringLocaleMap.erase(itr++);
+            mCWStringLocaleMap.erase(itr++);
         else
             ++itr;
     }
@@ -7364,8 +7364,8 @@ bool ObjectMgr::LoadTrinityStrings(DatabaseType& db, char const* table, int32 mi
         bar.step();
 
         sLog.outString();
-        if (min_value == MIN_TRINITY_STRING_ID)              // error only in case internal strings
-            sLog.outErrorDb(">> Loaded 0 trinity strings. DB table `%s` is empty. Cannot continue.",table);
+        if (min_value == MIN_CW_STRING_ID)              // error only in case internal strings
+            sLog.outErrorDb(">> Loaded 0 CW strings. DB table `%s` is empty. Cannot continue.",table);
         else
             sLog.outString(">> Loaded 0 string templates. DB table `%s` is empty.",table);
         return false;
@@ -7393,7 +7393,7 @@ bool ObjectMgr::LoadTrinityStrings(DatabaseType& db, char const* table, int32 mi
             continue;
         }
 
-        TrinityStringLocale& data = mTrinityStringLocaleMap[entry];
+        CWStringLocale& data = mCWStringLocaleMap[entry];
 
         if (data.Content.size() > 0)
         {
@@ -7428,19 +7428,19 @@ bool ObjectMgr::LoadTrinityStrings(DatabaseType& db, char const* table, int32 mi
     delete result;
 
     sLog.outString();
-    if (min_value == MIN_TRINITY_STRING_ID)
-        sLog.outString( ">> Loaded %u Trinity strings from table %s", count,table);
+    if (min_value == MIN_CW_STRING_ID)
+        sLog.outString( ">> Loaded %u CW strings from table %s", count,table);
     else
         sLog.outString( ">> Loaded %u string templates from %s", count,table);
 
     return true;
 }
 
-const char *ObjectMgr::GetTrinityString(int32 entry, int locale_idx) const
+const char *ObjectMgr::GetCWString(int32 entry, int locale_idx) const
 {
     // locale_idx==-1 -> default, locale_idx >= 0 in to idx+1
-    // Content[0] always exist if exist TrinityStringLocale
-    if(TrinityStringLocale const *msl = GetTrinityStringLocale(entry))
+    // Content[0] always exist if exist CWStringLocale
+    if(CWStringLocale const *msl = GetCWStringLocale(entry))
     {
         if(msl->Content.size() > locale_idx+1 && !msl->Content[locale_idx+1].empty())
             return msl->Content[locale_idx+1].c_str();
@@ -7449,9 +7449,9 @@ const char *ObjectMgr::GetTrinityString(int32 entry, int locale_idx) const
     }
 
     if(entry > 0)
-        sLog.outErrorDb("Entry %i not found in `trinity_string` table.",entry);
+        sLog.outErrorDb("Entry %i not found in `CW_string` table.",entry);
     else
-        sLog.outErrorDb("Trinity string entry %i not found in DB.",entry);
+        sLog.outErrorDb("CW string entry %i not found in DB.",entry);
     return "<error>";
 }
 
@@ -8398,7 +8398,7 @@ void ObjectMgr::CheckScripts(ScriptMapMap const& scripts,std::set<int32>& ids)
             {
                 case SCRIPT_COMMAND_TALK:
                 {
-                    if(!GetTrinityStringLocale (itrM->second.dataint))
+                    if(!GetCWStringLocale (itrM->second.dataint))
                         sLog.outErrorDb( "Table `db_script_string` not has string id  %u used db script (ID: %u)", itrM->second.dataint, itrMM->first);
 
                     if(ids.count(itrM->second.dataint))
@@ -8411,12 +8411,12 @@ void ObjectMgr::CheckScripts(ScriptMapMap const& scripts,std::set<int32>& ids)
 
 void ObjectMgr::LoadDbScriptStrings()
 {
-    LoadTrinityStrings(WorldDatabase,"db_script_string",MIN_DB_SCRIPT_STRING_ID,MAX_DB_SCRIPT_STRING_ID);
+    LoadCWStrings(WorldDatabase,"db_script_string",MIN_DB_SCRIPT_STRING_ID,MAX_DB_SCRIPT_STRING_ID);
 
     std::set<int32> ids;
 
     for(int32 i = MIN_DB_SCRIPT_STRING_ID; i < MAX_DB_SCRIPT_STRING_ID; ++i)
-        if(GetTrinityStringLocale(i))
+        if(GetCWStringLocale(i))
             ids.insert(i);
 
     CheckScripts(sQuestEndScripts,ids);
@@ -8437,7 +8437,7 @@ uint32 GetAreaTriggerScriptId(uint32 trigger_id)
     return objmgr.GetAreaTriggerScriptId(trigger_id);
 }
 
-bool LoadTrinityStrings(DatabaseType& db, char const* table,int32 start_value, int32 end_value)
+bool LoadCWStrings(DatabaseType& db, char const* table,int32 start_value, int32 end_value)
 {
     // MAX_DB_SCRIPT_STRING_ID is max allowed negative value for scripts (scrpts can use only more deep negative values
     // start/end reversed for negative values
@@ -8447,10 +8447,10 @@ bool LoadTrinityStrings(DatabaseType& db, char const* table,int32 start_value, i
         return false;
     }
 
-    return objmgr.LoadTrinityStrings(db,table,start_value,end_value);
+    return objmgr.LoadCWStrings(db,table,start_value,end_value);
 }
 
-uint32 TRINITY_DLL_SPEC GetScriptId(const char *name)
+uint32 CW_DLL_SPEC GetScriptId(const char *name)
 {
     return objmgr.GetScriptId(name);
 }

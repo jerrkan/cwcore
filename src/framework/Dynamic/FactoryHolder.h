@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_FACTORY_HOLDER
-#define TRINITY_FACTORY_HOLDER
+#ifndef CW_FACTORY_HOLDER
+#define CW_FACTORY_HOLDER
 
 #include "Platform/Define.h"
 #include "Utilities/TypeList.h"
@@ -29,11 +29,11 @@
 /** FactoryHolder holds a factory object of a specific type
  */
 template<class T, class Key = std::string>
-class TRINITY_DLL_DECL FactoryHolder
+class CW_DLL_DECL FactoryHolder
 {
     public:
         typedef ObjectRegistry<FactoryHolder<T, Key >, Key > FactoryHolderRegistry;
-        typedef Trinity::Singleton<FactoryHolderRegistry > FactoryHolderRepository;
+        typedef CW::Singleton<FactoryHolderRegistry > FactoryHolderRepository;
 
         FactoryHolder(Key k) : i_key(k) {}
         virtual ~FactoryHolder() {}

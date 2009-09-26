@@ -1,4 +1,4 @@
-/* Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+/* Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * Thanks to the original authors: ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  *
@@ -462,8 +462,8 @@ void ScriptedAI::DoTeleportAll(float fX, float fY, float fZ, float fO)
 Unit* ScriptedAI::DoSelectLowestHpFriendly(float fRange, uint32 uiMinHPDiff)
 {
     Unit* pUnit = NULL;
-    Trinity::MostHPMissingInRange u_check(m_creature, fRange, uiMinHPDiff);
-    Trinity::UnitLastSearcher<Trinity::MostHPMissingInRange> searcher(m_creature, pUnit, u_check);
+    CW::MostHPMissingInRange u_check(m_creature, fRange, uiMinHPDiff);
+    CW::UnitLastSearcher<CW::MostHPMissingInRange> searcher(m_creature, pUnit, u_check);
     m_creature->VisitNearbyObject(fRange, searcher);
 
     return pUnit;
@@ -472,8 +472,8 @@ Unit* ScriptedAI::DoSelectLowestHpFriendly(float fRange, uint32 uiMinHPDiff)
 std::list<Creature*> ScriptedAI::DoFindFriendlyCC(float fRange)
 {
     std::list<Creature*> pList;
-    Trinity::FriendlyCCedInRange u_check(m_creature, fRange);
-    Trinity::CreatureListSearcher<Trinity::FriendlyCCedInRange> searcher(m_creature, pList, u_check);
+    CW::FriendlyCCedInRange u_check(m_creature, fRange);
+    CW::CreatureListSearcher<CW::FriendlyCCedInRange> searcher(m_creature, pList, u_check);
     m_creature->VisitNearbyObject(fRange, searcher);
     return pList;
 }
@@ -481,8 +481,8 @@ std::list<Creature*> ScriptedAI::DoFindFriendlyCC(float fRange)
 std::list<Creature*> ScriptedAI::DoFindFriendlyMissingBuff(float fRange, uint32 uiSpellid)
 {
     std::list<Creature*> pList;
-    Trinity::FriendlyMissingBuffInRange u_check(m_creature, fRange, uiSpellid);
-    Trinity::CreatureListSearcher<Trinity::FriendlyMissingBuffInRange> searcher(m_creature, pList, u_check);
+    CW::FriendlyMissingBuffInRange u_check(m_creature, fRange, uiSpellid);
+    CW::CreatureListSearcher<CW::FriendlyMissingBuffInRange> searcher(m_creature, pList, u_check);
     m_creature->VisitNearbyObject(fRange, searcher);
     return pList;
 }
@@ -491,14 +491,14 @@ Player* ScriptedAI::GetPlayerAtMinimumRange(float fMinimumRange)
 {
     Player* pPlayer = NULL;
 
-    CellPair pair(Trinity::ComputeCellPair(m_creature->GetPositionX(), m_creature->GetPositionY()));
+    CellPair pair(CW::ComputeCellPair(m_creature->GetPositionX(), m_creature->GetPositionY()));
     Cell cell(pair);
     cell.data.Part.reserved = ALL_DISTRICT;
     cell.SetNoCreate();
 
-    Trinity::PlayerAtMinimumRangeAway check(m_creature, fMinimumRange);
-    Trinity::PlayerSearcher<Trinity::PlayerAtMinimumRangeAway> searcher(m_creature, pPlayer, check);
-    TypeContainerVisitor<Trinity::PlayerSearcher<Trinity::PlayerAtMinimumRangeAway>, GridTypeMapContainer> visitor(searcher);
+    CW::PlayerAtMinimumRangeAway check(m_creature, fMinimumRange);
+    CW::PlayerSearcher<CW::PlayerAtMinimumRangeAway> searcher(m_creature, pPlayer, check);
+    TypeContainerVisitor<CW::PlayerSearcher<CW::PlayerAtMinimumRangeAway>, GridTypeMapContainer> visitor(searcher);
 
     CellLock<GridReadGuard> cell_lock(cell, pair);
     cell_lock->Visit(cell_lock, visitor, *(m_creature->GetMap()));
@@ -754,15 +754,15 @@ Creature* GetClosestCreatureWithEntry(WorldObject* pSource, uint32 Entry, float 
 {
     Creature* pCreature = NULL;
 
-    CellPair pair(Trinity::ComputeCellPair(pSource->GetPositionX(), pSource->GetPositionY()));
+    CellPair pair(CW::ComputeCellPair(pSource->GetPositionX(), pSource->GetPositionY()));
     Cell cell(pair);
     cell.data.Part.reserved = ALL_DISTRICT;
     cell.SetNoCreate();
 
-    Trinity::NearestCreatureEntryWithLiveStateInObjectRangeCheck creature_check(*pSource, Entry, true, MaxSearchRange);
-    Trinity::CreatureLastSearcher<Trinity::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(pSource, pCreature, creature_check);
+    CW::NearestCreatureEntryWithLiveStateInObjectRangeCheck creature_check(*pSource, Entry, true, MaxSearchRange);
+    CW::CreatureLastSearcher<CW::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(pSource, pCreature, creature_check);
 
-    TypeContainerVisitor<Trinity::CreatureLastSearcher<Trinity::NearestCreatureEntryWithLiveStateInObjectRangeCheck>, GridTypeMapContainer> creature_searcher(searcher);
+    TypeContainerVisitor<CW::CreatureLastSearcher<CW::NearestCreatureEntryWithLiveStateInObjectRangeCheck>, GridTypeMapContainer> creature_searcher(searcher);
 
     CellLock<GridReadGuard> cell_lock(cell, pair);
     cell_lock->Visit(cell_lock, creature_searcher,*(pSource->GetMap()));

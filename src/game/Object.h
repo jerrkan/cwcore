@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,7 +108,7 @@ class Unit;
 
 typedef UNORDERED_MAP<Player*, UpdateData> UpdateDataMapType;
 
-class TRINITY_DLL_SPEC Object
+class CW_DLL_SPEC Object
 {
     public:
         virtual ~Object ( );
@@ -350,7 +350,7 @@ class TRINITY_DLL_SPEC Object
         Object& operator=(Object const&);                   // prevent generation assigment operator
 };
 
-struct TRINITY_DLL_SPEC Position
+struct CW_DLL_SPEC Position
 {
     float m_positionX;
     float m_positionY;
@@ -436,7 +436,7 @@ class WorldLocation : public Position
         uint32 m_mapId;
 };
 
-class TRINITY_DLL_SPEC WorldObject : public Object, public WorldLocation
+class CW_DLL_SPEC WorldObject : public Object, public WorldLocation
 {
     public:
         virtual ~WorldObject();

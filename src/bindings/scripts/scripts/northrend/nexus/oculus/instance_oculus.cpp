@@ -1,7 +1,7 @@
 #include "precompiled.h"
 #include "def_oculus.h"
 
-struct TRINITY_DLL_DECL instance_oculus : public ScriptedInstance
+struct CW_DLL_DECL instance_oculus : public ScriptedInstance
 {
     instance_oculus(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 };

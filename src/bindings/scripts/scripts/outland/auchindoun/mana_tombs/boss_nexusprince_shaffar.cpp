@@ -53,7 +53,7 @@ enum
     NR_INITIAL_BEACONS              = 3
 };
 
-struct TRINITY_DLL_DECL boss_nexusprince_shaffarAI : public ScriptedAI
+struct CW_DLL_DECL boss_nexusprince_shaffarAI : public ScriptedAI
 {
     boss_nexusprince_shaffarAI(Creature *c) : ScriptedAI(c), summons(me) { HasTaunted = false; }
 
@@ -221,7 +221,7 @@ enum
     SPELL_ETHEREAL_APPRENTICE       = 32372                 // Summon 18430
 };
 
-struct TRINITY_DLL_DECL mob_ethereal_beaconAI : public ScriptedAI
+struct CW_DLL_DECL mob_ethereal_beaconAI : public ScriptedAI
 {
     mob_ethereal_beaconAI(Creature *c) : ScriptedAI(c)
     {
@@ -308,7 +308,7 @@ enum
     SPELL_ETHEREAL_APPRENTICE_FROSTBOLT         = 32370
 };
 
-struct TRINITY_DLL_DECL mob_ethereal_apprenticeAI : public ScriptedAI
+struct CW_DLL_DECL mob_ethereal_apprenticeAI : public ScriptedAI
 {
     mob_ethereal_apprenticeAI(Creature *c) : ScriptedAI(c) {}
 

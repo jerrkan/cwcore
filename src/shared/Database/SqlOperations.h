@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,10 +82,10 @@ class SqlQuery : public SqlOperation
 {
     private:
         const char *m_sql;
-        Trinity::IQueryCallback * m_callback;
+        CW::IQueryCallback * m_callback;
         SqlResultQueue * m_queue;
     public:
-        SqlQuery(const char *sql, Trinity::IQueryCallback * callback, SqlResultQueue * queue)
+        SqlQuery(const char *sql, CW::IQueryCallback * callback, SqlResultQueue * queue)
             : m_sql(strdup(sql)), m_callback(callback), m_queue(queue) {}
         ~SqlQuery() { void* tofree = const_cast<char*>(m_sql); free(tofree); }
         void Execute(Database *db);
@@ -105,17 +105,17 @@ class SqlQueryHolder
         void SetSize(size_t size);
         QueryResult* GetResult(size_t index);
         void SetResult(size_t index, QueryResult *result);
-        bool Execute(Trinity::IQueryCallback * callback, SqlDelayThread *thread, SqlResultQueue *queue);
+        bool Execute(CW::IQueryCallback * callback, SqlDelayThread *thread, SqlResultQueue *queue);
 };
 
 class SqlQueryHolderEx : public SqlOperation
 {
     private:
         SqlQueryHolder * m_holder;
-        Trinity::IQueryCallback * m_callback;
+        CW::IQueryCallback * m_callback;
         SqlResultQueue * m_queue;
     public:
-        SqlQueryHolderEx(SqlQueryHolder *holder, Trinity::IQueryCallback * callback, SqlResultQueue * queue)
+        SqlQueryHolderEx(SqlQueryHolder *holder, CW::IQueryCallback * callback, SqlResultQueue * queue)
             : m_holder(holder), m_callback(callback), m_queue(queue) {}
         void Execute(Database *db);
 };

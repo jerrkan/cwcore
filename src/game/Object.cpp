@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1415,8 +1415,8 @@ void WorldObject::GetRandomPoint(const Position &pos, float distance, float &ran
     rand_y = pos.m_positionY + new_dist * sin(angle);
     rand_z = pos.m_positionZ;
 
-    Trinity::NormalizeMapCoord(rand_x);
-    Trinity::NormalizeMapCoord(rand_y);
+    CW::NormalizeMapCoord(rand_x);
+    CW::NormalizeMapCoord(rand_y);
     UpdateGroundPositionZ(rand_x, rand_y, rand_z);            // update to LOS height if available
 }
 
@@ -1429,7 +1429,7 @@ void WorldObject::UpdateGroundPositionZ(float x, float y, float &z) const
 
 bool Position::IsPositionValid() const
 {
-    return Trinity::IsValidMapCoord(m_positionX, m_positionY, m_positionZ, m_orientation);
+    return CW::IsValidMapCoord(m_positionX, m_positionY, m_positionZ, m_orientation);
 }
 
 void WorldObject::MonsterSay(const char* text, uint32 language, uint64 TargetGuid)
@@ -1488,7 +1488,7 @@ void Object::ForceValuesUpdateAtIndex(uint32 i)
     }
 }
 
-namespace Trinity
+namespace CW
 {
     class MonsterChatBuilder
     {
@@ -1510,11 +1510,11 @@ namespace Trinity
             uint32 i_language;
             uint64 i_targetGUID;
     };
-}                                                           // namespace Trinity
+}                                                           // namespace CW
 
 void WorldObject::MonsterSay(int32 textId, uint32 language, uint64 TargetGuid)
 {
-    CellPair p = Trinity::ComputeCellPair(GetPositionX(), GetPositionY());
+    CellPair p = CW::ComputeCellPair(GetPositionX(), GetPositionY());
 
     Cell cell(p);
     cell.data.Part.reserved = ALL_DISTRICT;
@@ -1530,7 +1530,7 @@ void WorldObject::MonsterSay(int32 textId, uint32 language, uint64 TargetGuid)
 
 void WorldObject::MonsterYell(int32 textId, uint32 language, uint64 TargetGuid)
 {
-    CellPair p = Trinity::ComputeCellPair(GetPositionX(), GetPositionY());
+    CellPair p = CW::ComputeCellPair(GetPositionX(), GetPositionY());
 
     Cell cell(p);
     cell.data.Part.reserved = ALL_DISTRICT;
@@ -1559,7 +1559,7 @@ void WorldObject::MonsterYellToZone(int32 textId, uint32 language, uint64 Target
 
 void WorldObject::MonsterTextEmote(int32 textId, uint64 TargetGuid, bool IsBossEmote)
 {
-    CellPair p = Trinity::ComputeCellPair(GetPositionX(), GetPositionY());
+    CellPair p = CW::ComputeCellPair(GetPositionX(), GetPositionY());
 
     Cell cell(p);
     cell.data.Part.reserved = ALL_DISTRICT;
@@ -1580,7 +1580,7 @@ void WorldObject::MonsterWhisper(int32 textId, uint64 receiver, bool IsBossWhisp
         return;
 
     uint32 loc_idx = player->GetSession()->GetSessionDbLocaleIndex();
-    char const* text = objmgr.GetTrinityString(textId, loc_idx);
+    char const* text = objmgr.GetCWString(textId, loc_idx);
 
     WorldPacket data(SMSG_MESSAGECHAT, 200);
     BuildMonsterChat(&data,IsBossWhisper ? CHAT_MSG_RAID_BOSS_WHISPER : CHAT_MSG_MONSTER_WHISPER, text, LANG_UNIVERSAL, GetNameForLocaleIdx(loc_idx), receiver);
@@ -1616,13 +1616,13 @@ void Unit::BuildHeartBeatMsg(WorldPacket *data) const
 
 void WorldObject::SendMessageToSet(WorldPacket *data, bool /*fake*/)
 {
-    Trinity::MessageDistDeliverer notifier(this, data, World::GetMaxVisibleDistance());
+    CW::MessageDistDeliverer notifier(this, data, World::GetMaxVisibleDistance());
     VisitNearbyWorldObject(World::GetMaxVisibleDistance(), notifier);
 }
 
 void WorldObject::SendMessageToSetInRange(WorldPacket *data, float dist, bool /*bToSelf*/)
 {
-    Trinity::MessageDistDeliverer notifier(this, data, dist);
+    CW::MessageDistDeliverer notifier(this, data, dist);
     VisitNearbyWorldObject(dist, notifier);
 }
 
@@ -1935,8 +1935,8 @@ Creature* WorldObject::SummonTrigger(float x, float y, float z, float ang, uint3
 Creature* WorldObject::FindNearestCreature(uint32 entry, float range, bool alive)
 {
     Creature *creature = NULL;
-    Trinity::NearestCreatureEntryWithLiveStateInObjectRangeCheck checker(*this, entry, alive, range);
-    Trinity::CreatureLastSearcher<Trinity::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(this, creature, checker);
+    CW::NearestCreatureEntryWithLiveStateInObjectRangeCheck checker(*this, entry, alive, range);
+    CW::CreatureLastSearcher<CW::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(this, creature, checker);
     VisitNearbyObject(range, searcher);
     return creature;
 }
@@ -1944,22 +1944,22 @@ Creature* WorldObject::FindNearestCreature(uint32 entry, float range, bool alive
 GameObject* WorldObject::FindNearestGameObject(uint32 entry, float range)
 {
     GameObject *go = NULL;
-    Trinity::NearestGameObjectEntryInObjectRangeCheck checker(*this, entry, range);
-    Trinity::GameObjectLastSearcher<Trinity::NearestGameObjectEntryInObjectRangeCheck> searcher(this, go, checker);
+    CW::NearestGameObjectEntryInObjectRangeCheck checker(*this, entry, range);
+    CW::GameObjectLastSearcher<CW::NearestGameObjectEntryInObjectRangeCheck> searcher(this, go, checker);
     VisitNearbyGridObject(range, searcher);
     return go;
 }
 
 void WorldObject::GetGameObjectListWithEntryInGrid(std::list<GameObject*>& lList, uint32 uiEntry, float fMaxSearchRange)
 {
-    CellPair pair(Trinity::ComputeCellPair(this->GetPositionX(), this->GetPositionY()));
+    CellPair pair(CW::ComputeCellPair(this->GetPositionX(), this->GetPositionY()));
     Cell cell(pair);
     cell.data.Part.reserved = ALL_DISTRICT;
     cell.SetNoCreate();
 
-    Trinity::AllGameObjectsWithEntryInRange check(this, uiEntry, fMaxSearchRange);
-    Trinity::GameObjectListSearcher<Trinity::AllGameObjectsWithEntryInRange> searcher(this, lList, check);
-    TypeContainerVisitor<Trinity::GameObjectListSearcher<Trinity::AllGameObjectsWithEntryInRange>, GridTypeMapContainer> visitor(searcher);
+    CW::AllGameObjectsWithEntryInRange check(this, uiEntry, fMaxSearchRange);
+    CW::GameObjectListSearcher<CW::AllGameObjectsWithEntryInRange> searcher(this, lList, check);
+    TypeContainerVisitor<CW::GameObjectListSearcher<CW::AllGameObjectsWithEntryInRange>, GridTypeMapContainer> visitor(searcher);
 
     CellLock<GridReadGuard> cell_lock(cell, pair);
     cell_lock->Visit(cell_lock, visitor, *(this->GetMap()));
@@ -1967,14 +1967,14 @@ void WorldObject::GetGameObjectListWithEntryInGrid(std::list<GameObject*>& lList
 
 void WorldObject::GetCreatureListWithEntryInGrid(std::list<Creature*>& lList, uint32 uiEntry, float fMaxSearchRange)
 {
-    CellPair pair(Trinity::ComputeCellPair(this->GetPositionX(), this->GetPositionY()));
+    CellPair pair(CW::ComputeCellPair(this->GetPositionX(), this->GetPositionY()));
     Cell cell(pair);
     cell.data.Part.reserved = ALL_DISTRICT;
     cell.SetNoCreate();
 
-    Trinity::AllCreaturesOfEntryInRange check(this, uiEntry, fMaxSearchRange);
-    Trinity::CreatureListSearcher<Trinity::AllCreaturesOfEntryInRange> searcher(this, lList, check);
-    TypeContainerVisitor<Trinity::CreatureListSearcher<Trinity::AllCreaturesOfEntryInRange>, GridTypeMapContainer> visitor(searcher);
+    CW::AllCreaturesOfEntryInRange check(this, uiEntry, fMaxSearchRange);
+    CW::CreatureListSearcher<CW::AllCreaturesOfEntryInRange> searcher(this, lList, check);
+    TypeContainerVisitor<CW::CreatureListSearcher<CW::AllCreaturesOfEntryInRange>, GridTypeMapContainer> visitor(searcher);
 
     CellLock<GridReadGuard> cell_lock(cell, pair);
     cell_lock->Visit(cell_lock, visitor, *(this->GetMap()));
@@ -2060,8 +2060,8 @@ void WorldObject::GetNearPoint2D(float &x, float &y, float distance2d, float abs
     x = GetPositionX() + (GetObjectSize() + distance2d) * cos(absAngle);
     y = GetPositionY() + (GetObjectSize() + distance2d) * sin(absAngle);
 
-    Trinity::NormalizeMapCoord(x);
-    Trinity::NormalizeMapCoord(y);
+    CW::NormalizeMapCoord(x);
+    CW::NormalizeMapCoord(y);
 }
 
 void WorldObject::GetNearPoint(WorldObject const* searcher, float &x, float &y, float &z, float searcher_size, float distance2d, float absAngle ) const
@@ -2195,8 +2195,8 @@ void WorldObject::MovePosition(Position &pos, float dist, float angle)
     angle += m_orientation;
     pos.m_positionX += dist * cos(angle);
     pos.m_positionY += dist * sin(angle);
-    Trinity::NormalizeMapCoord(pos.m_positionX);
-    Trinity::NormalizeMapCoord(pos.m_positionY);
+    CW::NormalizeMapCoord(pos.m_positionX);
+    CW::NormalizeMapCoord(pos.m_positionY);
     UpdateGroundPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
     pos.m_orientation = m_orientation;
 }
@@ -2236,8 +2236,8 @@ void WorldObject::DestroyForNearbyPlayers()
         return;
 
     std::list<Unit*> targets;
-    Trinity::AnyUnitInObjectRangeCheck check(this, World::GetMaxVisibleDistance());
-    Trinity::UnitListSearcher<Trinity::AnyUnitInObjectRangeCheck> searcher(this, targets, check);
+    CW::AnyUnitInObjectRangeCheck check(this, World::GetMaxVisibleDistance());
+    CW::UnitListSearcher<CW::AnyUnitInObjectRangeCheck> searcher(this, targets, check);
     VisitNearbyWorldObject(World::GetMaxVisibleDistance(), searcher);
     for(std::list<Unit*>::const_iterator iter = targets.begin(); iter != targets.end(); ++iter)
     {

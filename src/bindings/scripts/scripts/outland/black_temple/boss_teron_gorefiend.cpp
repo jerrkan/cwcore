@@ -49,7 +49,7 @@ EndScriptData */
 #define CREATURE_DOOM_BLOSSOM       23123
 #define CREATURE_SHADOWY_CONSTRUCT  23111
 
-struct TRINITY_DLL_DECL mob_doom_blossomAI : public ScriptedAI
+struct CW_DLL_DECL mob_doom_blossomAI : public ScriptedAI
 {
     mob_doom_blossomAI(Creature *c) : ScriptedAI(c) {}
 
@@ -103,7 +103,7 @@ struct TRINITY_DLL_DECL mob_doom_blossomAI : public ScriptedAI
     void SetTeronGUID(uint64 guid){ TeronGUID = guid; }
 };
 
-struct TRINITY_DLL_DECL mob_shadowy_constructAI : public ScriptedAI
+struct CW_DLL_DECL mob_shadowy_constructAI : public ScriptedAI
 {
     mob_shadowy_constructAI(Creature* c) : ScriptedAI(c) {}
 
@@ -181,7 +181,7 @@ struct TRINITY_DLL_DECL mob_shadowy_constructAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
+struct CW_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
 {
     boss_teron_gorefiendAI(Creature *c) : ScriptedAI(c)
     {
@@ -303,7 +303,7 @@ struct TRINITY_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
     {
         /************************************************************************/
         /** NOTE FOR FUTURE DEVELOPER: PROPERLY IMPLEMENT THE GHOST PORTION *****/
-        /**  ONLY AFTER TrinIty FULLY IMPLEMENTS MIND CONTROL ABILITIES      *****/
+        /**  ONLY AFTER CW FULLY IMPLEMENTS MIND CONTROL ABILITIES      *****/
         /**   THE CURRENT CODE IN THIS FUNCTION IS ONLY THE BEGINNING OF    *****/
         /**    WHAT IS FULLY NECESSARY FOR GOREFIEND TO BE 100% COMPLETE    *****/
         /************************************************************************/

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13112,8 +13112,8 @@ void Unit::UpdateReactives( uint32 p_time )
 Unit* Unit::SelectNearbyTarget(float dist) const
 {
     std::list<Unit *> targets;
-    Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(this, this, dist);
-    Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(this, targets, u_check);
+    CW::AnyUnfriendlyUnitInObjectRangeCheck u_check(this, this, dist);
+    CW::UnitListSearcher<CW::AnyUnfriendlyUnitInObjectRangeCheck> searcher(this, targets, u_check);
     VisitNearbyObject(dist, searcher);
 
     // remove current target
@@ -13626,7 +13626,7 @@ bool Unit::HandleAuraRaidProcFromCharge( AuraEffect* triggeredByAura )
 
     return true;
 }
-/*-----------------------TRINITY-----------------------------*/
+/*-----------------------CW-----------------------------*/
 
 void Unit::SetToNotify()
 {

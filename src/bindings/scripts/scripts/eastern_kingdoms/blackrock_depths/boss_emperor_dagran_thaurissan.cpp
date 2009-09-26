@@ -29,7 +29,7 @@ EndScriptData */
 #define SPELL_HANDOFTHAURISSAN          17492
 #define SPELL_AVATAROFFLAME             15636
 
-struct TRINITY_DLL_DECL boss_draganthaurissanAI : public ScriptedAI
+struct CW_DLL_DECL boss_draganthaurissanAI : public ScriptedAI
 {
     boss_draganthaurissanAI(Creature *c) : ScriptedAI(c) {}
 

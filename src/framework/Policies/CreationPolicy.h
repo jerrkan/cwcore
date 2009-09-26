@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,19 +18,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_CREATIONPOLICY_H
-#define TRINITY_CREATIONPOLICY_H
+#ifndef CW_CREATIONPOLICY_H
+#define CW_CREATIONPOLICY_H
 
 #include <stdlib.h>
 #include "Platform/Define.h"
 
-namespace Trinity
+namespace CW
 {
     /**
      * OperatorNew policy creates an object on the heap using new.
      */
     template <class T>
-        class TRINITY_DLL_DECL OperatorNew
+        class CW_DLL_DECL OperatorNew
     {
         public:
             static T* Create(void) { return (new T); }
@@ -42,7 +42,7 @@ namespace Trinity
      * the first time call Create.
      */
     template <class T>
-        class TRINITY_DLL_DECL LocalStaticCreation
+        class CW_DLL_DECL LocalStaticCreation
     {
         union MaxAlign
         {
@@ -71,7 +71,7 @@ namespace Trinity
      * CreateUsingMalloc by pass the memory manger.
      */
     template<class T>
-        class TRINITY_DLL_DECL CreateUsingMalloc
+        class CW_DLL_DECL CreateUsingMalloc
     {
         public:
             static T* Create()
@@ -92,7 +92,7 @@ namespace Trinity
      * CreateOnCallBack creates the object base on the call back.
      */
     template<class T, class CALL_BACK>
-        class TRINITY_DLL_DECL CreateOnCallBack
+        class CW_DLL_DECL CreateOnCallBack
     {
         public:
             static T* Create()

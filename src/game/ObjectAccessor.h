@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef TRINITY_OBJECTACCESSOR_H
-#define TRINITY_OBJECTACCESSOR_H
+#ifndef CW_OBJECTACCESSOR_H
+#define CW_OBJECTACCESSOR_H
 
 #include "Platform/Define.h"
 #include "Policies/Singleton.h"
@@ -81,7 +81,7 @@ class HashMapHolder
 class MANGOS_DLL_DECL ObjectAccessor : public MaNGOS::Singleton<ObjectAccessor, MaNGOS::ClassLevelLockable<ObjectAccessor, ACE_Thread_Mutex> >
 {
 
-    friend class Trinity::OperatorNew<ObjectAccessor>;
+    friend class CW::OperatorNew<ObjectAccessor>;
     ObjectAccessor();
     ~ObjectAccessor();
     ObjectAccessor(const ObjectAccessor &);
@@ -139,14 +139,14 @@ class MANGOS_DLL_DECL ObjectAccessor : public MaNGOS::Singleton<ObjectAccessor, 
             T* obj = HashMapHolder<T>::Find(guid);
             if(!obj || obj->GetMapId() != mapid) return NULL;
 
-            CellPair p = Trinity::ComputeCellPair(x,y);
+            CellPair p = CW::ComputeCellPair(x,y);
             if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP )
             {
                 sLog.outError("ObjectAccessor::GetObjectInWorld: invalid coordinates supplied X:%f Y:%f grid cell [%u:%u]", x, y, p.x_coord, p.y_coord);
                 return NULL;
             }
 
-            CellPair q = Trinity::ComputeCellPair(obj->GetPositionX(),obj->GetPositionY());
+            CellPair q = CW::ComputeCellPair(obj->GetPositionX(),obj->GetPositionY());
             if(q.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || q.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP )
             {
                 sLog.outError("ObjectAccessor::GetObjecInWorld: object (GUID: %u TypeId: %u) has invalid coordinates X:%f Y:%f grid cell [%u:%u]", obj->GetGUIDLow(), obj->GetTypeId(), obj->GetPositionX(), obj->GetPositionY(), q.x_coord, q.y_coord);

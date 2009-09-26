@@ -36,7 +36,7 @@ update creature_template set scriptname = 'boss_salramm' where entry = '';
 #define SAY_SUMMON_GHOULS_1                      -1595043
 #define SAY_SUMMON_GHOULS_2                      -1595044
 
-struct TRINITY_DLL_DECL boss_salrammAI : public ScriptedAI
+struct CW_DLL_DECL boss_salrammAI : public ScriptedAI
 {
     boss_salrammAI(Creature *c) : ScriptedAI(c) {}
 

@@ -40,7 +40,7 @@ float TempestMinions[4][4] =
 /*######
 ##  Emalon the Storm Watcher
 ######*/
-struct TRINITY_DLL_DECL boss_emalonAI : public ScriptedAI
+struct CW_DLL_DECL boss_emalonAI : public ScriptedAI
 {
     boss_emalonAI(Creature *c) : ScriptedAI(c)
     {
@@ -171,7 +171,7 @@ struct TRINITY_DLL_DECL boss_emalonAI : public ScriptedAI
 /*######
 ##  Tempest Minion
 ######*/
-struct TRINITY_DLL_DECL mob_tempest_minionAI : public ScriptedAI
+struct CW_DLL_DECL mob_tempest_minionAI : public ScriptedAI
 {
     mob_tempest_minionAI(Creature *c) : ScriptedAI(c)
     {

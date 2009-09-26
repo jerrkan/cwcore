@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,13 +19,14 @@
  */
 
 /** \file
-    \ingroup Trinityd
+    \ingroup CWd
 */
 
 #include <ace/OS_NS_signal.h>
 
 #include "Common.h"
 #include "SystemConfig.h"
+#include "revision_nr.h"
 #include "World.h"
 #include "WorldRunnable.h"
 #include "WorldSocket.h"
@@ -33,7 +34,6 @@
 #include "Config/ConfigEnv.h"
 #include "Database/DatabaseEnv.h"
 #include "Policies/SingletonImp.h"
-#include "revision.h"
 
 #include "CliRunnable.h"
 #include "Log.h"
@@ -50,7 +50,7 @@
 #include "sockets/SocketHandler.h"
 #include "sockets/ListenSocket.h"
 
-#define _FULLVERSION (_REVISION)
+#define _FULLVERSION (REVISION_NR)
 
 #ifdef WIN32
 #include "ServiceWin32.h"
@@ -203,7 +203,7 @@ Master::~Master()
 /// Main function
 int Master::Run()
 {
-	sLog.outString( "(core-daemon) Revision: %s", _FULLVERSION );
+	sLog.outString( "(core-daemon) Revision: %s ", _FULLVERSION );
     sLog.outString( "<Ctrl-C> to stop.\n" );
 
 	sLog.outString( "####### ##      ## ####### ######### ######### #######");
@@ -278,7 +278,7 @@ int Master::Run()
 
                 if(!curAff )
                 {
-                    sLog.outError("Processors marked in UseProcessors bitmask (hex) %x not accessible for Trinityd. Accessible processors bitmask (hex): %x",Aff,appAff);
+                    sLog.outError("Processors marked in UseProcessors bitmask (hex) %x not accessible for CWd. Accessible processors bitmask (hex): %x",Aff,appAff);
                 }
                 else
                 {
@@ -297,9 +297,9 @@ int Master::Run()
         if(Prio)
         {
             if(SetPriorityClass(hProcess,HIGH_PRIORITY_CLASS))
-                sLog.outString("TrinityCore process priority class set to HIGH");
+                sLog.outString("CWCore process priority class set to HIGH");
             else
-                sLog.outError("ERROR: Can't set Trinityd process priority class.");
+                sLog.outError("ERROR: Can't set CWd process priority class.");
             sLog.outString("");
         }
     }
@@ -494,7 +494,7 @@ bool Master::_StartDB()
     clearOnlineAccounts();
 
     ///- Insert version info into DB
-    WorldDatabase.PExecute("UPDATE version SET core_version = '%s', core_revision = '%s'", _FULLVERSION, _REVISION);
+	WorldDatabase.PExecute("UPDATE core_version SET revision = 'CWCore Revision: %s' ", _FULLVERSION );
 
     sWorld.LoadDBVersion();
 

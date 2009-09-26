@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ EndScriptData */
 2 - Anub'arak
 */
 
-struct TRINITY_DLL_DECL instance_azjol_nerub : public ScriptedInstance
+struct CW_DLL_DECL instance_azjol_nerub : public ScriptedInstance
 {
     instance_azjol_nerub(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 

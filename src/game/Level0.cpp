@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,9 @@
 #include "Language.h"
 #include "AccountMgr.h"
 #include "SystemConfig.h"
-#include "revision.h"
 #include "Util.h"
+
+#define _FULLVERSION (REVISION_NR)
 
 bool ChatHandler::HandleHelpCommand(const char* args)
 {
@@ -96,15 +97,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
     uint32 updateTime = sWorld.GetUpdateTime();
 
     PSendSysMessage(_FULLVERSION);
-    //if(m_session)
-    //    full = _FULLVERSION(REVISION_DATE,REVISION_TIME,"|cffffffff|Hurl:" REVISION_ID "|h" REVISION_ID "|h|r");
-    //else
-    //    full = _FULLVERSION(REVISION_DATE,REVISION_TIME,REVISION_ID);
 
-    //SendSysMessage(full);
-    //PSendSysMessage(LANG_USING_SCRIPT_LIB,sWorld.GetScriptsVersion());
-    //PSendSysMessage(LANG_USING_WORLD_DB,sWorld.GetDBVersion());
-    //PSendSysMessage(LANG_USING_EVENT_AI,sWorld.GetCreatureEventAIVersion());
     PSendSysMessage(LANG_CONNECTED_PLAYERS, PlayersNum, MaxPlayersNum);
     PSendSysMessage(LANG_CONNECTED_USERS, activeClientsNum, maxActiveClientsNum, queuedClientsNum, maxQueuedClientsNum);
     PSendSysMessage(LANG_UPTIME, uptime.c_str());

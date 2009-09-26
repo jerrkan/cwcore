@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ void MapManager::checkAndCorrectGridStatesArray()
             ok = false;
             si_GridStates[i] = i_GridStates[i];
         }
-        #ifdef TRINITY_DEBUG
+        #ifdef CW_DEBUG
         // inner class checking only when compiled with debug
         if(!si_GridStates[i]->checkMagic())
         {
@@ -177,7 +177,7 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player)
                 {
                     // probably there must be special opcode, because client has this string constant in GlobalStrings.lua
                     // TODO: this is not a good place to send the message
-                    player->GetSession()->SendAreaTriggerMessage(player->GetSession()->GetTrinityString(LANG_INSTANCE_RAID_GROUP_ONLY), mapName);
+                    player->GetSession()->SendAreaTriggerMessage(player->GetSession()->GetCWString(LANG_INSTANCE_RAID_GROUP_ONLY), mapName);
                     sLog.outDebug("MAP: Player '%s' must be in a raid group to enter instance of '%s'", player->GetName(), mapName);
                     return false;
                 }
@@ -210,7 +210,7 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player)
 
                 if (!instance_map)
                 {
-                    player->GetSession()->SendAreaTriggerMessage(player->GetSession()->GetTrinityString(811), mapName);
+                    player->GetSession()->SendAreaTriggerMessage(player->GetSession()->GetCWString(811), mapName);
                     sLog.outDebug("MAP: Player '%s' doesn't has a corpse in instance '%s' and can't enter", player->GetName(), mapName);
                     return false;
                 }
@@ -308,7 +308,7 @@ void MapManager::DoDelayedMovesAndRemoves()
 
 bool MapManager::ExistMapAndVMap(uint32 mapid, float x,float y)
 {
-    GridPair p = Trinity::ComputeGridPair(x,y);
+    GridPair p = CW::ComputeGridPair(x,y);
 
     int gx=63-p.x_coord;
     int gy=63-p.y_coord;

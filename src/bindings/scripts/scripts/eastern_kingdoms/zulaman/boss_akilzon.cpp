@@ -57,7 +57,7 @@ EndScriptData */
 #define SE_LOC_Y_MAX 1435
 #define SE_LOC_Y_MIN 1370
 
-struct TRINITY_DLL_DECL boss_akilzonAI : public ScriptedAI
+struct CW_DLL_DECL boss_akilzonAI : public ScriptedAI
 {
     boss_akilzonAI(Creature *c) : ScriptedAI(c)
     {
@@ -178,7 +178,7 @@ struct TRINITY_DLL_DECL boss_akilzonAI : public ScriptedAI
             for(uint8 i = 2; i < StormCount; ++i)
                 bp0 *= 2;
 
-            CellPair p(Trinity::ComputeCellPair(m_creature->GetPositionX(), m_creature->GetPositionY()));
+            CellPair p(CW::ComputeCellPair(m_creature->GetPositionX(), m_creature->GetPositionY()));
             Cell cell(p);
             cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
@@ -186,11 +186,11 @@ struct TRINITY_DLL_DECL boss_akilzonAI : public ScriptedAI
             std::list<Unit *> tempUnitMap;
 
             {
-                Trinity::AnyAoETargetUnitInObjectRangeCheck u_check(m_creature, m_creature, 999);
-                Trinity::UnitListSearcher<Trinity::AnyAoETargetUnitInObjectRangeCheck> searcher(m_creature, tempUnitMap, u_check);
+                CW::AnyAoETargetUnitInObjectRangeCheck u_check(m_creature, m_creature, 999);
+                CW::UnitListSearcher<CW::AnyAoETargetUnitInObjectRangeCheck> searcher(m_creature, tempUnitMap, u_check);
 
-                TypeContainerVisitor<Trinity::UnitListSearcher<Trinity::AnyAoETargetUnitInObjectRangeCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-                TypeContainerVisitor<Trinity::UnitListSearcher<Trinity::AnyAoETargetUnitInObjectRangeCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+                TypeContainerVisitor<CW::UnitListSearcher<CW::AnyAoETargetUnitInObjectRangeCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+                TypeContainerVisitor<CW::UnitListSearcher<CW::AnyAoETargetUnitInObjectRangeCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
                 CellLock<GridReadGuard> cell_lock(cell, p);
                 cell_lock->Visit(cell_lock, world_unit_searcher, *(m_creature->GetMap()));
@@ -364,7 +364,7 @@ struct TRINITY_DLL_DECL boss_akilzonAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_soaring_eagleAI : public ScriptedAI
+struct CW_DLL_DECL mob_soaring_eagleAI : public ScriptedAI
 {
     mob_soaring_eagleAI(Creature *c) : ScriptedAI(c) {}
 

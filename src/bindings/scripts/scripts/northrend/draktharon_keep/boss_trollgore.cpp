@@ -29,7 +29,7 @@ update creature_template set scriptname = 'boss_trollgore' where entry = '';
 #define SAY_EXPLODE                                -1600009
 #define SAY_DEATH                                  -1600010
 
-struct TRINITY_DLL_DECL boss_trollgoreAI : public ScriptedAI
+struct CW_DLL_DECL boss_trollgoreAI : public ScriptedAI
 {
     boss_trollgoreAI(Creature *c) : ScriptedAI(c) {}
 

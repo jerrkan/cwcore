@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_REFERENCEHOLDER_H
-#define TRINITY_REFERENCEHOLDER_H
+#ifndef CW_REFERENCEHOLDER_H
+#define CW_REFERENCEHOLDER_H
 
 /** ReferenceHolder holds the actualy referenced obejct as well the refence
     count.  The ReferenecHolder implements as a policy base object and

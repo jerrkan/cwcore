@@ -28,7 +28,7 @@ EndScriptData */
 #define SPELL_DEADENMAGIC               19714
 #define SPELL_COUNTERSPELL              19715
 
-struct TRINITY_DLL_DECL boss_shazzrahAI : public ScriptedAI
+struct CW_DLL_DECL boss_shazzrahAI : public ScriptedAI
 {
     boss_shazzrahAI(Creature *c) : ScriptedAI(c) {}
 

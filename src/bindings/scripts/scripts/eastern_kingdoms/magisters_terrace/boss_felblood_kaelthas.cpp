@@ -75,7 +75,7 @@ float KaelLocations[3][2]=
 
 #define LOCATION_Z                  -16.727455
 
-struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
+struct CW_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
 {
     boss_felblood_kaelthasAI(Creature* c) : ScriptedAI(c)
     {
@@ -418,7 +418,7 @@ struct TRINITY_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_felkael_flamestrikeAI : public ScriptedAI
+struct CW_DLL_DECL mob_felkael_flamestrikeAI : public ScriptedAI
 {
     mob_felkael_flamestrikeAI(Creature *c) : ScriptedAI(c)
     {
@@ -450,7 +450,7 @@ struct TRINITY_DLL_DECL mob_felkael_flamestrikeAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_felkael_phoenixAI : public ScriptedAI
+struct CW_DLL_DECL mob_felkael_phoenixAI : public ScriptedAI
 {
     mob_felkael_phoenixAI(Creature* c) : ScriptedAI(c)
     {
@@ -560,7 +560,7 @@ struct TRINITY_DLL_DECL mob_felkael_phoenixAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_felkael_phoenix_eggAI : public ScriptedAI
+struct CW_DLL_DECL mob_felkael_phoenix_eggAI : public ScriptedAI
 {
     mob_felkael_phoenix_eggAI(Creature *c) : ScriptedAI(c) {}
 
@@ -586,7 +586,7 @@ struct TRINITY_DLL_DECL mob_felkael_phoenix_eggAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_arcane_sphereAI : public ScriptedAI
+struct CW_DLL_DECL mob_arcane_sphereAI : public ScriptedAI
 {
     mob_arcane_sphereAI(Creature *c) : ScriptedAI(c) {Reset();}
 

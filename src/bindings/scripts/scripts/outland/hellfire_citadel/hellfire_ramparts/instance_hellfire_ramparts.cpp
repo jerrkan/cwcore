@@ -24,7 +24,7 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_hellfire_ramparts.h"
 
-struct TRINITY_DLL_DECL instance_ramparts : public ScriptedInstance
+struct CW_DLL_DECL instance_ramparts : public ScriptedInstance
 {
     instance_ramparts(Map* pMap) : ScriptedInstance(pMap) {Initialize();}
 

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -935,7 +935,7 @@ void BattleGround::SendRewardMarkByMail(Player *plr,uint32 mark, uint32 count)
                     subject = il->Name[loc_idx];
 
         // text
-        std::string textFormat = plr->GetSession()->GetTrinityString(LANG_BG_MARK_BY_MAIL);
+        std::string textFormat = plr->GetSession()->GetCWString(LANG_BG_MARK_BY_MAIL);
         char textBuf[300];
         snprintf(textBuf,300,textFormat.c_str(),GetName(),GetName());
         uint32 itemTextId = objmgr.CreateItemText( textBuf );
@@ -1727,10 +1727,10 @@ void BattleGround::EndNow()
 }
 
 //to be removed
-const char *BattleGround::GetTrinityString(int32 entry)
+const char *BattleGround::GetCWString(int32 entry)
 {
     // FIXME: now we have different DBC locales and need localized message for each target client
-    return objmgr.GetTrinityStringForDBCLocale(entry);
+    return objmgr.GetCWStringForDBCLocale(entry);
 }
 
 /*

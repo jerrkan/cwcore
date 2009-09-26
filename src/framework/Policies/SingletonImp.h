@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_SINGLETONIMPL_H
-#define TRINITY_SINGLETONIMPL_H
+#ifndef CW_SINGLETONIMPL_H
+#define CW_SINGLETONIMPL_H
 
 #include "Singleton.h"
 
@@ -34,7 +34,7 @@ class CreatePolicy,
 class LifeTimePolicy
 >
 T&
-Trinity::Singleton<T, ThreadingModel, CreatePolicy, LifeTimePolicy >::Instance()
+CW::Singleton<T, ThreadingModel, CreatePolicy, LifeTimePolicy >::Instance()
 {
     if( !si_instance )
     {
@@ -63,7 +63,7 @@ class CreatePolicy,
 class LifeTimePolicy
 >
 void
-Trinity::Singleton<T, ThreadingModel, CreatePolicy, LifeTimePolicy>::DestroySingleton()
+CW::Singleton<T, ThreadingModel, CreatePolicy, LifeTimePolicy>::DestroySingleton()
 {
     CreatePolicy::Destroy(si_instance);
     si_instance = NULL;
@@ -71,23 +71,23 @@ Trinity::Singleton<T, ThreadingModel, CreatePolicy, LifeTimePolicy>::DestroySing
 }
 
 #define INSTANTIATE_SINGLETON_1(TYPE) \
-    template class TRINITY_DLL_DECL Trinity::Singleton<TYPE, Trinity::SingleThreaded<TYPE>, Trinity::OperatorNew<TYPE>, Trinity::ObjectLifeTime<TYPE> >; \
-    template<> TYPE* Trinity::Singleton<TYPE, Trinity::SingleThreaded<TYPE>, Trinity::OperatorNew<TYPE>, Trinity::ObjectLifeTime<TYPE> >::si_instance = 0; \
-    template<> bool Trinity::Singleton<TYPE, Trinity::SingleThreaded<TYPE>, Trinity::OperatorNew<TYPE>, Trinity::ObjectLifeTime<TYPE> >::si_destroyed = false
+    template class CW_DLL_DECL CW::Singleton<TYPE, CW::SingleThreaded<TYPE>, CW::OperatorNew<TYPE>, CW::ObjectLifeTime<TYPE> >; \
+    template<> TYPE* CW::Singleton<TYPE, CW::SingleThreaded<TYPE>, CW::OperatorNew<TYPE>, CW::ObjectLifeTime<TYPE> >::si_instance = 0; \
+    template<> bool CW::Singleton<TYPE, CW::SingleThreaded<TYPE>, CW::OperatorNew<TYPE>, CW::ObjectLifeTime<TYPE> >::si_destroyed = false
 
 #define INSTANTIATE_SINGLETON_2(TYPE, THREADINGMODEL) \
-    template class TRINITY_DLL_DECL Trinity::Singleton<TYPE, THREADINGMODEL, Trinity::OperatorNew<TYPE>, Trinity::ObjectLifeTime<TYPE> >; \
-    template<> TYPE* Trinity::Singleton<TYPE, THREADINGMODEL, Trinity::OperatorNew<TYPE>, Trinity::ObjectLifeTime<TYPE> >::si_instance = 0; \
-    template<> bool Trinity::Singleton<TYPE, THREADINGMODEL, Trinity::OperatorNew<TYPE>, Trinity::ObjectLifeTime<TYPE> >::si_destroyed = false
+    template class CW_DLL_DECL CW::Singleton<TYPE, THREADINGMODEL, CW::OperatorNew<TYPE>, CW::ObjectLifeTime<TYPE> >; \
+    template<> TYPE* CW::Singleton<TYPE, THREADINGMODEL, CW::OperatorNew<TYPE>, CW::ObjectLifeTime<TYPE> >::si_instance = 0; \
+    template<> bool CW::Singleton<TYPE, THREADINGMODEL, CW::OperatorNew<TYPE>, CW::ObjectLifeTime<TYPE> >::si_destroyed = false
 
 #define INSTANTIATE_SINGLETON_3(TYPE, THREADINGMODEL, CREATIONPOLICY ) \
-    template class TRINITY_DLL_DECL Trinity::Singleton<TYPE, THREADINGMODEL, CREATIONPOLICY, Trinity::ObjectLifeTime<TYPE> >; \
-    template<> TYPE* Trinity::Singleton<TYPE, THREADINGMODEL, CREATIONPOLICY, Trinity::ObjectLifeTime<TYPE> >::si_instance = 0; \
-    template<> bool Trinity::Singleton<TYPE, THREADINGMODEL, CREATIONPOLICY, Trinity::ObjectLifeType<TYPE> >::si_destroyed = false
+    template class CW_DLL_DECL CW::Singleton<TYPE, THREADINGMODEL, CREATIONPOLICY, CW::ObjectLifeTime<TYPE> >; \
+    template<> TYPE* CW::Singleton<TYPE, THREADINGMODEL, CREATIONPOLICY, CW::ObjectLifeTime<TYPE> >::si_instance = 0; \
+    template<> bool CW::Singleton<TYPE, THREADINGMODEL, CREATIONPOLICY, CW::ObjectLifeType<TYPE> >::si_destroyed = false
 
 #define INSTANTIATE_SINGLETON_4(TYPE, THREADINGMODEL, CREATIONPOLICY, OBJECTLIFETIME) \
-    template class TRINITY_DLL_DECL Trinity::Singleton<TYPE, THREADINGMODEL, CREATIONPOLICY, OBJECTLIFETIME >; \
-    template<> TYPE* Trinity::Singleton<TYPE, THREADINGMODEL, CREATIONPOLICY, OBJECTLIFETIME >::si_instance = 0; \
-    template<> bool Trinity::Singleton<TYPE, THREADINGMODEL, CREATIONPOLICY, OBJECTLIFETIME >::si_destroyed = false
+    template class CW_DLL_DECL CW::Singleton<TYPE, THREADINGMODEL, CREATIONPOLICY, OBJECTLIFETIME >; \
+    template<> TYPE* CW::Singleton<TYPE, THREADINGMODEL, CREATIONPOLICY, OBJECTLIFETIME >::si_instance = 0; \
+    template<> bool CW::Singleton<TYPE, THREADINGMODEL, CREATIONPOLICY, OBJECTLIFETIME >::si_destroyed = false
 #endif
 

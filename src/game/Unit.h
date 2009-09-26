@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1070,7 +1070,7 @@ enum ReactiveType
 
 struct SpellProcEventEntry;                                 // used only privately
 
-class TRINITY_DLL_SPEC Unit : public WorldObject
+class CW_DLL_SPEC Unit : public WorldObject
 {
     public:
         typedef std::set<Unit*> AttackerSet;
@@ -2004,7 +2004,7 @@ class TRINITY_DLL_SPEC Unit : public WorldObject
         uint64 m_misdirectionTargetGUID;
 };
 
-namespace Trinity
+namespace CW
 {
     template<class T>
     void RandomResizeList(std::list<T> &_list, uint32 _size)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #define SPELL_REVIVE 51918
 #define VALK_WHISPER "It is not yet your time, champion. Rise! Rise and fight once more!"
 
-struct TRINITY_DLL_DECL npc_valkyr_battle_maidenAI : public PassiveAI
+struct CW_DLL_DECL npc_valkyr_battle_maidenAI : public PassiveAI
 {
     npc_valkyr_battle_maidenAI(Creature *c) : PassiveAI(c) {}
 

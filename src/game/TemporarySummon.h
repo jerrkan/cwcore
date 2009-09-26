@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITYCORE_TEMPSUMMON_H
-#define TRINITYCORE_TEMPSUMMON_H
+#ifndef CWCORE_TEMPSUMMON_H
+#define CWCORE_TEMPSUMMON_H
 
 #include "Creature.h"
 
-class TRINITY_DLL_SPEC TempSummon : public Creature
+class CW_DLL_SPEC TempSummon : public Creature
 {
     public:
         explicit TempSummon(SummonPropertiesEntry const *properties, Unit *owner);

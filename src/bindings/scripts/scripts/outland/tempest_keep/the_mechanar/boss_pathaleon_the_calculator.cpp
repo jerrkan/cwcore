@@ -48,7 +48,7 @@ EndScriptData */
 #define SPELL_DETONATION              35058
 #define SPELL_ARCANE_MISSILES         35034
 
-struct TRINITY_DLL_DECL boss_pathaleon_the_calculatorAI : public ScriptedAI
+struct CW_DLL_DECL boss_pathaleon_the_calculatorAI : public ScriptedAI
 {
     boss_pathaleon_the_calculatorAI(Creature *c) : ScriptedAI(c), summons(m_creature)
     {
@@ -175,7 +175,7 @@ CreatureAI* GetAI_boss_pathaleon_the_calculator(Creature* pCreature)
     return new boss_pathaleon_the_calculatorAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL mob_nether_wraithAI : public ScriptedAI
+struct CW_DLL_DECL mob_nether_wraithAI : public ScriptedAI
 {
     mob_nether_wraithAI(Creature *c) : ScriptedAI(c) {}
 

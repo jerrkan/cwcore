@@ -1,7 +1,7 @@
 #include "precompiled.h"
 #include "def_gundrak.h"
 
-struct TRINITY_DLL_DECL instance_gundrak : public ScriptedInstance
+struct CW_DLL_DECL instance_gundrak : public ScriptedInstance
 {
     instance_gundrak(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 };

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,7 +100,7 @@ void WorldSession::SendPacket(WorldPacket const* packet)
     if (!m_Socket)
         return;
 
-    #ifdef TRINITY_DEBUG
+    #ifdef CW_DEBUG
 
     // Code for network use statistic
     static uint64 sendPacketCount = 0;
@@ -134,7 +134,7 @@ void WorldSession::SendPacket(WorldPacket const* packet)
         sendLastPacketBytes = packet->wpos();               // wpos is real written size
     }
 
-    #endif                                                  // !TRINITY_DEBUG
+    #endif                                                  // !CW_DEBUG
 
     if (m_Socket->SendPacket (*packet) == -1)
         m_Socket->CloseSocket ();
@@ -503,7 +503,7 @@ void WorldSession::SendNotification(const char *format,...)
 
 void WorldSession::SendNotification(int32 string_id,...)
 {
-    char const* format = GetTrinityString(string_id);
+    char const* format = GetCWString(string_id);
     if(format)
     {
         va_list ap;
@@ -526,9 +526,9 @@ void WorldSession::SendSetPhaseShift(uint32 PhaseShift)
     SendPacket(&data);
 }
 
-const char * WorldSession::GetTrinityString( int32 entry ) const
+const char * WorldSession::GetCWString( int32 entry ) const
 {
-    return objmgr.GetTrinityString(entry,GetSessionDbLocaleIndex());
+    return objmgr.GetCWString(entry,GetSessionDbLocaleIndex());
 }
 
 void WorldSession::Handle_NULL( WorldPacket& recvPacket )

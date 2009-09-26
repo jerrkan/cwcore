@@ -1245,6 +1245,6 @@ public:
     uint32 GetAHBplayerGUID() { return AHBplayerGUID; };
 };
 
-#define auctionbot Trinity::Singleton<AuctionHouseBot>::Instance()
+#define auctionbot CW::Singleton<AuctionHouseBot>::Instance()
 
 #endif

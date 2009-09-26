@@ -33,7 +33,7 @@ make him fly from 70-100%
 #define SPELL_SUMMONSWARMER 25844                           //might be 25708
 // #define SPELL_PARALYZE 23414 doesnt work correct (core)
 
-struct TRINITY_DLL_DECL boss_ayamissAI : public ScriptedAI
+struct CW_DLL_DECL boss_ayamissAI : public ScriptedAI
 {
     boss_ayamissAI(Creature *c) : ScriptedAI(c) {}
 

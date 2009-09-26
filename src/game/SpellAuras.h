@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef TRINITY_SPELLAURAS_H
-#define TRINITY_SPELLAURAS_H
+#ifndef CW_SPELLAURAS_H
+#define CW_SPELLAURAS_H
 
 #include "SpellAuraDefines.h"
 
@@ -41,15 +41,15 @@ typedef void(AuraEffect::*pAuraHandler)(bool Apply, bool Real, bool changeAmount
 //      (percent auras, stats mods, etc)
 // Second rule: Code must be guarded by if(Real) check if it modifies object state (start/stop attack, send packets to client, etc)
 //
-// Other case choice: each code line moved under if(Real) check is Trinity speedup,
-//      each setting object update field code line moved under if(Real) check is significant Trinity speedup, and less server->client data sends
-//      each packet sending code moved under if(Real) check is _large_ Trinity speedup, and lot less server->client data sends
+// Other case choice: each code line moved under if(Real) check is CW speedup,
+//      each setting object update field code line moved under if(Real) check is significant CW speedup, and less server->client data sends
+//      each packet sending code moved under if(Real) check is _large_ CW speedup, and lot less server->client data sends
 //
 // changeAmount == true at changing existing aura amount - called wit real == false 
 // if aura has amount dependant effect handler has to allow proceeding it
 // example: change speed aura, modifier aura
 
-class TRINITY_DLL_SPEC Aura
+class CW_DLL_SPEC Aura
 {
     friend void Player::SendAurasForTarget(Unit *target);
     public:
@@ -170,7 +170,7 @@ class TRINITY_DLL_SPEC Aura
         bool IsVisible() const;
 };
 
-class TRINITY_DLL_SPEC AuraEffect
+class CW_DLL_SPEC AuraEffect
 {
     public:
         friend AuraEffect* CreateAuraEffect(Aura * parentAura, uint32 effIndex, int32 *currentBasePoints);
@@ -406,7 +406,7 @@ class TRINITY_DLL_SPEC AuraEffect
         bool IsPeriodicTickCrit(Unit const * pCaster) const;
 };
 
-class TRINITY_DLL_SPEC AreaAuraEffect : public AuraEffect
+class CW_DLL_SPEC AreaAuraEffect : public AuraEffect
 {
     public:
         friend AuraEffect* CreateAuraEffect(Aura * parentAura, uint32 effIndex, int32 *currentBasePoints);
@@ -419,7 +419,7 @@ class TRINITY_DLL_SPEC AreaAuraEffect : public AuraEffect
         AreaAuraType m_areaAuraType;
 };
 
-class TRINITY_DLL_SPEC PersistentAreaAuraEffect : public AuraEffect
+class CW_DLL_SPEC PersistentAreaAuraEffect : public AuraEffect
 {
     public:
         friend AuraEffect* CreateAuraEffect(Aura * parentAura, uint32 effIndex, int32 *currentBasePoints);

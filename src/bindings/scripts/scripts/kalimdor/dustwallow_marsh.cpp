@@ -47,7 +47,7 @@ enum
     NPC_RISEN_SPIRIT                 = 23554
 };
 
-struct TRINITY_DLL_DECL mobs_risen_husk_spiritAI : public ScriptedAI
+struct CW_DLL_DECL mobs_risen_husk_spiritAI : public ScriptedAI
 {
     mobs_risen_husk_spiritAI(Creature *c) : ScriptedAI(c) {}
 
@@ -127,7 +127,7 @@ enum
     FACTION_THER_DESERTER   = 1883
 };
 
-struct TRINITY_DLL_DECL npc_deserter_agitatorAI : public ScriptedAI
+struct CW_DLL_DECL npc_deserter_agitatorAI : public ScriptedAI
 {
     npc_deserter_agitatorAI(Creature* pCreature) : ScriptedAI(pCreature) { }
 
@@ -245,7 +245,7 @@ enum
 };
 
 //TODO: develop this further, end event not created
-struct TRINITY_DLL_DECL npc_private_hendelAI : public ScriptedAI
+struct CW_DLL_DECL npc_private_hendelAI : public ScriptedAI
 {
     npc_private_hendelAI(Creature* pCreature) : ScriptedAI(pCreature) { }
 

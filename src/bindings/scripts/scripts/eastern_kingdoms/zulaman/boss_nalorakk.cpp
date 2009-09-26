@@ -89,7 +89,7 @@ float NalorakkWay[8][3] =
 #define SOUND_YELL_TOBEAR       12072
 
 
-struct TRINITY_DLL_DECL boss_nalorakkAI : public ScriptedAI
+struct CW_DLL_DECL boss_nalorakkAI : public ScriptedAI
 {
     boss_nalorakkAI(Creature *c) : ScriptedAI(c)
     {
@@ -152,15 +152,15 @@ struct TRINITY_DLL_DECL boss_nalorakkAI : public ScriptedAI
         m_creature->GetPosition(x, y, z);
 
         {
-            CellPair pair(Trinity::ComputeCellPair(x, y));
+            CellPair pair(CW::ComputeCellPair(x, y));
             Cell cell(pair);
             cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
-            Trinity::AllFriendlyCreaturesInGrid check(m_creature);
-            Trinity::CreatureListSearcher<Trinity::AllFriendlyCreaturesInGrid> searcher(m_creature, templist, check);
+            CW::AllFriendlyCreaturesInGrid check(m_creature);
+            CW::CreatureListSearcher<CW::AllFriendlyCreaturesInGrid> searcher(m_creature, templist, check);
 
-            TypeContainerVisitor<Trinity::CreatureListSearcher<Trinity::AllFriendlyCreaturesInGrid>, GridTypeMapContainer> cSearcher(searcher);
+            TypeContainerVisitor<CW::CreatureListSearcher<CW::AllFriendlyCreaturesInGrid>, GridTypeMapContainer> cSearcher(searcher);
 
             CellLock<GridReadGuard> cell_lock(cell, pair);
             cell_lock->Visit(cell_lock, cSearcher, *(m_creature->GetMap()));

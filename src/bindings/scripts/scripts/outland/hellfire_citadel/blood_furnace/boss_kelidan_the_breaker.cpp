@@ -65,7 +65,7 @@ const float ShadowmoonChannelers[5][4]=
     {316,-109,-24.6,1.257}
 };
 
-struct TRINITY_DLL_DECL boss_kelidan_the_breakerAI : public ScriptedAI
+struct CW_DLL_DECL boss_kelidan_the_breakerAI : public ScriptedAI
 {
     boss_kelidan_the_breakerAI(Creature *c) : ScriptedAI(c)
     {
@@ -282,7 +282,7 @@ enum
     SPELL_CHANNELING        = 39123
 };
 
-struct TRINITY_DLL_DECL mob_shadowmoon_channelerAI : public ScriptedAI
+struct CW_DLL_DECL mob_shadowmoon_channelerAI : public ScriptedAI
 {
     mob_shadowmoon_channelerAI(Creature *c) : ScriptedAI(c)
     {

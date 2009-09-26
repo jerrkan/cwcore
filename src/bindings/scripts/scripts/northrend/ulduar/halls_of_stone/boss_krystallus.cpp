@@ -27,7 +27,7 @@ update creature_template set scriptname = 'boss_krystallus' where entry = '';
 #define SAY_DEATH                                   -1599002
 #define SAY_SHATTER                                 -1599003
 
-struct TRINITY_DLL_DECL boss_krystallusAI : public ScriptedAI
+struct CW_DLL_DECL boss_krystallusAI : public ScriptedAI
 {
     boss_krystallusAI(Creature *c) : ScriptedAI(c) {}
 

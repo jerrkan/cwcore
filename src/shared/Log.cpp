@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -205,8 +205,8 @@ FILE* Log::openGmlogPerAccount(uint32 account)
     if(m_gmlog_filename_format.empty())
         return NULL;
 
-    char namebuf[TRINITY_PATH_MAX];
-    snprintf(namebuf,TRINITY_PATH_MAX,m_gmlog_filename_format.c_str(),account);
+    char namebuf[CW_PATH_MAX];
+    snprintf(namebuf,CW_PATH_MAX,m_gmlog_filename_format.c_str(),account);
     return fopen(namebuf, "a");
 }
 
@@ -920,7 +920,7 @@ void outstring_log(const char * str, ...)
     vsnprintf(buf,256, str, ap);
     va_end(ap);
 
-    Trinity::Singleton<Log>::Instance().outString(buf);
+    CW::Singleton<Log>::Instance().outString(buf);
 }
 
 void detail_log(const char * str, ...)
@@ -934,7 +934,7 @@ void detail_log(const char * str, ...)
     vsnprintf(buf,256, str, ap);
     va_end(ap);
 
-    Trinity::Singleton<Log>::Instance().outDetail(buf);
+    CW::Singleton<Log>::Instance().outDetail(buf);
 }
 
 void debug_log(const char * str, ...)
@@ -948,7 +948,7 @@ void debug_log(const char * str, ...)
     vsnprintf(buf,256, str, ap);
     va_end(ap);
 
-    Trinity::Singleton<Log>::Instance().outDebug(buf);
+    CW::Singleton<Log>::Instance().outDebug(buf);
 }
 
 void error_log(const char * str, ...)
@@ -962,7 +962,7 @@ void error_log(const char * str, ...)
     vsnprintf(buf,256, str, ap);
     va_end(ap);
 
-    Trinity::Singleton<Log>::Instance().outError(buf);
+    CW::Singleton<Log>::Instance().outError(buf);
 }
 
 void error_db_log(const char * str, ...)
@@ -976,6 +976,6 @@ void error_db_log(const char * str, ...)
     vsnprintf(buf,256, str, ap);
     va_end(ap);
 
-    Trinity::Singleton<Log>::Instance().outErrorDb(buf);
+    CW::Singleton<Log>::Instance().outErrorDb(buf);
 }
 

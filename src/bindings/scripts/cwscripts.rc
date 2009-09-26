@@ -17,14 +17,13 @@
  */
 
 #include "../../cwcore/resource.h"
-#include "../../shared/revision.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "windows.h" //"afxres.h"
+#include "windows.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -36,7 +35,7 @@
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-//IDI_APPICON             ICON                    "CWRealm.ico"
+//IDI_APPICON             ICON                    "CWScripts.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 // Neutre (Par défaut système) resources
@@ -53,8 +52,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_SYS_DEFAULT
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION FILEVER
- PRODUCTVERSION PRODUCTVER
+ FILEVERSION 1, 0
+ PRODUCTVERSION 1, 0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -70,12 +69,12 @@ BEGIN
         BLOCK "080004b0"
         BEGIN
             VALUE "FileDescription", "CWScripts"
-            VALUE "FileVersion", STRFILEVER
+            VALUE "FileVersion", "1, 0"
             VALUE "InternalName", "CWScripts"
             VALUE "LegalCopyright", "Copyright (C) 2009"
             VALUE "OriginalFilename", "CWScripts.dll"
             VALUE "ProductName", "CWScripts"
-            VALUE "ProductVersion", STRPRODUCTVER
+            VALUE "ProductVersion", "1, 0"
         END
     END
     BLOCK "VarFileInfo"

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-#ifndef TRINITY_SPELLAURADEFINES_H
-#define TRINITY_SPELLAURADEFINES_H
+#ifndef CW_SPELLAURADEFINES_H
+#define CW_SPELLAURADEFINES_H
 
 #define MAX_AURAS 64                                        // client support up to 255, but it will cause problems with group auras updating
 #define FRIENDLY_AA_REMOVE_TIME 2*IN_MILISECONDS

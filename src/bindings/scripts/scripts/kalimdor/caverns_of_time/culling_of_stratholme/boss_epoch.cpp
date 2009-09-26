@@ -30,7 +30,7 @@ update creature_template set scriptname = '' where entry = '';
 #define SAY_SLAY_3                               -1595007 //"You were destined to fail. "
 #define SAY_DEATH                                -1595008 //"*gurgles*"
 
-struct TRINITY_DLL_DECL boss_epochAI : public ScriptedAI
+struct CW_DLL_DECL boss_epochAI : public ScriptedAI
 {
     boss_epochAI(Creature *c) : ScriptedAI(c) {}
 

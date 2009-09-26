@@ -39,7 +39,7 @@ EndContentData */
 #define SPELL_FREEZING_TRAP     37368
 #define SPELL_HAMMER_OF_JUSTICE 37369
 
-struct TRINITY_DLL_DECL mob_stolen_soulAI : public ScriptedAI
+struct CW_DLL_DECL mob_stolen_soulAI : public ScriptedAI
 {
     mob_stolen_soulAI(Creature *c) : ScriptedAI(c) {}
 
@@ -141,7 +141,7 @@ CreatureAI* GetAI_mob_stolen_soul(Creature* pCreature)
 
 #define ENTRY_STOLEN_SOUL           18441
 
-struct TRINITY_DLL_DECL boss_exarch_maladaarAI : public ScriptedAI
+struct CW_DLL_DECL boss_exarch_maladaarAI : public ScriptedAI
 {
     boss_exarch_maladaarAI(Creature *c) : ScriptedAI(c)
     {
@@ -198,7 +198,7 @@ struct TRINITY_DLL_DECL boss_exarch_maladaarAI : public ScriptedAI
     {
         if (summoned->GetEntry() == ENTRY_STOLEN_SOUL)
         {
-            //SPELL_STOLEN_SOUL_VISUAL has shapeshift effect, but not implemented feature in Trinity for this spell.
+            //SPELL_STOLEN_SOUL_VISUAL has shapeshift effect, but not implemented feature in CW for this spell.
             summoned->CastSpell(summoned,SPELL_STOLEN_SOUL_VISUAL,false);
             summoned->SetDisplayId(soulmodel);
             summoned->setFaction(m_creature->getFaction());
@@ -301,7 +301,7 @@ CreatureAI* GetAI_boss_exarch_maladaar(Creature* pCreature)
 #define SPELL_AV_MORTAL_STRIKE          16856
 #define SPELL_AV_SUNDER_ARMOR           16145
 
-struct TRINITY_DLL_DECL mob_avatar_of_martyredAI : public ScriptedAI
+struct CW_DLL_DECL mob_avatar_of_martyredAI : public ScriptedAI
 {
     mob_avatar_of_martyredAI(Creature *c) : ScriptedAI(c) {}
 

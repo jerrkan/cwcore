@@ -1,4 +1,4 @@
-/* Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+/* Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; either version 2 of the License, or
@@ -113,7 +113,7 @@ float Humanoides[6][5] =
 };
 
 uint32 EnrageTimer = 600000;
-struct TRINITY_DLL_DECL boss_entropiusAI : public ScriptedAI
+struct CW_DLL_DECL boss_entropiusAI : public ScriptedAI
 {
     boss_entropiusAI(Creature *c) : ScriptedAI(c), Summons(m_creature)
     {
@@ -206,7 +206,7 @@ CreatureAI* GetAI_boss_entropius(Creature* pCreature)
     return new boss_entropiusAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL boss_muruAI : public Scripted_NoMovementAI
+struct CW_DLL_DECL boss_muruAI : public Scripted_NoMovementAI
 {
     boss_muruAI(Creature *c) : Scripted_NoMovementAI(c), Summons(m_creature)
     {
@@ -365,7 +365,7 @@ CreatureAI* GetAI_boss_muru(Creature* pCreature)
     return new boss_muruAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL npc_muru_portalAI : public Scripted_NoMovementAI
+struct CW_DLL_DECL npc_muru_portalAI : public Scripted_NoMovementAI
 {
     npc_muru_portalAI(Creature *c) : Scripted_NoMovementAI(c), Summons(m_creature)
     {
@@ -443,7 +443,7 @@ CreatureAI* GetAI_npc_muru_portal(Creature* pCreature)
     return new npc_muru_portalAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL npc_dark_fiendAI : public ScriptedAI
+struct CW_DLL_DECL npc_dark_fiendAI : public ScriptedAI
 {
     npc_dark_fiendAI(Creature *c) : ScriptedAI(c) {}
 
@@ -503,7 +503,7 @@ CreatureAI* GetAI_npc_dark_fiend(Creature* pCreature)
     return new npc_dark_fiendAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL npc_void_sentinelAI : public ScriptedAI
+struct CW_DLL_DECL npc_void_sentinelAI : public ScriptedAI
 {
     npc_void_sentinelAI(Creature *c) : ScriptedAI(c){}
 
@@ -553,7 +553,7 @@ CreatureAI* GetAI_npc_void_sentinel(Creature* pCreature)
     return new npc_void_sentinelAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL npc_blackholeAI : public ScriptedAI
+struct CW_DLL_DECL npc_blackholeAI : public ScriptedAI
 {
     npc_blackholeAI(Creature *c) : ScriptedAI(c)
     {

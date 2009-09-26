@@ -45,7 +45,7 @@ enum
 
 const float m_afGalakLoc[]= {-4867.387695, -1357.353760, -48.226 };
 
-struct TRINITY_DLL_DECL npc_kanatiAI : public npc_escortAI
+struct CW_DLL_DECL npc_kanatiAI : public npc_escortAI
 {
     npc_kanatiAI(Creature* pCreature) : npc_escortAI(pCreature) { }
 
@@ -126,7 +126,7 @@ float m_afBanditLoc[6][6]=
     {-4788.861328, -1888.007813, 89.888}
 };
 
-struct TRINITY_DLL_DECL npc_lakota_windsongAI : public npc_escortAI
+struct CW_DLL_DECL npc_lakota_windsongAI : public npc_escortAI
 {
     npc_lakota_windsongAI(Creature* pCreature) : npc_escortAI(pCreature) { }
 
@@ -204,7 +204,7 @@ float m_afWyvernLoc[3][3]=
     {-4985.364, -952.528, -5.199}
 };
 
-struct TRINITY_DLL_DECL npc_paoka_swiftmountainAI : public npc_escortAI
+struct CW_DLL_DECL npc_paoka_swiftmountainAI : public npc_escortAI
 {
     npc_paoka_swiftmountainAI(Creature* pCreature) : npc_escortAI(pCreature) { }
 
@@ -269,7 +269,7 @@ enum
     SPELL_PLUCKY_CHICKEN    = 9220
 };
 
-struct TRINITY_DLL_DECL npc_pluckyAI : public ScriptedAI
+struct CW_DLL_DECL npc_pluckyAI : public ScriptedAI
 {
     npc_pluckyAI(Creature *c) : ScriptedAI(c) { m_uiNormFaction = c->getFaction(); }
 

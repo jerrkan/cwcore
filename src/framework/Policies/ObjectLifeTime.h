@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,20 +18,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_OBJECTLIFETIME_H
-#define TRINITY_OBJECTLIFETIME_H
+#ifndef CW_OBJECTLIFETIME_H
+#define CW_OBJECTLIFETIME_H
 
 #include <stdexcept>
 #include "Platform/Define.h"
 
 typedef void (* Destroyer)(void);
 
-namespace Trinity
+namespace CW
 {
-    void TRINITY_DLL_SPEC at_exit( void (*func)() );
+    void CW_DLL_SPEC at_exit( void (*func)() );
 
     template <class T>
-        class TRINITY_DLL_DECL ObjectLifeTime
+        class CW_DLL_DECL ObjectLifeTime
     {
         public:
             static void ScheduleCall(void (*destroyer)() )

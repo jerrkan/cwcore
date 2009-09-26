@@ -70,7 +70,7 @@ enum
     GO_CHEST_SEVEN          = 169243
 };
 
-struct TRINITY_DLL_DECL instance_blackrock_depths : public ScriptedInstance
+struct CW_DLL_DECL instance_blackrock_depths : public ScriptedInstance
 {
     instance_blackrock_depths(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 

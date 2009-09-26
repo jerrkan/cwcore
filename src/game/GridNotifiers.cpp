@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 #include "Transports.h"
 #include "ObjectAccessor.h"
 
-using namespace Trinity;
+using namespace CW;
 
 void
 VisibleChangesNotifier::Visit(PlayerMapType &m)
@@ -92,7 +92,7 @@ PlayerVisibilityNotifier::Notify()
     {
         i_player.m_clientGUIDs.erase(*itr);
 
-        #ifdef TRINITY_DEBUG
+        #ifdef CW_DEBUG
         if((sLog.getLogFilter() & LOG_FILTER_VISIBILITY_CHANGES)==0)
             sLog.outDebug("Object %u (Type: %u) is out of range (no in active cells set) now for player %u",GUID_LOPART(*itr),GuidHigh2TypeId(GUID_HIPART(*itr)),i_player.GetGUIDLow());
         #endif

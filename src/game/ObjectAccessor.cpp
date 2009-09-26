@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -228,7 +228,7 @@ ObjectAccessor::_buildPacket(Player *pl, Object *obj, UpdateDataMapType &update_
 void
 ObjectAccessor::_buildChangeObjectForPlayer(WorldObject *obj, UpdateDataMapType &update_players)
 {
-    CellPair p = Trinity::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
+    CellPair p = CW::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
     Cell cell(p);
     cell.data.Part.reserved = ALL_DISTRICT;
     cell.SetNoCreate();
@@ -273,7 +273,7 @@ ObjectAccessor::RemoveCorpse(Corpse *corpse)
         return;
 
     // build mapid*cellid -> guid_set map
-    CellPair cell_pair = Trinity::ComputeCellPair(corpse->GetPositionX(), corpse->GetPositionY());
+    CellPair cell_pair = CW::ComputeCellPair(corpse->GetPositionX(), corpse->GetPositionY());
     uint32 cell_id = (cell_pair.y_coord*TOTAL_NUMBER_OF_CELLS_PER_MAP) + cell_pair.x_coord;
 
     objmgr.DeleteCorpseCellData(corpse->GetMapId(), cell_id, corpse->GetOwnerGUID());
@@ -291,7 +291,7 @@ ObjectAccessor::AddCorpse(Corpse *corpse)
     i_player2corpse[corpse->GetOwnerGUID()] = corpse;
 
     // build mapid*cellid -> guid_set map
-    CellPair cell_pair = Trinity::ComputeCellPair(corpse->GetPositionX(), corpse->GetPositionY());
+    CellPair cell_pair = CW::ComputeCellPair(corpse->GetPositionX(), corpse->GetPositionY());
     uint32 cell_id = (cell_pair.y_coord*TOTAL_NUMBER_OF_CELLS_PER_MAP) + cell_pair.x_coord;
 
     objmgr.AddCorpseCellData(corpse->GetMapId(), cell_id, corpse->GetOwnerGUID(), corpse->GetInstanceId());
@@ -472,7 +472,7 @@ ObjectAccessor::WorldObjectChangeAccumulator::BuildPacket(Player* plr)
 void
 ObjectAccessor::UpdateObjectVisibility(WorldObject *obj)
 {
-    CellPair p = Trinity::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
+    CellPair p = CW::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
     Cell cell(p);
 
     obj->GetMap()->UpdateObjectVisibility(obj, cell, p);
@@ -483,13 +483,13 @@ ObjectAccessor::UpdateObjectVisibility(WorldObject *obj)
     WorldObject const* viewPoint = player->GetViewPoint();
     Map* m = player->GetMap();
 
-    CellPair p = Trinity::ComputeCellPair(player->GetPositionX(), player->GetPositionY());
+    CellPair p = CW::ComputeCellPair(player->GetPositionX(), player->GetPositionY());
     Cell cell(p);
 
     m->UpdatePlayerVisibility(player, cell, p);
     if (player!=viewPoint)
     {
-        CellPair pView(Trinity::ComputeCellPair(viewPoint->GetPositionX(), viewPoint->GetPositionY()));
+        CellPair pView(CW::ComputeCellPair(viewPoint->GetPositionX(), viewPoint->GetPositionY()));
         Cell cellView(pView);
 
         m->UpdateObjectsVisibilityFor(player, cellView, pView);

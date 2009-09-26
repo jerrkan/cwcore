@@ -67,7 +67,7 @@ EndScriptData */
 //If nefarian dies then he will kill himself then he will kill himself in his hiding place
 //To prevent players from doing the event twice
 
-struct TRINITY_DLL_DECL boss_victor_nefariusAI : public ScriptedAI
+struct CW_DLL_DECL boss_victor_nefariusAI : public ScriptedAI
 {
     boss_victor_nefariusAI(Creature *c) : ScriptedAI(c)
     {
@@ -188,7 +188,7 @@ struct TRINITY_DLL_DECL boss_victor_nefariusAI : public ScriptedAI
     {
         DoScriptText(SAY_GAMESBEGIN_2, m_creature);
 
-        //Trinity::Singleton<MapManager>::Instance().GetMap(m_creature->GetMapId(), m_creature)->GetPlayers().begin();
+        //CW::Singleton<MapManager>::Instance().GetMap(m_creature->GetMapId(), m_creature)->GetPlayers().begin();
         /*
         list <Player*>::iterator i = MapManager::Instance().GetMap(m_creature->GetMapId(), m_creature)->GetPlayers().begin();
 
@@ -304,7 +304,7 @@ struct TRINITY_DLL_DECL boss_victor_nefariusAI : public ScriptedAI
                     //Make super invis
                     DoCast(m_creature,8149);
 
-                    //Teleport self to a hiding spot (this causes errors in the Trinity log but no real issues)
+                    //Teleport self to a hiding spot (this causes errors in the CW log but no real issues)
                     DoTeleportTo(HIDE_X,HIDE_Y,HIDE_Z);
                     m_creature->addUnitState(UNIT_STAT_FLEEING);
 

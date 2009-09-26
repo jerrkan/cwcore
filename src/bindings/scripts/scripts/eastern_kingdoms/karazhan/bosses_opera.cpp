@@ -100,7 +100,7 @@ void SummonCroneIfReady(ScriptedInstance* pInstance, Creature* pCreature)
     }
 };
 
-struct TRINITY_DLL_DECL boss_dorotheeAI : public ScriptedAI
+struct CW_DLL_DECL boss_dorotheeAI : public ScriptedAI
 {
     boss_dorotheeAI(Creature* c) : ScriptedAI(c)
     {
@@ -203,7 +203,7 @@ struct TRINITY_DLL_DECL boss_dorotheeAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_titoAI : public ScriptedAI
+struct CW_DLL_DECL mob_titoAI : public ScriptedAI
 {
     mob_titoAI(Creature* c) : ScriptedAI(c) {}
 
@@ -258,7 +258,7 @@ void boss_dorotheeAI::SummonTito()
     }
 }
 
-struct TRINITY_DLL_DECL boss_strawmanAI : public ScriptedAI
+struct CW_DLL_DECL boss_strawmanAI : public ScriptedAI
 {
     boss_strawmanAI(Creature* c) : ScriptedAI(c)
     {
@@ -360,7 +360,7 @@ struct TRINITY_DLL_DECL boss_strawmanAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL boss_tinheadAI : public ScriptedAI
+struct CW_DLL_DECL boss_tinheadAI : public ScriptedAI
 {
     boss_tinheadAI(Creature* c) : ScriptedAI(c)
     {
@@ -458,7 +458,7 @@ struct TRINITY_DLL_DECL boss_tinheadAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL boss_roarAI : public ScriptedAI
+struct CW_DLL_DECL boss_roarAI : public ScriptedAI
 {
     boss_roarAI(Creature* c) : ScriptedAI(c)
     {
@@ -555,7 +555,7 @@ struct TRINITY_DLL_DECL boss_roarAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL boss_croneAI : public ScriptedAI
+struct CW_DLL_DECL boss_croneAI : public ScriptedAI
 {
     boss_croneAI(Creature* c) : ScriptedAI(c)
     {
@@ -630,7 +630,7 @@ struct TRINITY_DLL_DECL boss_croneAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_cycloneAI : public ScriptedAI
+struct CW_DLL_DECL mob_cycloneAI : public ScriptedAI
 {
     mob_cycloneAI(Creature* c) : ScriptedAI(c) {}
 
@@ -738,7 +738,7 @@ bool GossipSelect_npc_grandmother(Player* pPlayer, Creature* pCreature, uint32 u
     return true;
 }
 
-struct TRINITY_DLL_DECL boss_bigbadwolfAI : public ScriptedAI
+struct CW_DLL_DECL boss_bigbadwolfAI : public ScriptedAI
 {
     boss_bigbadwolfAI(Creature* c) : ScriptedAI(c)
     {
@@ -932,7 +932,7 @@ void Resurrect(Creature* target)
             target->GetMotionMaster()->Initialize();
 };
 
-struct TRINITY_DLL_DECL boss_julianneAI : public ScriptedAI
+struct CW_DLL_DECL boss_julianneAI : public ScriptedAI
 {
     boss_julianneAI(Creature* c) : ScriptedAI(c)
     {
@@ -1043,7 +1043,7 @@ struct TRINITY_DLL_DECL boss_julianneAI : public ScriptedAI
     void UpdateAI(const uint32 diff);
 };
 
-struct TRINITY_DLL_DECL boss_romuloAI : public ScriptedAI
+struct CW_DLL_DECL boss_romuloAI : public ScriptedAI
 {
     boss_romuloAI(Creature* c) : ScriptedAI(c)
     {

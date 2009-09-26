@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -3050,7 +3050,7 @@ bool SpellArea::IsFitToRequirements(Player const* player, uint32 newZone, uint32
     return true;
 }
 
-//-----------TRINITY-------------
+//-----------CW-------------
 
 bool SpellMgr::CanAurasStack(SpellEntry const *spellInfo_1, SpellEntry const *spellInfo_2, bool sameCaster) const
 {

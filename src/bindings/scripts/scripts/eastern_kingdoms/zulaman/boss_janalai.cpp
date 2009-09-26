@@ -100,7 +100,7 @@ float hatcherway[2][5][3] =
     }
 };
 
-struct TRINITY_DLL_DECL boss_janalaiAI : public ScriptedAI
+struct CW_DLL_DECL boss_janalaiAI : public ScriptedAI
 {
     boss_janalaiAI(Creature *c) : ScriptedAI(c)
     {
@@ -233,15 +233,15 @@ struct TRINITY_DLL_DECL boss_janalaiAI : public ScriptedAI
         m_creature->GetPosition(x, y, z);
 
         {
-            CellPair pair(Trinity::ComputeCellPair(x, y));
+            CellPair pair(CW::ComputeCellPair(x, y));
             Cell cell(pair);
             cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
-            Trinity::AllCreaturesOfEntryInRange check(m_creature, MOB_EGG, 100);
-            Trinity::CreatureListSearcher<Trinity::AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
+            CW::AllCreaturesOfEntryInRange check(m_creature, MOB_EGG, 100);
+            CW::CreatureListSearcher<CW::AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
 
-            TypeContainerVisitor<Trinity::CreatureListSearcher<Trinity::AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
+            TypeContainerVisitor<CW::CreatureListSearcher<CW::AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
 
             CellLock<GridReadGuard> cell_lock(cell, pair);
             cell_lock->Visit(cell_lock, cSearcher, *(m_creature->GetMap()));
@@ -268,15 +268,15 @@ struct TRINITY_DLL_DECL boss_janalaiAI : public ScriptedAI
         m_creature->GetPosition(x, y, z);
 
         {
-            CellPair pair(Trinity::ComputeCellPair(x, y));
+            CellPair pair(CW::ComputeCellPair(x, y));
             Cell cell(pair);
             cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
-            Trinity::AllCreaturesOfEntryInRange check(m_creature, MOB_FIRE_BOMB, 100);
-            Trinity::CreatureListSearcher<Trinity::AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
+            CW::AllCreaturesOfEntryInRange check(m_creature, MOB_FIRE_BOMB, 100);
+            CW::CreatureListSearcher<CW::AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
 
-            TypeContainerVisitor<Trinity::CreatureListSearcher<Trinity::AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
+            TypeContainerVisitor<CW::CreatureListSearcher<CW::AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
 
             CellLock<GridReadGuard> cell_lock(cell, pair);
             cell_lock->Visit(cell_lock, cSearcher, *(m_creature->GetMap()));
@@ -442,7 +442,7 @@ CreatureAI* GetAI_boss_janalaiAI(Creature* pCreature)
     return new boss_janalaiAI(pCreature);
 }
 
-struct TRINITY_DLL_DECL mob_janalai_firebombAI : public ScriptedAI
+struct CW_DLL_DECL mob_janalai_firebombAI : public ScriptedAI
 {
     mob_janalai_firebombAI(Creature *c) : ScriptedAI(c){}
 
@@ -468,7 +468,7 @@ CreatureAI* GetAI_mob_janalai_firebombAI(Creature* pCreature)
     return new mob_janalai_firebombAI(pCreature);
 }
 
-struct TRINITY_DLL_DECL mob_amanishi_hatcherAI : public ScriptedAI
+struct CW_DLL_DECL mob_amanishi_hatcherAI : public ScriptedAI
 {
     mob_amanishi_hatcherAI(Creature *c) : ScriptedAI(c)
     {
@@ -502,15 +502,15 @@ struct TRINITY_DLL_DECL mob_amanishi_hatcherAI : public ScriptedAI
         m_creature->GetPosition(x, y, z);
 
         {
-            CellPair pair(Trinity::ComputeCellPair(x, y));
+            CellPair pair(CW::ComputeCellPair(x, y));
             Cell cell(pair);
             cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
-            Trinity::AllCreaturesOfEntryInRange check(m_creature, 23817, 50);
-            Trinity::CreatureListSearcher<Trinity::AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
+            CW::AllCreaturesOfEntryInRange check(m_creature, 23817, 50);
+            CW::CreatureListSearcher<CW::AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
 
-            TypeContainerVisitor<Trinity::CreatureListSearcher<Trinity::AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
+            TypeContainerVisitor<CW::CreatureListSearcher<CW::AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
 
             CellLock<GridReadGuard> cell_lock(cell, pair);
             cell_lock->Visit(cell_lock, cSearcher, *(m_creature->GetMap()));
@@ -599,7 +599,7 @@ CreatureAI* GetAI_mob_amanishi_hatcherAI(Creature* pCreature)
     return new mob_amanishi_hatcherAI(pCreature);
 }
 
-struct TRINITY_DLL_DECL mob_hatchlingAI : public ScriptedAI
+struct CW_DLL_DECL mob_hatchlingAI : public ScriptedAI
 {
     mob_hatchlingAI(Creature *c) : ScriptedAI(c)
     {
@@ -649,7 +649,7 @@ CreatureAI* GetAI_mob_hatchlingAI(Creature* pCreature)
     return new mob_hatchlingAI(pCreature);
 }
 
-struct TRINITY_DLL_DECL mob_eggAI : public ScriptedAI
+struct CW_DLL_DECL mob_eggAI : public ScriptedAI
 {
     mob_eggAI(Creature *c) : ScriptedAI(c){}
     void Reset() {}

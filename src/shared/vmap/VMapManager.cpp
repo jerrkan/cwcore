@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace VMAP
 
     //=========================================================
 
-    Vector3 VMapManager::convertPositionToTrinityRep(float x, float y, float z) const
+    Vector3 VMapManager::convertPositionToCWRep(float x, float y, float z) const
     {
         float pos[3];
         pos[0] = z;
@@ -430,7 +430,7 @@ namespace VMAP
                 Vector3 resultPos;
                 MapTree* mapTree = iInstanceMapTrees.get(pMapId);
                 result = mapTree->getObjectHitPos(pos1, pos2, resultPos, pModifyDist);
-                resultPos = convertPositionToTrinityRep(resultPos.x,resultPos.y,resultPos.z);
+                resultPos = convertPositionToCWRep(resultPos.x,resultPos.y,resultPos.z);
                 rx = resultPos.x;
                 ry = resultPos.y;
                 rz = resultPos.z;

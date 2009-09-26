@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -241,8 +241,8 @@ void CreatureGroup::LeaderMoveTo(float x, float y, float z)
         float dy = y + sin(angle + pathangle) * dist;
         float dz = z;
 
-        Trinity::NormalizeMapCoord(dx);
-        Trinity::NormalizeMapCoord(dy);
+        CW::NormalizeMapCoord(dx);
+        CW::NormalizeMapCoord(dy);
 
         member->UpdateGroundPositionZ(dx, dy, dz);
 

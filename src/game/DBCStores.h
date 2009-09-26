@@ -150,13 +150,13 @@ extern DBCStorage <WorldSafeLocsEntry>           sWorldSafeLocsStore;
 void LoadDBCStores(const std::string& dataPath);
 
 // script support functions
-TRINITY_DLL_SPEC DBCStorage <SoundEntriesEntry>          const* GetSoundEntriesStore();
-TRINITY_DLL_SPEC DBCStorage <SpellEntry>                 const* GetSpellStore();
-TRINITY_DLL_SPEC DBCStorage <SpellRangeEntry>            const* GetSpellRangeStore();
-TRINITY_DLL_SPEC DBCStorage <FactionEntry>               const* GetFactionStore();
-TRINITY_DLL_SPEC DBCStorage <ItemEntry>                  const* GetItemDisplayStore();
-TRINITY_DLL_SPEC DBCStorage <CreatureDisplayInfoEntry>   const* GetCreatureDisplayStore();
-TRINITY_DLL_SPEC DBCStorage <EmotesEntry>                const* GetEmotesStore();
-TRINITY_DLL_SPEC DBCStorage <EmotesTextEntry>            const* GetEmotesTextStore();
-TRINITY_DLL_SPEC DBCStorage <AchievementEntry>           const* GetAchievementStore();
+CW_DLL_SPEC DBCStorage <SoundEntriesEntry>          const* GetSoundEntriesStore();
+CW_DLL_SPEC DBCStorage <SpellEntry>                 const* GetSpellStore();
+CW_DLL_SPEC DBCStorage <SpellRangeEntry>            const* GetSpellRangeStore();
+CW_DLL_SPEC DBCStorage <FactionEntry>               const* GetFactionStore();
+CW_DLL_SPEC DBCStorage <ItemEntry>                  const* GetItemDisplayStore();
+CW_DLL_SPEC DBCStorage <CreatureDisplayInfoEntry>   const* GetCreatureDisplayStore();
+CW_DLL_SPEC DBCStorage <EmotesEntry>                const* GetEmotesStore();
+CW_DLL_SPEC DBCStorage <EmotesTextEntry>            const* GetEmotesTextStore();
+CW_DLL_SPEC DBCStorage <AchievementEntry>           const* GetAchievementStore();
 #endif

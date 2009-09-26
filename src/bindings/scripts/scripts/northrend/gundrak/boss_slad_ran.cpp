@@ -32,7 +32,7 @@ update creature_template set scriptname = 'boss_slad_ran' where entry = '';
 #define SAY_SUMMON_SNAKES                         -1604022  //npc 29680
 #define SAY_SUMMON_CONSTRICTORS                   -1604023  //npc 29713, can cast Grip of Slad'ran (spell 55093)
 
-struct TRINITY_DLL_DECL boss_slad_ranAI : public ScriptedAI
+struct CW_DLL_DECL boss_slad_ranAI : public ScriptedAI
 {
     boss_slad_ranAI(Creature *c) : ScriptedAI(c) {}
 

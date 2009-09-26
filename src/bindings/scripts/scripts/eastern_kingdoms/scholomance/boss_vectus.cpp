@@ -33,7 +33,7 @@ enum
     SPELL_FRENZY                 = 8269 //28371,
 };
 
-struct TRINITY_DLL_DECL boss_vectusAI : public ScriptedAI
+struct CW_DLL_DECL boss_vectusAI : public ScriptedAI
 {
     boss_vectusAI(Creature *c) : ScriptedAI(c) {}
 

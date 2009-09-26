@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1709,7 +1709,7 @@ void Spell::SearchAreaTarget(std::list<Unit*> &TagUnitMap, float radius, SpellNo
             break;
     }
 
-    Trinity::SpellNotifierCreatureAndPlayer notifier(m_caster, TagUnitMap, radius, type, TargetType, pos, entry);
+    CW::SpellNotifierCreatureAndPlayer notifier(m_caster, TagUnitMap, radius, type, TargetType, pos, entry);
     if((m_spellInfo->AttributesEx3 & SPELL_ATTR_EX3_PLAYERS_ONLY)
         || TargetType == SPELL_TARGETS_ENTRY && !entry)
         m_caster->GetMap()->VisitWorld(pos->m_positionX, pos->m_positionY, radius, notifier);
@@ -1798,16 +1798,16 @@ WorldObject* Spell::SearchNearbyTarget(float range, SpellTargets TargetType)
         case SPELL_TARGETS_ENEMY:
         {
             Unit *target = NULL;
-            Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_caster, m_caster, range);
-            Trinity::UnitLastSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(m_caster, target, u_check);
+            CW::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_caster, m_caster, range);
+            CW::UnitLastSearcher<CW::AnyUnfriendlyUnitInObjectRangeCheck> searcher(m_caster, target, u_check);
             m_caster->VisitNearbyObject(range, searcher);
             return target;
         }
         case SPELL_TARGETS_ALLY:
         {
             Unit *target = NULL;
-            Trinity::AnyFriendlyUnitInObjectRangeCheck u_check(m_caster, m_caster, range);
-            Trinity::UnitLastSearcher<Trinity::AnyFriendlyUnitInObjectRangeCheck> searcher(m_caster, target, u_check);
+            CW::AnyFriendlyUnitInObjectRangeCheck u_check(m_caster, m_caster, range);
+            CW::UnitLastSearcher<CW::AnyFriendlyUnitInObjectRangeCheck> searcher(m_caster, target, u_check);
             m_caster->VisitNearbyObject(range, searcher);
             return target;
         }
@@ -2313,7 +2313,7 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                         {
                             CleanupTargetList();
 
-                            WorldObject* result = FindCorpseUsing <Trinity::ExplodeCorpseObjectCheck> ();
+                            WorldObject* result = FindCorpseUsing <CW::ExplodeCorpseObjectCheck> ();
 
                             if(result)
                             {
@@ -2392,9 +2392,9 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                             break;
                     }
 
-                    Trinity::GameObjectInRangeCheck check(x, y, z, radius + 50);
+                    CW::GameObjectInRangeCheck check(x, y, z, radius + 50);
                     std::list<GameObject*> goList;
-                    Trinity::GameObjectListSearcher<Trinity::GameObjectInRangeCheck> searcher(m_caster, goList, check);
+                    CW::GameObjectListSearcher<CW::GameObjectInRangeCheck> searcher(m_caster, goList, check);
                     m_caster->GetMap()->VisitGrid(x, y, radius, searcher);
                     for(std::list<GameObject*>::iterator itr = goList.begin(); itr != goList.end(); ++itr)
                         AddGOTarget(*itr, i);
@@ -2448,7 +2448,7 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
 
                 if(m_spellInfo->Id == 5246) //Intimidating Shout
                     unitList.remove(m_targets.getUnitTarget());
-                Trinity::RandomResizeList(unitList, m_spellValue->MaxAffectedTargets);
+                CW::RandomResizeList(unitList, m_spellValue->MaxAffectedTargets);
             }
             else
             {
@@ -5615,7 +5615,7 @@ SpellCastResult Spell::CheckItems()
     // check spell focus object
     if(m_spellInfo->RequiresSpellFocus)
     {
-        CellPair p(Trinity::ComputeCellPair(m_caster->GetPositionX(), m_caster->GetPositionY()));
+        CellPair p(CW::ComputeCellPair(m_caster->GetPositionX(), m_caster->GetPositionY()));
         Cell cell(p);
         cell.data.Part.reserved = ALL_DISTRICT;
 
@@ -5623,7 +5623,7 @@ SpellCastResult Spell::CheckItems()
         MaNGOS::GameObjectFocusCheck go_check(m_caster,m_spellInfo->RequiresSpellFocus);
         MaNGOS::GameObjectSearcher<MaNGOS::GameObjectFocusCheck> checker(m_caster, ok, go_check);
 
-        TypeContainerVisitor<Trinity::GameObjectSearcher<Trinity::GameObjectFocusCheck>, GridTypeMapContainer > object_checker(checker);
+        TypeContainerVisitor<CW::GameObjectSearcher<CW::GameObjectFocusCheck>, GridTypeMapContainer > object_checker(checker);
         CellLock<GridReadGuard> cell_lock(cell, p);
         cell_lock->Visit(cell_lock, object_checker, *m_caster->GetMap());
 

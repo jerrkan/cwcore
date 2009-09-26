@@ -35,7 +35,7 @@ enum
     SPELL_SHADOWWORDPAIN    = 2767,
 };
 
-struct TRINITY_DLL_DECL boss_interrogator_vishasAI : public ScriptedAI
+struct CW_DLL_DECL boss_interrogator_vishasAI : public ScriptedAI
 {
     boss_interrogator_vishasAI(Creature *c) : ScriptedAI(c)
     {

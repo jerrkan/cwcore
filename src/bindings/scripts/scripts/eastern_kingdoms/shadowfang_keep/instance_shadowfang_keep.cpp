@@ -39,7 +39,7 @@ enum
     GO_ARUGAL_DOOR          = 18971                         //door to open when Wolf Master Nandos
 };
 
-struct TRINITY_DLL_DECL instance_shadowfang_keep : public ScriptedInstance
+struct CW_DLL_DECL instance_shadowfang_keep : public ScriptedInstance
 {
     instance_shadowfang_keep(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 

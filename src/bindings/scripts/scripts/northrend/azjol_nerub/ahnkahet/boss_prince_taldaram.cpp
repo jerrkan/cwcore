@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ enum CombatPhase
     FEEDING
 };
 
-struct TRINITY_DLL_DECL boss_taldaramAI : public ScriptedAI
+struct CW_DLL_DECL boss_taldaramAI : public ScriptedAI
 {
     boss_taldaramAI(Creature *c) : ScriptedAI(c)
     {
@@ -274,7 +274,7 @@ struct TRINITY_DLL_DECL boss_taldaramAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_taldaram_flamesphereAI : public ScriptedAI
+struct CW_DLL_DECL mob_taldaram_flamesphereAI : public ScriptedAI
 {
     mob_taldaram_flamesphereAI(Creature *c) : ScriptedAI(c) 
     {

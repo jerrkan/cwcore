@@ -34,7 +34,7 @@ update creature_template set scriptname = 'boss_ymiron' where entry = '';
 #define SAY_SUMMON_RANULF                       -1575036
 #define SAY_SUMMON_TORGYN                       -1575037
 
-struct TRINITY_DLL_DECL boss_ymironAI : public ScriptedAI
+struct CW_DLL_DECL boss_ymironAI : public ScriptedAI
 {
     boss_ymironAI(Creature *c) : ScriptedAI(c)
     {

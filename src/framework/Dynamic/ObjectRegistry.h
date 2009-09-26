@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_OBJECTREGISTRY_H
-#define TRINITY_OBJECTREGISTRY_H
+#ifndef CW_OBJECTREGISTRY_H
+#define CW_OBJECTREGISTRY_H
 
 #include "Platform/Define.h"
 #include "Utilities/UnorderedMap.h"
@@ -32,7 +32,7 @@
 /** ObjectRegistry holds all registry item of the same type
  */
 template<class T, class Key = std::string>
-class TRINITY_DLL_DECL ObjectRegistry
+class CW_DLL_DECL ObjectRegistry
 {
     public:
         typedef std::map<Key, T *> RegistryMapType;
@@ -96,7 +96,7 @@ class TRINITY_DLL_DECL ObjectRegistry
 
     private:
         RegistryMapType i_registeredObjects;
-        friend class Trinity::OperatorNew<ObjectRegistry<T, Key> >;
+        friend class CW::OperatorNew<ObjectRegistry<T, Key> >;
 
         // protected for friend use since it should be a singleton
         ObjectRegistry() {}

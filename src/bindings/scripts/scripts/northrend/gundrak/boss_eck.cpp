@@ -17,7 +17,7 @@ update creature_template set scriptname = '' where entry = '';
 #define SPELL_ECK_SPRING_1                      55815 //Eck leaps at a distant target.  --> Drops aggro and charges a random player. Tank can simply taunt him back.
 #define SPELL_ECK_SPRING_2                      55837 //Eck leaps at a distant target.
 
-struct TRINITY_DLL_DECL boss_eckAI : public ScriptedAI
+struct CW_DLL_DECL boss_eckAI : public ScriptedAI
 {
     boss_eckAI(Creature *c) : ScriptedAI(c) {}
 

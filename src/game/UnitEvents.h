@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ enum UNIT_EVENT_TYPE
 
 //==============================================================
 
-class TRINITY_DLL_SPEC UnitBaseEvent
+class CW_DLL_SPEC UnitBaseEvent
 {
     private:
         uint32 iType;
@@ -84,7 +84,7 @@ class TRINITY_DLL_SPEC UnitBaseEvent
 
 //==============================================================
 
-class TRINITY_DLL_SPEC ThreatRefStatusChangeEvent : public UnitBaseEvent
+class CW_DLL_SPEC ThreatRefStatusChangeEvent : public UnitBaseEvent
 {
     private:
         HostilReference* iHostilReference;
@@ -121,7 +121,7 @@ class TRINITY_DLL_SPEC ThreatRefStatusChangeEvent : public UnitBaseEvent
 
 //==============================================================
 
-class TRINITY_DLL_SPEC ThreatManagerEvent : public ThreatRefStatusChangeEvent
+class CW_DLL_SPEC ThreatManagerEvent : public ThreatRefStatusChangeEvent
 {
     private:
         ThreatContainer* iThreatContainer;

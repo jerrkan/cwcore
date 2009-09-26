@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/// \addtogroup Trinityd Trinity Daemon
+/// \addtogroup CWd CW Daemon
 /// @{
 /// \file
 
@@ -33,15 +33,15 @@
 #include "Master.h"
 
 
-#ifndef _TRINITY_CORE_CONFIG
-# define _TRINITY_CORE_CONFIG  "CWCore.conf"
-#endif //_TRINITY_CORE_CONFIG
+#ifndef _CW_CORE_CONFIG
+# define _CW_CORE_CONFIG  "CWCore.conf"
+#endif //_CW_CORE_CONFIG
 
 // Format is YYYYMMDDRR where RR is the change in the conf file
 // for that day.
-#ifndef _TRINITY_CORE_CONFVER
-# define _TRINITY_CORE_CONFVER 2009082901
-#endif //_TRINITY_CORE_CONFVER
+#ifndef _CW_CORE_CONFVER
+# define _CW_CORE_CONFVER 2009082901
+#endif //_CW_CORE_CONFVER
 
 #ifdef WIN32
 #include "ServiceWin32.h"
@@ -77,11 +77,11 @@ void usage(const char *prog)
         ,prog);
 }
 
-/// Launch the Trinity server
+/// Launch the CW server
 extern int main(int argc, char **argv)
 {
     ///- Command line parsing to get the configuration file name
-    char const* cfg_file = _TRINITY_CORE_CONFIG;
+    char const* cfg_file = _CW_CORE_CONFIG;
     int c=1;
     while( c < argc )
     {
@@ -145,7 +145,7 @@ extern int main(int argc, char **argv)
     sLog.outString("Using configuration file %s.", cfg_file);
 
     uint32 confVersion = sConfig.GetIntDefault("ConfVersion", 0);
-    if (confVersion < _TRINITY_CORE_CONFVER)
+    if (confVersion < _CW_CORE_CONFVER)
     {
         sLog.outError("*****************************************************************************");
         sLog.outError(" WARNING: Your cwcore.conf version indicates your conf file is out of date!");
@@ -173,7 +173,7 @@ extern int main(int argc, char **argv)
     // at sMaster return function exist with codes
     // 0 - normal shutdown
     // 1 - shutdown at error
-    // 2 - restart command used, this code can be used by restarter for restart Trinityd
+    // 2 - restart command used, this code can be used by restarter for restart CWd
 }
 
 /// @}

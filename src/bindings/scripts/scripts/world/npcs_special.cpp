@@ -98,7 +98,7 @@ SpawnAssociation m_aSpawnAssociations[] =
     {22126, 22122, SPAWNTYPE_ALARMBOT}                      //Air Force Trip Wire - Rooftop (Cenarion Expedition)
 };
 
-struct TRINITY_DLL_DECL npc_air_force_botsAI : public ScriptedAI
+struct CW_DLL_DECL npc_air_force_botsAI : public ScriptedAI
 {
     npc_air_force_botsAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
@@ -258,7 +258,7 @@ CreatureAI* GetAI_npc_air_force_bots(Creature* pCreature)
 #define FACTION_FRIENDLY    35
 #define FACTION_CHICKEN     31
 
-struct TRINITY_DLL_DECL npc_chicken_cluckAI : public ScriptedAI
+struct CW_DLL_DECL npc_chicken_cluckAI : public ScriptedAI
 {
     npc_chicken_cluckAI(Creature *c) : ScriptedAI(c) {}
 
@@ -342,7 +342,7 @@ bool QuestComplete_npc_chicken_cluck(Player* pPlayer, Creature* pCreature, const
 #define SPELL_SEDUCTION     47057
 #define SPELL_FIERY_AURA    45427
 
-struct TRINITY_DLL_DECL npc_dancing_flamesAI : public ScriptedAI
+struct CW_DLL_DECL npc_dancing_flamesAI : public ScriptedAI
 {
     npc_dancing_flamesAI(Creature *c) : ScriptedAI(c) {}
 
@@ -479,7 +479,7 @@ const uint32 HordeSoldierId[3] =
 ## npc_doctor (handles both Gustaf Vanhowzen and Gregory Victor)
 ######*/
 
-struct TRINITY_DLL_DECL npc_doctorAI : public ScriptedAI
+struct CW_DLL_DECL npc_doctorAI : public ScriptedAI
 {
     npc_doctorAI(Creature *c) : ScriptedAI(c) {}
 
@@ -524,7 +524,7 @@ struct TRINITY_DLL_DECL npc_doctorAI : public ScriptedAI
 ## npc_injured_patient (handles all the patients, no matter Horde or Alliance)
 #####*/
 
-struct TRINITY_DLL_DECL npc_injured_patientAI : public ScriptedAI
+struct CW_DLL_DECL npc_injured_patientAI : public ScriptedAI
 {
     npc_injured_patientAI(Creature *c) : ScriptedAI(c) {}
 
@@ -834,7 +834,7 @@ enum
     SAY_SHAYA_GOODBYE       = -1000174, //signed for 21469
 };
 
-struct TRINITY_DLL_DECL npc_garments_of_questsAI : public npc_escortAI
+struct CW_DLL_DECL npc_garments_of_questsAI : public npc_escortAI
 {
     npc_garments_of_questsAI(Creature *c) : npc_escortAI(c) {Reset();}
 
@@ -1016,7 +1016,7 @@ CreatureAI* GetAI_npc_garments_of_quests(Creature* pCreature)
 
 #define SPELL_DEATHTOUCH                5
 
-struct TRINITY_DLL_DECL npc_guardianAI : public ScriptedAI
+struct CW_DLL_DECL npc_guardianAI : public ScriptedAI
 {
     npc_guardianAI(Creature *c) : ScriptedAI(c) {}
 
@@ -1373,7 +1373,7 @@ bool GossipSelect_npc_sayge(Player* pPlayer, Creature* pCreature, uint32 uiSende
     return true;
 }
 
-struct TRINITY_DLL_DECL npc_steam_tonkAI : public ScriptedAI
+struct CW_DLL_DECL npc_steam_tonkAI : public ScriptedAI
 {
     npc_steam_tonkAI(Creature *c) : ScriptedAI(c) {}
 
@@ -1403,7 +1403,7 @@ CreatureAI* GetAI_npc_steam_tonk(Creature* pCreature)
 
 #define SPELL_TONK_MINE_DETONATE 25099
 
-struct TRINITY_DLL_DECL npc_tonk_mineAI : public ScriptedAI
+struct CW_DLL_DECL npc_tonk_mineAI : public ScriptedAI
 {
     npc_tonk_mineAI(Creature *c) : ScriptedAI(c)
     {
@@ -1488,7 +1488,7 @@ bool ReceiveEmote_npc_brewfest_reveler(Player* pPlayer, Creature* pCreature, uin
 
 #define RAND 5
 
-struct TRINITY_DLL_DECL npc_snake_trap_serpentsAI : public ScriptedAI
+struct CW_DLL_DECL npc_snake_trap_serpentsAI : public ScriptedAI
 {
     npc_snake_trap_serpentsAI(Creature *c) : ScriptedAI(c) {}
 
@@ -1605,7 +1605,7 @@ CreatureAI* GetAI_npc_snake_trap_serpents(Creature* pCreature)
 #define SAY_RANDOM_MOJO6b   ", I know of a little swamp not too far from here...."
 #define SAY_RANDOM_MOJO7    "There's just never enough Mojo to go around..."
 
-struct TRINITY_DLL_DECL mob_mojoAI : public ScriptedAI
+struct CW_DLL_DECL mob_mojoAI : public ScriptedAI
 {
     mob_mojoAI(Creature *c) : ScriptedAI(c) {Reset();}
     uint32 hearts;
@@ -1675,7 +1675,7 @@ CreatureAI* GetAI_mob_mojo(Creature* pCreature)
     return new mob_mojoAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL npc_mirror_image : CasterAI
+struct CW_DLL_DECL npc_mirror_image : CasterAI
 {
     npc_mirror_image(Creature *c) : CasterAI(c) {}
 
@@ -1715,7 +1715,7 @@ CreatureAI* GetAI_npc_mirror_image(Creature* pCreature)
     return new npc_mirror_image (pCreature);
 }
 
-struct TRINITY_DLL_DECL npc_ebon_gargoyleAI : CasterAI
+struct CW_DLL_DECL npc_ebon_gargoyleAI : CasterAI
 {
     npc_ebon_gargoyleAI(Creature *c) : CasterAI(c) {}
 
@@ -1731,8 +1731,8 @@ struct TRINITY_DLL_DECL npc_ebon_gargoyleAI : CasterAI
         despawnTimer = 0;
         // Find victim of Summon Gargoyle spell
         std::list<Unit*> targets;
-        Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_creature, m_creature, 30);
-        Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(m_creature, targets, u_check);
+        CW::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_creature, m_creature, 30);
+        CW::UnitListSearcher<CW::AnyUnfriendlyUnitInObjectRangeCheck> searcher(m_creature, targets, u_check);
         m_creature->VisitNearbyObject(30, searcher);
         for(std::list<Unit*>::iterator iter = targets.begin(); iter != targets.end(); ++iter)
             if((*iter)->GetAura(49206,owner->GetGUID()))
@@ -1800,7 +1800,7 @@ CreatureAI* GetAI_npc_ebon_gargoyle(Creature* pCreature)
     return new npc_ebon_gargoyleAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL npc_lightwellAI : public PassiveAI
+struct CW_DLL_DECL npc_lightwellAI : public PassiveAI
 {
     npc_lightwellAI(Creature *c) : PassiveAI(c) {}
 
@@ -1815,7 +1815,7 @@ CreatureAI* GetAI_npc_lightwellAI(Creature* pCreature)
     return new npc_lightwellAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL npc_training_dummy : Scripted_NoMovementAI
+struct CW_DLL_DECL npc_training_dummy : Scripted_NoMovementAI
 {
     npc_training_dummy(Creature *c) : Scripted_NoMovementAI(c) {}
 

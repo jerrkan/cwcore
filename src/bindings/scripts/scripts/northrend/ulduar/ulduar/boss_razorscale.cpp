@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 - 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2009 CW <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ static float SpawnLocations[4][3]=
     {626.6, -271.5, 391.4},
 };
 
-struct TRINITY_DLL_DECL boss_razorscaleAI : public ScriptedAI
+struct CW_DLL_DECL boss_razorscaleAI : public ScriptedAI
 {
     boss_razorscaleAI(Creature* c) : ScriptedAI(c) {}
 

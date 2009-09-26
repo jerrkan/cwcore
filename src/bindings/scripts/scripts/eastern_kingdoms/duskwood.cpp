@@ -54,7 +54,7 @@ bool AreaTrigger_at_twilight_grove(Player* pPlayer, AreaTriggerEntry *at)
 #define SPELL_CREATURE_OF_NIGHTMARE 25806
 #define SPELL_LEVEL_UP 24312
 
-struct TRINITY_DLL_DECL boss_twilight_corrupterAI : public ScriptedAI
+struct CW_DLL_DECL boss_twilight_corrupterAI : public ScriptedAI
 {
     boss_twilight_corrupterAI(Creature *c) : ScriptedAI(c) {}
 

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_THREADINGMODEL_H
-#define TRINITY_THREADINGMODEL_H
+#ifndef CW_THREADINGMODEL_H
+#define CW_THREADINGMODEL_H
 
 /**
  * @class ThreadingModel<T>
@@ -28,11 +28,11 @@
 
 #include "Platform/Define.h"
 
-namespace Trinity
+namespace CW
 {
     inline void Guard(void *) {}
 
-    template<typename MUTEX> class TRINITY_DLL_DECL GeneralLock
+    template<typename MUTEX> class CW_DLL_DECL GeneralLock
     {
         public:
             GeneralLock(MUTEX &m) : i_mutex(m)
@@ -51,7 +51,7 @@ namespace Trinity
     };
 
     template <class T>
-        class TRINITY_DLL_DECL SingleThreaded
+        class CW_DLL_DECL SingleThreaded
     {
         public:
 
@@ -69,7 +69,7 @@ namespace Trinity
 
     // object level lockable
     template<class T, class MUTEX>
-        class TRINITY_DLL_DECL ObjectLevelLockable
+        class CW_DLL_DECL ObjectLevelLockable
     {
         public:
             ObjectLevelLockable() : i_mtx() {}
@@ -98,7 +98,7 @@ namespace Trinity
     };
 
     template<class T, class MUTEX>
-        class TRINITY_DLL_DECL ClassLevelLockable
+        class CW_DLL_DECL ClassLevelLockable
     {
         public:
             class Lock;
@@ -122,9 +122,9 @@ namespace Trinity
 
 }
 
-template<class T, class MUTEX> MUTEX Trinity::ClassLevelLockable<T, MUTEX>::si_mtx;
+template<class T, class MUTEX> MUTEX CW::ClassLevelLockable<T, MUTEX>::si_mtx;
 
 #define INSTANTIATE_CLASS_MUTEX(CTYPE,MUTEX) \
-    template class TRINITY_DLL_DECL Trinity::ClassLevelLockable<CTYPE, MUTEX >
+    template class CW_DLL_DECL CW::ClassLevelLockable<CTYPE, MUTEX >
 #endif
 

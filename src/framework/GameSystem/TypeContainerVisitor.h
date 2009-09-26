@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_TYPECONTAINERVISITOR_H
-#define TRINITY_TYPECONTAINERVISITOR_H
+#ifndef CW_TYPECONTAINERVISITOR_H
+#define CW_TYPECONTAINERVISITOR_H
 
 /*
  * @class TypeContainerVisitor is implemented as a visitor pattern.  It is
@@ -97,7 +97,7 @@ template<class VISITOR, class OBJECT_TYPES> void VisitorHelper(VISITOR &v, TypeM
 }
 
 template<class VISITOR, class TYPE_CONTAINER>
-class TRINITY_DLL_DECL TypeContainerVisitor
+class CW_DLL_DECL TypeContainerVisitor
 {
     public:
         TypeContainerVisitor(VISITOR &v) : i_visitor(v) {}

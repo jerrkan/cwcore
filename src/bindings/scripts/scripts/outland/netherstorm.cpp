@@ -59,7 +59,7 @@ EndContentData */
 #define SPELL_INTERRUPT_1       35016                       //ACID mobs should cast this
 #define SPELL_INTERRUPT_2       35176                       //ACID mobs should cast this (Manaforge Ara-version)
 
-struct TRINITY_DLL_DECL npc_manaforge_control_consoleAI : public ScriptedAI
+struct CW_DLL_DECL npc_manaforge_control_consoleAI : public ScriptedAI
 {
     npc_manaforge_control_consoleAI(Creature *c) : ScriptedAI(c) {}
 
@@ -287,7 +287,7 @@ CreatureAI* GetAI_npc_manaforge_control_console(Creature* pCreature)
 ## go_manaforge_control_console
 ######*/
 
-//TODO: clean up this workaround when Trinity adds support to do it properly (with gossip selections instead of instant summon)
+//TODO: clean up this workaround when CW adds support to do it properly (with gossip selections instead of instant summon)
 bool GOHello_go_manaforge_control_console(Player* pPlayer, GameObject* pGo)
 {
     if (pGo->GetGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
@@ -360,7 +360,7 @@ const uint32 CreatureEntry[3] =
     21504                                                 // Pathaleon
 };
 
-struct TRINITY_DLL_DECL npc_commander_dawnforgeAI : public ScriptedAI
+struct CW_DLL_DECL npc_commander_dawnforgeAI : public ScriptedAI
 {
     npc_commander_dawnforgeAI(Creature *c) : ScriptedAI(c) { Reset (); }
 
@@ -682,7 +682,7 @@ bool QuestAccept_npc_professor_dabiri(Player* pPlayer, Creature* pCreature, Ques
 #define SPELL_MATERIALIZE       34804
 #define SPELL_DE_MATERIALIZE    34804
 
-struct TRINITY_DLL_DECL mob_phase_hunterAI : public ScriptedAI
+struct CW_DLL_DECL mob_phase_hunterAI : public ScriptedAI
 {
 
     mob_phase_hunterAI(Creature *c) : ScriptedAI(c) {}
@@ -799,7 +799,7 @@ CreatureAI* GetAI_mob_phase_hunter(Creature* pCreature)
 #define SAY_THADELL_1   -1000304
 #define SAY_THADELL_2   -1000305
 
-struct TRINITY_DLL_DECL npc_bessyAI : public npc_escortAI
+struct CW_DLL_DECL npc_bessyAI : public npc_escortAI
 {
 
     npc_bessyAI(Creature *c) : npc_escortAI(c) {}

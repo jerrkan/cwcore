@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 - 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2009 CW <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ enum Events
     EVENT_DOOM,
 };
 
-struct TRINITY_DLL_DECL boss_loathebAI : public BossAI
+struct CW_DLL_DECL boss_loathebAI : public BossAI
 {
     boss_loathebAI(Creature *c) : BossAI(c, BOSS_LOATHEB) {}
 

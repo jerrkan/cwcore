@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -739,15 +739,15 @@ void AreaAuraEffect::Update(uint32 diff)
                     break;
                 case AREA_AURA_FRIEND:
                 {
-                    Trinity::AnyFriendlyUnitInObjectRangeCheck u_check(source, caster, m_radius);
-                    Trinity::UnitListSearcher<Trinity::AnyFriendlyUnitInObjectRangeCheck> searcher(source, targets, u_check);
+                    CW::AnyFriendlyUnitInObjectRangeCheck u_check(source, caster, m_radius);
+                    CW::UnitListSearcher<CW::AnyFriendlyUnitInObjectRangeCheck> searcher(source, targets, u_check);
                     source->VisitNearbyObject(m_radius, searcher);
                     break;
                 }
                 case AREA_AURA_ENEMY:
                 {
-                    Trinity::AnyAoETargetUnitInObjectRangeCheck u_check(source, caster, m_radius); // No GetCharmer in searcher
-                    Trinity::UnitListSearcher<Trinity::AnyAoETargetUnitInObjectRangeCheck> searcher(source, targets, u_check);
+                    CW::AnyAoETargetUnitInObjectRangeCheck u_check(source, caster, m_radius); // No GetCharmer in searcher
+                    CW::UnitListSearcher<CW::AnyAoETargetUnitInObjectRangeCheck> searcher(source, targets, u_check);
                     source->VisitNearbyObject(m_radius, searcher);
                     break;
                 }
@@ -3778,7 +3778,7 @@ void AuraEffect::HandleChannelDeathItem(bool apply, bool Real, bool /*changeAmou
 
         // Soul Shard only from non-grey units
         if( spellInfo->EffectItemType[m_effIndex] == 6265 &&
-            (victim->getLevel() <= Trinity::XP::GetGrayLevel(caster->getLevel()) ||
+            (victim->getLevel() <= CW::XP::GetGrayLevel(caster->getLevel()) ||
              victim->GetTypeId()==TYPEID_UNIT && !((Player*)caster)->isAllowedToLoot((Creature*)victim)) )
             return;
         //Adding items
@@ -3894,8 +3894,8 @@ void AuraEffect::HandleFeignDeath(bool apply, bool Real, bool /*changeAmount*/)
         */
 
         std::list<Unit*> targets;
-        Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_target, m_target, World::GetMaxVisibleDistance());
-        Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(m_target, targets, u_check);
+        CW::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_target, m_target, World::GetMaxVisibleDistance());
+        CW::UnitListSearcher<CW::AnyUnfriendlyUnitInObjectRangeCheck> searcher(m_target, targets, u_check);
         m_target->VisitNearbyObject(World::GetMaxVisibleDistance(), searcher);
         for(std::list<Unit*>::iterator iter = targets.begin(); iter != targets.end(); ++iter)
         {

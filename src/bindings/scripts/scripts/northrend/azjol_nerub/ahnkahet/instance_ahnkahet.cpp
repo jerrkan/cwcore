@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ EndScriptData */
 4 - Amanitar (Heroic only)
 */
 
-struct TRINITY_DLL_DECL instance_ahnkahet : public ScriptedInstance
+struct CW_DLL_DECL instance_ahnkahet : public ScriptedInstance
 {
     instance_ahnkahet(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 

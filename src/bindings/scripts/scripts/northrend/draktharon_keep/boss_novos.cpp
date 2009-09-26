@@ -32,7 +32,7 @@ update creature_template set scriptname = 'boss_novos' where entry = '';
 #define SAY_REUBBLE_1                          -1600004
 #define SAY_REUBBLE_2                          -1600005
 
-struct TRINITY_DLL_DECL boss_novosAI : public ScriptedAI
+struct CW_DLL_DECL boss_novosAI : public ScriptedAI
 {
     boss_novosAI(Creature *c) : ScriptedAI(c) {}
 

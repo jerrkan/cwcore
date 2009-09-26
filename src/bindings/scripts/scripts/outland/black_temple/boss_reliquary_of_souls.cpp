@@ -99,7 +99,7 @@ static Position2d Coords[]=
     {450.4, 168.3}
 };
 
-struct TRINITY_DLL_DECL npc_enslaved_soulAI : public ScriptedAI
+struct CW_DLL_DECL npc_enslaved_soulAI : public ScriptedAI
 {
     npc_enslaved_soulAI(Creature *c) : ScriptedAI(c) {}
 
@@ -116,7 +116,7 @@ struct TRINITY_DLL_DECL npc_enslaved_soulAI : public ScriptedAI
     void JustDied(Unit *killer);
 };
 
-struct TRINITY_DLL_DECL boss_reliquary_of_soulsAI : public ScriptedAI
+struct CW_DLL_DECL boss_reliquary_of_soulsAI : public ScriptedAI
 {
     boss_reliquary_of_soulsAI(Creature *c) : ScriptedAI(c)
     {
@@ -331,7 +331,7 @@ struct TRINITY_DLL_DECL boss_reliquary_of_soulsAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL boss_essence_of_sufferingAI : public ScriptedAI
+struct CW_DLL_DECL boss_essence_of_sufferingAI : public ScriptedAI
 {
     boss_essence_of_sufferingAI(Creature *c) : ScriptedAI(c) {}
 
@@ -449,7 +449,7 @@ struct TRINITY_DLL_DECL boss_essence_of_sufferingAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL boss_essence_of_desireAI : public ScriptedAI
+struct CW_DLL_DECL boss_essence_of_desireAI : public ScriptedAI
 {
     boss_essence_of_desireAI(Creature *c) : ScriptedAI(c) {}
 
@@ -545,7 +545,7 @@ struct TRINITY_DLL_DECL boss_essence_of_desireAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL boss_essence_of_angerAI : public ScriptedAI
+struct CW_DLL_DECL boss_essence_of_angerAI : public ScriptedAI
 {
     boss_essence_of_angerAI(Creature *c) : ScriptedAI(c) {}
 

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_GRIDDEFINES_H
-#define TRINITY_GRIDDEFINES_H
+#ifndef CW_GRIDDEFINES_H
+#define CW_GRIDDEFINES_H
 
 #include "Common.h"
 #include "GameSystem/NGrid.h"
@@ -78,7 +78,7 @@ typedef TypeMapContainer<AllGridObjectTypes> GridTypeMapContainer;
 typedef TypeMapContainer<AllWorldObjectTypes> WorldTypeMapContainer;
 
 template<const unsigned int LIMIT>
-struct TRINITY_DLL_DECL CoordPair
+struct CW_DLL_DECL CoordPair
 {
     CoordPair(uint32 x=0, uint32 y=0) : x_coord(x), y_coord(y) {}
     CoordPair(const CoordPair<LIMIT> &obj) : x_coord(obj.x_coord), y_coord(obj.y_coord) {}
@@ -130,7 +130,7 @@ struct TRINITY_DLL_DECL CoordPair
 typedef CoordPair<MAX_NUMBER_OF_GRIDS> GridPair;
 typedef CoordPair<TOTAL_NUMBER_OF_CELLS_PER_MAP> CellPair;
 
-namespace Trinity
+namespace CW
 {
     template<class RET_TYPE, int CENTER_VAL>
         inline RET_TYPE Compute(float x, float y, float center_offset, float size)

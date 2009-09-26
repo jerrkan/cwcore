@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_COMBATAI_H
-#define TRINITY_COMBATAI_H
+#ifndef CW_COMBATAI_H
+#define CW_COMBATAI_H
 
 #include "CreatureAI.h"
 #include "CreatureAIImpl.h"
 
 class Creature;
 
-class TRINITY_DLL_DECL AggressorAI : public CreatureAI
+class CW_DLL_DECL AggressorAI : public CreatureAI
 {
     public:
         explicit AggressorAI(Creature *c) : CreatureAI(c) {}
@@ -37,7 +37,7 @@ class TRINITY_DLL_DECL AggressorAI : public CreatureAI
 
 typedef std::vector<uint32> SpellVct;
 
-class TRINITY_DLL_SPEC CombatAI : public CreatureAI
+class CW_DLL_SPEC CombatAI : public CreatureAI
 {
     public:
         explicit CombatAI(Creature *c) : CreatureAI(c) {}
@@ -53,7 +53,7 @@ class TRINITY_DLL_SPEC CombatAI : public CreatureAI
         SpellVct spells;
 };
 
-class TRINITY_DLL_SPEC CasterAI : public CombatAI
+class CW_DLL_SPEC CasterAI : public CombatAI
 {
     public:
         explicit CasterAI(Creature *c) : CombatAI(c) { m_attackDist = MELEE_RANGE; }
@@ -65,7 +65,7 @@ class TRINITY_DLL_SPEC CasterAI : public CombatAI
         float m_attackDist;
 };
 
-struct TRINITY_DLL_SPEC ArchorAI : public CreatureAI
+struct CW_DLL_SPEC ArchorAI : public CreatureAI
 {
     public:
         explicit ArchorAI(Creature *c);
@@ -77,7 +77,7 @@ struct TRINITY_DLL_SPEC ArchorAI : public CreatureAI
         float m_minRange;
 };
 
-struct TRINITY_DLL_SPEC TurretAI : public CreatureAI
+struct CW_DLL_SPEC TurretAI : public CreatureAI
 {
     public:
         explicit TurretAI(Creature *c);

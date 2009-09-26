@@ -1,4 +1,4 @@
-/* Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+/* Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; either version 2 of the License, or
@@ -91,7 +91,7 @@ enum Creatures
     LADY_SACROLASH          =   25165
 };
 
-struct TRINITY_DLL_DECL boss_sacrolashAI : public ScriptedAI
+struct CW_DLL_DECL boss_sacrolashAI : public ScriptedAI
 {
     boss_sacrolashAI(Creature *c) : ScriptedAI(c)
     {
@@ -349,7 +349,7 @@ CreatureAI* GetAI_boss_sacrolash(Creature* pCreature)
     return new boss_sacrolashAI (pCreature);
 };
 
-struct TRINITY_DLL_DECL boss_alythessAI : public Scripted_NoMovementAI
+struct CW_DLL_DECL boss_alythessAI : public Scripted_NoMovementAI
 {
     boss_alythessAI(Creature *c) : Scripted_NoMovementAI(c)
     {
@@ -667,7 +667,7 @@ CreatureAI* GetAI_boss_alythess(Creature* pCreature)
     return new boss_alythessAI (pCreature);
 };
 
-struct TRINITY_DLL_DECL mob_shadow_imageAI : public ScriptedAI
+struct CW_DLL_DECL mob_shadow_imageAI : public ScriptedAI
 {
     mob_shadow_imageAI(Creature *c) : ScriptedAI(c) {}
 

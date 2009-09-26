@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -745,8 +745,8 @@ bool ChatHandler::HandleDebugEnterVehicle(const char * args)
     else
     {
         Creature *passenger = NULL;
-        Trinity::AllCreaturesOfEntryInRange check(m_session->GetPlayer(), entry, 20.0f);
-        Trinity::CreatureSearcher<Trinity::AllCreaturesOfEntryInRange> searcher(m_session->GetPlayer(), passenger, check);
+        CW::AllCreaturesOfEntryInRange check(m_session->GetPlayer(), entry, 20.0f);
+        CW::CreatureSearcher<CW::AllCreaturesOfEntryInRange> searcher(m_session->GetPlayer(), passenger, check);
         m_session->GetPlayer()->VisitNearbyObject(30.0f, searcher);
         if(!passenger || passenger == target)
             return false;
@@ -946,14 +946,14 @@ bool ChatHandler::HandleDebugSetValueCommand(const char* args)
     if(isint32)
     {
         iValue = (uint32)atoi(py);
-        sLog.outDebug(GetTrinityString(LANG_SET_UINT), GUID_LOPART(guid), Opcode, iValue);
+        sLog.outDebug(GetCWString(LANG_SET_UINT), GUID_LOPART(guid), Opcode, iValue);
         target->SetUInt32Value( Opcode , iValue );
         PSendSysMessage(LANG_SET_UINT_FIELD, GUID_LOPART(guid), Opcode,iValue);
     }
     else
     {
         fValue = (float)atof(py);
-        sLog.outDebug(GetTrinityString(LANG_SET_FLOAT), GUID_LOPART(guid), Opcode, fValue);
+        sLog.outDebug(GetCWString(LANG_SET_FLOAT), GUID_LOPART(guid), Opcode, fValue);
         target->SetFloatValue( Opcode , fValue );
         PSendSysMessage(LANG_SET_FLOAT_FIELD, GUID_LOPART(guid), Opcode,fValue);
     }
@@ -997,13 +997,13 @@ bool ChatHandler::HandleDebugGetValueCommand(const char* args)
     if(isint32)
     {
         iValue = target->GetUInt32Value( Opcode );
-        sLog.outDebug(GetTrinityString(LANG_GET_UINT), GUID_LOPART(guid), Opcode, iValue);
+        sLog.outDebug(GetCWString(LANG_GET_UINT), GUID_LOPART(guid), Opcode, iValue);
         PSendSysMessage(LANG_GET_UINT_FIELD, GUID_LOPART(guid), Opcode,    iValue);
     }
     else
     {
         fValue = target->GetFloatValue( Opcode );
-        sLog.outDebug(GetTrinityString(LANG_GET_FLOAT), GUID_LOPART(guid), Opcode, fValue);
+        sLog.outDebug(GetCWString(LANG_GET_FLOAT), GUID_LOPART(guid), Opcode, fValue);
         PSendSysMessage(LANG_GET_FLOAT_FIELD, GUID_LOPART(guid), Opcode, fValue);
     }
 
@@ -1030,7 +1030,7 @@ bool ChatHandler::HandleDebugMod32ValueCommand(const char* args)
         return false;
     }
 
-    sLog.outDebug(GetTrinityString(LANG_CHANGE_32BIT), Opcode, Value);
+    sLog.outDebug(GetCWString(LANG_CHANGE_32BIT), Opcode, Value);
 
     int CurrentValue = (int)m_session->GetPlayer( )->GetUInt32Value( Opcode );
 

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include "CellImpl.h"
 #include "CreatureAI.h"
 
-class TRINITY_DLL_DECL ObjectGridRespawnMover
+class CW_DLL_DECL ObjectGridRespawnMover
 {
     public:
         ObjectGridRespawnMover() {}
@@ -65,7 +65,7 @@ ObjectGridRespawnMover::Visit(CreatureMapType &m)
 
         float resp_x, resp_y, resp_z;
         c->GetRespawnCoord(resp_x, resp_y, resp_z);
-        CellPair resp_val = Trinity::ComputeCellPair(resp_x, resp_y);
+        CellPair resp_val = CW::ComputeCellPair(resp_x, resp_y);
         Cell resp_cell(resp_val);
 
         if(cur_cell.DiffGrid(resp_cell))

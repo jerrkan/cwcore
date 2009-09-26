@@ -86,7 +86,7 @@ enum
     SPELL_SUMMON_VOIDWALKERS             = 15092
 };
 
-struct TRINITY_DLL_DECL boss_doomrelAI : public ScriptedAI
+struct CW_DLL_DECL boss_doomrelAI : public ScriptedAI
 {
     boss_doomrelAI(Creature *c) : ScriptedAI(c)
     {

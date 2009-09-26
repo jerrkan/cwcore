@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,8 +159,8 @@ FleeingMovementGenerator<T>::_getPoint(T &owner, float &x, float &y, float &z)
         }
         temp_x = x + distance * cos(angle);
         temp_y = y + distance * sin(angle);
-        Trinity::NormalizeMapCoord(temp_x);
-        Trinity::NormalizeMapCoord(temp_y);
+        CW::NormalizeMapCoord(temp_x);
+        CW::NormalizeMapCoord(temp_y);
         if( owner.IsWithinLOS(temp_x,temp_y,z))
         {
             bool is_water_now = _map->IsInWater(x,y,z);

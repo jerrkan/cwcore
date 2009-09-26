@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -501,7 +501,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "spell_target_position",       SEC_ADMINISTRATOR, true,  &ChatHandler::HandleReloadSpellTargetPositionCommand,     "", NULL },
         { "spell_threats",               SEC_ADMINISTRATOR, true,  &ChatHandler::HandleReloadSpellThreatsCommand,            "", NULL },
         { "spell_disabled",              SEC_ADMINISTRATOR, true,  &ChatHandler::HandleReloadSpellDisabledCommand,           "", NULL },
-        { "trinity_string",              SEC_ADMINISTRATOR, true,  &ChatHandler::HandleReloadTrinityStringCommand,           "", NULL },
+        { "CW_string",              SEC_ADMINISTRATOR, true,  &ChatHandler::HandleReloadCWStringCommand,           "", NULL },
         { "auctions",                    SEC_ADMINISTRATOR, true,  &ChatHandler::HandleReloadAuctionsCommand,                "", NULL },
         { "waypoint_scripts",            SEC_ADMINISTRATOR, true,  &ChatHandler::HandleReloadWpScriptsCommand,               "", NULL },
         { "gm_tickets",                  SEC_ADMINISTRATOR, true,  &ChatHandler::HandleGMTicketReloadCommand,                "", NULL },
@@ -754,9 +754,9 @@ ChatCommand * ChatHandler::getCommandTable()
     return commandTable;
 }
 
-const char *ChatHandler::GetTrinityString(int32 entry) const
+const char *ChatHandler::GetCWString(int32 entry) const
 {
-    return m_session->GetTrinityString(entry);
+    return m_session->GetCWString(entry);
 }
 
 bool ChatHandler::isAvailable(ChatCommand const& cmd) const
@@ -893,12 +893,12 @@ void ChatHandler::SendGlobalGMSysMessage(const char *str)
 
 void ChatHandler::SendSysMessage(int32 entry)
 {
-    SendSysMessage(GetTrinityString(entry));
+    SendSysMessage(GetCWString(entry));
 }
 
 void ChatHandler::PSendSysMessage(int32 entry, ...)
 {
-    const char *format = GetTrinityString(entry);
+    const char *format = GetCWString(entry);
     va_list ap;
     char str [2048];
     va_start(ap, entry);
@@ -1985,8 +1985,8 @@ GameObject* ChatHandler::GetNearbyGameObject()
 
     Player* pl = m_session->GetPlayer();
     GameObject* obj = NULL;
-    Trinity::NearestGameObjectCheck check(*pl);
-    Trinity::GameObjectLastSearcher<Trinity::NearestGameObjectCheck> searcher(pl, obj, check);
+    CW::NearestGameObjectCheck check(*pl);
+    CW::GameObjectLastSearcher<CW::NearestGameObjectCheck> searcher(pl, obj, check);
     pl->VisitNearbyGridObject(999, searcher);
     return obj;
 }
@@ -2003,14 +2003,14 @@ GameObject* ChatHandler::GetObjectGlobalyWithGuidOrNearWithDbGuid(uint32 lowguid
     if(!obj && objmgr.GetGOData(lowguid))                   // guid is DB guid of object
     {
         // search near player then
-        CellPair p(Trinity::ComputeCellPair(pl->GetPositionX(), pl->GetPositionY()));
+        CellPair p(CW::ComputeCellPair(pl->GetPositionX(), pl->GetPositionY()));
         Cell cell(p);
         cell.data.Part.reserved = ALL_DISTRICT;
 
         MaNGOS::GameObjectWithDbGUIDCheck go_check(*pl,lowguid);
         MaNGOS::GameObjectSearcher<MaNGOS::GameObjectWithDbGUIDCheck> checker(pl,obj,go_check);
 
-        TypeContainerVisitor<Trinity::GameObjectSearcher<Trinity::GameObjectWithDbGUIDCheck>, GridTypeMapContainer > object_checker(checker);
+        TypeContainerVisitor<CW::GameObjectSearcher<CW::GameObjectWithDbGUIDCheck>, GridTypeMapContainer > object_checker(checker);
         CellLock<GridReadGuard> cell_lock(cell, p);
         cell_lock->Visit(cell_lock, object_checker, *pl->GetMap());
     }
@@ -2291,7 +2291,7 @@ int ChatHandler::GetSessionDbLocaleIndex() const
 
 const char *CliHandler::GetMangosString(int32 entry) const
 {
-    return objmgr.GetTrinityStringForDBCLocale(entry);
+    return objmgr.GetCWStringForDBCLocale(entry);
 }
 
 bool CliHandler::isAvailable(ChatCommand const& cmd) const
@@ -2308,7 +2308,7 @@ void CliHandler::SendSysMessage(const char *str)
 
 std::string CliHandler::GetNameLink() const
 {
-    return GetTrinityString(LANG_CONSOLE_COMMAND);
+    return GetCWString(LANG_CONSOLE_COMMAND);
 }
 
 bool CliHandler::needReportToTarget(Player* /*chr*/) const

@@ -192,7 +192,7 @@ enum
     SPELL_SUMMON_WORM             = 46800,
 };
 
-struct TRINITY_DLL_DECL npc_sinkhole_kill_creditAI : public ScriptedAI
+struct CW_DLL_DECL npc_sinkhole_kill_creditAI : public ScriptedAI
 {
     npc_sinkhole_kill_creditAI(Creature* c) : ScriptedAI(c){}
 
@@ -296,7 +296,7 @@ CreatureAI* GetAI_npc_sinkhole_kill_credit(Creature* pCreature)
 ## npc_khunok_the_behemoth
 ######*/
 
-struct TRINITY_DLL_DECL npc_khunok_the_behemothAI : public ScriptedAI
+struct CW_DLL_DECL npc_khunok_the_behemothAI : public ScriptedAI
 {
     npc_khunok_the_behemothAI(Creature *c) : ScriptedAI(c) {}
 
@@ -453,7 +453,7 @@ const uint32 nerubarVictims[3] =
 {
     45526, 45527, 45514
 };
-struct TRINITY_DLL_DECL mob_nerubar_victimAI : public ScriptedAI
+struct CW_DLL_DECL mob_nerubar_victimAI : public ScriptedAI
 {
     mob_nerubar_victimAI(Creature *c) : ScriptedAI(c) {}
 

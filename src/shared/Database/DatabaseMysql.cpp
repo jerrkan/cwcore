@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,7 +153,7 @@ bool DatabaseMysql::Initialize(const char *infoString)
         // by default. In crash case you can lose data!!!
         // So better to turn this off
         // ---
-        // This is wrong since Trinity use transactions,
+        // This is wrong since CW use transactions,
         // autocommit is turned of during it.
         // Setting it to on makes atomic updates work
         if (!mysql_autocommit(mMysql, 1))
@@ -211,7 +211,7 @@ bool DatabaseMysql::_Query(const char *sql, MYSQL_RES **pResult, MYSQL_FIELD **p
         }
         else
         {
-            #ifdef TRINITY_DEBUG
+            #ifdef CW_DEBUG
             sLog.outDebug("[%u ms] SQL: %s", getMSTimeDiff(_s,getMSTime()), sql );
             #endif
         }
@@ -316,7 +316,7 @@ bool DatabaseMysql::DirectExecute(const char* sql)
         }
         else
         {
-            #ifdef TRINITY_DEBUG
+            #ifdef CW_DEBUG
             sLog.outDebug("[%u ms] SQL: %s", getMSTimeDiff(_s,getMSTime()), sql );
             #endif
         }

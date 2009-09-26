@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -5758,8 +5758,8 @@ void Spell::EffectSanctuary(uint32 /*i*/)
         return;
 
     std::list<Unit*> targets;
-    Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(unitTarget, unitTarget, World::GetMaxVisibleDistance());
-    Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(unitTarget, targets, u_check);
+    CW::AnyUnfriendlyUnitInObjectRangeCheck u_check(unitTarget, unitTarget, World::GetMaxVisibleDistance());
+    CW::UnitListSearcher<CW::AnyUnfriendlyUnitInObjectRangeCheck> searcher(unitTarget, targets, u_check);
     unitTarget->VisitNearbyObject(World::GetMaxVisibleDistance(), searcher);
     for(std::list<Unit*>::iterator iter = targets.begin(); iter != targets.end(); ++iter)
     {

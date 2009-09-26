@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,8 +55,8 @@ ConfusedMovementGenerator<T>::Initialize(T &unit)
         i_waypoints[idx][1] = y + wanderY;
 
         // prevent invalid coordinates generation
-        Trinity::NormalizeMapCoord(i_waypoints[idx][0]);
-        Trinity::NormalizeMapCoord(i_waypoints[idx][1]);
+        CW::NormalizeMapCoord(i_waypoints[idx][0]);
+        CW::NormalizeMapCoord(i_waypoints[idx][1]);
 
         bool is_water = map->IsInWater(i_waypoints[idx][0],i_waypoints[idx][1],z);
         // if generated wrong path just ignore

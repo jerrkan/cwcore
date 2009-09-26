@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -145,7 +145,7 @@ namespace VMAP
         public:
             // public for debug
             G3D::Vector3 convertPositionToInternalRep(float x, float y, float z) const;
-            G3D::Vector3 convertPositionToTrinityRep(float x, float y, float z) const;
+            G3D::Vector3 convertPositionToCWRep(float x, float y, float z) const;
             std::string getDirFileName(unsigned int pMapId) const;
             std::string getDirFileName(unsigned int pMapId, int x, int y) const;
             MapTree* getInstanceMapTree(int pMapId) { return(iInstanceMapTrees.get(pMapId)); }

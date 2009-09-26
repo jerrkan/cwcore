@@ -58,7 +58,7 @@ enum
 ## Boss Loken
 ######*/
 
-struct TRINITY_DLL_DECL boss_lokenAI : public ScriptedAI
+struct CW_DLL_DECL boss_lokenAI : public ScriptedAI
 {
     boss_lokenAI(Creature* pCreature) : ScriptedAI(pCreature)
     {

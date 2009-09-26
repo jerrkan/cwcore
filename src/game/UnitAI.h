@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_UNITAI_H
-#define TRINITY_UNITAI_H
+#ifndef CW_UNITAI_H
+#define CW_UNITAI_H
 
 #include "Platform/Define.h"
 #include <list>
@@ -39,7 +39,7 @@ enum SelectAggroTarget
     SELECT_TARGET_FARTHEST,
 };
 
-class TRINITY_DLL_SPEC UnitAI
+class CW_DLL_SPEC UnitAI
 {
     protected:
         Unit * const me;
@@ -82,7 +82,7 @@ class TRINITY_DLL_SPEC UnitAI
         static void FillAISpellInfo();
 };
 
-class TRINITY_DLL_SPEC PlayerAI : public UnitAI
+class CW_DLL_SPEC PlayerAI : public UnitAI
 {
     protected:
         Player* const me;
@@ -92,7 +92,7 @@ class TRINITY_DLL_SPEC PlayerAI : public UnitAI
         void OnCharmed(bool apply);
 };
 
-class TRINITY_DLL_SPEC SimpleCharmedAI : public PlayerAI
+class CW_DLL_SPEC SimpleCharmedAI : public PlayerAI
 {
     public:
         void UpdateAI(const uint32 diff);

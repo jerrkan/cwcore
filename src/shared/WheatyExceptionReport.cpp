@@ -15,8 +15,9 @@
 #include <dbghelp.h>
 #include "WheatyExceptionReport.h"
 #include "SystemConfig.h"
-#include "revision.h"
+#include "revision_nr.h"
 #define CrashFolder _T("Crashes")
+#define _FULLVERSION (REVISION_NR)
 //#pragma comment(linker, "/defaultlib:dbghelp.lib")
 
 inline LPTSTR ErrorMessage(DWORD dw)

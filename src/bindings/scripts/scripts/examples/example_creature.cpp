@@ -66,7 +66,7 @@ enum
 //List of gossip item texts. Items will appear in the gossip window.
 #define GOSSIP_ITEM     "I'm looking for a fight"
 
-struct TRINITY_DLL_DECL example_creatureAI : public ScriptedAI
+struct CW_DLL_DECL example_creatureAI : public ScriptedAI
 {
     //*** HANDLED FUNCTION ***
     //This is the constructor, called only once when the Creature is first created

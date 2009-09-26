@@ -1,4 +1,4 @@
-/* Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+/* Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * Thanks to the original authors: ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  *
@@ -40,7 +40,7 @@ class SummonList : public std::list<uint64>
         Creature *m_creature;
 };
 
-struct TRINITY_DLL_DECL ScriptedAI : public CreatureAI
+struct CW_DLL_DECL ScriptedAI : public CreatureAI
 {
     explicit ScriptedAI(Creature* pCreature);
     ~ScriptedAI() {}
@@ -176,7 +176,7 @@ struct TRINITY_DLL_DECL ScriptedAI : public CreatureAI
         uint32 m_uiEvadeCheckCooldown;
 };
 
-struct TRINITY_DLL_DECL Scripted_NoMovementAI : public ScriptedAI
+struct CW_DLL_DECL Scripted_NoMovementAI : public ScriptedAI
 {
     Scripted_NoMovementAI(Creature* creature) : ScriptedAI(creature) {}
 
@@ -185,7 +185,7 @@ struct TRINITY_DLL_DECL Scripted_NoMovementAI : public ScriptedAI
     void AttackStart(Unit* who);
 };
 
-struct TRINITY_DLL_DECL BossAI : public ScriptedAI
+struct CW_DLL_DECL BossAI : public ScriptedAI
 {
     BossAI(Creature *c, uint32 id);
 

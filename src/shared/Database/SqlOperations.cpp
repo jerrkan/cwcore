@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ void SqlQuery::Execute(Database *db)
 void SqlResultQueue::Update()
 {
     /// execute the callbacks waiting in the synchronization queue
-    Trinity::IQueryCallback* callback;
+    CW::IQueryCallback* callback;
     while (next(callback))
     {
         callback->Execute();
@@ -81,7 +81,7 @@ void SqlResultQueue::Update()
     }
 }
 
-bool SqlQueryHolder::Execute(Trinity::IQueryCallback * callback, SqlDelayThread *thread, SqlResultQueue *queue)
+bool SqlQueryHolder::Execute(CW::IQueryCallback * callback, SqlDelayThread *thread, SqlResultQueue *queue)
 {
     if(!callback || !thread || !queue)
         return false;

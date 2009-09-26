@@ -40,7 +40,7 @@ EndContentData */
 
 #define GOSSIP_BLY                  "[PH] In that case, I will take my reward!"
 
-struct TRINITY_DLL_DECL npc_sergeant_blyAI : public ScriptedAI
+struct CW_DLL_DECL npc_sergeant_blyAI : public ScriptedAI
 {
     npc_sergeant_blyAI(Creature *c) : ScriptedAI(c)
     {
@@ -50,7 +50,7 @@ struct TRINITY_DLL_DECL npc_sergeant_blyAI : public ScriptedAI
     //ScriptedInstance* pInstance;
 
     uint32 ShieldBash_Timer;
-    uint32 Revenge_Timer;                                   //this is wrong, spell should never be used unless m_creature->getVictim() dodge, parry or block attack. Trinity support required.
+    uint32 Revenge_Timer;                                   //this is wrong, spell should never be used unless m_creature->getVictim() dodge, parry or block attack. CW support required.
 
     void Reset()
     {
@@ -137,7 +137,7 @@ bool GossipSelect_npc_sergeant_bly(Player* pPlayer, Creature* pCreature, uint32 
 
 #define GOSSIP_WEEGLI               "[PH] Please blow up the door."
 
-struct TRINITY_DLL_DECL npc_weegli_blastfuseAI : public ScriptedAI
+struct CW_DLL_DECL npc_weegli_blastfuseAI : public ScriptedAI
 {
     npc_weegli_blastfuseAI(Creature *c) : ScriptedAI(c)
     {

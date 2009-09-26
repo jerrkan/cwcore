@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ private:
     uint32 m_UpdateTimer;
 };
 
-#define sOutdoorPvPMgr Trinity::Singleton<OutdoorPvPMgr>::Instance()
+#define sOutdoorPvPMgr CW::Singleton<OutdoorPvPMgr>::Instance()
 
 #endif /*OUTDOOR_PVP_MGR_H_*/
 

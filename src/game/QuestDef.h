@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITYCORE_QUEST_H
-#define TRINITYCORE_QUEST_H
+#ifndef CWCORE_QUEST_H
+#define CWCORE_QUEST_H
 
 #include "Platform/Define.h"
 #include "Database/DatabaseEnv.h"
@@ -136,16 +136,16 @@ enum __QuestFlags
     QUEST_FLAGS_DAILY          = 0x00001000,                // Used to know quest is Daily one
     QUEST_FLAGS_WEEKLY         = 0x00008000,
 
-    // Trinity flags for set SpecialFlags in DB if required but used only at server
-    QUEST_TRINITY_FLAGS_REPEATABLE           = 0x010000,     // Set by 1 in SpecialFlags from DB
-    QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT = 0x020000,     // Set by 2 in SpecialFlags from DB (if reequired area explore, spell SPELL_EFFECT_QUEST_COMPLETE casting, table `*_script` command SCRIPT_COMMAND_QUEST_EXPLORED use, set from script DLL)
-    QUEST_TRINITY_FLAGS_DB_ALLOWED = 0xFFFF | QUEST_TRINITY_FLAGS_REPEATABLE | QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT,
+    // CW flags for set SpecialFlags in DB if required but used only at server
+    QUEST_CW_FLAGS_REPEATABLE           = 0x010000,     // Set by 1 in SpecialFlags from DB
+    QUEST_CW_FLAGS_EXPLORATION_OR_EVENT = 0x020000,     // Set by 2 in SpecialFlags from DB (if reequired area explore, spell SPELL_EFFECT_QUEST_COMPLETE casting, table `*_script` command SCRIPT_COMMAND_QUEST_EXPLORED use, set from script DLL)
+    QUEST_CW_FLAGS_DB_ALLOWED = 0xFFFF | QUEST_CW_FLAGS_REPEATABLE | QUEST_CW_FLAGS_EXPLORATION_OR_EVENT,
 
-    // Trinity flags for internal use only
-    QUEST_TRINITY_FLAGS_DELIVER              = 0x040000,     // Internal flag computed only
-    QUEST_TRINITY_FLAGS_SPEAKTO              = 0x080000,     // Internal flag computed only
-    QUEST_TRINITY_FLAGS_KILL_OR_CAST         = 0x100000,     // Internal flag computed only
-    QUEST_TRINITY_FLAGS_TIMED                = 0x200000,     // Internal flag computed only
+    // CW flags for internal use only
+    QUEST_CW_FLAGS_DELIVER              = 0x040000,     // Internal flag computed only
+    QUEST_CW_FLAGS_SPEAKTO              = 0x080000,     // Internal flag computed only
+    QUEST_CW_FLAGS_KILL_OR_CAST         = 0x100000,     // Internal flag computed only
+    QUEST_CW_FLAGS_TIMED                = 0x200000,     // Internal flag computed only
 };
 
 struct QuestLocale
@@ -224,7 +224,7 @@ class Quest
         uint32 GetCompleteEmote() const { return CompleteEmote; }
         uint32 GetQuestStartScript() const { return QuestStartScript; }
         uint32 GetQuestCompleteScript() const { return QuestCompleteScript; }
-        bool   IsRepeatable() const { return QuestFlags & QUEST_TRINITY_FLAGS_REPEATABLE; }
+        bool   IsRepeatable() const { return QuestFlags & QUEST_CW_FLAGS_REPEATABLE; }
         bool   IsAutoComplete() const { return QuestMethod ? false : true; }
         uint32 GetFlags() const { return QuestFlags; }
         bool   IsDaily() const { return QuestFlags & (QUEST_FLAGS_DAILY | QUEST_FLAGS_WEEKLY); }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ enum
     NPC_RAGECLAW               = 29686
 };
 
-struct TRINITY_DLL_DECL npc_drakuru_shacklesAI : public ScriptedAI
+struct CW_DLL_DECL npc_drakuru_shacklesAI : public ScriptedAI
 {
     npc_drakuru_shacklesAI(Creature *c) : ScriptedAI(c) {}
 
@@ -108,7 +108,7 @@ const char * SAY_RAGECLAW_2 =      "ARRRROOOOGGGGAAAA!";
 const char * SAY_RAGECLAW_3 =      "No more mister nice wolvar!";
 #define SAY_RAGECLAW RAND(SAY_RAGECLAW_1,SAY_RAGECLAW_2,SAY_RAGECLAW_3)
 
-struct TRINITY_DLL_DECL npc_captured_rageclawAI : public ScriptedAI
+struct CW_DLL_DECL npc_captured_rageclawAI : public ScriptedAI
 {
     npc_captured_rageclawAI(Creature *c) : ScriptedAI(c) {}
 

@@ -65,7 +65,7 @@ update creature_template set scriptname = '' where entry = '';
 // you do not have access to until you kill the Mage-Lord Urom
 #define SPELL_EMERALD_DREAM_FUNNEL                 50344         //(60 yds) - Channeled - Transfers 5% of the caster's max health to a friendly drake every second for 10 seconds as long as the caster channels.
 
-struct TRINITY_DLL_DECL boss_eregosAI : public ScriptedAI
+struct CW_DLL_DECL boss_eregosAI : public ScriptedAI
 {
     boss_eregosAI(Creature *c) : ScriptedAI(c) {}
 

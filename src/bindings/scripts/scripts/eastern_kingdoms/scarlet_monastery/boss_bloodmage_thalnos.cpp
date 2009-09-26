@@ -35,7 +35,7 @@ enum
     SPELL_FIRENOVA          = 16079,
 };
 
-struct TRINITY_DLL_DECL boss_bloodmage_thalnosAI : public ScriptedAI
+struct CW_DLL_DECL boss_bloodmage_thalnosAI : public ScriptedAI
 {
     boss_bloodmage_thalnosAI(Creature *c) : ScriptedAI(c) {}
 

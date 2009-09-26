@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_CELL_H
-#define TRINITY_CELL_H
+#ifndef CW_CELL_H
+#define CW_CELL_H
 
 #include <cmath>
 
@@ -46,7 +46,7 @@ enum District
 
 template<class T> struct CellLock;
 
-struct TRINITY_DLL_DECL Cell
+struct CW_DLL_DECL Cell
 {
     Cell() { data.All = 0; }
     Cell(const Cell &cell) { data.All = cell.data.All; }
@@ -148,7 +148,7 @@ struct TRINITY_DLL_DECL Cell
 };
 
 template<class T>
-struct TRINITY_DLL_DECL CellLock
+struct CW_DLL_DECL CellLock
 {
     const Cell& i_cell;
     const CellPair &i_cellPair;

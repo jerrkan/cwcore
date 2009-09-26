@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ enum
     MOB_DALRONN_GHOST                           = 27389
 };
 
-struct TRINITY_DLL_DECL boss_skarvald_the_constructorAI : public ScriptedAI
+struct CW_DLL_DECL boss_skarvald_the_constructorAI : public ScriptedAI
 {
     boss_skarvald_the_constructorAI(Creature *c) : ScriptedAI(c)
     {
@@ -203,7 +203,7 @@ CreatureAI* GetAI_boss_skarvald_the_constructor(Creature* pCreature)
     return new boss_skarvald_the_constructorAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL boss_dalronn_the_controllerAI : public ScriptedAI
+struct CW_DLL_DECL boss_dalronn_the_controllerAI : public ScriptedAI
 {
     boss_dalronn_the_controllerAI(Creature *c) : ScriptedAI(c)
     {

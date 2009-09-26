@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef TRINITYCORE_GOSSIP_H
-#define TRINITYCORE_GOSSIP_H
+#ifndef CWCORE_GOSSIP_H
+#define CWCORE_GOSSIP_H
 
 #include "Common.h"
 #include "QuestDef.h"
@@ -97,7 +97,7 @@ struct QuestMenuItem
 
 typedef std::vector<QuestMenuItem> QuestMenuItemList;
 
-class TRINITY_DLL_SPEC GossipMenu
+class CW_DLL_SPEC GossipMenu
 {
     public:
         GossipMenu();
@@ -165,7 +165,7 @@ class QuestMenu
         QuestMenuItemList m_qItems;
 };
 
-class TRINITY_DLL_SPEC PlayerMenu
+class CW_DLL_SPEC PlayerMenu
 {
     private:
         GossipMenu mGossipMenu;

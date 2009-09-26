@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef TRINITY_GRIDNOTIFIERS_H
-#define TRINITY_GRIDNOTIFIERS_H
+#ifndef CW_GRIDNOTIFIERS_H
+#define CW_GRIDNOTIFIERS_H
 
 #include "ObjectGridLoader.h"
 #include "UpdateData.h"
@@ -36,9 +36,9 @@
 class Player;
 //class Map;
 
-namespace Trinity
+namespace CW
 {
-    struct TRINITY_DLL_DECL PlayerVisibilityNotifier
+    struct CW_DLL_DECL PlayerVisibilityNotifier
     {
         Player &i_player;
         UpdateData i_data;
@@ -52,7 +52,7 @@ namespace Trinity
         void Notify(void);
     };
 
-    struct TRINITY_DLL_DECL PlayerRelocationNotifier : public PlayerVisibilityNotifier
+    struct CW_DLL_DECL PlayerRelocationNotifier : public PlayerVisibilityNotifier
     {
         PlayerRelocationNotifier(Player &player) : PlayerVisibilityNotifier(player) {}
         template<class T> inline void Visit(GridRefManager<T> &m) { PlayerVisibilityNotifier::Visit(m); }
@@ -62,7 +62,7 @@ namespace Trinity
         #endif
     };
 
-    struct TRINITY_DLL_DECL CreatureRelocationNotifier
+    struct CW_DLL_DECL CreatureRelocationNotifier
     {
         Creature &i_creature;
         CreatureRelocationNotifier(Creature &c) : i_creature(c) {}
@@ -73,7 +73,7 @@ namespace Trinity
         #endif
     };
 
-    struct TRINITY_DLL_DECL VisibleChangesNotifier
+    struct CW_DLL_DECL VisibleChangesNotifier
     {
         WorldObject &i_object;
 
@@ -84,7 +84,7 @@ namespace Trinity
         void Visit(DynamicObjectMapType &);
     };
 
-    struct TRINITY_DLL_DECL GridUpdater
+    struct CW_DLL_DECL GridUpdater
     {
         GridType &i_grid;
         uint32 i_timeDiff;
@@ -103,7 +103,7 @@ namespace Trinity
         void Visit(CorpseMapType &m) { updateObjects<Corpse>(m); }
     };
 
-    struct TRINITY_DLL_DECL MessageDistDeliverer
+    struct CW_DLL_DECL MessageDistDeliverer
     {
         WorldObject *i_source;
         WorldPacket *i_message;
@@ -130,7 +130,7 @@ namespace Trinity
         }
     };
 
-    struct TRINITY_DLL_DECL ObjectUpdater
+    struct CW_DLL_DECL ObjectUpdater
     {
         uint32 i_timeDiff;
         explicit ObjectUpdater(const uint32 &diff) : i_timeDiff(diff) {}
@@ -141,7 +141,7 @@ namespace Trinity
     };
 
     template<class T>
-        struct TRINITY_DLL_DECL ObjectAccessorNotifier
+        struct CW_DLL_DECL ObjectAccessorNotifier
     {
         T *& i_object;
 
@@ -167,7 +167,7 @@ namespace Trinity
         template<class NOT_INTERESTED> void Visit(GridRefManager<NOT_INTERESTED> &) {}
     };
 
-    struct TRINITY_DLL_DECL DynamicObjectUpdater
+    struct CW_DLL_DECL DynamicObjectUpdater
     {
         DynamicObject &i_dynobject;
         Unit* i_check;
@@ -193,7 +193,7 @@ namespace Trinity
     // WorldObject searchers & workers
 
     template<class Check>
-        struct TRINITY_DLL_DECL WorldObjectSearcher
+        struct CW_DLL_DECL WorldObjectSearcher
     {
         uint32 i_phaseMask;
         WorldObject* &i_object;
@@ -212,7 +212,7 @@ namespace Trinity
     };
 
     template<class Check>
-        struct TRINITY_DLL_DECL WorldObjectListSearcher
+        struct CW_DLL_DECL WorldObjectListSearcher
     {
         uint32 i_phaseMask;
         std::list<WorldObject*> &i_objects;
@@ -231,7 +231,7 @@ namespace Trinity
     };
 
     template<class Do>
-        struct TRINITY_DLL_DECL WorldObjectWorker
+        struct CW_DLL_DECL WorldObjectWorker
     {
         uint32 i_phaseMask;
         Do const& i_do;
@@ -279,7 +279,7 @@ namespace Trinity
     // Gameobject searchers
 
     template<class Check>
-        struct TRINITY_DLL_DECL GameObjectSearcher
+        struct CW_DLL_DECL GameObjectSearcher
     {
         uint32 i_phaseMask;
         GameObject* &i_object;
@@ -295,7 +295,7 @@ namespace Trinity
 
     // Last accepted by Check GO if any (Check can change requirements at each call)
     template<class Check>
-        struct TRINITY_DLL_DECL GameObjectLastSearcher
+        struct CW_DLL_DECL GameObjectLastSearcher
     {
         uint32 i_phaseMask;
         GameObject* &i_object;
@@ -310,7 +310,7 @@ namespace Trinity
     };
 
     template<class Check>
-        struct TRINITY_DLL_DECL GameObjectListSearcher
+        struct CW_DLL_DECL GameObjectListSearcher
     {
         uint32 i_phaseMask;
         std::list<GameObject*> &i_objects;
@@ -328,7 +328,7 @@ namespace Trinity
 
     // First accepted by Check Unit if any
     template<class Check>
-        struct TRINITY_DLL_DECL UnitSearcher
+        struct CW_DLL_DECL UnitSearcher
     {
         uint32 i_phaseMask;
         Unit* &i_object;
@@ -345,7 +345,7 @@ namespace Trinity
 
     // Last accepted by Check Unit if any (Check can change requirements at each call)
     template<class Check>
-        struct TRINITY_DLL_DECL UnitLastSearcher
+        struct CW_DLL_DECL UnitLastSearcher
     {
         uint32 i_phaseMask;
         Unit* &i_object;
@@ -362,7 +362,7 @@ namespace Trinity
 
     // All accepted by Check units if any
     template<class Check>
-        struct TRINITY_DLL_DECL UnitListSearcher
+        struct CW_DLL_DECL UnitListSearcher
     {
         uint32 i_phaseMask;
         std::list<Unit*> &i_objects;
@@ -380,7 +380,7 @@ namespace Trinity
     // Creature searchers
 
     template<class Check>
-        struct TRINITY_DLL_DECL CreatureSearcher
+        struct CW_DLL_DECL CreatureSearcher
     {
         uint32 i_phaseMask;
         Creature* &i_object;
@@ -396,7 +396,7 @@ namespace Trinity
 
     // Last accepted by Check Creature if any (Check can change requirements at each call)
     template<class Check>
-        struct TRINITY_DLL_DECL CreatureLastSearcher
+        struct CW_DLL_DECL CreatureLastSearcher
     {
         uint32 i_phaseMask;
         Creature* &i_object;
@@ -411,7 +411,7 @@ namespace Trinity
     };
 
     template<class Check>
-        struct TRINITY_DLL_DECL CreatureListSearcher
+        struct CW_DLL_DECL CreatureListSearcher
     {
         uint32 i_phaseMask;
         std::list<Creature*> &i_objects;
@@ -447,7 +447,7 @@ namespace Trinity
     // Player searchers
 
     template<class Check>
-    struct TRINITY_DLL_DECL PlayerSearcher
+    struct CW_DLL_DECL PlayerSearcher
     {
         uint32 i_phaseMask;
         Player* &i_object;
@@ -462,7 +462,7 @@ namespace Trinity
     };
 
     template<class Check>
-        struct TRINITY_DLL_DECL PlayerListSearcher
+        struct CW_DLL_DECL PlayerListSearcher
     {
         uint32 i_phaseMask;
         std::list<Player*> &i_objects;
@@ -477,7 +477,7 @@ namespace Trinity
     };
 
     template<class Do>
-    struct TRINITY_DLL_DECL PlayerWorker
+    struct CW_DLL_DECL PlayerWorker
     {
         uint32 i_phaseMask;
         Do& i_do;
@@ -496,7 +496,7 @@ namespace Trinity
     };
 
     template<class Do>
-    struct TRINITY_DLL_DECL PlayerDistWorker
+    struct CW_DLL_DECL PlayerDistWorker
     {
         WorldObject const* i_searcher;
         float i_dist;

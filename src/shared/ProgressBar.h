@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef TRINITYCORE_PROGRESSBAR_H
-#define TRINITYCORE_PROGRESSBAR_H
+#ifndef CWCORE_PROGRESSBAR_H
+#define CWCORE_PROGRESSBAR_H
 
 #include "Platform/Define.h"
 
-class TRINITY_DLL_SPEC barGoLink
+class CW_DLL_SPEC barGoLink
 {
     static char const * const empty;
     static char const * const full;

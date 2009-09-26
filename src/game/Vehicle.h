@@ -40,7 +40,7 @@ struct VehicleSeat
 
 typedef std::map<int8, VehicleSeat> SeatMap;
 
-class TRINITY_DLL_SPEC Vehicle
+class CW_DLL_SPEC Vehicle
 {
     public:
         explicit Vehicle(Unit *unit, VehicleEntry const *vehInfo);

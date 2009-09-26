@@ -51,7 +51,7 @@ EndScriptData */
 #define SPELL_FROST_BUFFET          (HeroicMode?38142:33528)
 #define SPELL_SHADOW_BUFFET         (HeroicMode?38143:33529)
 
-struct TRINITY_DLL_DECL boss_darkweaver_sythAI : public ScriptedAI
+struct CW_DLL_DECL boss_darkweaver_sythAI : public ScriptedAI
 {
     boss_darkweaver_sythAI(Creature *c) : ScriptedAI(c)
 
@@ -203,7 +203,7 @@ CreatureAI* GetAI_boss_darkweaver_syth(Creature* pCreature)
 
 /* ELEMENTALS */
 
-struct TRINITY_DLL_DECL mob_syth_fireAI : public ScriptedAI
+struct CW_DLL_DECL mob_syth_fireAI : public ScriptedAI
 {
     mob_syth_fireAI(Creature *c) : ScriptedAI(c)
 
@@ -254,7 +254,7 @@ CreatureAI* GetAI_mob_syth_fire(Creature* pCreature)
     return new mob_syth_fireAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL mob_syth_arcaneAI : public ScriptedAI
+struct CW_DLL_DECL mob_syth_arcaneAI : public ScriptedAI
 {
     mob_syth_arcaneAI(Creature *c) : ScriptedAI(c)
 
@@ -305,7 +305,7 @@ CreatureAI* GetAI_mob_syth_arcane(Creature* pCreature)
     return new mob_syth_arcaneAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL mob_syth_frostAI : public ScriptedAI
+struct CW_DLL_DECL mob_syth_frostAI : public ScriptedAI
 {
     mob_syth_frostAI(Creature *c) : ScriptedAI(c)
 
@@ -356,7 +356,7 @@ CreatureAI* GetAI_mob_syth_frost(Creature* pCreature)
     return new mob_syth_frostAI (pCreature);
 }
 
-struct TRINITY_DLL_DECL mob_syth_shadowAI : public ScriptedAI
+struct CW_DLL_DECL mob_syth_shadowAI : public ScriptedAI
 {
     mob_syth_shadowAI(Creature *c) : ScriptedAI(c)
 

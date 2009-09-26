@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef TRINITY_MAP_H
-#define TRINITY_MAP_H
+#ifndef CW_MAP_H
+#define CW_MAP_H
 
 #include "Platform/Define.h"
 #include "Policies/ThreadingModel.h"
@@ -59,14 +59,14 @@ template<class MUTEX, class LOCK_TYPE>
 struct RGuard
 {
     RGuard(MUTEX &l) : i_lock(l.getReadLock()) {}
-    Trinity::GeneralLock<LOCK_TYPE> i_lock;
+    CW::GeneralLock<LOCK_TYPE> i_lock;
 };
 
 template<class MUTEX, class LOCK_TYPE>
 struct WGuard
 {
     WGuard(MUTEX &l) : i_lock(l.getWriteLock()) {}
-    Trinity::GeneralLock<LOCK_TYPE> i_lock;
+    CW::GeneralLock<LOCK_TYPE> i_lock;
 };
 
 typedef RGuard<GridRWLock, ACE_Thread_Mutex> GridReadGuard;
@@ -290,7 +290,7 @@ class MANGOS_DLL_SPEC Map : public GridRefManager<NGridType>, public MaNGOS::Obj
 
         bool IsRemovalGrid(float x, float y) const
         {
-            GridPair p = Trinity::ComputeGridPair(x, y);
+            GridPair p = CW::ComputeGridPair(x, y);
             return( !getNGrid(p.x_coord, p.y_coord) || getNGrid(p.x_coord, p.y_coord)->GetGridState() == GRID_STATE_REMOVAL );
         }
 
@@ -576,7 +576,7 @@ enum InstanceResetMethod
     INSTANCE_RESET_RESPAWN_DELAY
 };
 
-class TRINITY_DLL_SPEC InstanceMap : public Map
+class CW_DLL_SPEC InstanceMap : public Map
 {
     public:
         InstanceMap(uint32 id, time_t, uint32 InstanceId, uint8 SpawnMode, Map* _parent);
@@ -601,7 +601,7 @@ class TRINITY_DLL_SPEC InstanceMap : public Map
         uint32 i_script_id;
 };
 
-class TRINITY_DLL_SPEC BattleGroundMap : public Map
+class CW_DLL_SPEC BattleGroundMap : public Map
 {
     public:
         BattleGroundMap(uint32 id, time_t, uint32 InstanceId, Map* _parent);
@@ -646,7 +646,7 @@ inline void
 Map::VisitAll(const float &x, const float &y, float radius, NOTIFIER &notifier)
 {
     float x_off, y_off;
-    CellPair p(Trinity::ComputeCellPair(x, y, x_off, y_off));
+    CellPair p(CW::ComputeCellPair(x, y, x_off, y_off));
     Cell cell(p);
     cell.data.Part.reserved = ALL_DISTRICT;
     cell.SetNoCreate();
@@ -663,7 +663,7 @@ inline void
 Map::VisitWorld(const float &x, const float &y, float radius, NOTIFIER &notifier)
 {
     float x_off, y_off;
-    CellPair p(Trinity::ComputeCellPair(x, y, x_off, y_off));
+    CellPair p(CW::ComputeCellPair(x, y, x_off, y_off));
     Cell cell(p);
     cell.data.Part.reserved = ALL_DISTRICT;
     cell.SetNoCreate();
@@ -678,7 +678,7 @@ inline void
 Map::VisitGrid(const float &x, const float &y, float radius, NOTIFIER &notifier)
 {
     float x_off, y_off;
-    CellPair p(Trinity::ComputeCellPair(x, y, x_off, y_off));
+    CellPair p(CW::ComputeCellPair(x, y, x_off, y_off));
     Cell cell(p);
     cell.data.Part.reserved = ALL_DISTRICT;
     cell.SetNoCreate();

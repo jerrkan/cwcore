@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ uint32 entry_search[3] =
     186611
 };
 
-struct TRINITY_DLL_DECL npc_dragonflayer_forge_masterAI : public ScriptedAI
+struct CW_DLL_DECL npc_dragonflayer_forge_masterAI : public ScriptedAI
 {
     npc_dragonflayer_forge_masterAI(Creature *c) : ScriptedAI(c)
     {

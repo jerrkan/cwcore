@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITYCORE_GROUP_H
-#define TRINITYCORE_GROUP_H
+#ifndef CWCORE_GROUP_H
+#define CWCORE_GROUP_H
 
 #include "GroupReference.h"
 #include "GroupRefManager.h"
@@ -131,7 +131,7 @@ struct InstanceGroupBind
 
 /** request member stats checken **/
 /** todo: uninvite people that not accepted invite **/
-class TRINITY_DLL_SPEC Group
+class CW_DLL_SPEC Group
 {
     public:
         struct MemberSlot

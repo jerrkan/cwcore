@@ -32,7 +32,7 @@ update creature_template set scriptname = 'boss_sjonnir' where entry = '';
 #define SAY_SLAY_3                              -1599014
 #define SAY_DEATH                               -1599015
 
-struct TRINITY_DLL_DECL boss_sjonnirAI : public ScriptedAI
+struct CW_DLL_DECL boss_sjonnirAI : public ScriptedAI
 {
     boss_sjonnirAI(Creature *c) : ScriptedAI(c) {}
 

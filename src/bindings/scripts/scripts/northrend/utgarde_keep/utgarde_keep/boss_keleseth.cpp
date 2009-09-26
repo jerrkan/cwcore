@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ float AttackLoc[3]={197.636, 194.046, 40.8164};
 
 bool ShatterFrostTomb; // needed for achievement: On The Rocks(1919)
 
-struct TRINITY_DLL_DECL mob_frost_tombAI : public ScriptedAI
+struct CW_DLL_DECL mob_frost_tombAI : public ScriptedAI
 {
     mob_frost_tombAI(Creature *c) : ScriptedAI(c)
     {
@@ -101,7 +101,7 @@ struct TRINITY_DLL_DECL mob_frost_tombAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL boss_kelesethAI : public ScriptedAI
+struct CW_DLL_DECL boss_kelesethAI : public ScriptedAI
 {
     boss_kelesethAI(Creature *c) : ScriptedAI(c)
     {
@@ -233,7 +233,7 @@ struct TRINITY_DLL_DECL boss_kelesethAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_vrykul_skeletonAI : public ScriptedAI
+struct CW_DLL_DECL mob_vrykul_skeletonAI : public ScriptedAI
 {
     mob_vrykul_skeletonAI(Creature *c) : ScriptedAI(c)
     {

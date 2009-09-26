@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_PASSIVEAI_H
-#define TRINITY_PASSIVEAI_H
+#ifndef CW_PASSIVEAI_H
+#define CW_PASSIVEAI_H
 
 #include "CreatureAI.h"
 //#include "CreatureAIImpl.h"
 
-class TRINITY_DLL_SPEC PassiveAI : public CreatureAI
+class CW_DLL_SPEC PassiveAI : public CreatureAI
 {
     public:
         explicit PassiveAI(Creature *c);
@@ -36,7 +36,7 @@ class TRINITY_DLL_SPEC PassiveAI : public CreatureAI
         static int Permissible(const Creature *) { return PERMIT_BASE_IDLE;  }
 };
 
-class TRINITY_DLL_DECL PossessedAI : public CreatureAI
+class CW_DLL_DECL PossessedAI : public CreatureAI
 {
     public:
         explicit PossessedAI(Creature *c);
@@ -52,7 +52,7 @@ class TRINITY_DLL_DECL PossessedAI : public CreatureAI
         static int Permissible(const Creature *) { return PERMIT_BASE_IDLE;  }
 };
 
-class TRINITY_DLL_SPEC NullCreatureAI : public CreatureAI
+class CW_DLL_SPEC NullCreatureAI : public CreatureAI
 {
     public:
         explicit NullCreatureAI(Creature *c);
@@ -66,7 +66,7 @@ class TRINITY_DLL_SPEC NullCreatureAI : public CreatureAI
         static int Permissible(const Creature *) { return PERMIT_BASE_IDLE;  }
 };
 
-class TRINITY_DLL_DECL CritterAI : public PassiveAI
+class CW_DLL_DECL CritterAI : public PassiveAI
 {
     public:
         explicit CritterAI(Creature *c) : PassiveAI(c) {}
@@ -75,7 +75,7 @@ class TRINITY_DLL_DECL CritterAI : public PassiveAI
         void EnterEvadeMode();
 };
 
-class TRINITY_DLL_SPEC TriggerAI : public NullCreatureAI
+class CW_DLL_SPEC TriggerAI : public NullCreatureAI
 {
     public:
         explicit TriggerAI(Creature *c) : NullCreatureAI(c) {}

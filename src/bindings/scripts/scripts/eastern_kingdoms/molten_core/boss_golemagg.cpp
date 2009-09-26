@@ -37,7 +37,7 @@ enum
     SPELL_MANGLE            = 19820
 };
 
-struct TRINITY_DLL_DECL boss_golemaggAI : public ScriptedAI
+struct CW_DLL_DECL boss_golemaggAI : public ScriptedAI
 {
     boss_golemaggAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
@@ -117,7 +117,7 @@ struct TRINITY_DLL_DECL boss_golemaggAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_core_ragerAI : public ScriptedAI
+struct CW_DLL_DECL mob_core_ragerAI : public ScriptedAI
 {
     mob_core_ragerAI(Creature *c) : ScriptedAI(c)
     {

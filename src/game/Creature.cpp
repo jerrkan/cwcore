@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -2016,7 +2016,7 @@ bool Creature::IsVisibleInGridForPlayer(Player const* pl) const
 
 Unit* Creature::SelectNearestTarget(float dist) const
 {
-    CellPair p(Trinity::ComputeCellPair(GetPositionX(), GetPositionY()));
+    CellPair p(CW::ComputeCellPair(GetPositionX(), GetPositionY()));
     Cell cell(p);
     cell.data.Part.reserved = ALL_DISTRICT;
     cell.SetNoCreate();
@@ -2024,11 +2024,11 @@ Unit* Creature::SelectNearestTarget(float dist) const
     Unit *target = NULL;
 
     {
-        Trinity::NearestHostileUnitInAttackDistanceCheck u_check(this, dist);
-        Trinity::UnitLastSearcher<Trinity::NearestHostileUnitInAttackDistanceCheck> searcher(this, target, u_check);
+        CW::NearestHostileUnitInAttackDistanceCheck u_check(this, dist);
+        CW::UnitLastSearcher<CW::NearestHostileUnitInAttackDistanceCheck> searcher(this, target, u_check);
 
-        TypeContainerVisitor<Trinity::UnitLastSearcher<Trinity::NearestHostileUnitInAttackDistanceCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-        TypeContainerVisitor<Trinity::UnitLastSearcher<Trinity::NearestHostileUnitInAttackDistanceCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+        TypeContainerVisitor<CW::UnitLastSearcher<CW::NearestHostileUnitInAttackDistanceCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+        TypeContainerVisitor<CW::UnitLastSearcher<CW::NearestHostileUnitInAttackDistanceCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
         CellLock<GridReadGuard> cell_lock(cell, p);
         cell_lock->Visit(cell_lock, world_unit_searcher, *GetMap());
@@ -2051,7 +2051,7 @@ void Creature::CallAssistance()
             std::list<Creature*> assistList;
 
             {
-                CellPair p(Trinity::ComputeCellPair(GetPositionX(), GetPositionY()));
+                CellPair p(CW::ComputeCellPair(GetPositionX(), GetPositionY()));
                 Cell cell(p);
                 cell.data.Part.reserved = ALL_DISTRICT;
                 cell.SetNoCreate();
@@ -2059,7 +2059,7 @@ void Creature::CallAssistance()
                 MaNGOS::AnyAssistCreatureInRangeCheck u_check(this, getVictim(), radius);
                 MaNGOS::CreatureListSearcher<MaNGOS::AnyAssistCreatureInRangeCheck> searcher(this, assistList, u_check);
 
-                TypeContainerVisitor<Trinity::CreatureListSearcher<Trinity::AnyAssistCreatureInRangeCheck>, GridTypeMapContainer >  grid_creature_searcher(searcher);
+                TypeContainerVisitor<CW::CreatureListSearcher<CW::AnyAssistCreatureInRangeCheck>, GridTypeMapContainer >  grid_creature_searcher(searcher);
 
                 CellLock<GridReadGuard> cell_lock(cell, p);
                 cell_lock->Visit(cell_lock, grid_creature_searcher, *GetMap());

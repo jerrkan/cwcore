@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ update creature_template set scriptname = 'boss_amanitar' where entry = '';
 #define SPELL_MINI                                   57055
 #define SPELL_VENOM_BOLT_VOLLEY                      57088
 
-struct TRINITY_DLL_DECL boss_amanitarAI : public ScriptedAI
+struct CW_DLL_DECL boss_amanitarAI : public ScriptedAI
 {
     boss_amanitarAI(Creature *c) : ScriptedAI(c) {}
 

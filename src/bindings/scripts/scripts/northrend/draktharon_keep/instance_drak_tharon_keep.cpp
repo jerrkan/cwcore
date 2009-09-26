@@ -1,7 +1,7 @@
 #include "precompiled.h"
 #include "def_drak_tharon_keep.h"
 
-struct TRINITY_DLL_DECL instance_drak_tharon : public ScriptedInstance
+struct CW_DLL_DECL instance_drak_tharon : public ScriptedInstance
 {
     instance_drak_tharon(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 };

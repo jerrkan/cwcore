@@ -54,7 +54,7 @@ enum
     SPELL_STUNNED       = 28630
 };
 
-struct TRINITY_DLL_DECL npc_draenei_survivorAI : public ScriptedAI
+struct CW_DLL_DECL npc_draenei_survivorAI : public ScriptedAI
 {
     npc_draenei_survivorAI(Creature *c) : ScriptedAI(c) {}
 
@@ -191,7 +191,7 @@ enum
 
 #define GOSSIP_FIGHT "Traitor! You will be brought to justice!"
 
-struct TRINITY_DLL_DECL npc_engineer_spark_overgrindAI : public ScriptedAI
+struct CW_DLL_DECL npc_engineer_spark_overgrindAI : public ScriptedAI
 {
     npc_engineer_spark_overgrindAI(Creature *c) : ScriptedAI(c)
     {
@@ -282,7 +282,7 @@ bool GossipSelect_npc_engineer_spark_overgrind(Player* pPlayer, Creature* pCreat
 ## npc_injured_draenei
 ######*/
 
-struct TRINITY_DLL_DECL npc_injured_draeneiAI : public ScriptedAI
+struct CW_DLL_DECL npc_injured_draeneiAI : public ScriptedAI
 {
     npc_injured_draeneiAI(Creature *c) : ScriptedAI(c) {}
 
@@ -331,7 +331,7 @@ enum
     QUEST_A_CRY_FOR_SAY_HELP    = 9528
 };
 
-struct TRINITY_DLL_DECL npc_magwinAI : public npc_escortAI
+struct CW_DLL_DECL npc_magwinAI : public npc_escortAI
 {
     npc_magwinAI(Creature *c) : npc_escortAI(c) {}
 
@@ -412,7 +412,7 @@ enum
 
 static float SparkPos[3] = {-5029.91, -11291.79, 8.096};
 
-struct TRINITY_DLL_DECL npc_geezleAI : public ScriptedAI
+struct CW_DLL_DECL npc_geezleAI : public ScriptedAI
 {
     npc_geezleAI(Creature *c) : ScriptedAI(c) {}
 
@@ -495,8 +495,8 @@ struct TRINITY_DLL_DECL npc_geezleAI : public ScriptedAI
     {
         float radius = 50.0f;
         std::list<Player*> players;
-        Trinity::AnyPlayerInObjectRangeCheck checker(m_creature, radius);
-        Trinity::PlayerListSearcher<Trinity::AnyPlayerInObjectRangeCheck> searcher(m_creature, players, checker);
+        CW::AnyPlayerInObjectRangeCheck checker(m_creature, radius);
+        CW::PlayerListSearcher<CW::AnyPlayerInObjectRangeCheck> searcher(m_creature, players, checker);
         m_creature->VisitNearbyWorldObject(radius, searcher);
 
         for(std::list<Player*>::iterator itr = players.begin(); itr != players.end(); ++itr)
@@ -556,7 +556,7 @@ enum
     ENTRY_OWLKIN_INOC       = 16534
 };
 
-struct TRINITY_DLL_DECL npc_nestlewood_owlkinAI : public ScriptedAI
+struct CW_DLL_DECL npc_nestlewood_owlkinAI : public ScriptedAI
 {
     npc_nestlewood_owlkinAI(Creature *c) : ScriptedAI(c) {}
 

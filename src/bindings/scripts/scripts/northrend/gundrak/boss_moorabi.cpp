@@ -33,7 +33,7 @@ update creature_template set scriptname = 'boss_moorabi' where entry = '';
 #define SAY_TRANSFORM                             -1604015
 #define SAY_QUAKE                                 -1604016
 
-struct TRINITY_DLL_DECL boss_moorabiAI : public ScriptedAI
+struct CW_DLL_DECL boss_moorabiAI : public ScriptedAI
 {
     boss_moorabiAI(Creature *c) : ScriptedAI(c) {}
 

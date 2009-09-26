@@ -33,7 +33,7 @@ update creature_template set scriptname = '' where entry = '';
 #define SAY_TRANSFORM_1                            -1604008  //Phase change
 #define SAY_TRANSFORM_2                            -1604009
 
-struct TRINITY_DLL_DECL boss_gal_darahAI : public ScriptedAI
+struct CW_DLL_DECL boss_gal_darahAI : public ScriptedAI
 {
     boss_gal_darahAI(Creature *c) : ScriptedAI(c) {}
 

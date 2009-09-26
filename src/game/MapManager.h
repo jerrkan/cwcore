@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef TRINITY_MAPMANAGER_H
-#define TRINITY_MAPMANAGER_H
+#ifndef CW_MAPMANAGER_H
+#define CW_MAPMANAGER_H
 
 #include "Platform/Define.h"
 #include "Policies/Singleton.h"
@@ -33,7 +33,7 @@ class Transport;
 class MANGOS_DLL_DECL MapManager : public MaNGOS::Singleton<MapManager, MaNGOS::ClassLevelLockable<MapManager, ACE_Thread_Mutex> >
 {
 
-    friend class Trinity::OperatorNew<MapManager>;
+    friend class CW::OperatorNew<MapManager>;
     typedef UNORDERED_MAP<uint32, Map*> MapMapType;
     typedef std::pair<UNORDERED_MAP<uint32, Map*>::iterator, bool>  MapMapPair;
 
@@ -89,17 +89,17 @@ class MANGOS_DLL_DECL MapManager : public MaNGOS::Singleton<MapManager, MaNGOS::
 
         static bool IsValidMapCoord(uint32 mapid, float x,float y)
         {
-            return IsValidMAP(mapid) && Trinity::IsValidMapCoord(x,y);
+            return IsValidMAP(mapid) && CW::IsValidMapCoord(x,y);
         }
 
         static bool IsValidMapCoord(uint32 mapid, float x,float y,float z)
         {
-            return IsValidMAP(mapid) && Trinity::IsValidMapCoord(x,y,z);
+            return IsValidMAP(mapid) && CW::IsValidMapCoord(x,y,z);
         }
 
         static bool IsValidMapCoord(uint32 mapid, float x,float y,float z,float o)
         {
-            return IsValidMAP(mapid) && Trinity::IsValidMapCoord(x,y,z,o);
+            return IsValidMAP(mapid) && CW::IsValidMapCoord(x,y,z,o);
         }
 
         static bool IsValidMapCoord(WorldLocation const& loc)

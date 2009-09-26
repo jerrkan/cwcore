@@ -1,7 +1,7 @@
 #include "precompiled.h"
 #include "def_culling_of_stratholme.h"
 
-struct TRINITY_DLL_DECL instance_culling_of_stratholme : public ScriptedInstance
+struct CW_DLL_DECL instance_culling_of_stratholme : public ScriptedInstance
 {
     instance_culling_of_stratholme(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 };

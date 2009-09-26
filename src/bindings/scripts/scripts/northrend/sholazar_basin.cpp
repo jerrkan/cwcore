@@ -1,4 +1,4 @@
-/* Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+/* Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ enum
     FACTION_ESCORTEE_H                  = 775
 };
 
-struct TRINITY_DLL_DECL npc_injured_rainspeaker_oracleAI : public npc_escortAI
+struct CW_DLL_DECL npc_injured_rainspeaker_oracleAI : public npc_escortAI
 {
     npc_injured_rainspeaker_oracleAI(Creature* c) : npc_escortAI(c) { c_guid = c->GetGUID(); }
 

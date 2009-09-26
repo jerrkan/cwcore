@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_TYPECONTAINER_H
-#define TRINITY_TYPECONTAINER_H
+#ifndef CW_TYPECONTAINER_H
+#define CW_TYPECONTAINER_H
 
 /*
  * Here, you'll find a series of containers that allow you to hold multiple
@@ -97,27 +97,27 @@ template<class H, class T> struct ContainerList<TypeList<H, T> >
  */
 
 template<class OBJECT_TYPES>
-class TRINITY_DLL_DECL TypeMapContainer
+class CW_DLL_DECL TypeMapContainer
 {
     public:
-        template<class SPECIFIC_TYPE> size_t Count() const { return Trinity::Count(i_elements, (SPECIFIC_TYPE*)NULL); }
+        template<class SPECIFIC_TYPE> size_t Count() const { return CW::Count(i_elements, (SPECIFIC_TYPE*)NULL); }
 
-        template<class SPECIFIC_TYPE> SPECIFIC_TYPE* find(OBJECT_HANDLE hdl, SPECIFIC_TYPE *fake) { return Trinity::Find(i_elements, hdl,fake); }
+        template<class SPECIFIC_TYPE> SPECIFIC_TYPE* find(OBJECT_HANDLE hdl, SPECIFIC_TYPE *fake) { return CW::Find(i_elements, hdl,fake); }
 
         /// find a specific type of object in the container
-        template<class SPECIFIC_TYPE> const SPECIFIC_TYPE* find(OBJECT_HANDLE hdl, SPECIFIC_TYPE *fake) const { return Trinity::Find(i_elements, hdl,fake); }
+        template<class SPECIFIC_TYPE> const SPECIFIC_TYPE* find(OBJECT_HANDLE hdl, SPECIFIC_TYPE *fake) const { return CW::Find(i_elements, hdl,fake); }
 
         /// inserts a specific object into the container
         template<class SPECIFIC_TYPE> bool insert(OBJECT_HANDLE hdl, SPECIFIC_TYPE *obj)
         {
-            SPECIFIC_TYPE* t = Trinity::Insert(i_elements, obj, hdl);
+            SPECIFIC_TYPE* t = CW::Insert(i_elements, obj, hdl);
             return (t != NULL);
         }
 
         ///  Removes the object from the container, and returns the removed object
         template<class SPECIFIC_TYPE> bool remove(SPECIFIC_TYPE* obj, OBJECT_HANDLE hdl)
         {
-            SPECIFIC_TYPE* t = Trinity::Remove(i_elements, obj, hdl);
+            SPECIFIC_TYPE* t = CW::Remove(i_elements, obj, hdl);
             return (t != NULL);
         }
 

@@ -85,7 +85,7 @@ const uint32 m_auiAddEntries[] =
     24556,                                                  //Zelfan
 };
 
-struct TRINITY_DLL_DECL boss_priestess_delrissaAI : public ScriptedAI
+struct CW_DLL_DECL boss_priestess_delrissaAI : public ScriptedAI
 {
     boss_priestess_delrissaAI(Creature* c) : ScriptedAI(c)
     {
@@ -345,7 +345,7 @@ enum
 };
 
 //all 8 possible lackey use this common
-struct TRINITY_DLL_DECL boss_priestess_lackey_commonAI : public ScriptedAI
+struct CW_DLL_DECL boss_priestess_lackey_commonAI : public ScriptedAI
 {
     boss_priestess_lackey_commonAI(Creature* c) : ScriptedAI(c)
     {
@@ -488,7 +488,7 @@ enum
     SPELL_EVISCERATE        = 27611
 };
 
-struct TRINITY_DLL_DECL boss_kagani_nightstrikeAI : public boss_priestess_lackey_commonAI
+struct CW_DLL_DECL boss_kagani_nightstrikeAI : public boss_priestess_lackey_commonAI
 {
     //Rogue
     boss_kagani_nightstrikeAI(Creature *c) : boss_priestess_lackey_commonAI(c) {}
@@ -586,7 +586,7 @@ enum
     SPELL_SUMMON_IMP            = 44163
 };
 
-struct TRINITY_DLL_DECL boss_ellris_duskhallowAI : public boss_priestess_lackey_commonAI
+struct CW_DLL_DECL boss_ellris_duskhallowAI : public boss_priestess_lackey_commonAI
 {
     //Warlock
     boss_ellris_duskhallowAI(Creature *c) : boss_priestess_lackey_commonAI(c) {}
@@ -671,7 +671,7 @@ enum
     SPELL_SNAP_KICK     = 46182
 };
 
-struct TRINITY_DLL_DECL boss_eramas_brightblazeAI : public boss_priestess_lackey_commonAI
+struct CW_DLL_DECL boss_eramas_brightblazeAI : public boss_priestess_lackey_commonAI
 {
     //Monk
     boss_eramas_brightblazeAI(Creature *c) : boss_priestess_lackey_commonAI(c) {}
@@ -726,7 +726,7 @@ enum
     SPELL_BLINK             = 14514
 };
 
-struct TRINITY_DLL_DECL boss_yazzaiAI : public boss_priestess_lackey_commonAI
+struct CW_DLL_DECL boss_yazzaiAI : public boss_priestess_lackey_commonAI
 {
     //Mage
     boss_yazzaiAI(Creature *c) : boss_priestess_lackey_commonAI(c) {}
@@ -850,7 +850,7 @@ enum
     SPELL_MORTAL_STRIKE         = 44268
 };
 
-struct TRINITY_DLL_DECL boss_warlord_salarisAI : public boss_priestess_lackey_commonAI
+struct CW_DLL_DECL boss_warlord_salarisAI : public boss_priestess_lackey_commonAI
 {
     //Warrior
     boss_warlord_salarisAI(Creature *c) : boss_priestess_lackey_commonAI(c) {}
@@ -964,7 +964,7 @@ enum
     NPC_SLIVER                  = 24552
 };
 
-struct TRINITY_DLL_DECL boss_garaxxasAI : public boss_priestess_lackey_commonAI
+struct CW_DLL_DECL boss_garaxxasAI : public boss_priestess_lackey_commonAI
 {
     //Hunter
     boss_garaxxasAI(Creature *c) : boss_priestess_lackey_commonAI(c) { m_uiPetGUID = 0; }
@@ -1077,7 +1077,7 @@ enum
     SPELL_EARTHBIND_TOTEM       = 15786
 };
 
-struct TRINITY_DLL_DECL boss_apokoAI : public boss_priestess_lackey_commonAI
+struct CW_DLL_DECL boss_apokoAI : public boss_priestess_lackey_commonAI
 {
     //Shaman
     boss_apokoAI(Creature *c) : boss_priestess_lackey_commonAI(c) {}
@@ -1174,7 +1174,7 @@ enum
     SPELL_SHEEP_EXPLOSION       = 44279
 };
 
-struct TRINITY_DLL_DECL boss_zelfanAI : public boss_priestess_lackey_commonAI
+struct CW_DLL_DECL boss_zelfanAI : public boss_priestess_lackey_commonAI
 {
     //Engineer
     boss_zelfanAI(Creature *c) : boss_priestess_lackey_commonAI(c) {}
@@ -1252,7 +1252,7 @@ CreatureAI* GetAI_zelfan(Creature* pCreature)
     return new boss_zelfanAI(pCreature);
 }
 
-//struct TRINITY_DLL_DECL mob_high_explosive_sheepAI : public ScriptedAI
+//struct CW_DLL_DECL mob_high_explosive_sheepAI : public ScriptedAI
 //{
 //    mob_high_explosive_sheepAI(Creature *c) : ScriptedAI(c) {}
 //

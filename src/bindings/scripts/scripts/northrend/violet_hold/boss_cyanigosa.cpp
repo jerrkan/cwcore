@@ -31,7 +31,7 @@ update creature_template set scriptname = '' where entry = '';
 #define SAY_SPECIAL_ATTACK_1                        -1608008
 #define SAY_SPECIAL_ATTACK_2                        -1608009
 
-struct TRINITY_DLL_DECL boss_cyanigosaAI : public ScriptedAI
+struct CW_DLL_DECL boss_cyanigosaAI : public ScriptedAI
 {
     boss_cyanigosaAI(Creature *c) : ScriptedAI(c) {}
 

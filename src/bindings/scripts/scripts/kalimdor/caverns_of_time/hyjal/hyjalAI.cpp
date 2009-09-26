@@ -935,17 +935,17 @@ void hyjalAI::JustDied(Unit* killer)
 }
 void hyjalAI::HideNearPos(float x, float y)
 {
-    CellPair pair(Trinity::ComputeCellPair(x, y));
+    CellPair pair(CW::ComputeCellPair(x, y));
     Cell cell(pair);
     cell.data.Part.reserved = ALL_DISTRICT;
     cell.SetNoCreate();
 
     // First get all creatures.
     std::list<Creature*> creatures;
-    Trinity::AllFriendlyCreaturesInGrid creature_check(m_creature);
-    Trinity::CreatureListSearcher<Trinity::AllFriendlyCreaturesInGrid> creature_searcher(m_creature, creatures, creature_check);
+    CW::AllFriendlyCreaturesInGrid creature_check(m_creature);
+    CW::CreatureListSearcher<CW::AllFriendlyCreaturesInGrid> creature_searcher(m_creature, creatures, creature_check);
     TypeContainerVisitor
-        <Trinity::CreatureListSearcher<Trinity::AllFriendlyCreaturesInGrid>,
+        <CW::CreatureListSearcher<CW::AllFriendlyCreaturesInGrid>,
         GridTypeMapContainer> creature_visitor(creature_searcher);
 
     CellLock<GridReadGuard> cell_lock(cell, pair);
@@ -963,14 +963,14 @@ void hyjalAI::HideNearPos(float x, float y)
 }
 void hyjalAI::RespawnNearPos(float x, float y)
 {
-    CellPair p(Trinity::ComputeCellPair(x, y));
+    CellPair p(CW::ComputeCellPair(x, y));
     Cell cell(p);
     cell.data.Part.reserved = ALL_DISTRICT;
     cell.SetNoCreate();
 
-    Trinity::RespawnDo u_do;
-    Trinity::WorldObjectWorker<Trinity::RespawnDo> worker(m_creature, u_do);
-    TypeContainerVisitor<Trinity::WorldObjectWorker<Trinity::RespawnDo>, GridTypeMapContainer > obj_worker(worker);
+    CW::RespawnDo u_do;
+    CW::WorldObjectWorker<CW::RespawnDo> worker(m_creature, u_do);
+    TypeContainerVisitor<CW::WorldObjectWorker<CW::RespawnDo>, GridTypeMapContainer > obj_worker(worker);
     CellLock<GridReadGuard> cell_lock(cell, p);
     cell_lock->Visit(cell_lock, obj_worker, *m_creature->GetMap());
 }
@@ -995,17 +995,17 @@ void hyjalAI::WaypointReached(uint32 i)
         }
         //do some talking
         //all alive guards walk near here
-        CellPair pair(Trinity::ComputeCellPair(m_creature->GetPositionX(), m_creature->GetPositionY()));
+        CellPair pair(CW::ComputeCellPair(m_creature->GetPositionX(), m_creature->GetPositionY()));
         Cell cell(pair);
         cell.data.Part.reserved = ALL_DISTRICT;
         cell.SetNoCreate();
 
         // First get all creatures.
         std::list<Creature*> creatures;
-        Trinity::AllFriendlyCreaturesInGrid creature_check(m_creature);
-        Trinity::CreatureListSearcher<Trinity::AllFriendlyCreaturesInGrid> creature_searcher(m_creature, creatures, creature_check);
+        CW::AllFriendlyCreaturesInGrid creature_check(m_creature);
+        CW::CreatureListSearcher<CW::AllFriendlyCreaturesInGrid> creature_searcher(m_creature, creatures, creature_check);
         TypeContainerVisitor
-            <Trinity::CreatureListSearcher<Trinity::AllFriendlyCreaturesInGrid>,
+            <CW::CreatureListSearcher<CW::AllFriendlyCreaturesInGrid>,
             GridTypeMapContainer> creature_visitor(creature_searcher);
 
         CellLock<GridReadGuard> cell_lock(cell, pair);
@@ -1038,16 +1038,16 @@ void hyjalAI::DoOverrun(uint32 faction, const uint32 diff)
     {
         if (TeleportTimer < diff)
         {
-            CellPair pair(Trinity::ComputeCellPair(m_creature->GetPositionX(), m_creature->GetPositionY()));
+            CellPair pair(CW::ComputeCellPair(m_creature->GetPositionX(), m_creature->GetPositionY()));
             Cell cell(pair);
             cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
             std::list<Creature*> creatures;
-            Trinity::AllFriendlyCreaturesInGrid creature_check(m_creature);
-            Trinity::CreatureListSearcher<Trinity::AllFriendlyCreaturesInGrid> creature_searcher(m_creature, creatures, creature_check);
+            CW::AllFriendlyCreaturesInGrid creature_check(m_creature);
+            CW::CreatureListSearcher<CW::AllFriendlyCreaturesInGrid> creature_searcher(m_creature, creatures, creature_check);
             TypeContainerVisitor
-                <Trinity::CreatureListSearcher<Trinity::AllFriendlyCreaturesInGrid>,
+                <CW::CreatureListSearcher<CW::AllFriendlyCreaturesInGrid>,
                 GridTypeMapContainer> creature_visitor(creature_searcher);
 
             CellLock<GridReadGuard> cell_lock(cell, pair);

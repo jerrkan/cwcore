@@ -141,7 +141,7 @@ const float afGravityPos[3]             = {795.0f, 0.0f, 70.0f};
 #define TIME_PHASE_3_4      180000
 
 //Base AI for Advisors
-struct TRINITY_DLL_DECL advisorbase_ai : public ScriptedAI
+struct CW_DLL_DECL advisorbase_ai : public ScriptedAI
 {
     advisorbase_ai(Creature* pCreature) : ScriptedAI(pCreature)
     {
@@ -269,7 +269,7 @@ struct TRINITY_DLL_DECL advisorbase_ai : public ScriptedAI
 };
 
 //Kael'thas AI
-struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
+struct CW_DLL_DECL boss_kaelthasAI : public ScriptedAI
 {
     boss_kaelthasAI(Creature* pCreature) : ScriptedAI(pCreature), summons(m_creature)
     {
@@ -980,7 +980,7 @@ struct TRINITY_DLL_DECL boss_kaelthasAI : public ScriptedAI
 };
 
 //Thaladred the Darkener AI
-struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
+struct CW_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
 {
     boss_thaladred_the_darkenerAI(Creature* pCreature) : advisorbase_ai(pCreature) {}
 
@@ -1058,7 +1058,7 @@ struct TRINITY_DLL_DECL boss_thaladred_the_darkenerAI : public advisorbase_ai
 };
 
 //Lord Sanguinar AI
-struct TRINITY_DLL_DECL boss_lord_sanguinarAI : public advisorbase_ai
+struct CW_DLL_DECL boss_lord_sanguinarAI : public advisorbase_ai
 {
     boss_lord_sanguinarAI(Creature* pCreature) : advisorbase_ai(pCreature) {}
 
@@ -1111,7 +1111,7 @@ struct TRINITY_DLL_DECL boss_lord_sanguinarAI : public advisorbase_ai
 };
 
 //Grand Astromancer Capernian AI
-struct TRINITY_DLL_DECL boss_grand_astromancer_capernianAI : public advisorbase_ai
+struct CW_DLL_DECL boss_grand_astromancer_capernianAI : public advisorbase_ai
 {
     boss_grand_astromancer_capernianAI(Creature* pCreature) : advisorbase_ai(pCreature) {}
 
@@ -1234,7 +1234,7 @@ struct TRINITY_DLL_DECL boss_grand_astromancer_capernianAI : public advisorbase_
 };
 
 //Master Engineer Telonicus AI
-struct TRINITY_DLL_DECL boss_master_engineer_telonicusAI : public advisorbase_ai
+struct CW_DLL_DECL boss_master_engineer_telonicusAI : public advisorbase_ai
 {
     boss_master_engineer_telonicusAI(Creature* pCreature) : advisorbase_ai(pCreature) {}
 
@@ -1299,7 +1299,7 @@ struct TRINITY_DLL_DECL boss_master_engineer_telonicusAI : public advisorbase_ai
 };
 
 //Flame Strike AI
-struct TRINITY_DLL_DECL mob_kael_flamestrikeAI : public ScriptedAI
+struct CW_DLL_DECL mob_kael_flamestrikeAI : public ScriptedAI
 {
     mob_kael_flamestrikeAI(Creature* pCreature) : ScriptedAI(pCreature) {}
 
@@ -1343,7 +1343,7 @@ struct TRINITY_DLL_DECL mob_kael_flamestrikeAI : public ScriptedAI
 };
 
 //Phoenix AI
-struct TRINITY_DLL_DECL mob_phoenix_tkAI : public ScriptedAI
+struct CW_DLL_DECL mob_phoenix_tkAI : public ScriptedAI
 {
     mob_phoenix_tkAI(Creature* pCreature) : ScriptedAI(pCreature) {}
 
@@ -1381,7 +1381,7 @@ struct TRINITY_DLL_DECL mob_phoenix_tkAI : public ScriptedAI
 };
 
 //Phoenix Egg AI
-struct TRINITY_DLL_DECL mob_phoenix_egg_tkAI : public ScriptedAI
+struct CW_DLL_DECL mob_phoenix_egg_tkAI : public ScriptedAI
 {
     mob_phoenix_egg_tkAI(Creature* pCreature) : ScriptedAI(pCreature) {}
 

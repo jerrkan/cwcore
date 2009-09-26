@@ -21,7 +21,7 @@ update creature_template set scriptname = '' where entry = '';
 #define SPELL_RAPTOR_CALL                        59416 //dummy
 
 
-struct TRINITY_DLL_DECL boss_dredAI : public ScriptedAI
+struct CW_DLL_DECL boss_dredAI : public ScriptedAI
 {
     boss_dredAI(Creature *c) : ScriptedAI(c) {}
 

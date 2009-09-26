@@ -1,7 +1,7 @@
 #include "precompiled.h"
 #include "def_eye_of_eternity.h"
 
-struct TRINITY_DLL_DECL instance_eye_of_eternity : public ScriptedInstance
+struct CW_DLL_DECL instance_eye_of_eternity : public ScriptedInstance
 {
     instance_eye_of_eternity(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 };

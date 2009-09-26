@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -341,8 +341,8 @@ void GameObject::Update(uint32 /*p_time*/)
                     // search unfriendly creature
                     if(owner)                    // hunter trap
                     {
-                        Trinity::AnyUnfriendlyNoTotemUnitInObjectRangeCheck checker(this, owner, radius);
-                        Trinity::UnitSearcher<Trinity::AnyUnfriendlyNoTotemUnitInObjectRangeCheck> searcher(this, ok, checker);
+                        CW::AnyUnfriendlyNoTotemUnitInObjectRangeCheck checker(this, owner, radius);
+                        CW::UnitSearcher<CW::AnyUnfriendlyNoTotemUnitInObjectRangeCheck> searcher(this, ok, checker);
                         VisitNearbyGridObject(radius, searcher);
                         if(!ok) VisitNearbyWorldObject(radius, searcher);
                     }
@@ -849,14 +849,14 @@ void GameObject::TriggeringLinkedGameObject( uint32 trapEntry, Unit* target)
     GameObject* trapGO = NULL;
     {
         // using original GO distance
-        CellPair p(Trinity::ComputeCellPair(GetPositionX(), GetPositionY()));
+        CellPair p(CW::ComputeCellPair(GetPositionX(), GetPositionY()));
         Cell cell(p);
         cell.data.Part.reserved = ALL_DISTRICT;
 
         MaNGOS::NearestGameObjectEntryInObjectRangeCheck go_check(*target,trapEntry,range);
         MaNGOS::GameObjectLastSearcher<MaNGOS::NearestGameObjectEntryInObjectRangeCheck> checker(this, trapGO,go_check);
 
-        TypeContainerVisitor<Trinity::GameObjectLastSearcher<Trinity::NearestGameObjectEntryInObjectRangeCheck>, GridTypeMapContainer > object_checker(checker);
+        TypeContainerVisitor<CW::GameObjectLastSearcher<CW::NearestGameObjectEntryInObjectRangeCheck>, GridTypeMapContainer > object_checker(checker);
         CellLock<GridReadGuard> cell_lock(cell, p);
         cell_lock->Visit(cell_lock, object_checker, *GetMap());
     }
@@ -871,7 +871,7 @@ GameObject* GameObject::LookupFishingHoleAround(float range)
 {
     GameObject* ok = NULL;
 
-    CellPair p(Trinity::ComputeCellPair(GetPositionX(),GetPositionY()));
+    CellPair p(CW::ComputeCellPair(GetPositionX(),GetPositionY()));
     Cell cell(p);
     cell.data.Part.reserved = ALL_DISTRICT;
     MaNGOS::NearestGameObjectFishingHole u_check(*this, range);
@@ -879,7 +879,7 @@ GameObject* GameObject::LookupFishingHoleAround(float range)
 
     CellLock<GridReadGuard> cell_lock(cell, p);
 
-    TypeContainerVisitor<Trinity::GameObjectSearcher<Trinity::NearestGameObjectFishingHole>, GridTypeMapContainer > grid_object_checker(checker);
+    TypeContainerVisitor<CW::GameObjectSearcher<CW::NearestGameObjectFishingHole>, GridTypeMapContainer > grid_object_checker(checker);
     cell_lock->Visit(cell_lock, grid_object_checker, *GetMap());
 
     return ok;

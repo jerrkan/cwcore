@@ -1,4 +1,4 @@
-/* Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+/* Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * Thanks to the original authors: ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  *
@@ -27,7 +27,7 @@ struct ItemPrototype;
 
 #define MAX_SCRIPTS         5000                            //72 bytes each (approx 351kb)
 #define VISIBLE_RANGE       (166.0f)                        //MAX visible range (size of grid)
-#define DEFAULT_TEXT        "<Trinity Script Text Entry Missing!>"
+#define DEFAULT_TEXT        "<CW Script Text Entry Missing!>"
 
 struct Script
 {
@@ -86,11 +86,11 @@ void DoScriptText(int32 textEntry, WorldObject* pSource, Unit* target = NULL);
 #endif
 
 #ifdef WIN32
-  #define TRINITY_DLL_EXPORT extern "C" __declspec(dllexport)
+  #define CW_DLL_EXPORT extern "C" __declspec(dllexport)
 #elif defined( __GNUC__ )
-#define TRINITY_DLL_EXPORT extern "C"
+#define CW_DLL_EXPORT extern "C"
 #else
-#define TRINITY_DLL_EXPORT extern "C" export
+#define CW_DLL_EXPORT extern "C" export
 #endif
 
 #endif

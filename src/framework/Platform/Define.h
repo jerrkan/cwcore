@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef TRINITY_DEFINE_H
-#define TRINITY_DEFINE_H
+#ifndef CW_DEFINE_H
+#define CW_DEFINE_H
 
 #include <sys/types.h>
 
@@ -28,89 +28,89 @@
 
 #include "Platform/CompilerDefs.h"
 
-#define TRINITY_LITTLEENDIAN 0
-#define TRINITY_BIGENDIAN    1
+#define CW_LITTLEENDIAN 0
+#define CW_BIGENDIAN    1
 
-#if !defined(TRINITY_ENDIAN)
+#if !defined(CW_ENDIAN)
 #  if defined (ACE_BIG_ENDIAN)
-#    define TRINITY_ENDIAN TRINITY_BIGENDIAN
+#    define CW_ENDIAN CW_BIGENDIAN
 #  else //ACE_BYTE_ORDER != ACE_BIG_ENDIAN
-#    define TRINITY_ENDIAN TRINITY_LITTLEENDIAN
+#    define CW_ENDIAN CW_LITTLEENDIAN
 #  endif //ACE_BYTE_ORDER
-#endif //TRINITY_ENDIAN
+#endif //CW_ENDIAN
 
 #if PLATFORM == PLATFORM_WINDOWS
-#  define TRINITY_EXPORT __declspec(dllexport)
-#  define TRINITY_LIBRARY_HANDLE HMODULE
-#  define TRINITY_LOAD_LIBRARY(a) LoadLibrary(a)
-#  define TRINITY_CLOSE_LIBRARY FreeLibrary
-#  define TRINITY_GET_PROC_ADDR GetProcAddress
-#  define TRINITY_IMPORT __cdecl
-#  define TRINITY_SCRIPT_EXT ".dll"
-#  define TRINITY_SCRIPT_NAME "CWScript"
-#  define TRINITY_PATH_MAX MAX_PATH
+#  define CW_EXPORT __declspec(dllexport)
+#  define CW_LIBRARY_HANDLE HMODULE
+#  define CW_LOAD_LIBRARY(a) LoadLibrary(a)
+#  define CW_CLOSE_LIBRARY FreeLibrary
+#  define CW_GET_PROC_ADDR GetProcAddress
+#  define CW_IMPORT __cdecl
+#  define CW_SCRIPT_EXT ".dll"
+#  define CW_SCRIPT_NAME "CWScript"
+#  define CW_PATH_MAX MAX_PATH
 #else //PLATFORM != PLATFORM_WINDOWS
-#  define TRINITY_LIBRARY_HANDLE void*
-#  define TRINITY_EXPORT export
-#  define TRINITY_LOAD_LIBRARY(a) dlopen(a,RTLD_NOW)
-#  define TRINITY_CLOSE_LIBRARY dlclose
-#  define TRINITY_GET_PROC_ADDR dlsym
+#  define CW_LIBRARY_HANDLE void*
+#  define CW_EXPORT export
+#  define CW_LOAD_LIBRARY(a) dlopen(a,RTLD_NOW)
+#  define CW_CLOSE_LIBRARY dlclose
+#  define CW_GET_PROC_ADDR dlsym
 #  if defined(__APPLE_CC__) && defined(BIG_ENDIAN)
-#    define TRINITY_IMPORT __attribute__ ((longcall))
+#    define CW_IMPORT __attribute__ ((longcall))
 #  elif defined(__x86_64__)
-#    define TRINITY_IMPORT
+#    define CW_IMPORT
 #  else
-#    define TRINITY_IMPORT __attribute__ ((cdecl))
+#    define CW_IMPORT __attribute__ ((cdecl))
 #  endif //__APPLE_CC__ && BIG_ENDIAN
 #  if defined(__APPLE_CC__)
-#    define TRINITY_SCRIPT_EXT ".dylib"
+#    define CW_SCRIPT_EXT ".dylib"
 #    if defined(DO_SCRIPTS)
-#      define TRINITY_SCRIPT_NAME "../lib/libcwscript"
+#      define CW_SCRIPT_NAME "../lib/libcwscript"
 #    else
-#      define TRINITY_SCRIPT_NAME "../lib/libcwinterface"
+#      define CW_SCRIPT_NAME "../lib/libcwinterface"
 #    endif // DO_SCRIPTS
 #  else
-#    define TRINITY_SCRIPT_EXT ".so"
+#    define CW_SCRIPT_EXT ".so"
 #    if defined(DO_SCRIPTS)
-#      define TRINITY_SCRIPT_NAME "libcwscript"
+#      define CW_SCRIPT_NAME "libcwscript"
 #    else
-#      define TRINITY_SCRIPT_NAME "libcwinterface"
+#      define CW_SCRIPT_NAME "libcwinterface"
 #    endif // DO_SCRIPTS
 #  endif //__APPLE_CC__
-#  define TRINITY_PATH_MAX PATH_MAX
+#  define CW_PATH_MAX PATH_MAX
 #endif //PLATFORM
 
 #if PLATFORM == PLATFORM_WINDOWS
-#  ifdef TRINITY_WIN32_DLL_IMPORT
-#    define TRINITY_DLL_DECL __declspec(dllimport)
-#  else //!TRINITY_WIN32_DLL_IMPORT
-#    ifdef TRINITY_WIND_DLL_EXPORT
-#      define TRINITY_DLL_DECL __declspec(dllexport)
-#    else //!TRINITY_WIND_DLL_EXPORT
-#      define TRINITY_DLL_DECL
-#    endif //TRINITY_WIND_DLL_EXPORT
-#  endif //TRINITY_WIN32_DLL_IMPORT
+#  ifdef CW_WIN32_DLL_IMPORT
+#    define CW_DLL_DECL __declspec(dllimport)
+#  else //!CW_WIN32_DLL_IMPORT
+#    ifdef CW_WIND_DLL_EXPORT
+#      define CW_DLL_DECL __declspec(dllexport)
+#    else //!CW_WIND_DLL_EXPORT
+#      define CW_DLL_DECL
+#    endif //CW_WIND_DLL_EXPORT
+#  endif //CW_WIN32_DLL_IMPORT
 #else //PLATFORM != PLATFORM_WINDOWS
-#  define TRINITY_DLL_DECL
+#  define CW_DLL_DECL
 #endif //PLATFORM
 
 #if PLATFORM == PLATFORM_WINDOWS
-#  define TRINITY_DLL_SPEC __declspec(dllexport)
+#  define CW_DLL_SPEC __declspec(dllexport)
 #  ifndef DECLSPEC_NORETURN
 #    define DECLSPEC_NORETURN __declspec(noreturn)
 #  endif //DECLSPEC_NORETURN
 #else //PLATFORM != PLATFORM_WINDOWS
-#  define TRINITY_DLL_SPEC
+#  define CW_DLL_SPEC
 #  define DECLSPEC_NORETURN
 #endif //PLATFORM
 
 #if !defined(DEBUG)
-#  define TRINITY_INLINE inline
+#  define CW_INLINE inline
 #else //DEBUG
-#  if !defined(TRINITY_DEBUG)
-#    define TRINITY_DEBUG
-#  endif //TRINITY_DEBUG
-#  define TRINITY_INLINE
+#  if !defined(CW_DEBUG)
+#    define CW_DEBUG
+#  endif //CW_DEBUG
+#  define CW_INLINE
 #endif //!DEBUG
 
 #if COMPILER == COMPILER_GNU
@@ -142,14 +142,14 @@ typedef uint64 OBJECT_HANDLE;
 #define MAP_BASED_RAND_GEN
 #endif
 
-#define MaNGOS              Trinity
-#define MANGOS_DLL_DECL     TRINITY_DLL_DECL
-#define MANGOS_DLL_SPEC     TRINITY_DLL_SPEC
-#define GetMangosString     GetTrinityString
+#define MaNGOS              CW
+#define MANGOS_DLL_DECL     CW_DLL_DECL
+#define MANGOS_DLL_SPEC     CW_DLL_SPEC
+#define GetMangosString     GetCWString
 
-#if defined(MANGOS_DEBUG) || defined(TRINITY_DEBUG)
-#  ifndef TRINITY_DEBUG
-#    define TRINITY_DEBUG
+#if defined(MANGOS_DEBUG) || defined(CW_DEBUG)
+#  ifndef CW_DEBUG
+#    define CW_DEBUG
 #  endif
 #  ifndef MANGOS_DEBUG
 #    define MANGOS_DEBUG
@@ -161,5 +161,5 @@ typedef uint64 OBJECT_HANDLE;
 #endif
 
 
-#endif //TRINITY_DEFINE_H
+#endif //CW_DEFINE_H
 

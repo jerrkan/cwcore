@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ update creature_template set scriptname = 'boss_jedoga' where entry = '';
 #define SAY_PREACHING_4                           -1619012
 #define SAY_PREACHING_5                           -1619013
 
-struct TRINITY_DLL_DECL boss_jedogaAI : public ScriptedAI
+struct CW_DLL_DECL boss_jedogaAI : public ScriptedAI
 {
     boss_jedogaAI(Creature *c) : ScriptedAI(c) {}
 

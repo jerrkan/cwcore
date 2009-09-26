@@ -50,7 +50,7 @@ enum
 #define GOSSIP_ITEM_2   "Click to Test Escort(NoAttack, Walk)"
 #define GOSSIP_ITEM_3   "Click to Test Escort(NoAttack, Run)"
 
-struct TRINITY_DLL_DECL example_escortAI : public npc_escortAI
+struct CW_DLL_DECL example_escortAI : public npc_escortAI
 {
     // CreatureAI functions
     example_escortAI(Creature* pCreature) : npc_escortAI(pCreature) { }
@@ -211,10 +211,10 @@ bool GossipSelect_example_escort(Player* pPlayer, Creature* pCreature, uint32 ui
                 pEscortAI->Start(false, true, pPlayer->GetGUID());
             break;
         default:
-            return false;                                   // nothing defined      -> trinity core handling
+            return false;                                   // nothing defined      -> CW core handling
     }
 
-    return true;                                            // no default handling  -> prevent trinity core handling
+    return true;                                            // no default handling  -> prevent CW core handling
 }
 
 void AddSC_example_escort()

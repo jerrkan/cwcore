@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,8 +82,8 @@ TotemAI::UpdateAI(const uint32 /*diff*/)
         m_creature->IsFriendlyTo(victim) || !victim->isVisibleForOrDetect(m_creature,false) )
     {
         victim = NULL;
-        Trinity::NearestAttackableUnitInObjectRangeCheck u_check(m_creature, m_creature, max_range);
-        Trinity::UnitLastSearcher<Trinity::NearestAttackableUnitInObjectRangeCheck> checker(m_creature, victim, u_check);
+        CW::NearestAttackableUnitInObjectRangeCheck u_check(m_creature, m_creature, max_range);
+        CW::UnitLastSearcher<CW::NearestAttackableUnitInObjectRangeCheck> checker(m_creature, victim, u_check);
         m_creature->VisitNearbyObject(max_range, checker);
     }
 

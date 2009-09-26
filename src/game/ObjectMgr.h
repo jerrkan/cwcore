@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,14 +142,14 @@ typedef UNORDERED_MAP<uint64/*(instance,guid) pair*/,time_t> RespawnTimes;
 
 
 // mangos string ranges
-#define MIN_TRINITY_STRING_ID           1                    // 'mangos_string'
-#define MAX_TRINITY_STRING_ID           2000000000
-#define MIN_DB_SCRIPT_STRING_ID        MAX_TRINITY_STRING_ID // 'db_script_string'
+#define MIN_CW_STRING_ID           1                    // 'mangos_string'
+#define MAX_CW_STRING_ID           2000000000
+#define MIN_DB_SCRIPT_STRING_ID        MAX_CW_STRING_ID // 'db_script_string'
 #define MAX_DB_SCRIPT_STRING_ID        2000010000
 #define MIN_CREATURE_AI_TEXT_STRING_ID (-1)                 // 'creature_ai_texts'
 #define MAX_CREATURE_AI_TEXT_STRING_ID (-1000000)
 
-struct TrinityStringLocale
+struct CWStringLocale
 {
     std::vector<std::string> Content;                       // 0 -> default, i -> i-1 locale index
 };
@@ -163,7 +163,7 @@ typedef UNORDERED_MAP<uint32,ItemLocale> ItemLocaleMap;
 typedef UNORDERED_MAP<uint32,QuestLocale> QuestLocaleMap;
 typedef UNORDERED_MAP<uint32,NpcTextLocale> NpcTextLocaleMap;
 typedef UNORDERED_MAP<uint32,PageTextLocale> PageTextLocaleMap;
-typedef UNORDERED_MAP<int32,TrinityStringLocale> TrinityStringLocaleMap;
+typedef UNORDERED_MAP<int32,CWStringLocale> CWStringLocaleMap;
 typedef UNORDERED_MAP<uint32,NpcOptionLocale> NpcOptionLocaleMap;
 typedef UNORDERED_MAP<uint32,PointOfInterestLocale> PointOfInterestLocaleMap;
 
@@ -322,7 +322,7 @@ SkillRangeType GetSkillRangeType(SkillLineEntry const *pSkill, bool racial);
 
 bool normalizePlayerName(std::string& name);
 
-struct TRINITY_DLL_SPEC LanguageDesc
+struct CW_DLL_SPEC LanguageDesc
 {
     Language lang_id;
     uint32   spell_id;
@@ -330,7 +330,7 @@ struct TRINITY_DLL_SPEC LanguageDesc
 };
 
 extern LanguageDesc lang_description[LANGUAGES_COUNT];
-TRINITY_DLL_SPEC LanguageDesc const* GetLanguageDescByID(uint32 lang);
+CW_DLL_SPEC LanguageDesc const* GetLanguageDescByID(uint32 lang);
 
 class PlayerDumpReader;
 
@@ -546,8 +546,8 @@ class ObjectMgr
 
         void LoadTransportEvents();
 
-        bool LoadTrinityStrings(DatabaseType& db, char const* table, int32 min_value, int32 max_value);
-        bool LoadTrinityStrings() { return LoadTrinityStrings(WorldDatabase,"trinity_string",MIN_TRINITY_STRING_ID,MAX_TRINITY_STRING_ID); }
+        bool LoadCWStrings(DatabaseType& db, char const* table, int32 min_value, int32 max_value);
+        bool LoadCWStrings() { return LoadCWStrings(WorldDatabase,"CW_string",MIN_CW_STRING_ID,MAX_CW_STRING_ID); }
         void LoadDbScriptStrings();
         void LoadCreatureLocales();
         void LoadCreatureTemplates();
@@ -732,14 +732,14 @@ class ObjectMgr
         GameObjectData& NewGOData(uint32 guid) { return mGameObjectDataMap[guid]; }
         void DeleteGOData(uint32 guid);
 
-        TrinityStringLocale const* GetTrinityStringLocale(int32 entry) const
+        CWStringLocale const* GetCWStringLocale(int32 entry) const
         {
-            TrinityStringLocaleMap::const_iterator itr = mTrinityStringLocaleMap.find(entry);
-            if(itr==mTrinityStringLocaleMap.end()) return NULL;
+            CWStringLocaleMap::const_iterator itr = mCWStringLocaleMap.find(entry);
+            if(itr==mCWStringLocaleMap.end()) return NULL;
             return &itr->second;
         }
-        const char *GetTrinityString(int32 entry, int locale_idx) const;
-        const char *GetTrinityStringForDBCLocale(int32 entry) const { return GetTrinityString(entry,DBCLocaleIndex); }
+        const char *GetCWString(int32 entry, int locale_idx) const;
+        const char *GetCWStringForDBCLocale(int32 entry) const { return GetCWString(entry,DBCLocaleIndex); }
         int32 GetDBCLocaleIndex() const { return DBCLocaleIndex; }
         void SetDBCLocaleIndex(uint32 lang) { DBCLocaleIndex = GetIndexForLocale(LocaleConstant(lang)); }
 
@@ -986,7 +986,7 @@ class ObjectMgr
         QuestLocaleMap mQuestLocaleMap;
         NpcTextLocaleMap mNpcTextLocaleMap;
         PageTextLocaleMap mPageTextLocaleMap;
-        TrinityStringLocaleMap mTrinityStringLocaleMap;
+        CWStringLocaleMap mCWStringLocaleMap;
         NpcOptionLocaleMap mNpcOptionLocaleMap;
         PointOfInterestLocaleMap mPointOfInterestLocaleMap;
         RespawnTimes mCreatureRespawnTimes;
@@ -1002,16 +1002,16 @@ class ObjectMgr
         CacheTrainerSpellMap m_mCacheTrainerSpellMap;
 };
 
-#define objmgr Trinity::Singleton<ObjectMgr>::Instance()
+#define objmgr CW::Singleton<ObjectMgr>::Instance()
 
 // scripting access functions
-TRINITY_DLL_SPEC bool LoadTrinityStrings(DatabaseType& db, char const* table,int32 start_value = MAX_CREATURE_AI_TEXT_STRING_ID, int32 end_value = std::numeric_limits<int32>::min());
-TRINITY_DLL_SPEC uint32 GetAreaTriggerScriptId(uint32 trigger_id);
-TRINITY_DLL_SPEC uint32 GetScriptId(const char *name);
-TRINITY_DLL_SPEC ObjectMgr::ScriptNameMap& GetScriptNames();
-TRINITY_DLL_SPEC GameObjectInfo const *GetGameObjectInfo(uint32 id);
-TRINITY_DLL_SPEC CreatureInfo const *GetCreatureInfo(uint32 id);
-TRINITY_DLL_SPEC CreatureInfo const* GetCreatureTemplateStore(uint32 entry);
-TRINITY_DLL_SPEC Quest const* GetQuestTemplateStore(uint32 entry);
+CW_DLL_SPEC bool LoadCWStrings(DatabaseType& db, char const* table,int32 start_value = MAX_CREATURE_AI_TEXT_STRING_ID, int32 end_value = std::numeric_limits<int32>::min());
+CW_DLL_SPEC uint32 GetAreaTriggerScriptId(uint32 trigger_id);
+CW_DLL_SPEC uint32 GetScriptId(const char *name);
+CW_DLL_SPEC ObjectMgr::ScriptNameMap& GetScriptNames();
+CW_DLL_SPEC GameObjectInfo const *GetGameObjectInfo(uint32 id);
+CW_DLL_SPEC CreatureInfo const *GetCreatureInfo(uint32 id);
+CW_DLL_SPEC CreatureInfo const* GetCreatureTemplateStore(uint32 entry);
+CW_DLL_SPEC Quest const* GetQuestTemplateStore(uint32 entry);
 
 #endif

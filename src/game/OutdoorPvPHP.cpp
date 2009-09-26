@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -175,13 +175,13 @@ void OPvPCapturePointHP::ChangeState()
         field = HP_MAP_A[m_TowerType];
         if(((OutdoorPvPHP*)m_PvP)->m_AllianceTowersControlled)
             ((OutdoorPvPHP*)m_PvP)->m_AllianceTowersControlled--;
-        sWorld.SendZoneText(OutdoorPvPHPBuffZones[0],objmgr.GetTrinityStringForDBCLocale(HP_LANG_LOOSE_A[m_TowerType]));
+        sWorld.SendZoneText(OutdoorPvPHPBuffZones[0],objmgr.GetCWStringForDBCLocale(HP_LANG_LOOSE_A[m_TowerType]));
         break;
     case OBJECTIVESTATE_HORDE:
         field = HP_MAP_H[m_TowerType];
         if(((OutdoorPvPHP*)m_PvP)->m_HordeTowersControlled)
             ((OutdoorPvPHP*)m_PvP)->m_HordeTowersControlled--;
-        sWorld.SendZoneText(OutdoorPvPHPBuffZones[0],objmgr.GetTrinityStringForDBCLocale(HP_LANG_LOOSE_H[m_TowerType]));
+        sWorld.SendZoneText(OutdoorPvPHPBuffZones[0],objmgr.GetCWStringForDBCLocale(HP_LANG_LOOSE_H[m_TowerType]));
         break;
     case OBJECTIVESTATE_NEUTRAL_ALLIANCE_CHALLENGE:
         field = HP_MAP_N[m_TowerType];
@@ -216,7 +216,7 @@ void OPvPCapturePointHP::ChangeState()
         artkit2 = HP_TowerArtKit_A[m_TowerType];
         if(((OutdoorPvPHP*)m_PvP)->m_AllianceTowersControlled<3)
             ((OutdoorPvPHP*)m_PvP)->m_AllianceTowersControlled++;
-        sWorld.SendZoneText(OutdoorPvPHPBuffZones[0],objmgr.GetTrinityStringForDBCLocale(HP_LANG_CAPTURE_A[m_TowerType]));
+        sWorld.SendZoneText(OutdoorPvPHPBuffZones[0],objmgr.GetCWStringForDBCLocale(HP_LANG_CAPTURE_A[m_TowerType]));
         break;
     case OBJECTIVESTATE_HORDE:
         field = HP_MAP_H[m_TowerType];
@@ -224,7 +224,7 @@ void OPvPCapturePointHP::ChangeState()
         artkit2 = HP_TowerArtKit_H[m_TowerType];
         if(((OutdoorPvPHP*)m_PvP)->m_HordeTowersControlled<3)
             ((OutdoorPvPHP*)m_PvP)->m_HordeTowersControlled++;
-        sWorld.SendZoneText(OutdoorPvPHPBuffZones[0],objmgr.GetTrinityStringForDBCLocale(HP_LANG_CAPTURE_H[m_TowerType]));
+        sWorld.SendZoneText(OutdoorPvPHPBuffZones[0],objmgr.GetCWStringForDBCLocale(HP_LANG_CAPTURE_H[m_TowerType]));
         break;
     case OBJECTIVESTATE_NEUTRAL_ALLIANCE_CHALLENGE:
         field = HP_MAP_N[m_TowerType];

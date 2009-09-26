@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ bool DeadAhnkaharGuardian; // needed for achievement: Respect Your Elders(2038)
 
 #define EMOTE_HATCHES                       "An Ahn'kahar Guardian hatches!"
 
-struct TRINITY_DLL_DECL boss_elder_nadoxAI : public ScriptedAI
+struct CW_DLL_DECL boss_elder_nadoxAI : public ScriptedAI
 {
     boss_elder_nadoxAI(Creature *c) : ScriptedAI(c)
     {
@@ -204,7 +204,7 @@ CreatureAI* GetAI_boss_elder_nadox(Creature* pCreature)
 
 #define SPELL_SPRINT            56354
 
-struct TRINITY_DLL_DECL mob_ahnkahar_nerubianAI : public ScriptedAI
+struct CW_DLL_DECL mob_ahnkahar_nerubianAI : public ScriptedAI
 {
     mob_ahnkahar_nerubianAI(Creature *c) : ScriptedAI(c)
     {

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -167,7 +167,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
         if (!_player->CanSpeak())
         {
             std::string timeStr = secsToTimeString(m_muteTime - time(NULL));
-            SendNotification(GetTrinityString(LANG_WAIT_BEFORE_SPEAKING),timeStr.c_str());
+            SendNotification(GetCWString(LANG_WAIT_BEFORE_SPEAKING),timeStr.c_str());
             return;
         }
 
@@ -180,7 +180,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
         std::string msg="";
         recv_data >> msg;
 
-        SendNotification(GetTrinityString(LANG_GM_SILENCE), GetPlayer()->GetName());
+        SendNotification(GetCWString(LANG_GM_SILENCE), GetPlayer()->GetName());
         return;
     }
 
@@ -259,7 +259,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 
             if (GetPlayer()->HasAura(1852) && !player->isGameMaster())
             {
-                SendNotification(GetTrinityString(LANG_GM_SILENCE), GetPlayer()->GetName());
+                SendNotification(GetCWString(LANG_GM_SILENCE), GetPlayer()->GetName());
                 return;
             }
 
@@ -544,7 +544,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
                 if(!_player->isAFK())
                 {
                     if(msg.empty())
-                        msg  = GetTrinityString(LANG_PLAYER_AFK_DEFAULT);
+                        msg  = GetCWString(LANG_PLAYER_AFK_DEFAULT);
                     _player->afkMsg = msg;
                 }
                 _player->ToggleAFK();
@@ -563,7 +563,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
                 if(!_player->isDND())
                 {
                     if(msg.empty())
-                        msg  = GetTrinityString(LANG_PLAYER_DND_DEFAULT);
+                        msg  = GetCWString(LANG_PLAYER_DND_DEFAULT);
                     _player->dndMsg = msg;
                 }
                 _player->ToggleDND();
@@ -628,7 +628,7 @@ void WorldSession::HandleTextEmoteOpcode( WorldPacket & recv_data )
     if (!GetPlayer()->CanSpeak())
     {
         std::string timeStr = secsToTimeString(m_muteTime - time(NULL));
-        SendNotification(GetTrinityString(LANG_WAIT_BEFORE_SPEAKING),timeStr.c_str());
+        SendNotification(GetCWString(LANG_WAIT_BEFORE_SPEAKING),timeStr.c_str());
         return;
     }
 

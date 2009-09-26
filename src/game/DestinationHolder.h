@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_DESTINATION_HOLDER_H
-#define TRINITY_DESTINATION_HOLDER_H
+#ifndef CW_DESTINATION_HOLDER_H
+#define CW_DESTINATION_HOLDER_H
 
 #include "Platform/Define.h"
 #include "Timer.h"
@@ -30,7 +30,7 @@ class Map;
 #define TRAVELLER_UPDATE_INTERVAL  300
 
 template<typename TRAVELLER>
-class TRINITY_DLL_DECL DestinationHolder
+class CW_DLL_DECL DestinationHolder
 {
     TimeTrackerSmall i_tracker;
     uint32 i_totalTravelTime;

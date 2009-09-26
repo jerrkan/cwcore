@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -259,7 +259,7 @@ void Map::RemoveFromGrid(T* obj, NGridType *grid, Cell const& cell)
 template<class T>
 void Map::SwitchGridContainers(T* obj, bool on)
 {
-    CellPair p = Trinity::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
+    CellPair p = CW::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
     if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP )
     {
         sLog.outError("Map::SwitchGridContainers: Object " I64FMT " have invalid coordinates X:%f Y:%f grid cell [%u:%u]", obj->GetGUID(), obj->GetPositionX(), obj->GetPositionY(), p.x_coord, p.y_coord);
@@ -419,7 +419,7 @@ bool Map::EnsureGridLoaded(const Cell &cell)
 
 void Map::LoadGrid(float x, float y)
 {
-    CellPair pair = Trinity::ComputeCellPair(x, y);
+    CellPair pair = CW::ComputeCellPair(x, y);
     Cell cell(pair);
     EnsureGridLoaded(cell);
 }
@@ -429,7 +429,7 @@ bool Map::Add(Player *player)
     // Check if we are adding to correct map
     assert (player->GetMap() == this);
     // update player state for other player and visa-versa
-    CellPair p = Trinity::ComputeCellPair(player->GetPositionX(), player->GetPositionY());
+    CellPair p = CW::ComputeCellPair(player->GetPositionX(), player->GetPositionY());
     Cell cell(p);
     EnsureGridLoadedAtEnter(cell, player);
     player->AddToWorld();
@@ -447,7 +447,7 @@ template<class T>
 void
 Map::Add(T *obj)
 {
-    CellPair p = Trinity::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
+    CellPair p = CW::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
     if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP )
     {
         sLog.outError("Map::Add: Object " UI64FMTD " have invalid coordinates X:%f Y:%f grid cell [%u:%u]", obj->GetGUID(), obj->GetPositionX(), obj->GetPositionY(), p.x_coord, p.y_coord);
@@ -512,14 +512,14 @@ void Map::RelocationNotify()
         float dist = abs(unit->GetPositionX() - unit->oldX) + abs(unit->GetPositionY() - unit->oldY);
         if(dist > 10.0f)
         {
-            Trinity::VisibleChangesNotifier notifier(*unit);
+            CW::VisibleChangesNotifier notifier(*unit);
             VisitWorld(unit->oldX, unit->oldY, World::GetMaxVisibleDistance(), notifier);
             dist = 0;
         }
 
         if(unit->GetTypeId() == TYPEID_PLAYER)
         {
-            Trinity::PlayerRelocationNotifier notifier(*((Player*)unit));
+            CW::PlayerRelocationNotifier notifier(*((Player*)unit));
             //if(((Player*)unit)->m_seer != unit)
             VisitAll(((Player*)unit)->m_seer->GetPositionX(), ((Player*)unit)->m_seer->GetPositionY(), World::GetMaxVisibleDistance() + dist, notifier);
             //else
@@ -528,7 +528,7 @@ void Map::RelocationNotify()
         }
         else
         {
-            Trinity::CreatureRelocationNotifier notifier(*((Creature*)unit));
+            CW::CreatureRelocationNotifier notifier(*((Creature*)unit));
             VisitAll(unit->GetPositionX(), unit->GetPositionY(), World::GetMaxVisibleDistance() + dist, notifier);
         }
     }
@@ -607,11 +607,11 @@ void Map::Update(const uint32 &t_diff)
     /// update active cells around players and active objects
     resetMarkedCells();
 
-    Trinity::ObjectUpdater updater(t_diff);
+    CW::ObjectUpdater updater(t_diff);
     // for creature
-    TypeContainerVisitor<Trinity::ObjectUpdater, GridTypeMapContainer  > grid_object_update(updater);
+    TypeContainerVisitor<CW::ObjectUpdater, GridTypeMapContainer  > grid_object_update(updater);
     // for pets
-    TypeContainerVisitor<Trinity::ObjectUpdater, WorldTypeMapContainer > world_object_update(updater);
+    TypeContainerVisitor<CW::ObjectUpdater, WorldTypeMapContainer > world_object_update(updater);
 
     // the player iterator is stored in the map object
     // to make sure calls to Map::Remove don't invalidate it
@@ -622,7 +622,7 @@ void Map::Update(const uint32 &t_diff)
         if(!plr->IsInWorld())
             continue;
 
-        CellPair standing_cell(Trinity::ComputeCellPair(plr->GetPositionX(), plr->GetPositionY()));
+        CellPair standing_cell(CW::ComputeCellPair(plr->GetPositionX(), plr->GetPositionY()));
 
         // Check for correctness of standing_cell, it also avoids problems with update_cell
         if (standing_cell.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || standing_cell.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
@@ -674,7 +674,7 @@ void Map::Update(const uint32 &t_diff)
             if(!obj->IsInWorld())
                 continue;
 
-            CellPair standing_cell(Trinity::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY()));
+            CellPair standing_cell(CW::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY()));
 
             // Check for correctness of standing_cell, it also avoids problems with update_cell
             if (standing_cell.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || standing_cell.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
@@ -725,7 +725,7 @@ void Map::Remove(Player *player, bool remove)
     player->RemoveFromWorld();
     SendRemoveTransports(player);
 
-    CellPair p = Trinity::ComputeCellPair(player->GetPositionX(), player->GetPositionY());
+    CellPair p = CW::ComputeCellPair(player->GetPositionX(), player->GetPositionY());
     if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
         sLog.outCrash("Map::Remove: Player is in invalid cell!");
     else
@@ -769,7 +769,7 @@ Map::Remove(T *obj, bool remove)
     if(obj->isActiveObject())
         RemoveFromActive(obj);
 
-    CellPair p = Trinity::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
+    CellPair p = CW::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
     if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP )
         sLog.outError("Map::Remove: Object " I64FMT " have invalid coordinates X:%f Y:%f grid cell [%u:%u]", obj->GetGUID(), obj->GetPositionX(), obj->GetPositionY(), p.x_coord, p.y_coord);
     else
@@ -802,8 +802,8 @@ Map::PlayerRelocation(Player *player, float x, float y, float z, float orientati
 {
     assert(player);
 
-    CellPair old_val = Trinity::ComputeCellPair(player->GetPositionX(), player->GetPositionY());
-    CellPair new_val = Trinity::ComputeCellPair(x, y);
+    CellPair old_val = CW::ComputeCellPair(player->GetPositionX(), player->GetPositionY());
+    CellPair new_val = CW::ComputeCellPair(x, y);
 
     Cell old_cell(old_val);
     Cell new_cell(new_val);
@@ -845,13 +845,13 @@ Map::CreatureRelocation(Creature *creature, float x, float y, float z, float ang
 
     Cell old_cell = creature->GetCurrentCell();
 
-    CellPair new_val = Trinity::ComputeCellPair(x, y);
+    CellPair new_val = CW::ComputeCellPair(x, y);
     Cell new_cell(new_val);
 
     // delay creature move for grid/cell to grid/cell moves
     if( old_cell.DiffCell(new_cell) || old_cell.DiffGrid(new_cell) )
     {
-        #ifdef TRINITY_DEBUG
+        #ifdef CW_DEBUG
         if((sLog.getLogFilter() & LOG_FILTER_CREATURE_MOVES)==0)
             sLog.outDebug("Creature (GUID: %u Entry: %u) added to moving list from grid[%u,%u]cell[%u,%u] to grid[%u,%u]cell[%u,%u].", creature->GetGUIDLow(), creature->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
         #endif
@@ -906,7 +906,7 @@ void Map::MoveAllCreaturesInMoveList()
         i_creaturesToMove.erase(iter);
 
         // calculate cells
-        CellPair new_val = Trinity::ComputeCellPair(cm.x, cm.y);
+        CellPair new_val = CW::ComputeCellPair(cm.x, cm.y);
         Cell new_cell(new_val);
 
         // do move or do move to respawn or remove creature if previous all fail
@@ -924,7 +924,7 @@ void Map::MoveAllCreaturesInMoveList()
             if(!CreatureRespawnRelocation(c))
             {
                 // ... or unload (if respawn grid also not loaded)
-                #ifdef TRINITY_DEBUG
+                #ifdef CW_DEBUG
                 if((sLog.getLogFilter() & LOG_FILTER_CREATURE_MOVES)==0)
                     sLog.outDebug("Creature (GUID: %u Entry: %u ) can't be move to unloaded respawn grid.",c->GetGUIDLow(),c->GetEntry());
                 #endif
@@ -942,7 +942,7 @@ bool Map::CreatureCellRelocation(Creature *c, Cell new_cell)
         // if in same cell then none do
         if(old_cell.DiffCell(new_cell))
         {
-            #ifdef TRINITY_DEBUG
+            #ifdef CW_DEBUG
             if((sLog.getLogFilter() & LOG_FILTER_CREATURE_MOVES)==0)
                 sLog.outDebug("Creature (GUID: %u Entry: %u) moved in grid[%u,%u] from cell[%u,%u] to cell[%u,%u].", c->GetGUIDLow(), c->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.CellX(), new_cell.CellY());
             #endif
@@ -952,7 +952,7 @@ bool Map::CreatureCellRelocation(Creature *c, Cell new_cell)
         }
         else
         {
-            #ifdef TRINITY_DEBUG
+            #ifdef CW_DEBUG
             if((sLog.getLogFilter() & LOG_FILTER_CREATURE_MOVES)==0)
                 sLog.outDebug("Creature (GUID: %u Entry: %u) move in same grid[%u,%u]cell[%u,%u].", c->GetGUIDLow(), c->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY());
             #endif
@@ -966,7 +966,7 @@ bool Map::CreatureCellRelocation(Creature *c, Cell new_cell)
     {
         EnsureGridLoadedAtEnter(new_cell);
 
-        #ifdef TRINITY_DEBUG
+        #ifdef CW_DEBUG
         if((sLog.getLogFilter() & LOG_FILTER_CREATURE_MOVES)==0)
             sLog.outDebug("Active creature (GUID: %u Entry: %u) moved from grid[%u,%u]cell[%u,%u] to grid[%u,%u]cell[%u,%u].", c->GetGUIDLow(), c->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
         #endif
@@ -980,7 +980,7 @@ bool Map::CreatureCellRelocation(Creature *c, Cell new_cell)
     // in diff. loaded grid normal creature
     if(loaded(GridPair(new_cell.GridX(), new_cell.GridY())))
     {
-        #ifdef TRINITY_DEBUG
+        #ifdef CW_DEBUG
         if((sLog.getLogFilter() & LOG_FILTER_CREATURE_MOVES)==0)
             sLog.outDebug("Creature (GUID: %u Entry: %u) moved from grid[%u,%u]cell[%u,%u] to grid[%u,%u]cell[%u,%u].", c->GetGUIDLow(), c->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
         #endif
@@ -993,7 +993,7 @@ bool Map::CreatureCellRelocation(Creature *c, Cell new_cell)
     }
 
     // fail to move: normal creature attempt move to unloaded grid
-    #ifdef TRINITY_DEBUG
+    #ifdef CW_DEBUG
     if((sLog.getLogFilter() & LOG_FILTER_CREATURE_MOVES)==0)
         sLog.outDebug("Creature (GUID: %u Entry: %u) attempt move from grid[%u,%u]cell[%u,%u] to unloaded grid[%u,%u]cell[%u,%u].", c->GetGUIDLow(), c->GetEntry(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
     #endif
@@ -1005,13 +1005,13 @@ bool Map::CreatureRespawnRelocation(Creature *c)
     float resp_x, resp_y, resp_z, resp_o;
     c->GetRespawnCoord(resp_x, resp_y, resp_z, &resp_o);
 
-    CellPair resp_val = Trinity::ComputeCellPair(resp_x, resp_y);
+    CellPair resp_val = CW::ComputeCellPair(resp_x, resp_y);
     Cell resp_cell(resp_val);
 
     c->CombatStop();
     c->GetMotionMaster()->Clear();
 
-    #ifdef TRINITY_DEBUG
+    #ifdef CW_DEBUG
     if((sLog.getLogFilter() & LOG_FILTER_CREATURE_MOVES)==0)
         sLog.outDebug("Creature (GUID: %u Entry: %u) will moved from grid[%u,%u]cell[%u,%u] to respawn grid[%u,%u]cell[%u,%u].", c->GetGUIDLow(), c->GetEntry(), c->GetCurrentCell().GridX(), c->GetCurrentCell().GridY(), c->GetCurrentCell().CellX(), c->GetCurrentCell().CellY(), resp_cell.GridX(), resp_cell.GridY(), resp_cell.CellX(), resp_cell.CellY());
     #endif
@@ -1976,7 +1976,7 @@ bool Map::CheckGridIntegrity(Creature* c, bool moved) const
 {
     Cell const& cur_cell = c->GetCurrentCell();
 
-    CellPair xy_val = Trinity::ComputeCellPair(c->GetPositionX(), c->GetPositionY());
+    CellPair xy_val = CW::ComputeCellPair(c->GetPositionX(), c->GetPositionY());
     Cell xy_cell(xy_val);
     if(xy_cell != cur_cell)
     {
@@ -2000,8 +2000,8 @@ void Map::UpdateObjectVisibility( WorldObject* obj, Cell cell, CellPair cellpair
 {
     cell.data.Part.reserved = ALL_DISTRICT;
     cell.SetNoCreate();
-    Trinity::VisibleChangesNotifier notifier(*obj);
-    TypeContainerVisitor<Trinity::VisibleChangesNotifier, WorldTypeMapContainer > player_notifier(notifier);
+    CW::VisibleChangesNotifier notifier(*obj);
+    TypeContainerVisitor<CW::VisibleChangesNotifier, WorldTypeMapContainer > player_notifier(notifier);
     CellLock<GridReadGuard> cell_lock(cell, cellpair);
     cell_lock->Visit(cell_lock, player_notifier, *this);
 }
@@ -2225,7 +2225,7 @@ bool Map::ActiveObjectsNearGrid(uint32 x, uint32 y) const
     {
         Player* plr = iter->getSource();
 
-        CellPair p = Trinity::ComputeCellPair(plr->GetPositionX(), plr->GetPositionY());
+        CellPair p = CW::ComputeCellPair(plr->GetPositionX(), plr->GetPositionY());
         if( (cell_min.x_coord <= p.x_coord && p.x_coord <= cell_max.x_coord) &&
             (cell_min.y_coord <= p.y_coord && p.y_coord <= cell_max.y_coord) )
             return true;
@@ -2235,7 +2235,7 @@ bool Map::ActiveObjectsNearGrid(uint32 x, uint32 y) const
     {
         WorldObject* obj = *iter;
 
-        CellPair p = Trinity::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
+        CellPair p = CW::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
         if( (cell_min.x_coord <= p.x_coord && p.x_coord <= cell_max.x_coord) &&
             (cell_min.y_coord <= p.y_coord && p.y_coord <= cell_max.y_coord) )
             return true;
@@ -2253,12 +2253,12 @@ void Map::AddToActive( Creature* c )
     {
         float x,y,z;
         c->GetRespawnCoord(x,y,z);
-        GridPair p = Trinity::ComputeGridPair(x, y);
+        GridPair p = CW::ComputeGridPair(x, y);
         if(getNGrid(p.x_coord, p.y_coord))
             getNGrid(p.x_coord, p.y_coord)->incUnloadActiveLock();
         else
         {
-            GridPair p2 = Trinity::ComputeGridPair(c->GetPositionX(), c->GetPositionY());
+            GridPair p2 = CW::ComputeGridPair(c->GetPositionX(), c->GetPositionY());
             sLog.outError("Active creature (GUID: %u Entry: %u) added to grid[%u,%u] but spawn grid[%u,%u] not loaded.",
                 c->GetGUIDLow(), c->GetEntry(), p.x_coord, p.y_coord, p2.x_coord, p2.y_coord);
         }
@@ -2274,12 +2274,12 @@ void Map::RemoveFromActive( Creature* c )
     {
         float x,y,z;
         c->GetRespawnCoord(x,y,z);
-        GridPair p = Trinity::ComputeGridPair(x, y);
+        GridPair p = CW::ComputeGridPair(x, y);
         if(getNGrid(p.x_coord, p.y_coord))
             getNGrid(p.x_coord, p.y_coord)->decUnloadActiveLock();
         else
         {
-            GridPair p2 = Trinity::ComputeGridPair(c->GetPositionX(), c->GetPositionY());
+            GridPair p2 = CW::ComputeGridPair(c->GetPositionX(), c->GetPositionY());
             sLog.outError("Active creature (GUID: %u Entry: %u) removed from grid[%u,%u] but spawn grid[%u,%u] not loaded.",
                 c->GetGUIDLow(), c->GetEntry(), p.x_coord, p.y_coord, p2.x_coord, p2.y_coord);
         }
@@ -3399,15 +3399,15 @@ void Map::ScriptsProcess()
 
                 if(source) //using grid searcher
                 {
-                    CellPair p(Trinity::ComputeCellPair(((Unit*)source)->GetPositionX(), ((Unit*)source)->GetPositionY()));
+                    CellPair p(CW::ComputeCellPair(((Unit*)source)->GetPositionX(), ((Unit*)source)->GetPositionY()));
                     Cell cell(p);
                     cell.data.Part.reserved = ALL_DISTRICT;
 
                     //sLog.outDebug("Attempting to find Creature: Db GUID: %i", step.script->datalong);
-                    Trinity::CreatureWithDbGUIDCheck target_check(((Unit*)source), step.script->datalong);
-                    Trinity::CreatureSearcher<Trinity::CreatureWithDbGUIDCheck> checker(((Unit*)source), target, target_check);
+                    CW::CreatureWithDbGUIDCheck target_check(((Unit*)source), step.script->datalong);
+                    CW::CreatureSearcher<CW::CreatureWithDbGUIDCheck> checker(((Unit*)source), target, target_check);
 
-                    TypeContainerVisitor<Trinity::CreatureSearcher <Trinity::CreatureWithDbGUIDCheck>, GridTypeMapContainer > unit_checker(checker);
+                    TypeContainerVisitor<CW::CreatureSearcher <CW::CreatureWithDbGUIDCheck>, GridTypeMapContainer > unit_checker(checker);
                     CellLock<GridReadGuard> cell_lock(cell, p);
                     cell_lock->Visit(cell_lock, unit_checker, *(((Unit*)source)->GetMap()));
                 }

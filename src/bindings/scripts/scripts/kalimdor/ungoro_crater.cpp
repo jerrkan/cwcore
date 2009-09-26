@@ -45,7 +45,7 @@ EndContentData */
 #define ENTRY_STOMPER 6513
 
 
-struct TRINITY_DLL_DECL npc_ameAI : public npc_escortAI
+struct CW_DLL_DECL npc_ameAI : public npc_escortAI
 {
     npc_ameAI(Creature *c) : npc_escortAI(c) {}
 
@@ -168,7 +168,7 @@ enum
     FACTION_ESCORTEE            = 113
 };
 
-struct TRINITY_DLL_DECL npc_ringoAI : public FollowerAI
+struct CW_DLL_DECL npc_ringoAI : public FollowerAI
 {
     npc_ringoAI(Creature* pCreature) : FollowerAI(pCreature) { }
 

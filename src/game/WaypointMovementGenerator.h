@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_WAYPOINTMOVEMENTGENERATOR_H
-#define TRINITY_WAYPOINTMOVEMENTGENERATOR_H
+#ifndef CW_WAYPOINTMOVEMENTGENERATOR_H
+#define CW_WAYPOINTMOVEMENTGENERATOR_H
 
 /** @page PathMovementGenerator is used to generate movements
  * of waypoints and flight paths.  Each serves the purpose
@@ -42,7 +42,7 @@
 #define STOP_TIME_FOR_PLAYER  3 * 60 * 1000                         // 3 Minutes
 
 template<class T, class P = Path>
-class TRINITY_DLL_SPEC PathMovementBase
+class CW_DLL_SPEC PathMovementBase
 {
     public:
         PathMovementBase() : i_currentNode(0) {}
@@ -62,7 +62,7 @@ class TRINITY_DLL_SPEC PathMovementBase
 
 template<class T>
 
-class TRINITY_DLL_SPEC WaypointMovementGenerator
+class CW_DLL_SPEC WaypointMovementGenerator
     : public MovementGeneratorMedium< T, WaypointMovementGenerator<T> >, public PathMovementBase<T>
 {
     public:
@@ -90,7 +90,7 @@ class TRINITY_DLL_SPEC WaypointMovementGenerator
 /** FlightPathMovementGenerator generates movement of the player for the paths
  * and hence generates ground and activities for the player.
  */
-class TRINITY_DLL_SPEC FlightPathMovementGenerator
+class CW_DLL_SPEC FlightPathMovementGenerator
 : public MovementGeneratorMedium< Player, FlightPathMovementGenerator >,
 public PathMovementBase<Player>
 {

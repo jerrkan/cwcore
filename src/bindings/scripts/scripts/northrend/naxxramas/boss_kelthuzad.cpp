@@ -99,7 +99,7 @@ const Position Pos[12] =
     {3739.500000,-5141.883989,142.0141130, 2.121412}//RIGHT_NEAR
 };
 
-struct TRINITY_DLL_DECL boss_kelthuzadAI : public BossAI
+struct CW_DLL_DECL boss_kelthuzadAI : public BossAI
 {
     boss_kelthuzadAI(Creature* c) : BossAI(c, BOSS_KELTHUZAD) {}
 

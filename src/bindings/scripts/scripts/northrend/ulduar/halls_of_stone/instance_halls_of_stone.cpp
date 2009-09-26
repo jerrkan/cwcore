@@ -1,7 +1,7 @@
 #include "precompiled.h"
 #include "def_halls_of_stone.h"
 
-struct TRINITY_DLL_DECL instance_halls_of_stone : public ScriptedInstance
+struct CW_DLL_DECL instance_halls_of_stone : public ScriptedInstance
 {
     instance_halls_of_stone(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 };

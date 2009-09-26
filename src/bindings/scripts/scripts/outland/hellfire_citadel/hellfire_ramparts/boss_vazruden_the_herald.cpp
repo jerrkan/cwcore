@@ -57,7 +57,7 @@ const float VazrudenRing[2][3] =
     {-1377, 1760, 112}
 };
 
-struct TRINITY_DLL_DECL boss_nazanAI : public ScriptedAI
+struct CW_DLL_DECL boss_nazanAI : public ScriptedAI
 {
     boss_nazanAI(Creature *c) : ScriptedAI(c)
     {
@@ -171,7 +171,7 @@ struct TRINITY_DLL_DECL boss_nazanAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL boss_vazrudenAI : public ScriptedAI
+struct CW_DLL_DECL boss_vazrudenAI : public ScriptedAI
 {
     boss_vazrudenAI(Creature *c) : ScriptedAI(c)
     {
@@ -246,7 +246,7 @@ struct TRINITY_DLL_DECL boss_vazrudenAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL boss_vazruden_the_heraldAI : public ScriptedAI
+struct CW_DLL_DECL boss_vazruden_the_heraldAI : public ScriptedAI
 {
     boss_vazruden_the_heraldAI(Creature *c) : ScriptedAI(c)
     {
@@ -408,7 +408,7 @@ struct TRINITY_DLL_DECL boss_vazruden_the_heraldAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_hellfire_sentryAI : public ScriptedAI
+struct CW_DLL_DECL mob_hellfire_sentryAI : public ScriptedAI
 {
     mob_hellfire_sentryAI(Creature *c) : ScriptedAI(c) {}
 

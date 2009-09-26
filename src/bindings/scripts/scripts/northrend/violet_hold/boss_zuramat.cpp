@@ -29,7 +29,7 @@ update creature_template set scriptname = '' where entry = '';
 #define SAY_SHIELD                                  -1608043
 #define SAY_WHISPER                                 -1608044
 
-struct TRINITY_DLL_DECL boss_zuramatAI : public ScriptedAI
+struct CW_DLL_DECL boss_zuramatAI : public ScriptedAI
 {
     boss_zuramatAI(Creature *c) : ScriptedAI(c) {}
 

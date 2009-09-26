@@ -70,7 +70,7 @@ enum
 ## Boss Volkhan
 ######*/
 
-struct TRINITY_DLL_DECL boss_volkhanAI : public ScriptedAI
+struct CW_DLL_DECL boss_volkhanAI : public ScriptedAI
 {
     boss_volkhanAI(Creature *pCreature) : ScriptedAI(pCreature)
     {
@@ -361,7 +361,7 @@ bool EffectDummyCreature_npc_volkhan_anvil(Unit* pCaster, uint32 uiSpellId, uint
 ## mob_molten_golem
 ######*/
 
-struct TRINITY_DLL_DECL mob_molten_golemAI : public ScriptedAI
+struct CW_DLL_DECL mob_molten_golemAI : public ScriptedAI
 {
     mob_molten_golemAI(Creature *pCreature) : ScriptedAI(pCreature)
     {

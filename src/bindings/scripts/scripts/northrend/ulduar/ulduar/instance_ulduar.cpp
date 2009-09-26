@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 - 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2009 CW <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 #include "precompiled.h"
 #include "def_ulduar.h"
 
-struct TRINITY_DLL_DECL instance_ulduar : public ScriptedInstance
+struct CW_DLL_DECL instance_ulduar : public ScriptedInstance
 {
     instance_ulduar(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 

@@ -1,8 +1,7 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005,2006 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
- *
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,40 +10,88 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// THIS FILE IS DEPRECATED
+#ifndef CW_SYSTEMCONFIG_H
+#define CW_SYSTEMCONFIG_H
 
-#ifndef TRINITY_SYSTEMCONFIG_H
-#define TRINITY_SYSTEMCONFIG_H
+#ifndef _PACKAGENAME
+#define _PACKAGENAME "CWCore"
+#endif
 
 #include "Platform/Define.h"
-#include "revision.h"
+#include "revision_nr.h"
 
+#ifndef _VERSION
+#if PLATFORM == PLATFORM_WINDOWS
+# define _VERSION(REVD,REVT,REVN,REVH) "0.1.0-DEV" " (" REVD " " REVT " Revision " REVN " - " REVH ")"
+#else
+# define _VERSION(REVD,REVT,REVN,REVH) "@VERSION@" " (" REVD " " REVT " Revision " REVN " - " REVH ")"
+#endif
+#endif
 
-#define _PACKAGENAME "TrinityCore2 "
-#define _CODENAME "YUME"
+// Format is YYYYMMDDRR where RR is the change in the conf file
+// for that day.
+#ifndef _CWDCONFVERSION
+# define _CWDCONFVERSION 2008022901
+#endif
+#ifndef _REALMDCONFVERSION
+# define _REALMDCONFVERSION 2007062001
+#endif
 
-#if TRINITY_ENDIAN == TRINITY_BIGENDIAN
+#if MANGOS_ENDIAN == MANGOS_BIGENDIAN
 # define _ENDIAN_STRING "big-endian"
 #else
 # define _ENDIAN_STRING "little-endian"
 #endif
 
+#if defined(i386) || defined(__i386) || defined(__i386__) || defined(_M_IX86)
+# define ARCHITECTURE "x32"
+#elif defined(__amd64) || defined(__amd64__) || defined(__x86_64) || defined(_M_X64)
+# define ARCHITECTURE "x64"
+#elif defined(__ia64)  || defined(__IA64__)  || defined(_M_IA64)
+# define ARCHITECTURE "IA64"
+#else
+# define ARCHITECTURE "x32"
+#endif
+
+// The path to config files
+#ifndef SYSCONFDIR
+#  define SYSCONFDIR        ""
+#endif
+
 #if PLATFORM == PLATFORM_WINDOWS
 # ifdef _WIN64
-#  define _FULLVERSION _PACKAGENAME "Rev: " _REVISION  " Hash: " _HASH " (Win64," _ENDIAN_STRING ")"
+#  define _ENDIAN_PLATFORM "Win64 (" _ENDIAN_STRING ")"
 # else
-#  define _FULLVERSION _PACKAGENAME "Rev: " _REVISION  " Hash: " _HASH " (Win32," _ENDIAN_STRING ")"
+#  define _ENDIAN_PLATFORM "Win32 (" _ENDIAN_STRING ")"
 # endif
+# define _MANGOSD_CONFIG  SYSCONFDIR "CWCore.conf"
+# define _REALMD_CONFIG   SYSCONFDIR "CWRealm.conf"
 #else
-#  define _FULLVERSION _PACKAGENAME "Rev: " _REVISION  " Hash: " _HASH " (Unix," _ENDIAN_STRING ")"
+# if defined  (__FreeBSD__)
+#  define _ENDIAN_PLATFORM "FreeBSD_"ARCHITECTURE" (" _ENDIAN_STRING ")"
+# elif defined(__NetBSD__)
+#  define _ENDIAN_PLATFORM "NetBSD_"ARCHITECTURE" (" _ENDIAN_STRING ")"
+# elif defined(__OpenBSD__)
+#  define _ENDIAN_PLATFORM "OpenBSD_"ARCHITECTURE" (" _ENDIAN_STRING ")"
+# elif defined(__DragonFly__)
+#  define _ENDIAN_PLATFORM "DragonFlyBSD_"ARCHITECTURE" (" _ENDIAN_STRING ")"
+# elif defined(__APPLE__)
+#  define _ENDIAN_PLATFORM "MacOSX_"ARCHITECTURE" (" _ENDIAN_STRING ")"
+# elif defined(__linux) || defined(__linux__)
+#  define _ENDIAN_PLATFORM "Linux_"ARCHITECTURE" (" _ENDIAN_STRING ")"
+# else
+#  define _ENDIAN_PLATFORM "Unix_"ARCHITECTURE" (" _ENDIAN_STRING ")"
+# endif
+# define _MANGOSD_CONFIG  SYSCONFDIR "CWCore.conf"
+# define _REALMD_CONFIG  SYSCONFDIR "CWRealm.conf"
 #endif
 
 #define DEFAULT_PLAYER_LIMIT 100
@@ -52,4 +99,3 @@
 #define DEFAULT_REALMSERVER_PORT 3724
 #define DEFAULT_SOCKET_SELECT_TIME 10000
 #endif
-

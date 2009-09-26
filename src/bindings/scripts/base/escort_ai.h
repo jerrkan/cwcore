@@ -25,7 +25,7 @@ struct Escort_Waypoint
     uint32 WaitTimeMs;
 };
 
-struct TRINITY_DLL_DECL npc_escortAI : public ScriptedAI
+struct CW_DLL_DECL npc_escortAI : public ScriptedAI
 {
     public:
         explicit npc_escortAI(Creature* pCreature);

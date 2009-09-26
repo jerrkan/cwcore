@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,14 +21,14 @@
 #include <cstdlib>
 #include "ObjectLifeTime.h"
 
-namespace Trinity
+namespace CW
 {
     extern "C" void external_wrapper(void *p)
     {
         std::atexit( (void (*)())p );
     }
 
-    void TRINITY_DLL_SPEC at_exit( void (*func)() )
+    void CW_DLL_SPEC at_exit( void (*func)() )
     {
         external_wrapper((void*)func);
     }

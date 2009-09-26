@@ -56,7 +56,7 @@ update creature_template set scriptname = 'boss_palehoof' where entry = '';
 #define SAY_SLAY_2                               -1575002
 #define SAY_DEATH                                -1575003
 
-struct TRINITY_DLL_DECL boss_palehoofAI : public ScriptedAI
+struct CW_DLL_DECL boss_palehoofAI : public ScriptedAI
 {
     boss_palehoofAI(Creature *c) : ScriptedAI(c)
     {
@@ -194,7 +194,7 @@ struct TRINITY_DLL_DECL boss_palehoofAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_ravenous_furbolgAI : public ScriptedAI
+struct CW_DLL_DECL mob_ravenous_furbolgAI : public ScriptedAI
 {
     mob_ravenous_furbolgAI(Creature *c) : ScriptedAI(c)
     {
@@ -273,7 +273,7 @@ struct TRINITY_DLL_DECL mob_ravenous_furbolgAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_frenzied_worgenAI : public ScriptedAI
+struct CW_DLL_DECL mob_frenzied_worgenAI : public ScriptedAI
 {
     mob_frenzied_worgenAI(Creature *c) : ScriptedAI(c)
     {
@@ -354,7 +354,7 @@ struct TRINITY_DLL_DECL mob_frenzied_worgenAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_ferocious_rhinoAI : public ScriptedAI
+struct CW_DLL_DECL mob_ferocious_rhinoAI : public ScriptedAI
 {
     mob_ferocious_rhinoAI(Creature *c) : ScriptedAI(c)
     {
@@ -437,7 +437,7 @@ struct TRINITY_DLL_DECL mob_ferocious_rhinoAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_massive_jormungarAI : public ScriptedAI
+struct CW_DLL_DECL mob_massive_jormungarAI : public ScriptedAI
 {
     mob_massive_jormungarAI(Creature *c) : ScriptedAI(c)
     {

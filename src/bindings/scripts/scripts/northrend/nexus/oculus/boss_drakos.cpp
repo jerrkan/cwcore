@@ -31,7 +31,7 @@ update creature_template set scriptname = '' where entry = '';
 #define SAY_STOMP_2                             -1578010
 #define SAY_STOMP_3                             -1578011
 
-struct TRINITY_DLL_DECL boss_drakosAI : public ScriptedAI
+struct CW_DLL_DECL boss_drakosAI : public ScriptedAI
 {
     boss_drakosAI(Creature *c) : ScriptedAI(c) {}
 

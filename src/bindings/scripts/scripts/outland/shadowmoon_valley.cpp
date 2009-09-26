@@ -62,7 +62,7 @@ enum
 };
 
 
-struct TRINITY_DLL_DECL mob_mature_netherwing_drakeAI : public ScriptedAI
+struct CW_DLL_DECL mob_mature_netherwing_drakeAI : public ScriptedAI
 {
     mob_mature_netherwing_drakeAI(Creature* c) : ScriptedAI(c) { }
 
@@ -187,7 +187,7 @@ CreatureAI* GetAI_mob_mature_netherwing_drake(Creature* pCreature)
 #define CREATURE_DRAGONMAW_SUBJUGATOR   21718
 #define CREATURE_ESCAPE_DUMMY           22317
 
-struct TRINITY_DLL_DECL mob_enslaved_netherwing_drakeAI : public ScriptedAI
+struct CW_DLL_DECL mob_enslaved_netherwing_drakeAI : public ScriptedAI
 {
     mob_enslaved_netherwing_drakeAI(Creature* c) : ScriptedAI(c)
     {
@@ -311,7 +311,7 @@ CreatureAI* GetAI_mob_enslaved_netherwing_drake(Creature* pCreature)
 # mob_dragonmaw_peon
 #####*/
 
-struct TRINITY_DLL_DECL mob_dragonmaw_peonAI : public ScriptedAI
+struct CW_DLL_DECL mob_dragonmaw_peonAI : public ScriptedAI
 {
     mob_dragonmaw_peonAI(Creature* c) : ScriptedAI(c) {}
 
@@ -672,7 +672,7 @@ bool QuestAccept_npc_karynaku(Player* pPlayer, Creature* pCreature, Quest const*
 
 #define YARZILL_THE_MERC_SAY -1000221
 
-struct TRINITY_DLL_DECL npc_overlord_morghorAI : public ScriptedAI
+struct CW_DLL_DECL npc_overlord_morghorAI : public ScriptedAI
 {
     npc_overlord_morghorAI(Creature *c) : ScriptedAI(c) {}
 
@@ -875,7 +875,7 @@ enum
     FACTION_EARTHEN             = 1726                      //guessed
 };
 
-struct TRINITY_DLL_DECL npc_earthmender_wildaAI : public npc_escortAI
+struct CW_DLL_DECL npc_earthmender_wildaAI : public npc_escortAI
 {
     npc_earthmender_wildaAI(Creature* pCreature) : npc_escortAI(pCreature) { }
 
@@ -1127,7 +1127,7 @@ static SpawnSpells SpawnCast[]=
 # mob_illidari_spawn
 ######*/
 
-struct TRINITY_DLL_DECL mob_illidari_spawnAI : public ScriptedAI
+struct CW_DLL_DECL mob_illidari_spawnAI : public ScriptedAI
 {
     mob_illidari_spawnAI(Creature* c) : ScriptedAI(c) {}
 
@@ -1228,7 +1228,7 @@ struct TRINITY_DLL_DECL mob_illidari_spawnAI : public ScriptedAI
 # mob_torloth_the_magnificent
 #####*/
 
-struct TRINITY_DLL_DECL mob_torloth_the_magnificentAI : public ScriptedAI
+struct CW_DLL_DECL mob_torloth_the_magnificentAI : public ScriptedAI
 {
     mob_torloth_the_magnificentAI(Creature* c) : ScriptedAI(c) {}
 
@@ -1378,7 +1378,7 @@ struct TRINITY_DLL_DECL mob_torloth_the_magnificentAI : public ScriptedAI
 # npc_lord_illidan_stormrage
 #####*/
 
-struct TRINITY_DLL_DECL npc_lord_illidan_stormrageAI : public ScriptedAI
+struct CW_DLL_DECL npc_lord_illidan_stormrageAI : public ScriptedAI
 {
     npc_lord_illidan_stormrageAI(Creature* c) : ScriptedAI(c) {}
 
@@ -1663,7 +1663,7 @@ CreatureAI* GetAI_mob_torloth_the_magnificent(Creature* c)
 #define ENRAGED_SOUL_FRIENDLY 35
 #define ENRAGED_SOUL_HOSTILE 14
 
-struct TRINITY_DLL_DECL npc_enraged_spiritAI : public ScriptedAI
+struct CW_DLL_DECL npc_enraged_spiritAI : public ScriptedAI
 {
     npc_enraged_spiritAI(Creature *c) : ScriptedAI(c) {}
 

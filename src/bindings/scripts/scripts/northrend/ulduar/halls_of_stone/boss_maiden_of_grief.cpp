@@ -29,7 +29,7 @@ update creature_template set scriptname = 'boss_maiden_of_grief' where entry = '
 #define SAY_DEATH                                        -1603005
 #define SAY_STUN                                         -1603006
 
-struct TRINITY_DLL_DECL boss_maiden_of_griefAI : public ScriptedAI
+struct CW_DLL_DECL boss_maiden_of_griefAI : public ScriptedAI
 {
     boss_maiden_of_griefAI(Creature *c) : ScriptedAI(c) 
     {

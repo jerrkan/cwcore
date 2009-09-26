@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_SINGLETON_H
-#define TRINITY_SINGLETON_H
+#ifndef CW_SINGLETON_H
+#define CW_SINGLETON_H
 
 /**
  * @brief class Singleton
@@ -29,16 +29,16 @@
 #include "ThreadingModel.h"
 #include "ObjectLifeTime.h"
 
-namespace Trinity
+namespace CW
 {
     template
         <
         typename T,
-        class ThreadingModel = Trinity::SingleThreaded<T>,
-        class CreatePolicy = Trinity::OperatorNew<T>,
-        class LifeTimePolicy = Trinity::ObjectLifeTime<T>
+        class ThreadingModel = CW::SingleThreaded<T>,
+        class CreatePolicy = CW::OperatorNew<T>,
+        class LifeTimePolicy = CW::ObjectLifeTime<T>
         >
-        class TRINITY_DLL_DECL Singleton
+        class CW_DLL_DECL Singleton
     {
         public:
             static T& Instance();

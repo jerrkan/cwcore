@@ -568,7 +568,7 @@ struct CreatureEventAIHolder
     bool UpdateRepeatTimer(Creature* creature, uint32 repeatMin, uint32 repeatMax);
 };
 
-class TRINITY_DLL_SPEC CreatureEventAI : public CreatureAI
+class CW_DLL_SPEC CreatureEventAI : public CreatureAI
 {
 
     public:

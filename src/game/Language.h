@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __TRINITY_LANGUAGE_H
-#define __TRINITY_LANGUAGE_H
+#ifndef __CW_LANGUAGE_H
+#define __CW_LANGUAGE_H
 
-enum TrinityStrings
+enum CWStrings
 {
     // for chat commands
     LANG_SELECT_CHAR_OR_CREATURE        = 1,
@@ -844,7 +844,7 @@ enum TrinityStrings
     LANG_COMMAND_TICKETLISTADDCOMMENT   = 2024,
     LANG_COMMAND_TICKETLISTAGECREATE    = 2025,
 
-    // Trinity strings                    5000-9999
+    // CW strings                    5000-9999
     LANG_COMMAND_FREEZE                 = 5000,
     LANG_COMMAND_FREEZE_ERROR           = 5001,
     LANG_COMMAND_FREEZE_WRONG           = 5002,
@@ -866,7 +866,7 @@ enum TrinityStrings
     LANG_RAID                           = 5017,
     LANG_HEROIC                         = 5018,
     LANG_MOUNTABLE                      = 5019,
-    // Room for more Trinity strings      5020-9999
+    // Room for more CW strings      5020-9999
     // Used for GM Announcements
     LANG_GM_BROADCAST                    = 6613,
     LANG_GM_NOTIFY                       = 6614,

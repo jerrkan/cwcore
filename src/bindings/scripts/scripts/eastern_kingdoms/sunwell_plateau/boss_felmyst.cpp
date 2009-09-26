@@ -1,4 +1,4 @@
-/* Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+/* Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; either version 2 of the License, or
@@ -124,7 +124,7 @@ static EventFelmyst MaxTimer[]=
     EVENT_SUMMON_FOG,
 };
 
-struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
+struct CW_DLL_DECL boss_felmystAI : public ScriptedAI
 {
     boss_felmystAI(Creature *c) : ScriptedAI(c)
     {
@@ -524,15 +524,15 @@ struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
         m_creature->GetPosition(x, y, z);
 
         {
-            CellPair pair(Trinity::ComputeCellPair(x, y));
+            CellPair pair(CW::ComputeCellPair(x, y));
             Cell cell(pair);
             cell.data.Part.reserved = ALL_DISTRICT;
             cell.SetNoCreate();
 
-            Trinity::AllCreaturesOfEntryInRange check(m_creature, entry, 100);
-            Trinity::CreatureListSearcher<Trinity::AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
+            CW::AllCreaturesOfEntryInRange check(m_creature, entry, 100);
+            CW::CreatureListSearcher<CW::AllCreaturesOfEntryInRange> searcher(m_creature, templist, check);
 
-            TypeContainerVisitor<Trinity::CreatureListSearcher<Trinity::AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
+            TypeContainerVisitor<CW::CreatureListSearcher<CW::AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
 
             CellLock<GridReadGuard> cell_lock(cell, pair);
             cell_lock->Visit(cell_lock, cSearcher, *(m_creature->GetMap()));
@@ -553,7 +553,7 @@ struct TRINITY_DLL_DECL boss_felmystAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_felmyst_vaporAI : public ScriptedAI
+struct CW_DLL_DECL mob_felmyst_vaporAI : public ScriptedAI
 {
     mob_felmyst_vaporAI(Creature *c) : ScriptedAI(c)
     {
@@ -573,7 +573,7 @@ struct TRINITY_DLL_DECL mob_felmyst_vaporAI : public ScriptedAI
     }
 };
 
-struct TRINITY_DLL_DECL mob_felmyst_trailAI : public ScriptedAI
+struct CW_DLL_DECL mob_felmyst_trailAI : public ScriptedAI
 {
     mob_felmyst_trailAI(Creature *c) : ScriptedAI(c)
     {

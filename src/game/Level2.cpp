@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -932,7 +932,7 @@ bool ChatHandler::HandleModifyRepCommand(const char * args)
         amount = -42000;
         for (; r < MAX_REPUTATION_RANK; ++r)
         {
-            std::string rank = GetTrinityString(ReputationRankStrIndex[r]);
+            std::string rank = GetCWString(ReputationRankStrIndex[r]);
             if(rank.empty())
                 continue;
 
@@ -2188,11 +2188,11 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         delete result;
     }
 
-    std::string username = GetTrinityString(LANG_ERROR);
-    std::string email = GetTrinityString(LANG_ERROR);
-    std::string last_ip = GetTrinityString(LANG_ERROR);
+    std::string username = GetCWString(LANG_ERROR);
+    std::string email = GetCWString(LANG_ERROR);
+    std::string last_ip = GetCWString(LANG_ERROR);
     uint32 security = 0;
-    std::string last_login = GetTrinityString(LANG_ERROR);
+    std::string last_login = GetCWString(LANG_ERROR);
 
     QueryResult* result = loginDatabase.PQuery("SELECT username,gmlevel,email,last_ip,last_login FROM account WHERE id = '%u'",accId);
     if(result)
@@ -2221,7 +2221,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
 
     std::string nameLink = playerLink(target_name);
 
-    PSendSysMessage(LANG_PINFO_ACCOUNT, (target?"":GetTrinityString(LANG_OFFLINE)), nameLink.c_str(), GUID_LOPART(target_guid), username.c_str(), accId, email.c_str(), security, last_ip.c_str(), last_login.c_str(), latency);
+    PSendSysMessage(LANG_PINFO_ACCOUNT, (target?"":GetCWString(LANG_OFFLINE)), nameLink.c_str(), GUID_LOPART(target_guid), username.c_str(), accId, email.c_str(), security, last_ip.c_str(), last_login.c_str(), latency);
 
     std::string race_s, Class_s;
     switch(race)
@@ -3422,7 +3422,7 @@ bool ChatHandler::HandleLookupEventCommand(const char* args)
 
         if (Utf8FitTo(descr, wnamepart))
         {
-            char const* active = activeEvents.find(id) != activeEvents.end() ? GetTrinityString(LANG_ACTIVE) : "";
+            char const* active = activeEvents.find(id) != activeEvents.end() ? GetCWString(LANG_ACTIVE) : "";
 
             if(m_session)
                 PSendSysMessage(LANG_EVENT_ENTRY_LIST_CHAT,id,id,eventData.description.c_str(),active );
@@ -3447,7 +3447,7 @@ bool ChatHandler::HandleEventActiveListCommand(const char* args)
     GameEventMgr::GameEventDataMap const& events = gameeventmgr.GetEventMap();
     GameEventMgr::ActiveEvents const& activeEvents = gameeventmgr.GetActiveEventList();
 
-    char const* active = GetTrinityString(LANG_ACTIVE);
+    char const* active = GetCWString(LANG_ACTIVE);
 
     for(GameEventMgr::ActiveEvents::const_iterator itr = activeEvents.begin(); itr != activeEvents.end(); ++itr )
     {
@@ -3499,7 +3499,7 @@ bool ChatHandler::HandleEventInfoCommand(const char* args)
 
     GameEventMgr::ActiveEvents const& activeEvents = gameeventmgr.GetActiveEventList();
     bool active = activeEvents.find(event_id) != activeEvents.end();
-    char const* activeStr = active ? GetTrinityString(LANG_ACTIVE) : "";
+    char const* activeStr = active ? GetCWString(LANG_ACTIVE) : "";
 
     std::string startTimeStr = TimeToTimestampStr(eventData.start);
     std::string endTimeStr = TimeToTimestampStr(eventData.end);

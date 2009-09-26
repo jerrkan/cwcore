@@ -31,7 +31,7 @@ EndScriptData */
    Must kill twilight lord for shrine event to be possible
  */
 
-struct TRINITY_DLL_DECL instance_blackfathom_deeps : public ScriptedInstance
+struct CW_DLL_DECL instance_blackfathom_deeps : public ScriptedInstance
 {
     instance_blackfathom_deeps(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 

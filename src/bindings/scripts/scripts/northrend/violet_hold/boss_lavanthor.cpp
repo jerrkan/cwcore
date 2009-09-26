@@ -17,7 +17,7 @@ update creature_template set scriptname = '' where entry = '';
 #define SPELL_FLAME_BREATH                            54282
 #define SPELL_LAVA_BURN                               54249
 
-struct TRINITY_DLL_DECL boss_lavanthorAI : public ScriptedAI
+struct CW_DLL_DECL boss_lavanthorAI : public ScriptedAI
 {
     boss_lavanthorAI(Creature *c) : ScriptedAI(c) {}
 

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +18,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITY_GRIDSTATES_H
-#define TRINITY_GRIDSTATES_H
+#ifndef CW_GRIDSTATES_H
+#define CW_GRIDSTATES_H
 
 #include "Map.h"
 #include "Object.h"
 
-class TRINITY_DLL_DECL GridState
+class CW_DLL_DECL GridState
 {
     public:
-#ifdef TRINITY_DEBUG
+#ifdef CW_DEBUG
 #define MAGIC_TESTVAL 0xFBE823BA
         GridState() { i_Magic = MAGIC_TESTVAL; }
         bool checkMagic()
@@ -45,28 +45,28 @@ class TRINITY_DLL_DECL GridState
         virtual void Update(Map &, NGridType&, GridInfo &, const uint32 &x, const uint32 &y, const uint32 &t_diff) const = 0;
 };
 
-class TRINITY_DLL_DECL InvalidState : public GridState
+class CW_DLL_DECL InvalidState : public GridState
 {
     public:
 
         void Update(Map &, NGridType &, GridInfo &, const uint32 &x, const uint32 &y, const uint32 &t_diff) const;
 };
 
-class TRINITY_DLL_DECL ActiveState : public GridState
+class CW_DLL_DECL ActiveState : public GridState
 {
     public:
 
         void Update(Map &, NGridType &, GridInfo &, const uint32 &x, const uint32 &y, const uint32 &t_diff) const;
 };
 
-class TRINITY_DLL_DECL IdleState : public GridState
+class CW_DLL_DECL IdleState : public GridState
 {
     public:
 
         void Update(Map &, NGridType &, GridInfo &, const uint32 &x, const uint32 &y, const uint32 &t_diff) const;
 };
 
-class TRINITY_DLL_DECL RemovalState : public GridState
+class CW_DLL_DECL RemovalState : public GridState
 {
     public:
 

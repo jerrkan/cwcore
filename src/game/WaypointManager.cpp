@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,8 +73,8 @@ void WaypointStore::Load()
         y = fields[3].GetFloat();
         z = fields[4].GetFloat();
 
-        Trinity::NormalizeMapCoord(x);
-        Trinity::NormalizeMapCoord(y);
+        CW::NormalizeMapCoord(x);
+        CW::NormalizeMapCoord(y);
 
         wp->id = fields[1].GetUInt32();
         wp->x = x;
@@ -125,8 +125,8 @@ void WaypointStore::UpdatePath(uint32 id)
         y = fields[3].GetFloat();
         z = fields[4].GetFloat();
 
-        Trinity::NormalizeMapCoord(x);
-        Trinity::NormalizeMapCoord(y);
+        CW::NormalizeMapCoord(x);
+        CW::NormalizeMapCoord(y);
 
         wp->id = fields[1].GetUInt32();
         wp->x = x;

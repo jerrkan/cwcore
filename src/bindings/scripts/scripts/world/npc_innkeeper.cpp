@@ -128,7 +128,7 @@ bool GossipSelect_npc_innkeeper(Player* pPlayer, Creature* pCreature, uint32 uiS
             }
             pPlayer->CastSpell(pPlayer, trickspell, true);
         }
-        return true;                                        // prevent Trinity core handling
+        return true;                                        // prevent CW core handling
     }
     return false;                                           // the player didn't select "trick or treat" or cheated, normal core handling
 }

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,7 +183,7 @@ bool ChatHandler::HandleNotifyCommand(const char* args)
     if(!*args)
         return false;
 
-    std::string str = GetTrinityString(LANG_GLOBAL_NOTIFY);
+    std::string str = GetCWString(LANG_GLOBAL_NOTIFY);
     str += args;
 
     WorldPacket data(SMSG_NOTIFICATION, (str.size()+1));
@@ -199,7 +199,7 @@ bool ChatHandler::HandleGMNotifyCommand(const char* args)
     if(!*args)
         return false;
 
-    std::string str = GetTrinityString(LANG_GM_NOTIFY);
+    std::string str = GetCWString(LANG_GM_NOTIFY);
     str += args;
 
     WorldPacket data(SMSG_NOTIFICATION, (str.size()+1));
@@ -285,7 +285,7 @@ bool ChatHandler::HandleGMChatCommand(const char* args)
 
 std::string ChatHandler::PGetParseString(int32 entry, ...)
 {
-        const char *format = GetTrinityString(entry);
+        const char *format = GetCWString(entry);
         va_list ap;
         char str [1024];
         va_start(ap, entry);
@@ -657,7 +657,7 @@ bool ChatHandler::HandleGMVisibleCommand(const char* args)
 {
     if (!*args)
     {
-        PSendSysMessage(LANG_YOU_ARE, m_session->GetPlayer()->isGMVisible() ?  GetTrinityString(LANG_VISIBLE) : GetTrinityString(LANG_INVISIBLE));
+        PSendSysMessage(LANG_YOU_ARE, m_session->GetPlayer()->isGMVisible() ?  GetCWString(LANG_VISIBLE) : GetCWString(LANG_INVISIBLE));
         return true;
     }
 
@@ -711,7 +711,7 @@ bool ChatHandler::HandleGPSCommand(const char* args)
             return false;
         }
     }
-    CellPair cell_val = Trinity::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
+    CellPair cell_val = CW::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
     Cell cell(cell_val);
 
     uint32 zone_id, area_id;
@@ -730,7 +730,7 @@ bool ChatHandler::HandleGPSCommand(const char* args)
     float ground_z = map->GetHeight(obj->GetPositionX(), obj->GetPositionY(), MAX_HEIGHT);
     float floor_z = map->GetHeight(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ());
 
-    GridPair p = Trinity::ComputeGridPair(obj->GetPositionX(), obj->GetPositionY());
+    GridPair p = CW::ComputeGridPair(obj->GetPositionX(), obj->GetPositionY());
 
     int gx=63-p.x_coord;
     int gy=63-p.y_coord;
@@ -751,7 +751,7 @@ bool ChatHandler::HandleGPSCommand(const char* args)
         m_session ? GetNameLink().c_str() : GetMangosString(LANG_CONSOLE_COMMAND),
         (obj->GetTypeId() == TYPEID_PLAYER ? "player" : "creature"), obj->GetName(),
         (obj->GetTypeId() == TYPEID_PLAYER ? "GUID" : "Entry"), (obj->GetTypeId() == TYPEID_PLAYER ? obj->GetGUIDLow(): obj->GetEntry()) );
-    sLog.outDebug(GetTrinityString(LANG_MAP_POSITION),
+    sLog.outDebug(GetCWString(LANG_MAP_POSITION),
         obj->GetMapId(), (mapEntry ? mapEntry->name[sWorld.GetDefaultDbcLocale()] : "<unknown>" ),
         zone_id, (zoneEntry ? zoneEntry->area_name[sWorld.GetDefaultDbcLocale()] : "<unknown>" ),
         area_id, (areaEntry ? areaEntry->area_name[sWorld.GetDefaultDbcLocale()] : "<unknown>" ),
@@ -877,7 +877,7 @@ bool ChatHandler::HandleNamegoCommand(const char* args)
 
         std::string nameLink = playerLink(target_name);
 
-        PSendSysMessage(LANG_SUMMONING, nameLink.c_str(),GetTrinityString(LANG_OFFLINE));
+        PSendSysMessage(LANG_SUMMONING, nameLink.c_str(),GetCWString(LANG_OFFLINE));
 
         // in point where GM stay
         Player::SavePositionInDB(m_session->GetPlayer()->GetMapId(),
@@ -1249,7 +1249,7 @@ bool ChatHandler::HandleModifyEnergyCommand(const char* args)
     chr->SetMaxPower(POWER_ENERGY,energym );
     chr->SetPower(POWER_ENERGY, energy );
 
-    sLog.outDetail(GetTrinityString(LANG_CURRENT_ENERGY),chr->GetMaxPower(POWER_ENERGY));
+    sLog.outDetail(GetCWString(LANG_CURRENT_ENERGY),chr->GetMaxPower(POWER_ENERGY));
 
     return true;
 }
@@ -2102,7 +2102,7 @@ bool ChatHandler::HandleModifyMoneyCommand(const char* args)
     {
         int32 newmoney = int32(moneyuser) + addmoney;
 
-        sLog.outDetail(GetTrinityString(LANG_CURRENT_MONEY), moneyuser, addmoney, newmoney);
+        sLog.outDetail(GetCWString(LANG_CURRENT_MONEY), moneyuser, addmoney, newmoney);
         if (newmoney <= 0 )
         {
             PSendSysMessage(LANG_YOU_TAKE_ALL_MONEY, GetNameLink(chr).c_str());
@@ -2134,7 +2134,7 @@ bool ChatHandler::HandleModifyMoneyCommand(const char* args)
             chr->ModifyMoney( addmoney );
     }
 
-    sLog.outDetail(GetTrinityString(LANG_NEW_MONEY), moneyuser, addmoney, chr->GetMoney() );
+    sLog.outDetail(GetCWString(LANG_NEW_MONEY), moneyuser, addmoney, chr->GetMoney() );
 
     return true;
 }
@@ -2378,7 +2378,7 @@ bool ChatHandler::HandleWhispersCommand(const char* args)
 {
     if(!*args)
     {
-        PSendSysMessage(LANG_COMMAND_WHISPERACCEPTING, m_session->GetPlayer()->isAcceptWhispers() ?  GetTrinityString(LANG_ON) : GetTrinityString(LANG_OFF));
+        PSendSysMessage(LANG_COMMAND_WHISPERACCEPTING, m_session->GetPlayer()->isAcceptWhispers() ?  GetCWString(LANG_ON) : GetCWString(LANG_OFF));
         return true;
     }
 

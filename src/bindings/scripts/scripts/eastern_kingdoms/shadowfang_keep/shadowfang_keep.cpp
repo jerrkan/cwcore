@@ -49,7 +49,7 @@ enum
 
 #define GOSSIP_ITEM_DOOR        "Thanks, I'll follow you to the door."
 
-struct TRINITY_DLL_DECL npc_shadowfang_prisonerAI : public npc_escortAI
+struct CW_DLL_DECL npc_shadowfang_prisonerAI : public npc_escortAI
 {
     npc_shadowfang_prisonerAI(Creature *c) : npc_escortAI(c)
     {

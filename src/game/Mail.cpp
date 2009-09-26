@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -500,7 +500,7 @@ void WorldSession::HandleMailTakeItem(WorldPacket & recv_data )
                     sender_accId = objmgr.GetPlayerAccountIdByGUID(sender_guid);
 
                     if(!objmgr.GetPlayerNameByGUID(sender_guid,sender_name))
-                        sender_name = objmgr.GetTrinityStringForDBCLocale(LANG_UNKNOWN);
+                        sender_name = objmgr.GetCWStringForDBCLocale(LANG_UNKNOWN);
                 }
                 sLog.outCommand(GetAccountId(),"GM %s (Account: %u) receive mail item: %s (Entry: %u Count: %u) and send COD money: %u to player: %s (Account: %u)",
                     GetPlayerName(),GetAccountId(),it->GetProto()->Name1,it->GetEntry(),it->GetCount(),m->COD,sender_name.c_str(),sender_accId);

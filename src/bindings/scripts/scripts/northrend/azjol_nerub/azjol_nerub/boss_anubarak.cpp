@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ update creature_template set scriptname = 'boss_anub_arak' where entry = '';
 #define SAY_SUBMERGE_2                             -1601009
 #define SAY_DEATH                                  -1601004
 
-struct TRINITY_DLL_DECL boss_anub_arakAI : public ScriptedAI
+struct CW_DLL_DECL boss_anub_arakAI : public ScriptedAI
 {
     boss_anub_arakAI(Creature *c) : ScriptedAI(c) {}
 

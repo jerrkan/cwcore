@@ -36,7 +36,7 @@ update creature_template set scriptname = '' where entry = '';
 #define SAY_SUMMON_2                          -1578020
 #define SAY_SUMMON_3                          -1578021
 
-struct TRINITY_DLL_DECL boss_uromAI : public ScriptedAI
+struct CW_DLL_DECL boss_uromAI : public ScriptedAI
 {
     boss_uromAI(Creature *c) : ScriptedAI(c) {}
 

@@ -1,7 +1,7 @@
 #include "precompiled.h"
 #include "def_violet_hold.h"
 
-struct TRINITY_DLL_DECL instance_violet_hold : public ScriptedInstance
+struct CW_DLL_DECL instance_violet_hold : public ScriptedInstance
 {
     instance_violet_hold(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 };

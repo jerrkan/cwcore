@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef TRINITYCORE_LOG_H
-#define TRINITYCORE_LOG_H
+#ifndef CWCORE_LOG_H
+#define CWCORE_LOG_H
 
 #include "Common.h"
 #include "Policies/Singleton.h"
@@ -82,9 +82,9 @@ enum ColorTypes
 
 const int Colors = int(WHITE)+1;
 
-class Log : public Trinity::Singleton<Log, Trinity::ClassLevelLockable<Log, ACE_Thread_Mutex> >
+class Log : public CW::Singleton<Log, CW::ClassLevelLockable<Log, ACE_Thread_Mutex> >
 {
-    friend class Trinity::OperatorNew<Log>;
+    friend class CW::OperatorNew<Log>;
     Log();
     ~Log();
 
@@ -170,19 +170,19 @@ class Log : public Trinity::Singleton<Log, Trinity::ClassLevelLockable<Log, ACE_
         bool m_charLog_Dump;
 };
 
-#define sLog Trinity::Singleton<Log>::Instance()
+#define sLog CW::Singleton<Log>::Instance()
 
-#ifdef TRINITY_DEBUG
-#define DEBUG_LOG Trinity::Singleton<Log>::Instance().outDebug
+#ifdef CW_DEBUG
+#define DEBUG_LOG CW::Singleton<Log>::Instance().outDebug
 #else
 #define DEBUG_LOG
 #endif
 
 // primary for script library
-void TRINITY_DLL_SPEC outstring_log(const char * str, ...) ATTR_PRINTF(1,2);
-void TRINITY_DLL_SPEC detail_log(const char * str, ...) ATTR_PRINTF(1,2);
-void TRINITY_DLL_SPEC debug_log(const char * str, ...) ATTR_PRINTF(1,2);
-void TRINITY_DLL_SPEC error_log(const char * str, ...) ATTR_PRINTF(1,2);
-void TRINITY_DLL_SPEC error_db_log(const char * str, ...) ATTR_PRINTF(1,2);
+void CW_DLL_SPEC outstring_log(const char * str, ...) ATTR_PRINTF(1,2);
+void CW_DLL_SPEC detail_log(const char * str, ...) ATTR_PRINTF(1,2);
+void CW_DLL_SPEC debug_log(const char * str, ...) ATTR_PRINTF(1,2);
+void CW_DLL_SPEC error_log(const char * str, ...) ATTR_PRINTF(1,2);
+void CW_DLL_SPEC error_db_log(const char * str, ...) ATTR_PRINTF(1,2);
 #endif
 

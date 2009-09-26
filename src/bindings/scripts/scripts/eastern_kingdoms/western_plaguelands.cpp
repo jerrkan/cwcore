@@ -136,7 +136,7 @@ bool GossipSelect_npc_myranda_the_hag(Player* pPlayer, Creature* pCreature, uint
 ## npc_the_scourge_cauldron
 ######*/
 
-struct TRINITY_DLL_DECL npc_the_scourge_cauldronAI : public ScriptedAI
+struct CW_DLL_DECL npc_the_scourge_cauldronAI : public ScriptedAI
 {
     npc_the_scourge_cauldronAI(Creature *c) : ScriptedAI(c) {}
 

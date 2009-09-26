@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ enum PartyResult
 };
 
 /// Player session in the World
-class TRINITY_DLL_SPEC WorldSession
+class CW_DLL_SPEC WorldSession
 {
     friend class CharacterHandler;
     public:
@@ -283,7 +283,7 @@ class TRINITY_DLL_SPEC WorldSession
         // Locales
         LocaleConstant GetSessionDbcLocale() const { return m_sessionDbcLocale; }
         int GetSessionDbLocaleIndex() const { return m_sessionDbLocaleIndex; }
-        const char *GetTrinityString(int32 entry) const;
+        const char *GetCWString(int32 entry) const;
 
         uint32 GetLatency() const { return m_latency; }
         void SetLatency(uint32 latency) { m_latency = latency; }

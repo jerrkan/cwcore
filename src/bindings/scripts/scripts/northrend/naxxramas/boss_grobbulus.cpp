@@ -1,4 +1,4 @@
-/* Copyright (C) 2008 - 2009 Trinity <http://www.trinitycore.org/>
+/* Copyright (C) 2008 - 2009 CW <http://www.wow-extrem.de/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -31,7 +31,7 @@
 
 #define MOB_FALLOUT_SLIME   16290
 
-struct TRINITY_DLL_DECL boss_grobbulusAI : public BossAI
+struct CW_DLL_DECL boss_grobbulusAI : public BossAI
 {
     boss_grobbulusAI(Creature *c) : BossAI(c, BOSS_GROBBULUS) {}
 

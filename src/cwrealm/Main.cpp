@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * Copyright (C) 2008-2009 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2009 CWCore <http://www.wow-extrem.de/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,15 +35,17 @@
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>
 
+#define _FULLVERSION (REVISION_NR)
+
 // Format is YYYYMMDDRR where RR is the change in the conf file
 // for that day.
 #ifndef _REALMDCONFVERSION
 # define _REALMDCONFVERSION 2009081701
 #endif
 
-#ifndef _TRINITY_REALM_CONFIG
-# define _TRINITY_REALM_CONFIG  "CWRealm.conf"
-#endif //_TRINITY_REALM_CONFIG
+#ifndef _CW_REALM_CONFIG
+# define _CW_REALM_CONFIG  "CWRealm.conf"
+#endif //_CW_REALM_CONFIG
 
 #ifdef WIN32
 #include "ServiceWin32.h"
@@ -87,7 +89,7 @@ extern int main(int argc, char **argv)
 {
     sLog.SetLogDB(false);
     ///- Command line parsing to get the configuration file name
-    char const* cfg_file = _TRINITY_REALM_CONFIG;
+    char const* cfg_file = _CW_REALM_CONFIG;
     int c=1;
     while( c < argc )
     {
@@ -159,7 +161,7 @@ extern int main(int argc, char **argv)
     if (confVersion < _REALMDCONFVERSION)
     {
         sLog.outError("*****************************************************************************");
-        sLog.outError(" WARNING: Your trinityrealm.conf version indicates your conf file is out of date!");
+        sLog.outError(" WARNING: Your CWrealm.conf version indicates your conf file is out of date!");
         sLog.outError("          Please check for updates, as your current default values may cause");
         sLog.outError("          strange behavior.");
         sLog.outError("*****************************************************************************");
@@ -228,7 +230,7 @@ extern int main(int argc, char **argv)
     ListenSocket<AuthSocket> authListenSocket(h);
     if ( authListenSocket.Bind(bind_ip.c_str(),rmport))
     {
-        sLog.outError( "Trinity realm can not bind to %s:%d",bind_ip.c_str(), rmport );
+        sLog.outError( "CW realm can not bind to %s:%d",bind_ip.c_str(), rmport );
         return 1;
     }
 
@@ -272,7 +274,7 @@ extern int main(int argc, char **argv)
         if(Prio)
         {
             if(SetPriorityClass(hProcess,HIGH_PRIORITY_CLASS))
-                sLog.outString("TrinityRealm process priority class set to HIGH");
+                sLog.outString("CWRealm process priority class set to HIGH");
             else
                 sLog.outError("ERROR: Can't set realmd process priority class.");
             sLog.outString();
