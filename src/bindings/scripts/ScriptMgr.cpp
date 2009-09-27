@@ -246,9 +246,6 @@ void OnPVPKill(Player* killer, Player* killed)
     if (!tmpscript || !tmpscript->pOnPVPKill) return;
     tmpscript->pOnPVPKill(killer,killed);
 }
-//End  - Non-Gossip related events
-
-CW_DLL_EXPORT
 
 CW_DLL_EXPORT
 bool OnSpellCast (Unit *pUnitTarget, Item *pItemTarget, GameObject *pGoTarget, uint32 i, SpellEntry const *spell)
@@ -339,7 +336,6 @@ void OnCreatureKill (Player *pPlayer, Creature *pCreature)
 }
 
 CW_DLL_EXPORT
-
 char const* ScriptsVersion()
 {
     return "Default CW scripting library";
