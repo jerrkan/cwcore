@@ -7449,9 +7449,9 @@ const char *ObjectMgr::GetCWString(int32 entry, int locale_idx) const
     }
 
     if(entry > 0)
-        sLog.outErrorDb("Entry %i not found in `CW_string` table.",entry);
+        sLog.outErrorDb("Entry %i not found in `cw_string` table.",entry);
     else
-        sLog.outErrorDb("CW string entry %i not found in DB.",entry);
+        sLog.outErrorDb("cw string entry %i not found in DB.",entry);
     return "<error>";
 }
 

@@ -547,7 +547,7 @@ class ObjectMgr
         void LoadTransportEvents();
 
         bool LoadCWStrings(DatabaseType& db, char const* table, int32 min_value, int32 max_value);
-        bool LoadCWStrings() { return LoadCWStrings(WorldDatabase,"CW_string",MIN_CW_STRING_ID,MAX_CW_STRING_ID); }
+        bool LoadCWStrings() { return LoadCWStrings(WorldDatabase,"cw_string",MIN_CW_STRING_ID,MAX_CW_STRING_ID); }
         void LoadDbScriptStrings();
         void LoadCreatureLocales();
         void LoadCreatureTemplates();

@@ -916,9 +916,9 @@ bool ChatHandler::HandleReloadLootTemplatesSpellCommand(const char*)
 
 bool ChatHandler::HandleReloadCWStringCommand(const char*)
 {
-    sLog.outString( "Re-Loading CW_string Table!" );
+    sLog.outString( "Re-Loading cw_string Table!" );
     objmgr.LoadCWStrings();
-    SendGlobalGMSysMessage("DB table `CW_string` reloaded.");
+    SendGlobalGMSysMessage("DB table `cw_string` reloaded.");
     return true;
 }
 
