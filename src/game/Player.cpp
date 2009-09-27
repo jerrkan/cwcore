@@ -4462,20 +4462,35 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
     }
 }
 
-bool Player::FallGround(bool noDeath/* = false*/)
+/**
+ * FallMode = 0 implies that the player is dying, or already dead, and the proper death state will be set.
+ *          = 1 simply causes the player to plummet towards the ground, and not suffer any damage.
+ *          = 2 causes the player to plummet towards the ground, and causes falling damage, regardless
+ *              of any auras that might of prevented fall damage.
+ */
+bool Player::FallGround(uint8 FallMode)
 {
     // Let's abort after we called this function one time
-    if (getDeathState() == DEAD_FALLING && !noDeath)
+    if (getDeathState() == DEAD_FALLING && FallMode == 0)
         return false;
 
     float x, y, z;
     GetPosition(x, y, z);
     float ground_Z = GetMap()->GetVmapHeight(x, y, z, true);
-    if (fabs(ground_Z - z) < 0.1f)
+    float z_diff = 0.0f;
+    if ((z_diff = fabs(ground_Z - z)) < 0.1f)
         return false;
 
     GetMotionMaster()->MoveFall(ground_Z, EVENT_FALL_GROUND);
-    if(!noDeath) Unit::setDeathState(DEAD_FALLING);
+
+    // Below formula for falling damage is from Player::HandleFall
+    if(FallMode == 2 && z_diff >= 14.57f)
+    {
+        uint32 damage = std::min(GetMaxHealth(), (uint32)((0.018f*z_diff-0.2426f)*GetMaxHealth()*sWorld.getRate(RATE_DAMAGE_FALL)));
+        if(damage > 0) EnvironmentalDamage(DAMAGE_FALL, damage);
+    }
+    else if(FallMode == 0)
+        Unit::setDeathState(DEAD_FALLING);
     return true;
 }
 
@@ -5993,8 +6008,8 @@ void Player::SendMessageToSet(WorldPacket *data, bool self)
         GetSession()->SendPacket(data);
 
     // we use World::GetMaxVisibleDistance() because i cannot see why not use a distance
-    CW::MessageDistDeliverer notifier(this, data, World::GetMaxVisibleDistance());
-    VisitNearbyWorldObject(World::GetMaxVisibleDistance(), notifier);
+    CW::MessageDistDeliverer notifier(this, data, GetMap()->GetVisibilityDistance());
+    VisitNearbyWorldObject(GetMap()->GetVisibilityDistance(), notifier);
 }
 
 void Player::SendMessageToSetInRange(WorldPacket *data, float dist, bool self)
@@ -17799,7 +17814,7 @@ void Player::HandleStealthedUnitsDetection()
     std::list<Unit*> stealthedUnits;
     CW::AnyStealthedCheck u_check;
     CW::UnitListSearcher<CW::AnyStealthedCheck > searcher(this, stealthedUnits, u_check);
-    VisitNearbyObject(World::GetMaxVisibleDistance(), searcher);
+    VisitNearbyObject(GetMap()->GetVisibilityDistance(), searcher);
 
     for (std::list<Unit*>::const_iterator i = stealthedUnits.begin(); i != stealthedUnits.end(); ++i)
     {
@@ -18995,6 +19010,7 @@ bool Player::canSeeOrDetect(Unit const* u, bool detect, bool inVisibleList, bool
     //if(u->GetVisibility() == VISIBILITY_RESPAWN)
     //    return false;
 
+    Map& _map = *u->GetMap();
     // Grid dead/alive checks
     // non visible at grid for any stealth state
     if(!u->IsVisibleInGridForPlayer(this))
@@ -19010,34 +19026,34 @@ bool Player::canSeeOrDetect(Unit const* u, bool detect, bool inVisibleList, bool
             return true;
 
     // different visible distance checks
-    if(isInFlight())                                     // what see player in flight
+    if(isInFlight())                                           // what see player in flight
     {
-        if (!m_seer->IsWithinDistInMap(u,World::GetMaxVisibleDistanceInFlight()+(inVisibleList ? World::GetVisibleObjectGreyDistance() : 0.0f), is3dDistance))
+        if (!m_seer->IsWithinDistInMap(u, _map.GetVisibilityDistance() + (inVisibleList ? World::GetVisibleObjectGreyDistance() : 0.0f), is3dDistance))
             return false;
     }
     else if(!u->isAlive())                                     // distance for show body
     {
-        if (!m_seer->IsWithinDistInMap(u,World::GetMaxVisibleDistanceForObject()+(inVisibleList ? World::GetVisibleObjectGreyDistance() : 0.0f), is3dDistance))
+        if (!m_seer->IsWithinDistInMap(u, _map.GetVisibilityDistance() + (inVisibleList ? World::GetVisibleObjectGreyDistance() : 0.0f), is3dDistance))
             return false;
     }
     else if(u->GetTypeId()==TYPEID_PLAYER)                     // distance for show player
     {
         // Players far than max visible distance for player or not in our map are not visible too
-        if (!at_same_transport && !m_seer->IsWithinDistInMap(u,World::GetMaxVisibleDistanceForPlayer()+(inVisibleList ? World::GetVisibleUnitGreyDistance() : 0.0f), is3dDistance))
+        if (!at_same_transport && !m_seer->IsWithinDistInMap(u, _map.GetVisibilityDistance() + (inVisibleList ? World::GetVisibleUnitGreyDistance() : 0.0f), is3dDistance))
             return false;
     }
     else if(u->GetCharmerOrOwnerGUID())                        // distance for show pet/charmed
     {
         // Pet/charmed far than max visible distance for player or not in our map are not visible too
-        if (!m_seer->IsWithinDistInMap(u,World::GetMaxVisibleDistanceForPlayer()+(inVisibleList ? World::GetVisibleUnitGreyDistance() : 0.0f), is3dDistance))
+        if (!m_seer->IsWithinDistInMap(u, _map.GetVisibilityDistance() + (inVisibleList ? World::GetVisibleUnitGreyDistance() : 0.0f), is3dDistance))
             return false;
     }
     else                                                    // distance for show creature
     {
-        // Units far than max visible distance for creature or not in our map are not visible too
+        // Units farther than max visible distance for creature or not in our map are not visible too
         if (!m_seer->IsWithinDistInMap(u
             , u->isActiveObject() ? (MAX_VISIBILITY_DISTANCE - (inVisibleList ? 0.0f : World::GetVisibleUnitGreyDistance()))
-            : (World::GetMaxVisibleDistanceForCreature() + (inVisibleList ? World::GetVisibleUnitGreyDistance() : 0.0f))
+            : (_map.GetVisibilityDistance() + (inVisibleList ? World::GetVisibleUnitGreyDistance() : 0.0f))
             , is3dDistance))
             return false;
     }
@@ -20342,7 +20358,7 @@ bool Player::IsAtGroupRewardDistance(WorldObject const* pRewardSource) const
 
 uint32 Player::GetBaseWeaponSkillValue (WeaponAttackType attType) const
 {
-    Item* item = GetWeaponForAttack(attType,true);
+    Item* item = GetWeaponForAttack(attType, false);
 
     // unarmed only with base attack
     if(attType != BASE_ATTACK && !item)

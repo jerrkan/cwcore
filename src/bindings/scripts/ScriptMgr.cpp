@@ -249,6 +249,97 @@ void OnPVPKill(Player* killer, Player* killed)
 //End  - Non-Gossip related events
 
 CW_DLL_EXPORT
+
+CW_DLL_EXPORT
+bool OnSpellCast (Unit *pUnitTarget, Item *pItemTarget, GameObject *pGoTarget, uint32 i, SpellEntry const *spell)
+{
+    Script *tmpscript = m_scripts[GetScriptId("scripted_on_events")];
+    if (!tmpscript || !tmpscript->pOnSpellCast) return true;
+    return tmpscript->pOnSpellCast(pUnitTarget,pItemTarget,pGoTarget,i,spell);
+}
+
+CW_DLL_EXPORT
+uint32 OnGetXP(Player *pPlayer, uint32 amount)
+{
+    Script *tmpscript = m_scripts[GetScriptId("scripted_on_events")];
+    if (!tmpscript || !tmpscript->pOnGetXP) return amount;
+    return tmpscript->pOnGetXP(pPlayer,amount);
+}
+
+CW_DLL_EXPORT
+uint32 OnGetMoney(Player *pPlayer, int32 amount)
+{
+    Script *tmpscript = m_scripts[GetScriptId("scripted_on_events")];
+    if (!tmpscript || !tmpscript->pOnGetMoney) return amount;
+    return tmpscript->pOnGetMoney(pPlayer,amount);
+}
+
+CW_DLL_EXPORT
+bool OnPlayerChat(Player *pPlayer, const char *text)
+{
+    Script *tmpscript = m_scripts[GetScriptId("scripted_on_events")];
+    if (!tmpscript || !tmpscript->pOnPlayerChat) return true;
+    return tmpscript->pOnPlayerChat(pPlayer,text);
+}
+
+CW_DLL_EXPORT
+void OnServerStartup()
+{
+    Script *tmpscript = m_scripts[GetScriptId("scripted_on_events")];
+    if (!tmpscript || !tmpscript->pOnServerStartup) return;
+    tmpscript->pOnServerStartup();
+}
+
+CW_DLL_EXPORT
+void OnServerShutdown()
+{
+    Script *tmpscript = m_scripts[GetScriptId("scripted_on_events")];
+    if (!tmpscript || !tmpscript->pOnServerShutdown) return;
+    tmpscript->pOnServerShutdown();
+}
+
+CW_DLL_EXPORT
+void OnAreaChange(Player *pPlayer, AreaTableEntry const *pArea)
+{
+    Script *tmpscript = m_scripts[GetScriptId("scripted_on_events")];
+    if (!tmpscript || !tmpscript->pOnAreaChange) return;
+    tmpscript->pOnAreaChange(pPlayer, pArea);
+}
+
+CW_DLL_EXPORT
+bool OnItemClick (Player *pPlayer, Item *pItem)
+{
+    Script *tmpscript = m_scripts[GetScriptId("scripted_on_events")];
+    if (!tmpscript || !tmpscript->pOnItemClick) return true;
+    return tmpscript->pOnItemClick(pPlayer,pItem);
+}
+
+CW_DLL_EXPORT
+bool OnItemOpen (Player *pPlayer, Item *pItem)
+{
+    Script *tmpscript = m_scripts[GetScriptId("scripted_on_events")];
+    if (!tmpscript || !tmpscript->pOnItemOpen) return true;
+    return tmpscript->pOnItemOpen(pPlayer,pItem);
+}
+
+CW_DLL_EXPORT
+bool OnGoClick (Player *pPlayer, GameObject *pGameObject)
+{
+    Script *tmpscript = m_scripts[GetScriptId("scripted_on_events")];
+    if (!tmpscript || !tmpscript->pOnGoClick) return true;
+    return tmpscript->pOnGoClick(pPlayer,pGameObject);
+}
+
+CW_DLL_EXPORT
+void OnCreatureKill (Player *pPlayer, Creature *pCreature)
+{
+    Script *tmpscript = m_scripts[GetScriptId("scripted_on_events")];
+    if (!tmpscript || !tmpscript->pOnCreatureKill) return;
+    tmpscript->pOnCreatureKill(pPlayer,pCreature);
+}
+
+CW_DLL_EXPORT
+
 char const* ScriptsVersion()
 {
     return "Default CW scripting library";

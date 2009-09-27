@@ -529,8 +529,9 @@ void Master::_OnSignal(int s)
         case SIGTERM:
         #ifdef _WIN32
         case SIGBREAK:
+            if (m_ServiceStatus != 1)
         #endif
-            World::StopNow(SHUTDOWN_EXIT_CODE);
+                World::StopNow(SHUTDOWN_EXIT_CODE);
             break;
     }
 
@@ -543,7 +544,8 @@ void Master::_HookSignals()
     signal(SIGINT, _OnSignal);
     signal(SIGTERM, _OnSignal);
     #ifdef _WIN32
-    signal(SIGBREAK, _OnSignal);
+    if (m_ServiceStatus != 1)
+        signal(SIGBREAK, _OnSignal);
     #endif
 }
 

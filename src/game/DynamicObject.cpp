@@ -110,7 +110,7 @@ void DynamicObject::Update(uint32 p_time)
 {
     // caster can be not in world at time dynamic object update, but dynamic object not yet deleted in Unit destructor
     Unit* caster = GetCaster();
-    if(!caster)
+    if (!caster)
     {
         Delete();
         return;
@@ -150,9 +150,9 @@ void DynamicObject::Delete()
 void DynamicObject::Delay(int32 delaytime)
 {
     m_aliveDuration -= delaytime;
-    for(AffectedSet::iterator iunit= m_affected.begin(); iunit != m_affected.end(); ++iunit)
+    for (AffectedSet::iterator iunit = m_affected.begin(); iunit != m_affected.end(); ++iunit)
         if (*iunit)
-            (*iunit)->DelayAura(m_spellId, GetCaster()->GetGUID() , delaytime);
+            (*iunit)->DelayAura(m_spellId, GetCaster()->GetGUID(), delaytime);
 }
 
 bool DynamicObject::isVisibleForInState(Player const* u, bool inVisibleList) const

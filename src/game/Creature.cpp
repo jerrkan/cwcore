@@ -544,7 +544,9 @@ void Creature::Update(uint32 diff)
             if(!isAlive())
                 break;
 
-            bool bNotInCombatOrIsPolymorphed = (!isInCombat() || IsPolymorphed());
+            bool bNotInCombatOrIsPolymorphed = (!isInCombat() || IsPolymorphed() || getThreatManager().isThreatListEmpty() ||
+                                               (getVictim() && getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() &&
+                                               getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself()->isGameMaster()));
 
             if(m_regenTimer > diff && !bNotInCombatOrIsPolymorphed)
                 m_regenTimer -= diff;
@@ -653,7 +655,7 @@ void Creature::DoFleeToGetAssistance()
         TypeContainerVisitor<MaNGOS::CreatureLastSearcher<MaNGOS::NearestAssistCreatureInCreatureRangeCheck>, GridTypeMapContainer > grid_creature_searcher(searcher);
 
         CellLock<GridReadGuard> cell_lock(cell, p);
-        cell_lock->Visit(cell_lock, grid_creature_searcher, *GetMap());
+        cell_lock->Visit(cell_lock, grid_creature_searcher, *GetMap(), *this, radius);
 
         SetNoSearchAssistance(true);
         if(!pCreature)
@@ -2004,10 +2006,14 @@ bool Creature::IsVisibleInGridForPlayer(Player const* pl) const
     if(pl->isGameMaster())
         return true;
 
+    // Trigger shouldn't be visible for players
+    if(isTrigger())
+        return false;
+
     // Live player (or with not release body see live creatures or death creatures with corpse disappearing time > 0
     if(pl->isAlive() || pl->GetDeathTimer() > 0)
     {
-        if( GetEntry() == VISUAL_WAYPOINT && !pl->isGameMaster() )
+        if( GetEntry() == VISUAL_WAYPOINT )
             return false;
         return (isAlive() || m_deathTimer > 0 || (m_isDeadByDefault && m_deathState==CORPSE));
     }
@@ -2049,8 +2055,8 @@ Unit* Creature::SelectNearestTarget(float dist) const
         TypeContainerVisitor<CW::UnitLastSearcher<CW::NearestHostileUnitInAttackDistanceCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
         CellLock<GridReadGuard> cell_lock(cell, p);
-        cell_lock->Visit(cell_lock, world_unit_searcher, *GetMap());
-        cell_lock->Visit(cell_lock, grid_unit_searcher, *GetMap());
+        cell_lock->Visit(cell_lock, world_unit_searcher, *GetMap(), *this, ATTACK_DISTANCE);
+        cell_lock->Visit(cell_lock, grid_unit_searcher, *GetMap(), *this, ATTACK_DISTANCE);
     }
 
     return target;
@@ -2080,7 +2086,7 @@ void Creature::CallAssistance()
                 TypeContainerVisitor<CW::CreatureListSearcher<CW::AnyAssistCreatureInRangeCheck>, GridTypeMapContainer >  grid_creature_searcher(searcher);
 
                 CellLock<GridReadGuard> cell_lock(cell, p);
-                cell_lock->Visit(cell_lock, grid_creature_searcher, *GetMap());
+                cell_lock->Visit(cell_lock, grid_creature_searcher, *GetMap(), *this, radius);
             }
 
             if (!assistList.empty())
@@ -2114,7 +2120,7 @@ void Creature::CallForHelp(float fRadius)
     TypeContainerVisitor<MaNGOS::CreatureWorker<MaNGOS::CallOfHelpCreatureInRangeDo>, GridTypeMapContainer >  grid_creature_searcher(worker);
 
     CellLock<GridReadGuard> cell_lock(cell, p);
-    cell_lock->Visit(cell_lock, grid_creature_searcher, *GetMap());
+    cell_lock->Visit(cell_lock, grid_creature_searcher, *GetMap(), *this, fRadius);
 }
 
 bool Creature::CanAssistTo(const Unit* u, const Unit* enemy, bool checkfaction /*= true*/) const

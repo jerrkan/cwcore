@@ -10,6 +10,7 @@ Script Data End */
 update creature_template set scriptname = '' where entry = '';
 *** SQL END ***/
 #include "precompiled.h"
+#include "def_gundrak.h"
 
 #define SPELL_ECK_BERSERK                       55816 //Eck goes berserk, increasing his attack speed by 150% and all damage he deals by 500%.
 #define SPELL_ECK_BITE                          55813 //Eck bites down hard, inflicting 150% of his normal damage to an enemy.
@@ -19,34 +20,79 @@ update creature_template set scriptname = '' where entry = '';
 
 struct CW_DLL_DECL boss_eckAI : public ScriptedAI
 {
-    boss_eckAI(Creature *c) : ScriptedAI(c) {}
+    boss_eckAI(Creature *c) : ScriptedAI(c)
+    {
+        pInstance = c->GetInstanceData();
+    }
 
-    uint32 berserk;
+    uint32 uiBerserkTimer;
+    uint32 uiBiteTimer;
+    uint32 uiSpitTimer;
+    uint32 uiSpringTimer;
+    
+    bool bBerserk;
+    
+    ScriptedInstance* pInstance;
 
     void Reset()
     {
-        //Source Deadly Boss Mod
-        berserk = 120000; //2min
+        uiBerserkTimer = 60000 + rand()%30000; //60-90 secs according to wowwiki
+        uiBiteTimer = 5000;
+        uiSpitTimer = 10000;
+        uiSpringTimer = 8000;
+        
+        bBerserk = false;
+        
+        if (pInstance)
+            pInstance->SetData(DATA_ECK_THE_FEROCIOUS_EVENT, NOT_STARTED);
     }
 
-    void EnterCombat(Unit* who) {}
-    void AttackStart(Unit* who) {}
-    void MoveInLineOfSight(Unit* who) {}
+    void EnterCombat(Unit* who)
+    {
+        if (pInstance)
+            pInstance->SetData(DATA_ECK_THE_FEROCIOUS_EVENT, IN_PROGRESS);
+    }
+    
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
         if (!UpdateVictim())
             return;
-
-        if (berserk < diff)
+        
+        if (uiBiteTimer < diff)
+        {
+            DoCast(m_creature->getVictim(),SPELL_ECK_BITE);
+            uiBiteTimer = 8000 + rand()%4000;
+        } else uiBiteTimer -= diff;
+        if (uiSpitTimer < diff)
+        {
+            DoCast(m_creature->getVictim(),SPELL_ECK_SPIT);
+            uiSpitTimer = 6000 + rand()%8000;
+        } else uiSpitTimer -= diff;
+        if (uiSpringTimer < diff)
+        {
+            Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,0);
+            while (pTarget && (pTarget->GetTypeId() != TYPEID_PLAYER || pTarget == m_creature->getVictim()))
+                pTarget = SelectUnit(SELECT_TARGET_RANDOM,0);
+            if (pTarget)
+                DoCast(pTarget,RAND(SPELL_ECK_SPRING_1,SPELL_ECK_SPRING_2));
+            uiSpringTimer = 5000 + rand()%10000;
+        } else uiSpringTimer -= diff;
+        //Berserk on timer or 20% of health
+        if (!bBerserk && (uiBerserkTimer < diff || m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 20))
         {
             DoCast(m_creature,SPELL_ECK_BERSERK);
-            berserk = 120000;
-        }else berserk -= diff;
+            bBerserk = true;
+        }else uiBerserkTimer -= diff;
 
         DoMeleeAttackIfReady();
     }
-    void JustDied(Unit* killer)  {}
+    
+    void JustDied(Unit* killer)  
+    {
+        if (pInstance)
+            pInstance->SetData(DATA_ECK_THE_FEROCIOUS_EVENT, DONE);
+    }
 };
 
 CreatureAI* GetAI_boss_eck(Creature* pCreature)

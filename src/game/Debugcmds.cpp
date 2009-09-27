@@ -823,30 +823,6 @@ bool ChatHandler::HandleDebugSendSetPhaseShiftCommand(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleDebugSetItemFlagCommand(const char* args)
-{
-    if (!*args)
-        return false;
-
-    char* e = strtok((char*)args, " ");
-    char* f = strtok(NULL, " ");
-
-    if (!e || !f)
-        return false;
-
-    uint32 guid = (uint32)atoi(e);
-    uint32 flag = (uint32)atoi(f);
-
-    Item *i = m_session->GetPlayer()->GetItemByGuid(MAKE_NEW_GUID(guid, 0, HIGHGUID_ITEM));
-
-    if (!i)
-        return false;
-
-    i->SetUInt32Value(ITEM_FIELD_FLAGS, flag);
-
-    return true;
-}
-
 bool ChatHandler::HandleDebugItemExpireCommand(const char* args)
 {
     if (!*args)
@@ -865,6 +841,35 @@ bool ChatHandler::HandleDebugItemExpireCommand(const char* args)
 
     m_session->GetPlayer()->DestroyItem( i->GetBagSlot(),i->GetSlot(), true);
     Script->ItemExpire(m_session->GetPlayer(),i->GetProto());
+
+    return true;
+}
+
+bool ChatHandler::HandleDebugSetItemValueCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    char* e = strtok((char*)args, " ");
+    char* f = strtok(NULL, " ");
+    char* g = strtok(NULL, " ");
+
+    if (!e || !f || !g)
+        return false;
+
+    uint32 guid = (uint32)atoi(e);
+    uint32 index = (uint32)atoi(f);
+    uint32 value = (uint32)atoi(g);
+
+    Item *i = m_session->GetPlayer()->GetItemByGuid(MAKE_NEW_GUID(guid, 0, HIGHGUID_ITEM));
+
+    if (!i)
+        return false;
+
+    if (index >= i->GetValuesCount())
+        return false;
+
+    i->SetUInt32Value(index, value);
 
     return true;
 }
@@ -1006,6 +1011,35 @@ bool ChatHandler::HandleDebugGetValueCommand(const char* args)
         sLog.outDebug(GetCWString(LANG_GET_FLOAT), GUID_LOPART(guid), Opcode, fValue);
         PSendSysMessage(LANG_GET_FLOAT_FIELD, GUID_LOPART(guid), Opcode, fValue);
     }
+
+    return true;
+}
+
+bool ChatHandler::HandleDebugGetItemValueCommand(const char* args)
+{
+    if (!*args)
+        return false;
+
+    char* e = strtok((char*)args, " ");
+    char* f = strtok(NULL, " ");
+
+    if (!e || !f)
+        return false;
+
+    uint32 guid = (uint32)atoi(e);
+    uint32 index = (uint32)atoi(f);
+
+    Item *i = m_session->GetPlayer()->GetItemByGuid(MAKE_NEW_GUID(guid, 0, HIGHGUID_ITEM));
+
+    if (!i)
+        return false;
+
+    if (index >= i->GetValuesCount())
+        return false;
+
+    uint32 value = i->GetUInt32Value(index);
+
+    PSendSysMessage("Item %u: value at %u is %u", guid, index, value);
 
     return true;
 }

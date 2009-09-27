@@ -216,7 +216,7 @@ void Unit::Update( uint32 p_time )
     {
     m_AurasCheck = 2000;
     _UpdateAura();
-    }else
+    } else
     m_AurasCheck -= p_time;*/
 
     // WARNING! Order of execution here is important, do not change.
@@ -6549,6 +6549,24 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                     target = this;
                     break;
                 }
+                // Lava Flows (Rank 1)
+                case 51480:
+                {
+                    triggered_spell_id = 64694;
+                    break;
+                }
+                // Lava Flows (Rank 2)
+                case 51481:
+                {
+                    triggered_spell_id = 65263;
+                    break;
+                }
+                // Lava Flows (Rank 3)
+                case 51482:
+                {
+                    triggered_spell_id = 65264;
+                    break;
+                }
                 // Glyph of Healing Wave
                 case 55440:
                 {
@@ -10744,7 +10762,7 @@ int32 Unit::ModifyPower(Powers power, int32 dVal)
 
 bool Unit::isVisibleForOrDetect(Unit const* u, bool detect, bool inVisibleList, bool is3dDistance) const
 {
-    if(!u)
+    if(!u || !IsInMap(u))
         return false;
 
     return u->canSeeOrDetect(this, detect, inVisibleList, is3dDistance);
