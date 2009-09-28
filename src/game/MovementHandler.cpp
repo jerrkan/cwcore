@@ -860,15 +860,15 @@ void WorldSession::HandleDismissControlledVehicle(WorldPacket &recv_data)
 
     uint64 vehicleGUID = _player->GetCharmGUID();
 
+	uint64 guid;
+	
+	if(!recv_data.readPackGUID(guid))
+			return;
+
     if(!vehicleGUID)                                        // something wrong here...
     {
         recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
 		return;
-
-		uint64 guid;
-		
-		if(!recv_data.readPackGUID(guid))
-			return;
     }
 
 	//mi.guid = guid;
@@ -919,7 +919,7 @@ void WorldSession::HandleRequestVehicleExit(WorldPacket &recv_data)
     GetPlayer()->ExitVehicle();
 }
 
-void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& /*recvdata*/)
+void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& recvdata)
 {
     //sLog.outDebug("WORLD: Recvd CMSG_MOUNTSPECIAL_ANIM");
 
@@ -935,6 +935,7 @@ void WorldSession::HandleMoveKnockBackAck( WorldPacket & recv_data )
 
     uint64 guid;
     recv_data.readPackGUID(guid);
+	recv_data.read_skip<uint64>();
     recv_data.read_skip<uint32>();                          // unk
 
     MovementInfo movementInfo;
@@ -947,6 +948,7 @@ void WorldSession::HandleMoveHoverAck( WorldPacket& recv_data )
 
     uint64 guid;
     recv_data.readPackGUID(guid);
+	recv_data.read_skip<uint64>();
     recv_data.read_skip<uint32>();                          // unk
 
     MovementInfo movementInfo;
@@ -961,6 +963,7 @@ void WorldSession::HandleMoveWaterWalkAck(WorldPacket& recv_data)
 
     uint64 guid;
     recv_data.readPackGUID(guid);
+	recv_data.read_skip<uint64>();
     recv_data.read_skip<uint32>();                          // unk
 
     MovementInfo movementInfo;
