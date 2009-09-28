@@ -64,11 +64,13 @@ struct CW_DLL_DECL boss_eckAI : public ScriptedAI
             DoCast(m_creature->getVictim(),SPELL_ECK_BITE);
             uiBiteTimer = 8000 + rand()%4000;
         } else uiBiteTimer -= diff;
+
         if (uiSpitTimer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_ECK_SPIT);
             uiSpitTimer = 6000 + rand()%8000;
         } else uiSpitTimer -= diff;
+
         if (uiSpringTimer < diff)
         {
             Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,1);
@@ -78,12 +80,25 @@ struct CW_DLL_DECL boss_eckAI : public ScriptedAI
                 uiSpringTimer = 5000 + rand()%10000;
             }
         } else uiSpringTimer -= diff;
+
         //Berserk on timer or 20% of health
-        if (!bBerserk && (uiBerserkTimer < diff || m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 20))
+        if (!bBerserk)
         {
-            DoCast(m_creature,SPELL_ECK_BERSERK);
-            bBerserk = true;
-        }else uiBerserkTimer -= diff;
+            if (uiBerserkTimer < diff)
+            {
+                DoCast(m_creature,SPELL_ECK_BERSERK);
+                bBerserk = true;
+            }
+            else 
+            {
+                uiBerserkTimer -= diff;
+                if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 20)
+                {
+                    DoCast(m_creature,SPELL_ECK_BERSERK);
+                    bBerserk = true;
+                }
+            }
+        }
 
         DoMeleeAttackIfReady();
     }

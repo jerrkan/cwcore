@@ -88,21 +88,6 @@ VendorItem const* VendorItemData::FindItem(uint32 item_id) const
     return NULL;
 }
 
-uint32 CreatureInfo::GetRandomValidModelIdIncludingNativeId(uint32 native_id) const
-{
-    uint8 c = 0;
-    uint32 modelIDs[5];
-
-    if (Modelid1) modelIDs[c++] = Modelid1;
-    if (Modelid2) modelIDs[c++] = Modelid2;
-    if (Modelid3) modelIDs[c++] = Modelid3;
-    if (Modelid4) modelIDs[c++] = Modelid4;
-    if (native_id != Modelid1 && native_id != Modelid2
-    && native_id != Modelid3 && native_id != Modelid4) modelIDs[c++] = native_id;
-
-    return ((c>0) ? modelIDs[urand(0,c-1)] : 0);
-}
-
 uint32 CreatureInfo::GetRandomValidModelId() const
 {
     uint8 c = 0;
@@ -544,24 +529,27 @@ void Creature::Update(uint32 diff)
             if(!isAlive())
                 break;
 
-            bool bNotInCombatOrIsPolymorphed = (!isInCombat() || IsPolymorphed() || getThreatManager().isThreatListEmpty() ||
-                                               (getVictim() && getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() &&
-                                               getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself()->isGameMaster()));
+            bool bIsPolymorphed = IsPolymorphed();
+            bool bInCombat = isInCombat() && (!getVictim() ||                                        // if isInCombat() is true and this has no victim
+                             !getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() ||                // or the victim/owner/charmer is not a player
+                             !getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself()->isGameMaster()); // or the victim/owner/charmer is not a GameMaster
 
-            if(m_regenTimer > diff && !bNotInCombatOrIsPolymorphed)
+            if(m_regenTimer > diff && !bIsPolymorphed) // if polymorphed, skip the timer
                 m_regenTimer -= diff;
             else
             {
-                if(bNotInCombatOrIsPolymorphed)
+                if(!bInCombat || bIsPolymorphed) // regenerate health if not in combat or if polymorphed
                     RegenerateHealth();
 
                 if(getPowerType() == POWER_ENERGY)
+                {
                     if(!IsVehicle() || GetVehicleKit()->GetVehicleInfo()->m_powerType != POWER_PYRITE)
                         Regenerate(POWER_ENERGY);
+                }
                 else
                     RegenerateMana();
 
-                if(!bNotInCombatOrIsPolymorphed)
+                if(!bIsPolymorphed) // only increase the timer if not polymorphed
                     m_regenTimer += 2000 - diff;
             }
 
@@ -740,7 +728,15 @@ bool Creature::Create(uint32 guidlow, Map *map, uint32 phaseMask, uint32 Entry, 
                 break;
         }
         LoadCreaturesAddon();
-        SetDisplayId(GetCreatureInfo()->GetRandomValidModelIdIncludingNativeId(GetNativeDisplayId()));
+        CreatureModelInfo const *minfo = objmgr.GetCreatureModelRandomGender(GetNativeDisplayId());
+        if (minfo)                                             // Cancel load if no model defined
+        {
+            uint32 display_id = minfo->modelid;                // it can be different (for another gender)
+
+            SetDisplayId(display_id);
+            SetNativeDisplayId(display_id);
+            SetByteValue(UNIT_FIELD_BYTES_0, 2, minfo->gender);
+        }
     }
     return bResult;
 }
@@ -1865,7 +1861,15 @@ void Creature::Respawn(bool force)
         else
             setDeathState( JUST_ALIVED );
 
-        SetDisplayId(cinfo->GetRandomValidModelIdIncludingNativeId(GetNativeDisplayId()));
+        CreatureModelInfo const *minfo = objmgr.GetCreatureModelRandomGender(GetNativeDisplayId());
+        if (minfo)                                             // Cancel load if no model defined
+        {
+            uint32 display_id = minfo->modelid;                // it can be different (for another gender)
+
+            SetDisplayId(display_id);
+            SetNativeDisplayId(display_id);
+            SetByteValue(UNIT_FIELD_BYTES_0, 2, minfo->gender);
+        }
 
         //Call AI respawn virtual function
         AI()->JustRespawned();
@@ -2143,6 +2147,14 @@ bool Creature::CanAssistTo(const Unit* u, const Unit* enemy, bool checkfaction /
 
     // only free creature
     if (GetCharmerOrOwnerGUID())
+        return false;
+
+    // don't help players or units controlled or owned by players
+    if (u->GetCharmerOrOwnerPlayerOrPlayerItself())
+        return false;
+
+    // don't help if the unit is fleeing from the enemy player
+    if (!u->isAttackingPlayer() && enemy->GetTypeId() == TYPEID_PLAYER)
         return false;
 
     // only from same creature faction

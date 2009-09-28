@@ -11306,7 +11306,7 @@ Unit* Creature::SelectVictim()
     if (CanHaveThreatList())
     {
         if ( !target && !m_ThreatManager.isThreatListEmpty() )
-            // No taunt aura or taunt aura caster is dead standart target selection
+            // No taunt aura or taunt aura caster is dead standard target selection
             target = m_ThreatManager.getHostilTarget();
     }
     else if(!HasReactState(REACT_PASSIVE))
@@ -11336,7 +11336,7 @@ Unit* Creature::SelectVictim()
     else
         return NULL;
 
-    if(target)
+    if(target && (!target->getVictim() || !target->isAttackingPlayer() || IsFriendlyTo(target->getVictim()))) // if the victim of target is a player, only defend the victim if we are friendly
     {
         SetInFront(target);
         return target;
@@ -11348,7 +11348,9 @@ Unit* Creature::SelectVictim()
     // Note: creature not have targeted movement generator but have attacker in this case
     for(AttackerSet::const_iterator itr = m_attackers.begin(); itr != m_attackers.end(); ++itr)
     {
-        if(canCreatureAttack(*itr) && ((*itr)->GetTypeId() != TYPEID_PLAYER && (!((Creature*)(*itr))->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN))))
+        if(canCreatureAttack(*itr) && (*itr)->GetTypeId() != TYPEID_PLAYER
+          && !((Creature*)(*itr))->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN)
+          && (!(*itr)->getVictim() || !(*itr)->isAttackingPlayer() || IsFriendlyTo(target->getVictim()))) // if the victim of target is a player, only defend the victim if we are friendly
             return NULL;
     }
 
@@ -11359,7 +11361,8 @@ Unit* Creature::SelectVictim()
     // search nearby enemy before enter evade mode
     if(HasReactState(REACT_AGGRESSIVE))
         if(target = SelectNearestTarget())
-            return target;
+            if(!target->getVictim() || !target->isAttackingPlayer() || IsFriendlyTo(target->getVictim())) // if the victim of target is a player, only defend the victim if we are friendly
+                return target;
 
     if(m_invisibilityMask)
     {
