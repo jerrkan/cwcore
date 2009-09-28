@@ -50,6 +50,21 @@ enum ConstrictorSpells
     H_SPELL_VENOMOUS_BITE                     = 58996
 };
 
+// Spawning locations
+struct Locations
+{
+	float x, y, z, orientation;
+};
+
+static Locations SpawnLoc[]=
+{
+	{1783.81, 646.637, 133.948, 3.71755},
+	{1775.03, 606.586, 134.165, 1.43117},
+	{1717.39, 630.041, 129.282, 5.96903},
+	{1765.66, 646.542, 134.02,  5.11381},
+	{1716.76, 635.159, 129.282, 0.191986}
+};
+
 struct CW_DLL_DECL boss_slad_ranAI : public ScriptedAI
 {
     boss_slad_ranAI(Creature *c) : ScriptedAI(c)
