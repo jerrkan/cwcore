@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS `version`
+DROP TABLE IF EXISTS `version`;
 
 SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
