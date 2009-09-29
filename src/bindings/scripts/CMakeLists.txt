@@ -1,7 +1,7 @@
 
 ########### next target ###############
 
-SET(cwscript_LIB_SRCS
+SET(trinityscript_LIB_SRCS
    ScriptMgr.cpp
    ScriptMgr.h
    base/escort_ai.cpp
@@ -18,6 +18,7 @@ SET(cwscript_LIB_SRCS
    include/sc_creature.h
    include/sc_gossip.h
    include/sc_instance.h
+   scripts/custom/on_events.cpp
    scripts/eastern_kingdoms/blackrock_depths/blackrock_depths.cpp
    scripts/eastern_kingdoms/blackrock_depths/boss_ambassador_flamelash.cpp
    scripts/eastern_kingdoms/blackrock_depths/boss_anubshiah.cpp
@@ -526,16 +527,16 @@ SET(cwscript_LIB_SRCS
    system/system.h
 )
 
-add_library(cwscript SHARED ${cwscript_LIB_SRCS})
+add_library(trinityscript SHARED ${trinityscript_LIB_SRCS})
 
-add_definitions(-D_TRINITY_SCRIPT_CONFIG='"${CONF_DIR}/cwcore.conf"')
+add_definitions(-D_TRINITY_SCRIPT_CONFIG='"${CONF_DIR}/trinitycore.conf"')
 
 IF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    SET_TARGET_PROPERTIES(cwscript PROPERTIES LINK_FLAGS "-flat_namespace -undefined suppress")
+    SET_TARGET_PROPERTIES(trinityscript PROPERTIES LINK_FLAGS "-flat_namespace -undefined suppress")
 ENDIF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
-target_link_libraries(cwscript)
+target_link_libraries(trinityscript)
 
-set_target_properties(cwscript PROPERTIES VERSION 4.2.0 SOVERSION 4)
-install(TARGETS cwscript DESTINATION lib)
+set_target_properties(trinityscript PROPERTIES VERSION 4.2.0 SOVERSION 4)
+install(TARGETS trinityscript DESTINATION lib)
 
