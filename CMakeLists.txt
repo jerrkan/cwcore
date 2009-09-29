@@ -1,4 +1,4 @@
-PROJECT(Trinity)
+PROJECT(CW)
 cmake_minimum_required(VERSION 2.6)
 cmake_policy(SET CMP0005 OLD)
 
@@ -16,7 +16,7 @@ ADD_CUSTOM_TARGET(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/c
 
 OPTION(DO_MYSQL "With MySQL support" 1)
 OPTION(DO_POSTGRESQL "With PostgreSQL support" 0) # not complete yet, may not link properly.
-OPTION(DO_SCRIPTS "With trinityscripts" 1)
+OPTION(DO_SCRIPTS "With CWscripts" 1)
 OPTION(DO_CLI "With CLI" 1)
 OPTION(DO_RA "With RA" 0)
 OPTION(DO_DEBUG "Debug mode" 0)
@@ -32,10 +32,10 @@ src/tools/genrevision/genrevision.cpp
 ADD_EXECUTABLE(genrev
 ${GENREV_SRC}
 )
-ADD_CUSTOM_TARGET("revision.h" ALL
-    COMMAND "${Trinity_BINARY_DIR}/genrev"
-    ${Trinity_SOURCE_DIR}
-    WORKING_DIRECTORY "${Trinity_SOURCE_DIR}/src/shared"
+ADD_CUSTOM_TARGET("revision_nr.h" ALL
+    COMMAND "${CW_BINARY_DIR}/genrev"
+    ${CW_SOURCE_DIR}
+    WORKING_DIRECTORY "${CW_SOURCE_DIR}/src/shared"
     DEPENDS genrev
 )
 
@@ -45,7 +45,7 @@ EXECUTE_PROCESS(
         OUTPUT_VARIABLE HG_REVISION
 )
 
-message("* TrinityCore2 revision: ${HG_REVISION}")
+message("* CWCore2 revision: ${HG_REVISION}")
 
 IF (PREFIX)
     SET(CMAKE_INSTALL_PREFIX ${PREFIX})
@@ -79,13 +79,13 @@ IF(DO_MYSQL)
 ENDIF(DO_MYSQL)
 
 if(DO_SCRIPTS)
-message("* With Trinity Scripts")
-SET(SCRIPT_LIB trinityscript)
+message("* With CW Scripts")
+SET(SCRIPT_LIB CWscript)
 SET(SCRIPT_INCLUDE src/bindings/scripts/include)
 ADD_DEFINITIONS(-DDO_SCRIPTS)
 else (DO_SCRIPTS)
-message("* Without Trinity Scripts")
-SET(SCRIPT_LIB trinityinterface)
+message("* Without CW Scripts")
+SET(SCRIPT_LIB CWinterface)
 SET(SCRIPT_INCLUDE src/bindings/interface)
 endif(DO_SCRIPTS)
 
@@ -107,7 +107,7 @@ endif(DO_RA)
 
 if(DO_DEBUG)
 message("* Debug mode ON")
-add_definitions(-g -DTRINITY_DEBUG)
+add_definitions(-g -DCW_DEBUG)
 endif(DO_DEBUG)
 
 if(DO_WARN)
@@ -145,7 +145,7 @@ if(ACE_FOUND)
 message(STATUS "Found ACE library: ${ACE_LIBRARY}")
 message(STATUS "Include dir is: ${ACE_INCLUDE_DIR}")
 else(ACE_FOUND)
-message(SEND_ERROR "** ACE library not found! Trinity Core cannot be compiled!")
+message(SEND_ERROR "** ACE library not found! CW Core cannot be compiled!")
 message(SEND_ERROR "** Please build ACE from http://www.cs.wustl.edu/~schmidt/ACE.html")
 #For now remove msg about install from repo, as ubuntu/debian don't have needed ver in repos.
 #message(SEND_ERROR "** your distro may provide a binary for ACE e.g. for ubuntu try apt-get install libace-dev")

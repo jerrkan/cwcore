@@ -1,7 +1,7 @@
 
 ########### next target ###############
 
-SET(trinity-core_SRCS
+SET(cw-core_SRCS
 CliRunnable.cpp
 CliRunnable.h
 Main.cpp
@@ -13,37 +13,37 @@ WorldRunnable.cpp
 WorldRunnable.h
 )
 
-SET(trinity-core_LINK_FLAGS "")
+SET(cw-core_LINK_FLAGS "")
 
-add_executable(trinity-core ${trinity-core_SRCS})
+add_executable(cw-core ${cw-core_SRCS})
 add_definitions(
--D_TRINITY_CORE_CONFIG='"${CONF_DIR}/trinitycore.conf"'
+-D_cw_CORE_CONFIG='"${CONF_DIR}/cwcore.conf"'
 )
 IF (DO_MYSQL)
-    SET(trinity-core_LINK_FLAGS "-pthread ${trinity-core_LINK_FLAGS}")
+    SET(cw-core_LINK_FLAGS "-pthread ${cw-core_LINK_FLAGS}")
 ENDIF(DO_MYSQL)
 IF (DO_POSTGRESQL)
-    SET(trinity-core_LINK_FLAGS "-pthread ${trinity-core_LINK_FLAGS}")
+    SET(cw-core_LINK_FLAGS "-pthread ${cw-core_LINK_FLAGS}")
 ENDIF(DO_POSTGRESQL)
 
 
 IF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    SET(trinity-core_LINK_FLAGS "-framework Carbon ${trinity-core_LINK_FLAGS}")
+    SET(cw-core_LINK_FLAGS "-framework Carbon ${cw-core_LINK_FLAGS}")
     SET(SCRIPT_LIB "")
 ENDIF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
-SET_TARGET_PROPERTIES(trinity-core PROPERTIES LINK_FLAGS "${trinity-core_LINK_FLAGS}")
+SET_TARGET_PROPERTIES(cw-core PROPERTIES LINK_FLAGS "${cw-core_LINK_FLAGS}")
 
 target_link_libraries(
-trinity-core
+cw-core
 game
 shared
 zlib
-trinityframework
-trinitysockets
-trinitydatabase
-trinityauth
-trinityconfig
+cwframework
+cwsockets
+cwdatabase
+cwauth
+cwconfig
 vmaps
 g3dlite
 ${READLINE_LIBRARY}
@@ -58,10 +58,10 @@ ${ZLIB}
 ${OSX_LIBS}
 )
 
-install(TARGETS trinity-core DESTINATION bin)
+install(TARGETS cw-core DESTINATION bin)
 
 
 ########### install files ###############
 
-install(FILES  trinitycore.conf.dist DESTINATION etc)
+install(FILES  cwcore.conf.dist DESTINATION etc)
 

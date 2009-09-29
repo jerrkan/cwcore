@@ -301,4 +301,4 @@ SET(game_STAT_SRCS
 )
 add_definitions(-fopenmp)
 add_library(game STATIC ${game_STAT_SRCS})
-ADD_DEPENDENCIES(game revision.h)
+ADD_DEPENDENCIES(game revision_nr.h)

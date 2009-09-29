@@ -1,7 +1,7 @@
 
 ########### next target ###############
 
-SET(trinityauth_STAT_SRCS
+SET(cwauth_STAT_SRCS
    AuthCrypt.cpp
    AuthCrypt.h
    BigNumber.cpp
@@ -16,4 +16,4 @@ SET(trinityauth_STAT_SRCS
    SARC4.h
 )
 
-add_library(trinityauth STATIC ${trinityauth_STAT_SRCS})
+add_library(cwauth STATIC ${cwauth_STAT_SRCS})

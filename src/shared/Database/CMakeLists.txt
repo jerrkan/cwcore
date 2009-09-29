@@ -1,4 +1,4 @@
-SET(trinitydatabase_STAT_SRCS
+SET(cwdatabase_STAT_SRCS
    DBCFileLoader.cpp
    DBCFileLoader.h
    DBCStore.h
@@ -27,4 +27,4 @@ SET(trinitydatabase_STAT_SRCS
    SqlOperations.h
 )
 
-add_library(trinitydatabase STATIC ${trinitydatabase_STAT_SRCS})
+add_library(cwdatabase STATIC ${cwdatabase_STAT_SRCS})

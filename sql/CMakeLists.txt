@@ -4,4 +4,4 @@ add_subdirectory(updates)
 
 FILE(GLOB _SQL *.sql)
 
-install(FILES ${_SQL} DESTINATION share/trinity/sql)
+install(FILES ${_SQL} DESTINATION share/cw/sql)

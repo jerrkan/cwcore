@@ -1,6 +1,6 @@
 ########### next target ###############
 
-SET(trinity-realm_SRCS
+SET(cw-realm_SRCS
 AuthCodes.h
 AuthSocket.cpp
 AuthSocket.h
@@ -9,33 +9,33 @@ RealmList.cpp
 RealmList.h
 )
 
-SET(trinity-realm_LINK_FLAGS "")
+SET(cw-realm_LINK_FLAGS "")
 
-add_executable(trinity-realm ${trinity-realm_SRCS})
+add_executable(cw-realm ${cw-realm_SRCS})
 add_definitions(
--D_TRINITY_REALM_CONFIG='"${CONF_DIR}/trinityrealm.conf"'
+-D_cw_REALM_CONFIG='"${CONF_DIR}/cwrealm.conf"'
 )
 IF (DO_MYSQL)
-   SET(trinity-realm_LINK_FLAGS "-pthread ${trinity-realm_LINK_FLAGS}")
+   SET(cw-realm_LINK_FLAGS "-pthread ${cw-realm_LINK_FLAGS}")
 ENDIF(DO_MYSQL)
 IF (DO_POSTGRESQL)
-   SET(trinity-realm_LINK_FLAGS "-pthread ${trinity-realm_LINK_FLAGS}")
+   SET(cw-realm_LINK_FLAGS "-pthread ${cw-realm_LINK_FLAGS}")
 ENDIF(DO_POSTGRESQL)
 
 IF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
-   SET(trinity-realm_LINK_FLAGS "-framework Carbon ${trinity-realm_LINK_FLAGS}")
+   SET(cw-realm_LINK_FLAGS "-framework Carbon ${cw-realm_LINK_FLAGS}")
 ENDIF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
-SET_TARGET_PROPERTIES(trinity-realm PROPERTIES LINK_FLAGS "${trinity-realm_LINK_FLAGS}")
+SET_TARGET_PROPERTIES(cw-realm PROPERTIES LINK_FLAGS "${cw-realm_LINK_FLAGS}")
 
 target_link_libraries(
-trinity-realm
+cw-realm
 shared
-trinityframework
-trinitysockets
-trinitydatabase
-trinityauth
-trinityconfig
+cwframework
+cwsockets
+cwdatabase
+cwauth
+cwconfig
 zlib
 gomp
 ${SSLLIB}
@@ -44,10 +44,10 @@ ${POSTGRESQL_LIBRARIES}
 ${OSX_LIBS}
 )
 
-install(TARGETS trinity-realm DESTINATION bin)
+install(TARGETS cw-realm DESTINATION bin)
 
 
 ########### install files ###############
 
-install(FILES  trinityrealm.conf.dist DESTINATION etc)
+install(FILES  cwrealm.conf.dist DESTINATION etc)
 

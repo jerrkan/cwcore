@@ -1,7 +1,7 @@
 
 ########### next target ###############
 
-SET(trinityscript_LIB_SRCS
+SET(cwscript_LIB_SRCS
    ScriptMgr.cpp
    ScriptMgr.h
    base/escort_ai.cpp
@@ -527,16 +527,16 @@ SET(trinityscript_LIB_SRCS
    system/system.h
 )
 
-add_library(trinityscript SHARED ${trinityscript_LIB_SRCS})
+add_library(cwscript SHARED ${cwscript_LIB_SRCS})
 
-add_definitions(-D_TRINITY_SCRIPT_CONFIG='"${CONF_DIR}/trinitycore.conf"')
+add_definitions(-D_cw_SCRIPT_CONFIG='"${CONF_DIR}/cwcore.conf"')
 
 IF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    SET_TARGET_PROPERTIES(trinityscript PROPERTIES LINK_FLAGS "-flat_namespace -undefined suppress")
+    SET_TARGET_PROPERTIES(cwscript PROPERTIES LINK_FLAGS "-flat_namespace -undefined suppress")
 ENDIF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
-target_link_libraries(trinityscript)
+target_link_libraries(cwscript)
 
-set_target_properties(trinityscript PROPERTIES VERSION 4.2.0 SOVERSION 4)
-install(TARGETS trinityscript DESTINATION lib)
+set_target_properties(cwscript PROPERTIES VERSION 4.2.0 SOVERSION 4)
+install(TARGETS cwscript DESTINATION lib)
 

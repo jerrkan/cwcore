@@ -1,7 +1,7 @@
 
 ########### next target ###############
 
-SET(trinityinterface_LIB_SRCS
+SET(cwinterface_LIB_SRCS
    ScriptMgr.cpp
    ScriptMgr.h
    config.h
@@ -11,9 +11,9 @@ SET(trinityinterface_LIB_SRCS
    Scripts/sc_defines.h
 )
 
-add_library(trinityinterface SHARED ${trinityinterface_LIB_SRCS})
+add_library(cwinterface SHARED ${cwinterface_LIB_SRCS})
 
-target_link_libraries(trinityinterface)
+target_link_libraries(cwinterface)
 
-set_target_properties(trinityinterface PROPERTIES VERSION 4.2.0 SOVERSION 4)
-install(TARGETS trinityinterface DESTINATION lib)
+set_target_properties(cwinterface PROPERTIES VERSION 4.2.0 SOVERSION 4)
+install(TARGETS cwinterface DESTINATION lib)

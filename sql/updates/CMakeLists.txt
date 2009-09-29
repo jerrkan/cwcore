@@ -2,4 +2,4 @@ FILE(GLOB _SQL_UPDATES *.sql)
 
 INSTALL(FILES
 ${_SQL_UPDATES}
-DESTINATION share/trinity/sql/updates)
+DESTINATION share/cw/sql/updates)
