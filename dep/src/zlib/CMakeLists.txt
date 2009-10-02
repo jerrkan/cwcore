@@ -1,22 +1,20 @@
-SET(cwsockets_STAT_SRCS
-   Base64.cpp
-   Exception.cpp
-   Ipv4Address.cpp
-   Ipv6Address.cpp
-   Lock.cpp
-   Mutex.cpp
-   Parse.cpp
-   ResolvServer.cpp
-   ResolvSocket.cpp
-   Socket.cpp
-   SocketHandler.cpp
-   StdoutLog.cpp
-   StreamSocket.cpp
-   TcpSocket.cpp
-   Thread.cpp
-   UdpSocket.cpp
-   Utility.cpp
-   socket_include.cpp
+
+########### next target ###############
+
+SET(zlib_STAT_SRCS
+   adler32.c
+   compress.c
+   crc32.c
+   deflate.c
+   example.c
+   gzio.c
+   infback.c
+   inffast.c
+   inflate.c
+   inftrees.c
+   trees.c
+   uncompr.c
+   zutil.c
 )
 
-add_library(cwsockets STATIC ${cwsockets_STAT_SRCS})
+add_library(zlib STATIC ${zlib_STAT_SRCS})
