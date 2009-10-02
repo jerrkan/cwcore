@@ -1524,7 +1524,7 @@ bool Creature::LoadFromDB(uint32 guid, Map *map)
     if (map->GetInstanceId() != 0) guid = objmgr.GenerateLowGuid(HIGHGUID_UNIT);
 
     uint16 team = 0;
-    if(!Create(guid,map,data->phaseMask,data->id,team,0,data->posX,data->posY,data->posZ,data->orientation,data))
+    if(!Create(guid,map,data->phaseMask,data->id,0,team,data->posX,data->posY,data->posZ,data->orientation,data))
         return false;
 
     //We should set first home position, because then AI calls home movement
@@ -1689,6 +1689,9 @@ bool Creature::canStartAttack(Unit const* who, bool force) const
 
     if(!force)
     {
+        if(!_IsTargetAcceptable(who))
+            return false;
+
         if(who->isInCombat())
             if(Unit *victim = who->getAttackerForHelper())
                 if(IsWithinDistInMap(victim, sWorld.getConfig(CONFIG_CREATURE_FAMILY_ASSISTANCE_RADIUS)))
@@ -2149,14 +2152,6 @@ bool Creature::CanAssistTo(const Unit* u, const Unit* enemy, bool checkfaction /
     if (GetCharmerOrOwnerGUID())
         return false;
 
-    // don't help players or units controlled or owned by players
-    if (u->GetCharmerOrOwnerPlayerOrPlayerItself())
-        return false;
-
-    // don't help if the unit is fleeing from the enemy player
-    if (!u->isAttackingPlayer() && enemy->GetTypeId() == TYPEID_PLAYER)
-        return false;
-
     // only from same creature faction
     if (checkfaction)
     {
@@ -2173,6 +2168,35 @@ bool Creature::CanAssistTo(const Unit* u, const Unit* enemy, bool checkfaction /
     if (!IsHostileTo(enemy))
         return false;
 
+    return true;
+}
+
+// use this function to avoid having hostile creatures attack
+// friendlies and other mobs they shouldn't attack
+bool Creature::_IsTargetAcceptable(const Unit* target) const
+{
+    if(IsFriendlyTo(target)) // friends shouldn't fight friends
+        return false;
+
+    const Unit* targetVictim = target->getAttackerForHelper();
+
+    if(!targetVictim) // if target does not have a victim, the target is acceptable
+        return true;
+
+    const Player* targetVictimPlayer = targetVictim->GetCharmerOrOwnerPlayerOrPlayerItself();
+
+    if(!targetVictimPlayer) // if the victim is not a player, the target is acceptable
+        return true;
+
+    // if the victim is a non-friendly player, the target is not acceptable
+    if(!IsFriendlyTo(targetVictim))
+        return false;
+
+    // if the target is passive, the target is not acceptable
+    if(((Creature*)target)->GetReactState() == REACT_PASSIVE)
+        return false;
+    
+    // otherwise, the target is acceptable
     return true;
 }
 
@@ -2270,6 +2294,9 @@ bool Creature::LoadCreaturesAddon(bool reload)
 
     if (cainfo->move_flags != 0)
         SetUnitMovementFlags(cainfo->move_flags);
+
+    if (cainfo->move_flags & (MOVEMENTFLAG_FLY_MODE | MOVEMENTFLAG_FLYING))
+        sLog.outErrorDb("Creature (GUID: %u Entry: %u) has improper `moveflags` value in `creature_template_addon`. Use `InhabitType` = 4 (Flying) in `creature_template`, not MOVEMENTFLAG_FLY_MODE or MOVEMENTFLAG_FLYING in `creature_template_addon`.",GetGUIDLow(),GetEntry());
 
     //Load Path
     if (cainfo->path_id != 0)

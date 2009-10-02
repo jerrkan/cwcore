@@ -40,9 +40,9 @@ update creature_template set scriptname = 'boss_svala' where entry = '';
 #define SAY_DIALOG_OF_ARTHAS_2                -1575029
 
 //creatures
-#define CREATURE_ARTHAS                          24266
-#define CREATURE_SVALA_SORROWGRAVE               24668
-#define CREATURE_SVALA                           29281
+#define CREATURE_ARTHAS                          24266 // Image of Arthas
+#define CREATURE_SVALA_SORROWGRAVE               26668 // Svala after transformation
+#define CREATURE_SVALA                           29281 // Svala before transformation
 #define CREATURE_RITUAL_CHANNELER                27281
 //ritual channeler's spells
 #define SPELL_PARALYZE                           48278
@@ -286,12 +286,9 @@ struct CW_DLL_DECL boss_svala_sorrowgraveAI : public ScriptedAI
                     Phase = SACRIFICING;
 
                     for (uint8 i = 0; i < 3; ++i)
-                    {
                         if (pRitualChanneler[i] = m_creature->SummonCreature(CREATURE_RITUAL_CHANNELER, RitualChannelerLocations[i].x, RitualChannelerLocations[i].y, RitualChannelerLocations[i].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 360000))
-                        {
-                            CAST_AI(mob_ritual_channelerAI,pRitualChanneler[i])->AttackStartNoMove(pSacrificeTarget);
-                        }
-                    }
+                            if (mob_ritual_channelerAI *pChannelerAI = CAST_AI(mob_ritual_channelerAI,pRitualChanneler[i]))
+                                pChannelerAI->AttackStartNoMove(pSacrificeTarget);
                 }
                 uiRitualOfSwordTimer = 18000 + rand()%4000;
             } else uiRitualOfSwordTimer -= diff;
