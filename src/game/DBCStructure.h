@@ -593,19 +593,15 @@ struct BarberShopStyleEntry
 
 struct BattlemasterListEntry
 {
-    uint32  id;                                             // 0
+	uint32  id;                                             // 0
     int32   mapid[8];                                       // 1-8 mapid
     uint32  type;                                           // 9 (3 - BG, 4 - arena)
-    uint32  minlvl;                                         // 10
-    uint32  maxlvl;                                         // 11
-    uint32  maxplayersperteam;                              // 12
-                                                            // 13 minplayers
-                                                            // 14 0 or 9
-                                                            // 15
-    char*   name[16];                                       // 16-31
-                                                            // 32 string flag, unused
-                                                            // 33 unused
-    //uint32 unk;                                           // 34 new 3.1
+    uint32  maxplayersperteam;                              // 10
+                                                            // 11
+    char*   name[16];                                       // 12-27
+                                                            // 28 string flag, unused
+                                                            // 29 unused
+    //uint32 unk;                                           // 30 new 3.1
 };
 
 #define MAX_OUTFIT_ITEMS 24
@@ -813,10 +809,11 @@ struct FactionEntry
     int32       BaseRepValue[4];                            // 10-13    m_reputationBase
     uint32      ReputationFlags[4];                         // 14-17    m_reputationFlags
     uint32      team;                                       // 18       m_parentFactionID
-    char*       name[16];                                   // 19-34    m_name_lang
-                                                            // 35 string flags
-    //char*     description[16];                            // 36-51    m_description_lang
-                                                            // 52 string flags
+															// 19-22
+    char*       name[16];                                   // 23-38    m_name_lang
+                                                            // 39 string flags
+    //char*     description[16];                            // 40-55    m_description_lang
+                                                            // 56 string flags
 };
 
 struct FactionTemplateEntry
