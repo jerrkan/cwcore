@@ -504,9 +504,15 @@ void AuctionHouseObject::Update()
     time_t curTime = sWorld.GetGameTime();
     ///- Handle expired auctions
 
+    // If storage is empty, no need to update. next == NULL in this case.
+    if (AuctionsMap.empty())
+        return;
+
     // reset next if at end of map
     if (next == AuctionsMap.end())
         next = AuctionsMap.begin();
+
+    ASSERT(next != AuctionsMap.end());
 
     uint32 loopBreaker = 0;
 
