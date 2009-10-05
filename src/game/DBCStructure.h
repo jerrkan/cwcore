@@ -1112,23 +1112,25 @@ struct MapEntry
     uint32  MapID;                                          // 0
     //char*       internalname;                             // 1 unused
     uint32  map_type;                                       // 2
-                                                            // 3 0 or 1 for battlegrounds (not arenas)
-    char*   name[16];                                       // 4-19
-                                                            // 20 name flags, unused
-    uint32  linked_zone;                                    // 21 common zone for instance and continent map
-    //char*     hordeIntro[16];                             // 23-37 text for PvP Zones
-                                                            // 38 intro text flags
-    //char*     allianceIntro[16];                          // 39-54 text for PvP Zones
-                                                            // 55 intro text flags
-    uint32  multimap_id;                                    // 56
-                                                            // 57
-    int32   entrance_map;                                   // 58 map_id of entrance map
-    float   entrance_x;                                     // 59 entrance x coordinate (if exist single entry)
-    float   entrance_y;                                     // 60 entrance y coordinate (if exist single entry)
-                                                            // 61 -1, 0 and 720
-    uint32  addon;                                          // 62 (0-original maps,1-tbc addon)
-                                                            // 63 some kind of time?
-    //uint32 maxPlayers;                                    // 64 max players
+	//unk3.3												// 3
+                                                            // 4 0 or 1 for battlegrounds (not arenas)
+    char*   name[16];                                       // 5-20
+                                                            // 21 name flags, unused
+    uint32  linked_zone;                                    // 22 common zone for instance and continent map
+															// 23
+    //char*     hordeIntro[16];                             // 24-38 text for PvP Zones
+                                                            // 39 intro text flags
+    //char*     allianceIntro[16];                          // 40-55 text for PvP Zones
+                                                            // 56 intro text flags
+    uint32  multimap_id;                                    // 57
+                                                            // 58
+    int32   entrance_map;                                   // 59 map_id of entrance map
+    float   entrance_x;                                     // 60 entrance x coordinate (if exist single entry)
+    float   entrance_y;                                     // 61 entrance y coordinate (if exist single entry)
+                                                            // 62 -1, 0 and 720
+    uint32  addon;                                          // 63 (0-original maps,1-tbc addon)
+                                                            // 64 some kind of time?
+    //uint32 maxPlayers;                                    // 65 max players
 
     // Helpers
     uint32 Expansion() const { return addon; }
