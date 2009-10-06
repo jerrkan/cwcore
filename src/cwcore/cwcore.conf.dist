@@ -1953,6 +1953,9 @@ Anticheat.Movement.GmLevel = 0
 #	NoResetTalentsCost
 #		Enable or disable no cost when reseting talents
 #
+#   OutdoorPvP.Wintergrasp.Enabled = 1
+#       Determines whether the Wintergrasp battle is enabled or not.
+#
 #   OutdoorPvP.Wintergrasp.StartTime = 30
 #       The start time of the first battle after server starts (default: 30 minutes)
 #
