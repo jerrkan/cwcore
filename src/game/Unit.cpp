@@ -6299,35 +6299,19 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                 // Seal of Blood do damage trigger
                 case 31892:
                 {
-                    if (effIndex == 0)       // 0 effect - is proc on enemy
+                    if (effIndex == 0 && procFlag & PROC_FLAG_SUCCESSFUL_MELEE_HIT)       // 0 effect - is proc on enemy
                         triggered_spell_id = 31893;
-                    else if (effIndex == 1)  // 1 effect - is proc on self
-                    {
-                        // add spell damage from prev effect (27%)
-                        damage += CalculateDamage(BASE_ATTACK, false) * 27 / 100;
-                        basepoints0 =  triggerAmount * damage / 100;
-                        target = this;
-                        triggered_spell_id = 32221;
-                    }
                     else
-                        return false;
+                        return true;
                     break;
                 }
                 // Seal of the Martyr do damage trigger
                 case 53720:
                 {
-                    if (effIndex == 0)      // 0 effect - is proc on enemy
+                    if (effIndex == 0 && procFlag & PROC_FLAG_SUCCESSFUL_MELEE_HIT )       // 0 effect - is proc on enemy
                         triggered_spell_id = 53719;
-                    else if (effIndex == 1) // 1 effect - is proc on self
-                    {
-                        // add spell damage from prev effect (27%)
-                        damage += CalculateDamage(BASE_ATTACK, false) * 27 / 100;
-                        basepoints0 =  triggerAmount * damage / 100;
-                        target = this;
-                        triggered_spell_id = 53718;
-                    }
                     else
-                        return false;
+                        return true;
                     break;
                 }
                 // Paladin Tier 6 Trinket (Ashtongue Talisman of Zeal)
@@ -6762,7 +6746,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
             // Improved Blood Presence
             if (dummySpell->SpellIconID == 2636)
             {
-                if (GetTypeId() != TYPEID_PLAYER || !((Player*)this)->isHonorOrXPTarget(pVictim))
+                if (GetTypeId() != TYPEID_PLAYER)
                     return false;
                 basepoints0 = triggerAmount * damage / 100;
                 // Blood Aura
@@ -7142,6 +7126,24 @@ bool Unit::HandleAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAura, S
             }
             break;
         }
+        
+        case SPELLFAMILY_PALADIN:
+        {
+            // Seal of Command should only proc from melee hits.
+            if(dummySpell->Id == 20375)
+            {
+                if (procFlag && ( procFlag & PROC_FLAG_SUCCESSFUL_MELEE_HIT ))
+                {
+                    *handled = false;
+                    return true;
+                }
+                else
+                {
+                    *handled = true;
+                    return false;
+                }
+            }
+        }
     }
     return false;
 }
@@ -7511,8 +7513,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
                 {
                     if (GetTypeId() != TYPEID_PLAYER)
                         return false;
-                    if (!((Player*)this)->isHonorOrXPTarget(pVictim))
-                        return false;
+
                     trigger_spell_id = 50475;
                     basepoints0 = damage * triggerAmount / 100;
                 }
@@ -9634,6 +9635,16 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                             break;
                         }
                     break;
+                    case SPELLFAMILY_PALADIN:
+                     // Judgement of Command proc always crits on stunned target
+                    if(spellProto->SpellFamilyName == SPELLFAMILY_PALADIN)
+                    {
+                        if(spellProto->SpellFamilyFlags[0] & 0x0000000000800000LL && spellProto->SpellIconID == 561)
+                        {
+                            if(pVictim->hasUnitState(UNIT_STAT_STUNNED))
+                                return true;
+                        }
+                    }
                 }
             }
         case SPELL_DAMAGE_CLASS_RANGED:
@@ -11953,8 +11964,8 @@ void Unit::SetHealth(uint32 val)
     if(getDeathState() == JUST_DIED)
         val = 0;
     // causes instant permadeath if you exit game while in combat?! :-|
-    //else if((getDeathState() & (DEAD | DEAD_FALLING)) != 0)
-    //    val = 1;
+    else if((GetTypeId() == TYPEID_PLAYER) && (getDeathState() & (DEAD | DEAD_FALLING)) != 0)
+        val = 1;
     else
     {
         uint32 maxHealth = GetMaxHealth();
