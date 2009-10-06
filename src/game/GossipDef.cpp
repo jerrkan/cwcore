@@ -603,6 +603,15 @@ void PlayerMenu::SendQuestQueryResponse( Quest const *pQuest )
         }
     }
 
+    for(iI = 0; iI < QUEST_REPUTATIONS_COUNT; ++iI)         // reward factions ids
+        data << uint32(0);
+
+    for(iI = 0; iI < QUEST_REPUTATIONS_COUNT; ++iI)         // columnid+1 QuestFactionReward.dbc?
+        data << uint32(0);
+
+    for(iI = 0; iI < QUEST_REPUTATIONS_COUNT; ++iI)         // unk (0)
+        data << uint32(0);
+
     data << pQuest->GetPointMapId();
     data << pQuest->GetPointX();
     data << pQuest->GetPointY();
@@ -612,6 +621,7 @@ void PlayerMenu::SendQuestQueryResponse( Quest const *pQuest )
     data << Objectives;
     data << Details;
     data << EndText;
+    data << uint8(0);                                       // some string
 
     for (iI = 0; iI < QUEST_OBJECTIVES_COUNT; ++iI)
     {
