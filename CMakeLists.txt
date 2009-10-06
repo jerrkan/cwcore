@@ -80,7 +80,7 @@ ENDIF(DO_MYSQL)
 
 if(DO_SCRIPTS)
 message("* With CW Scripts")
-SET(SCRIPT_LIB CWscript)
+SET(SCRIPT_LIB cwscript)
 SET(SCRIPT_INCLUDE src/bindings/scripts/include)
 ADD_DEFINITIONS(-DDO_SCRIPTS)
 else (DO_SCRIPTS)
