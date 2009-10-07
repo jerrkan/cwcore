@@ -34,6 +34,11 @@ enum Yells
     SAY_STUN                                         = -1603006
 };
 
+enum Achievements
+{
+    ACHIEVEMENT_GOOD_GRIEF                           = 1866
+};
+
 struct CW_DLL_DECL boss_maiden_of_griefAI : public ScriptedAI
 {
     boss_maiden_of_griefAI(Creature *c) : ScriptedAI(c) 
