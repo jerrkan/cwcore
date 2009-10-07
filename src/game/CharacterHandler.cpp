@@ -644,6 +644,17 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
         SendPacket( &data );
         DEBUG_LOG( "WORLD: Sent motd (SMSG_MOTD)" );
 
+		//GM Announce Logon
+		if(pCurrChar->isGameMaster())
+		{
+			std::string msg = "GM ";
+			msg += pCurrChar->GetName();
+			msg += " has logged in. ";
+			sWorld.SendWorldText(LANG_SYSTEMMESSAGE, msg.c_str());
+
+			sLog.outString(msg.c_str());
+		}
+
         // send server info
         if(sWorld.getConfig(CONFIG_ENABLE_SINFO_LOGIN) == 1)
             chH.PSendSysMessage(_FULLVERSION);
