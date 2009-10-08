@@ -952,10 +952,10 @@ TalentsInspecting = 1
 #
 ###################################################################################################################
 
-ThreatRadius = 60
-Rate.Creature.Aggro = 0.6
+ThreatRadius = 50
+Rate.Creature.Aggro = 0.5
 CreatureFamilyFleeAssistanceRadius = 30
-CreatureFamilyAssistanceRadius = 10
+CreatureFamilyAssistanceRadius = 2.5
 CreatureFamilyAssistanceDelay = 1500
 CreatureFamilyFleeDelay = 7000
 WorldBossLevelDiff = 3
